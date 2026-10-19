@@ -180,6 +180,14 @@ canvas{display:block;width:100%;height:100%}
 .slot svg{position:absolute;inset:26%;width:48%;height:48%}
 .slot .lv{position:absolute;left:24%;right:24%;bottom:17%;text-align:center;font-family:var(--f-body);font-weight:700;font-size:10px;line-height:1.5;background:rgba(0,0,0,.65);border-radius:999px;color:#fff}
 .slot.empty .ic{opacity:.35;filter:grayscale(1)}
+.slot .enb{position:absolute;top:6%;right:8%;font-size:10px;font-weight:700;color:#fff;background:linear-gradient(#ff9a3a,#c95a10);border-radius:999px;padding:0 5px;line-height:15px;box-shadow:0 1px 2px #000}
+.forge{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.fg{display:flex;flex-direction:column;align-items:center;gap:2px;background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:6px 4px;color:var(--fg);font:inherit;cursor:pointer}
+.fg img{width:30px;height:30px}
+.fg b{font-size:12px;font-weight:700}
+.fg b i{font-style:normal;color:#ff9a3a}
+.fg span{display:flex;align-items:center;gap:2px;font-size:12px;font-weight:700;color:#d8dcef}
+.fg:disabled{opacity:.5;cursor:default}
 .slot .lv.em{font-family:var(--f-body);font-weight:600;font-size:9.5px;color:#c9cbd6;bottom:17%;left:18%;right:18%;background:rgba(0,0,0,.6);border-radius:999px;text-shadow:none;line-height:1.5}
 .eqstats{display:grid;grid-template-columns:repeat(2,1fr);gap:4px 12px;font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums}
 .eqstats b{color:var(--fg);float:right}
@@ -358,6 +366,7 @@ button:focus-visible,input:focus-visible{outline:2px solid var(--gold);outline-o
         <div class="eqcol" id="slotsR"></div>
       </div>
       <div class="box eqstats" id="eqStats"></div>
+      <div class="box" id="forge"></div>
       <div class="box">
         <div class="boxhead"><b id="boxLv">성유물 상자 Lv.1</b><span id="boxXpT">0 / 10</span></div>
         <div class="xp"><div id="boxXp" style="width:0%"></div></div>
@@ -492,9 +501,10 @@ const ITEMN=Object.fromEntries([...CROPS,...GOODS].map(x=>[x.k,x.n]));
 const RECIPES=[
  {k:'bread',n:'마르타의 밀빵',need:{wheat:5},buff:'atk',desc:'원정대 공격력 +20%'},
  {k:'stew',n:'생선 당근 스튜',need:{carrot:2,fish:2},buff:'spd',desc:'원정대 공격 속도 +20%'},
- {k:'pie',n:'꿀 호박 파이',need:{pumpkin:2,honey:2},buff:'gold',desc:'획득 골드 +50%'}
+ {k:'pie',n:'꿀 호박 파이',need:{pumpkin:2,honey:2},buff:'gold',desc:'획득 골드 +50%'},
+ {k:'grill',n:'드워프 돌판 구이',need:{ore:3,wheat:2},buff:'crit',desc:'원정대 치명타 +10%'}
 ];
-const BUFFN={atk:'공격력',spd:'공속',gold:'골드'};
+const BUFFN={atk:'공격력',spd:'공속',gold:'골드',crit:'치명타'};
 const BLD=[
  {k:'inn',n:'여관',who:'',max:10,base:150,eff:l=>'방치 보상 최대 '+(6+l)+'시간',open:()=>true,lock:''},
  {k:'farm',n:'밭',who:'카엘',max:6,base:120,eff:l=>'밭 '+(2+l)+'칸',open:()=>S.done.marta,lock:'개울 마을을 되찾으면 열려요'},
@@ -649,11 +659,13 @@ const memMul=()=>1+.05*S.memory;
 const allMul=()=>(1+.04*rankIdx())*memMul();
 
 /* ---------- 능력치 ---------- */
-function kStats(){let ga=0,gh=0;for(const s of SLOTS){const it=S.eq[s.k];if(it){ga+=it.atk;gh+=it.hp}}const fm=1+.06*S.bld.mine,m=allMul();
- return{atk:(10+S.up.atk*3+ga*fm)*(buff('atk')?1.2:1)*m,hp:(100+S.up.hp*20+gh*fm)*(1+.05*S.bld.diner)*m,aps:(1+S.up.spd*.05)*(buff('spd')?1.2:1),crit:(5+S.up.crit)/100}}
+/* 브론의 대장간: 부위별 강화. 장비를 바꿔도 강화는 부위에 남음 */
+const EN_MAX=20,enLv=k=>(S.slotEn&&S.slotEn[k])||0,enMul=k=>1+.1*enLv(k),enCost=l=>Math.ceil(5*Math.pow(1.35,l));
+function kStats(){let ga=0,gh=0;for(const s of SLOTS){const it=S.eq[s.k];if(it){ga+=it.atk*enMul(s.k);gh+=it.hp*enMul(s.k)}}const fm=1+.06*S.bld.mine,m=allMul();
+ return{atk:(10+S.up.atk*3+ga*fm)*(buff('atk')?1.2:1)*m,hp:(100+S.up.hp*20+gh*fm)*(1+.05*S.bld.diner)*m,aps:(1+S.up.spd*.05)*(buff('spd')?1.2:1),crit:(5+S.up.crit)/100+(buff('crit')?.1:0)}}
 const COMP_GROW=1.1,BLESS=.2;/* 동료 레벨당 능력치 ×1.1, 카엘 성유물 능력치의 20%를 동료도 받음(성검의 축복) */
-function gearSum(){let a=0,h=0;for(const s of SLOTS){const it=S.eq[s.k];if(it){a+=it.atk;h+=it.hp}}const fm=1+.06*S.bld.mine;return{a:a*fm,h:h*fm}}
-function cStats(id){const c=COMP[id],l=S.lv[id],m=allMul(),g=Math.pow(COMP_GROW,l-1),gs=gearSum();return{atk:(c.base.atk*g+gs.a*BLESS)*(1+.08*S.bld.apiary)*(buff('atk')?1.2:1)*m,hp:(c.base.hp*g+gs.h*BLESS)*(1+.05*S.bld.diner)*m,aps:c.base.aps*(buff('spd')?1.2:1),crit:.05}}
+function gearSum(){let a=0,h=0;for(const s of SLOTS){const it=S.eq[s.k];if(it){a+=it.atk*enMul(s.k);h+=it.hp*enMul(s.k)}}const fm=1+.06*S.bld.mine;return{a:a*fm,h:h*fm}}
+function cStats(id){const c=COMP[id],l=S.lv[id],m=allMul(),g=Math.pow(COMP_GROW,l-1),gs=gearSum();return{atk:(c.base.atk*g+gs.a*BLESS)*(1+.08*S.bld.apiary)*(buff('atk')?1.2:1)*m,hp:(c.base.hp*g+gs.h*BLESS)*(1+.05*S.bld.diner)*m,aps:c.base.aps*(buff('spd')?1.2:1),crit:.05+(buff('crit')?.1:0)}}
 const stats=id=>id==='kael'?kStats():cStats(id);
 const members=()=>ORDER.filter(id=>id==='kael'||S.joined[id]);
 function power(){return Math.round(members().reduce((a,id)=>{const t=stats(id);return a+(t.atk*6+t.hp)*(1+t.crit)*t.aps*(id==='riel'?1.4:1)},0))}
@@ -872,8 +884,16 @@ let toastT;function toast(m){const t=$('toast');t.textContent=m;t.style.opacity=
 let eqSig='',upSig='',boxSig='';
 const FRAMES=['normal','uncommon','rare','epic','legendary','mythic'];
 const SLOTIMG={weapon:'slot_weapon',helm:'slot_hat',armor:'slot_armor',gloves:'slot_gloves',boots:'slot_boots',ring:'slot_ring'};
+let forgeSig='';
+function renderForge(){const f=$('forge');if(!f)return;const ore=S.items.ore||0;
+ const sig=[ore,S.bld.mine,JSON.stringify(S.slotEn||{}),S.joined.bron].join();if(sig===forgeSig)return;forgeSig=sig;
+ if(!S.bld.mine){f.innerHTML=`<div class="sec">브론의 대장간 <small>잠김</small></div><p class="note">마을에 광산을 재건하면 브론이 캐낸 광석으로 성유물을 강화할 수 있어요.</p>`;return}
+ f.innerHTML=`<div class="sec">브론의 대장간 <small>${uiImg('item_ore','chipic')} 광석 ${fmt(ore)}</small></div>
+ <p class="note">부위마다 강화할 때마다 그 부위 성유물 능력치가 10%씩 올라요. 장비를 바꿔도 강화는 부위에 남아요.</p>
+ <div class="forge">${SLOTS.map(sl=>{const l=enLv(sl.k),mx=l>=EN_MAX,c=enCost(l);return`<button class="fg" data-en="${sl.k}" ${mx||ore<c?'disabled':''}><img src="assets/ui/${SLOTIMG[sl.k]}.png" alt="" onerror="this.remove()"><b>${sl.n} <i>+${l}</i></b><span>${mx?'최대':`${uiImg('item_ore','chipic')}${c}`}</span></button>`}).join('')}</div>`;
+ f.querySelectorAll('[data-en]').forEach(b=>b.onclick=()=>{const k=b.dataset.en,l=enLv(k),c=enCost(l);if(l>=EN_MAX||(S.items.ore||0)<c)return;S.items.ore-=c;if(!S.slotEn)S.slotEn={};S.slotEn[k]=l+1;flashSlot(k);toast(SLOTS.find(x=>x.k===k).n+' +'+(l+1)+' 강화! 능력치 +'+((l+1)*10)+'%');kitSig='';renderAll()})}
 function slotHtml(sl){const it=S.eq[sl.k],g=it?it.g:0;
- return`<button class="slot${it?'':' empty'}" id="sl-${sl.k}" aria-label="${sl.n}"><img class="fr" src="assets/ui/frame_${FRAMES[g]}.png" alt="" onerror="this.remove()"><img class="ic${relicSrc(it)?' relic':''}" src="${relicSrc(it)||'assets/ui/'+SLOTIMG[sl.k]+'.png'}" alt="" onerror="this.replaceWith(document.createRange().createContextualFragment(svg('${sl.k}')))">${it?`<span class="lv">Lv.${it.lv}</span>`:`<span class="lv em">비어 있음</span>`}</button>`}
+ return`<button class="slot${it?'':' empty'}" id="sl-${sl.k}" aria-label="${sl.n}"><img class="fr" src="assets/ui/frame_${FRAMES[g]}.png" alt="" onerror="this.remove()"><img class="ic${relicSrc(it)?' relic':''}" src="${relicSrc(it)||'assets/ui/'+SLOTIMG[sl.k]+'.png'}" alt="" onerror="this.replaceWith(document.createRange().createContextualFragment(svg('${sl.k}')))">${enLv(sl.k)?`<span class="enb">+${enLv(sl.k)}</span>`:''}${it?`<span class="lv">Lv.${it.lv}</span>`:`<span class="lv em">비어 있음</span>`}</button>`}
 function renderSlots(){
  const L=['weapon','armor','gloves'],R=['helm','boots','ring'];
  $('slotsL').innerHTML=L.map(k=>slotHtml(SLOTS.find(x=>x.k===k))).join('');
@@ -903,7 +923,7 @@ function renderAll(){
  $('hPow').textContent=fmt(power());$('hRank').textContent=RANKS[rankIdx()].n;{const ri=$('hRankImg'),src='assets/ui/'+RANKIMG[rankIdx()]+'.png';if(ri&&!ri.src.endsWith(src))ri.src=src}
  const c=boxCost();$('openCost').textContent=fmt(c);$('openBtn').disabled=S.gold<c||!!pending;$('quickCost').textContent=fmt(c);$('quickBox').disabled=S.gold<c||!!pending;
  renderPartyRow();if(curTab==='eq')drawEqHero();
- const es=JSON.stringify(S.eq);if(es!==eqSig){eqSig=es;renderSlots()}
+ const es=JSON.stringify(S.eq)+JSON.stringify(S.slotEn||{});if(es!==eqSig){eqSig=es;renderSlots()}renderForge();
  const bs=S.boxLv+':'+S.boxXp;if(bs!==boxSig){boxSig=bs;renderBox()}
  const us=JSON.stringify(S.up);if(us!==upSig){upSig=us;renderUpg()}
  UPG.forEach(u=>{const b=$('up-'+u.k);if(b&&S.up[u.k]<u.max)b.disabled=S.gold<u.cost(S.up[u.k])});
