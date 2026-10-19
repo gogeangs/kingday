@@ -53,6 +53,11 @@ body{word-break:keep-all;overflow-wrap:break-word;line-break:strict;background:#
 .pfc.lock .pfr{filter:grayscale(1) brightness(.7)}
 .pfc b{font-size:12px;line-height:1.2;text-align:center;word-break:keep-all}.pfc small{font-size:10.5px;color:var(--muted);line-height:1.2;text-align:center;word-break:keep-all}
 .pfc.on small{color:var(--gold)}
+.pfc.lock .pfr{filter:grayscale(1) brightness(.6)}
+.pfbd{width:24px;height:24px;vertical-align:-4px;margin-left:5px}
+.hbadge{width:20px;height:20px;vertical-align:-4px;margin-right:2px}
+.hbadge[hidden]{display:none}
+.sheet .pfgrid+.sec{margin-top:12px}
 .setrow{display:flex;justify-content:space-between;align-items:center;gap:10px;background:var(--panel2);border-radius:12px;padding:10px 12px;font-size:13px}
 .setrow b{font-weight:600}
 .setrow small{display:block;color:var(--muted);font-size:11px;margin-top:2px}
@@ -357,7 +362,7 @@ button:focus-visible,input:focus-visible{outline:2px solid var(--gold);outline-o
 <div class="app">
   <header class="hud">
     <button class="face" id="faceBtn" aria-label="프로필 열기"><canvas id="faceCv"></canvas><img class="pfr" id="hFrame" src="assets/profile/frame_wood.png" alt="" onerror="this.remove()"></button>
-    <div class="who"><span class="nm">카엘 <img class="rankimg" id="hRankImg" src="assets/ui/rank_farmer.png" alt="" onerror="this.remove()"><span class="rank" id="hRank">농부</span></span><span class="pow" id="hPow">0</span></div>
+    <div class="who"><span class="nm">카엘 <img class="hbadge" id="hBadge" alt="" hidden onerror="this.hidden=true"><img class="rankimg" id="hRankImg" src="assets/ui/rank_farmer.png" alt="" onerror="this.remove()"><span class="rank" id="hRank">농부</span></span><span class="pow" id="hPow">0</span></div>
     <button class="gempill" id="gemBtn" aria-label="황금 이삭과 오늘의 할 일"><img class="gemimg" src="assets/gem/ui_gem.png" alt="" onerror="this.remove()"><span id="gem">0</span><i class="dot" id="gemDot" hidden></i></button>
     <div class="goldpill"><img class="coinimg" src="assets/ui/ui_gold.png" alt="" onerror="this.outerHTML='<i class=&quot;coin&quot;></i>'"><span id="gold">0</span></div>
   </header>
@@ -788,7 +793,7 @@ function buyGemPlot(){const n=S.gemPlots||0,c=GEM_PLOTS[n];if(c==null)return;
 function ensurePlots(){const n=plotCount();while(S.plots.length<n)S.plots.push(null)}
 function plotState(p){if(!p)return{st:'empty'};const c=CROPS.find(x=>x.k===p.k),left=c.t-(Date.now()-p.at)/1000;return left<=0?{st:'ready',c}:{st:'grow',c,left,ratio:1-left/c.t}}
 function plant(i,k){if(S.seeds[k]<=0||S.plots[i])return;S.seeds[k]--;S.plots[i]={k,at:Date.now()};farmSig='';renderAll()}
-function harvest(i){const ps=plotState(S.plots[i]);if(ps.st!=='ready')return 0;const n=2+(Math.random()<.3?1:0);S.items[ps.c.k]+=n;S.plots[i]=null;dailyAdd('harv',n);return n}
+function harvest(i){const ps=plotState(S.plots[i]);if(ps.st!=='ready')return 0;const n=2+(Math.random()<.3?1:0);S.items[ps.c.k]+=n;S.plots[i]=null;dailyAdd('harv',n);stat('harv',n);if(ps.c.k==='pumpkin')stat('pump',n);return n}
 function produce(){checkBuild();const now=Date.now();for(const g of GOODS){const l=S.bld[g.b];if(!l){S.prod[g.b]=now;continue}const iv=120000/l;if(!S.prod[g.b])S.prod[g.b]=now;const n=Math.min(2000,Math.floor((now-S.prod[g.b])/iv));if(n>0){S.items[g.k]+=n;S.prod[g.b]+=n*iv}}}
 function chooseSeed(i){const tg=plotTag(i);if(tg){const c=CROPS.find(x=>x.k===tg);if(S.seeds[tg]>0)plant(i,tg);else toast(c.n+' 전용 밭이에요. '+c.n+' 씨앗이 없어요');return}
  $('sheet').innerHTML=`<h2>무엇을 심을까요?</h2>${CROPS.map(c=>`<div class="row" style="background:var(--panel2)">${uiImg('seed_'+c.k)}<div class="info"><b>${c.n}</b><div>자라는 시간 ${mmss(c.t)} · 씨앗 ${S.seeds[c.k]}개</div></div><button class="buy" id="sd-${c.k}" ${S.seeds[c.k]?'':'disabled'}>심기</button></div>`).join('')}<label class="tagchk"><input type="checkbox" id="sdTag"> 이 칸을 고른 작물 전용 밭으로 지정<small>다음부터 '모두 심기'를 해도 이 칸엔 그 작물만 심어져요</small></label><div class="acts one"><button id="mX">닫기</button></div>`;
@@ -834,7 +839,7 @@ function renderKitchen(){
  const sig=chips+rows+val;if(sig===kitSig)return;kitSig=sig;
  kb.innerHTML=`<div class="sec">${S.joined.margo?'마고의 식당':'마을 부엌'} <small>요리하면 원정대가 강해져요</small></div><div class="inv">${chips}</div>${rows}
   <button class="buy ghost" id="sellAll" ${val>0?'':'disabled'}>창고 물건 모두 판매 +${fmt(val)}</button>`;
- kb.querySelectorAll('[data-r]').forEach(b=>b.onclick=()=>{const r=RECIPES.find(x=>x.k===b.dataset.r);if(!Object.entries(r.need).every(([k,n])=>S.items[k]>=n))return;for(const[k,n]of Object.entries(r.need))S.items[k]-=n;S.buffs[r.buff]=Math.max(Date.now(),S.buffs[r.buff]||0)+600000;toast(r.n+' 완성! '+r.desc);kitSig='';renderAll()});
+ kb.querySelectorAll('[data-r]').forEach(b=>b.onclick=()=>{const r=RECIPES.find(x=>x.k===b.dataset.r);if(!Object.entries(r.need).every(([k,n])=>S.items[k]>=n))return;for(const[k,n]of Object.entries(r.need))S.items[k]-=n;S.buffs[r.buff]=Math.max(Date.now(),S.buffs[r.buff]||0)+600000;stat('cook',1);toast(r.n+' 완성! '+r.desc);kitSig='';renderAll()});
  $('sellAll').onclick=()=>{S.gold+=val;keys.forEach(k=>S.items[k]=0);toast('창고 판매 +'+fmt(val));kitSig='';renderAll()};
 }
 const VNOTE={inn:'원정대가 쉬는 곳이에요. 레벨이 오를수록 게임을 꺼 둔 동안 더 오래 세금이 쌓여요.',dock:'잡은 생선은 창고에 쌓여요. 식당에서 요리 재료로 쓰거나 팔 수 있어요.',apiary:'모은 꿀은 창고에 쌓여요. 식당에서 요리 재료로 쓰거나 팔 수 있어요.',mine:'캐낸 광석은 창고에 쌓여요. 식당에서 팔 수 있어요.'};
@@ -1457,15 +1462,31 @@ const PFRAMES=[
  {k:'amethyst',n:'자수정 장식',d:'전설 성유물 착용',ok:()=>Object.values(S.eq).some(it=>it&&it.g>=4)},
  {k:'holy',n:'성검의 가호',d:'첫 은퇴',ok:()=>(S.retires||0)>=1},
  {k:'royal',n:'붉은 왕관',d:'칭호 공작',ok:()=>rankIdx()>=5}];
+const stat=(k,n)=>{if(!S.stat)S.stat={};S.stat[k]=(S.stat[k]||0)+n},st=k=>(S.stat&&S.stat[k])||0;
+const BADGES=[
+ {k:'pumpkin',n:'첫 달빛 호박',d:'달빛 호박 수확',ok:()=>st('pump')>=1},
+ {k:'basket',n:'풍년 농부',d:'작물 100개 수확',ok:()=>st('harv')>=100},
+ {k:'stew',n:'마고의 단골',d:'요리 10번',ok:()=>st('cook')>=10},
+ {k:'rebuild',n:'마을 재건',d:'건물 6채 모두 재건',ok:()=>Object.values(S.bld).filter(l=>l>0).length>=6},
+ {k:'chest',n:'상자 사냥꾼',d:'성유물 상자 Lv.10',ok:()=>S.boxLv>=10},
+ {k:'horns',n:'군단장 사냥꾼',d:'군단장 처치',ok:()=>Object.keys(S.gemLord||{}).length>=1},
+ {k:'retire',n:'은퇴 전문가',d:'은퇴 3번',ok:()=>(S.retires||0)>=3},
+ {k:'king',n:'농부 왕',d:'영지 50곳 모두 탈환',ok:()=>S.best>MAXLAND}];
+const bdHas=k=>!!(S.bdUnl&&S.bdUnl[k]);
 const pfHas=k=>k==='wood'||!!(S.pfUnl&&S.pfUnl[k]);
 function pfCheck(){if(!S.pfUnl)S.pfUnl={};for(const f of PFRAMES){if(!S.pfUnl[f.k]&&f.ok()){S.pfUnl[f.k]=1;if(f.k!=='wood'&&S.started)toast('새 프로필 테두리 「'+f.n+'」을 얻었어요')}}
+ if(!S.bdUnl)S.bdUnl={};for(const b of BADGES){if(!S.bdUnl[b.k]&&b.ok()){S.bdUnl[b.k]=1;if(S.started)toast('새 배지 「'+b.n+'」을 얻었어요')}}
+ const hb=$('hBadge');if(hb){const bs=S.badge&&bdHas(S.badge)?'assets/profile/badge_'+S.badge+'.png':'';if(!bs)hb.hidden=true;else{hb.hidden=false;if(!hb.src.endsWith(bs))hb.src=bs}}
  const im=$('hFrame'),src='assets/profile/frame_'+(S.pf||'wood')+'.png';if(im&&!im.src.endsWith(src))im.src=src}
 function profileSheet(){pfCheck();const cur=S.pf||'wood',ri=rankIdx();
- $('sheet').innerHTML=`<div class="eyebrow">프로필</div><div class="pfhead"><div class="pfbig"><canvas id="pfCv"></canvas><img class="pfr" src="assets/profile/frame_${cur}.png" alt=""></div><div class="pfinfo"><b>카엘</b><small>${RANKS[ri].n} · 전투력 ${fmt(power())}</small><small>최고 영지 ${Math.min(S.best,MAXLAND)} · 은퇴 ${S.retires||0}번</small></div></div>
+ $('sheet').innerHTML=`<div class="eyebrow">프로필</div><div class="pfhead"><div class="pfbig"><canvas id="pfCv"></canvas><img class="pfr" src="assets/profile/frame_${cur}.png" alt=""></div><div class="pfinfo"><b>카엘${S.badge&&bdHas(S.badge)?`<img class="pfbd" src="assets/profile/badge_${S.badge}.png" alt="">`:''}</b><small>${RANKS[ri].n} · 전투력 ${fmt(power())}</small><small>최고 영지 ${Math.min(S.best,MAXLAND)} · 은퇴 ${S.retires||0}번</small></div></div>
  <div class="sec">테두리 <small>${PFRAMES.filter(f=>pfHas(f.k)).length} / ${PFRAMES.length}</small></div>
  <div class="pfgrid">${PFRAMES.map(f=>{const has=pfHas(f.k);return`<button class="pfc${f.k===cur?' on':''}${has?'':' lock'}" data-pf="${f.k}"><span class="pv"><i></i><img class="pfr" src="assets/profile/frame_${f.k}.png" alt=""></span><b>${f.n}</b><small>${f.k===cur?'사용 중':has?'바꾸기':'🔒 '+f.d}</small></button>`}).join('')}</div>
+ <div class="sec">대표 배지 <small>${BADGES.filter(b=>bdHas(b.k)).length} / ${BADGES.length}</small></div>
+ <div class="pfgrid">${BADGES.map(b=>{const has=bdHas(b.k),on=S.badge===b.k;return`<button class="pfc bd${on?' on':''}${has?'':' lock'}" data-bd="${b.k}"><span class="pv"><img class="pfr" src="assets/profile/badge_${b.k}.png" alt=""></span><b>${b.n}</b><small>${on?'다는 중':has?'달기':'🔒 '+b.d}</small></button>`}).join('')}</div>
  <div class="acts"><button id="pfSet">⚙ 설정</button><button class="pri" id="mGo">닫기</button></div>`;
  $('modal').hidden=false;faceTo($('pfCv'),'kael');$('mGo').onclick=closeModal;$('pfSet').onclick=()=>settingsSheet();
+ document.querySelectorAll('[data-bd]').forEach(b=>b.onclick=()=>{const k=b.dataset.bd,f=BADGES.find(x=>x.k===k);if(!bdHas(k))return toast(f.d+' 달성 시 얻어요');S.badge=S.badge===k?null:k;pfCheck();save();profileSheet()});
  document.querySelectorAll('[data-pf]').forEach(b=>b.onclick=()=>{const k=b.dataset.pf,f=PFRAMES.find(x=>x.k===k);if(!pfHas(k))return toast(f.d+' 달성 시 얻어요');S.pf=k;pfCheck();save();profileSheet()});
 }
 function settingsSheet(step){
