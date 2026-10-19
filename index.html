@@ -145,7 +145,10 @@ canvas{display:block;width:100%;height:100%}
 .buff.sk{border-color:#9cc3ff;color:#dbe8ff}
 @keyframes skp{50%{box-shadow:0 0 16px 4px rgba(255,201,74,.95)}}
 @media (prefers-reduced-motion:reduce){.pcard.ready .pic{animation:none}}
-.skl{display:flex;gap:6px;align-items:flex-start;margin-top:4px;padding:5px 7px;border-radius:8px;background:rgba(255,201,74,.08);border:1px solid rgba(255,201,74,.25)}
+#party .row{flex-wrap:wrap}
+#party .skl{flex:1 1 100%;min-width:0;margin-left:66px;box-sizing:border-box}
+#party .skl>div{min-width:0}
+.skl{display:flex;gap:6px;align-items:center;margin-top:0;padding:5px 7px;border-radius:8px;background:rgba(255,201,74,.08);border:1px solid rgba(255,201,74,.25)}
 .skl img{width:28px;height:28px;flex:0 0 auto}
 .skl b{display:block;font-size:12px;color:var(--gold);font-family:var(--f-body)}
 .skl span{font-size:11px;color:var(--muted);line-height:1.4}
@@ -811,8 +814,8 @@ function renderParty(){
   $('party').innerHTML=ord.map(id=>{const c=COMP[id],has=id==='kael'||S.joined[id];
    if(!has)return`<div class="row locked"><canvas class="portrait" id="pf-${id}"></canvas><div class="info"><b>???</b><span class="role">${c.role}</span><div>${c.join}</div></div></div>`;
    const t=stats(id),line=`공격 ${fmt(t.atk)} · 체력 ${fmt(t.hp)}`;
-   if(id==='kael')return`<div class="row"><canvas class="portrait" id="pf-${id}"></canvas><div class="info"><b>${c.n}</b><span class="role">${c.role}</span><span class="lvtag">${RANKS[rankIdx()].n}</span><div>${c.desc}</div><div class="skl"><img src="assets/skills/skill_${id}.png" alt="" onerror="this.remove()"><div><b>${SKILLS[id].n}</b><span>${SKILLS[id].d}</span></div></div><div>${line}</div></div><button class="buy ghost" id="goEq">장비</button></div>`;
-   return`<div class="row"><canvas class="portrait" id="pf-${id}"></canvas><div class="info"><b>${c.n}</b><span class="role">${c.role}</span><span class="lvtag">Lv.${S.lv[id]}</span><div>${c.desc}</div><div class="skl"><img src="assets/skills/skill_${id}.png" alt="" onerror="this.remove()"><div><b>${SKILLS[id].n}</b><span>${SKILLS[id].d}</span></div></div><div>${line}</div></div><button class="buy" id="lv-${id}">${costBtn('레벨업',compCost(S.lv[id]))}</button></div>`}).join('');
+   if(id==='kael')return`<div class="row"><canvas class="portrait" id="pf-${id}"></canvas><div class="info"><b>${c.n}</b><span class="role">${c.role}</span><span class="lvtag">${RANKS[rankIdx()].n}</span><div>${c.desc}</div><div>${line}</div></div><button class="buy ghost" id="goEq">장비</button><div class="skl"><img src="assets/skills/skill_${id}.png" alt="" onerror="this.remove()"><div><b>${SKILLS[id].n}</b><span>${SKILLS[id].d}</span></div></div></div>`;
+   return`<div class="row"><canvas class="portrait" id="pf-${id}"></canvas><div class="info"><b>${c.n}</b><span class="role">${c.role}</span><span class="lvtag">Lv.${S.lv[id]}</span><div>${c.desc}</div><div>${line}</div></div><button class="buy" id="lv-${id}">${costBtn('레벨업',compCost(S.lv[id]))}</button><div class="skl"><img src="assets/skills/skill_${id}.png" alt="" onerror="this.remove()"><div><b>${SKILLS[id].n}</b><span>${SKILLS[id].d}</span></div></div></div>`}).join('');
   ORDER.forEach(id=>{portrait(id);const b=$('lv-'+id);if(b)b.onclick=()=>{const c=compCost(S.lv[id]);if(S.gold<c)return;const h0=stats(id).hp;S.gold-=c;S.lv[id]++;if(P[id])P[id].hp+=stats(id).hp-h0;renderAll()}});
   const g=$('goEq');if(g)g.onclick=()=>setTab('eq')}
  ORDER.forEach(id=>{const b=$('lv-'+id);if(b)b.disabled=S.gold<compCost(S.lv[id])});
