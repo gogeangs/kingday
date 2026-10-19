@@ -534,7 +534,7 @@ const RECRUITS={
  luka:{job:'cook',title:'제빵사 루카',lines:['m:루카|저, 저기… 카엘 씨 밭의 밀로 빵을 구워 보고 싶어서 따라왔어요.','k@surprised:내 밀로? …은퇴하면 빵집 옆에 밭 하나 더 일궈야겠네.','q@proud:흥, 또 식객이 늘었군. 뭐, 빵 냄새는 나쁘지 않다.','sys:원정대 탭의 요리사 자리에서 마고 대신 출전시킬 수 있어요.'],ok:'잘 부탁해, 루카'},
  nella:{job:'fisher',title:'그물 어부 넬라',lines:['m:넬라|하랄 할배! 또 혼자 허풍 떨면서 다니지? 이번엔 나도 같이 간다!','m:하랄@laugh|허허, 이 녀석 그물 솜씨는 나보다 낫지. 고래만 빼고.','k@flustered:…원정대가 점점 마을 잔치가 되어 가네.','sys:원정대 탭의 어부 자리에서 하랄 대신 출전시킬 수 있어요.'],ok:'잘 부탁해, 넬라'}},STAR_NEED=[30,20,40,80,150],STAR_MUL=[1,1,1.2,1.4,1.6,2];
 /* 동료 등급: 이야기 동료는 일반(★3까지), 모집 동료는 희귀 이상 */
-const GRADE={bron:'common',haral:'common',riel:'common',margo:'common',luka:'rare',nella:'rare'};
+const GRADE={bron:'common',haral:'common',riel:'common',margo:'common',luka:'epic',nella:'epic'};
 const GR={common:{n:'일반',c:'#b8c0cc',max:3,mul:1,w:55,need:[0,15,30],fr:'normal'},rare:{n:'희귀',c:'#5aa8ff',max:4,mul:1.1,w:30,need:[30,20,40,80],fr:'rare'},epic:{n:'영웅',c:'#b07bff',max:5,mul:1.2,w:12,need:[30,30,60,120,200],fr:'epic'},legend:{n:'전설',c:'#ffc23a',max:5,mul:1.35,w:3,need:[30,40,80,160,300],fr:'legendary'}};
 const gr=id=>GR[GRADE[id]||'common'],CARDIDS=()=>[...Object.values(STORY),...Object.keys(RECRUITS)];
 const isRec=id=>id in RECRUITS,recStar=id=>isRec(id)?((S.rec&&S.rec[id])||0):(S.joined[id]?Math.max(1,(S.rec&&S.rec[id])||0):0);
@@ -697,7 +697,7 @@ function renderShop(){
  ${adKeys().map(k=>`<div class="mis"><div class="info"><b>${ADS[k].t}</b><div style="font-size:11px;color:var(--muted)">오늘 ${adLeft(k)} / ${ADS[k].n}회 남음</div></div><button class="buy ad" data-ad="${k}" ${adLeft(k)?'':'disabled'}>▶ 받기</button></div>`).join('')}`}
  <div class="sec">골드 바꾸기 <small>지금 영지 기준 · 영지가 오를수록 더 많이</small></div>
  <div class="packs">${GOLDX.map((x,i)=>`<button class="pack gx" data-gx="${x.k}">${i?`<span class="tag">${x.h}시간치</span>`:''}<img src="assets/ui/ui_gold.png" alt="" style="transform:scale(${[.8,1,1.15][i]})" onerror="this.remove()"><b>${fmt(goldX(x))}</b><small>${x.n}</small><span class="price">${gemI}${x.gem}</span></button>`).join('')}</div>
- ${CARDIDS().some(cardOpen)?`<div class="sec">동료 카드 <small>동료 카드를 받아요 · 30장은 희귀 이상 확정</small></div>
+ ${CARDIDS().some(cardOpen)?`<div class="sec">동료 카드 <small>동료 카드를 받아요 · 30장은 영웅 확정</small></div>
  <div class="packs">${CARDPK.map((c,i)=>`<button class="pack gx" data-cp="${i}">${i?'<span class="tag">10% 이득</span>':''}<span class="cpk">🂠<b>×${c.n}</b></span><b>카드 ${c.n}장</b><small>${c.n>=30?'동료 1명 합류분':'맛보기'}</small><span class="price">${gemI}${c.gem}</span></button>`).join('')}</div>`:''}
  <div class="sec">특별 상품</div>
  ${S.buys.starter?'':`<div class="shoprow hot"><span class="tag">한 번만</span><img class="pk" src="assets/relic/relic_weapon_3.png" alt="" onerror="this.remove()"><div class="info"><b>${STARTER.n}</b><div>전설 등급 성유물 1개 확정<br>+ ${gemI}${STARTER.gem}</div></div><button class="buy" id="starterBuy">${won(STARTER.won)}</button></div>`}
