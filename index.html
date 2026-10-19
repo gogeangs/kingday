@@ -370,9 +370,11 @@ const RANKS=[{at:0,n:'농부'},{at:3,n:'마을 지킴이',k:'지킴이라니… 
 const EVENTS=[
  {at:2,id:'marta',eb:'새로운 주민',t:'농부 마르타',p:['개울 마을을 되찾자, 이웃집 마르타 할머니가 가장 먼저 돌아왔다.','m:마르타|용사? 웃기지 마라. 밭일이나 거들어. 씨앗 가져오면 밭은 내가 봐 주마.','k:…네. 사실 그게 제일 하고 싶은 일이에요.','sys:마을에 밭이 열렸어요. 마물이 떨어뜨리는 씨앗을 심어 보세요. 밀 씨앗 5개를 받았어요.'],btn:'밭으로 간다',act:()=>{S.bld.farm=Math.max(1,S.bld.farm);S.seeds.wheat+=5}},
  {at:3,id:'margo',eb:'동료 합류',t:'요리사 마고',p:['풍차 언덕 식당 주방에서, 국자 하나로 마물을 막아 내던 아주머니가 있었다.','m:마고@laugh|배고픈 원정대는 못 이겨. 상처엔 수프가 최고야. 대신 그 밭 작물, 나한테 먼저 팔아.','sys:마고가 합류했어요. 수프를 던져 가장 다친 동료를 치유해요. 마을에 식당을 열 수 있어요.'],btn:'함께 간다',act:()=>{S.joined.margo=true}},
+ {at:5,id:'toby',eb:'새로운 주민',t:'꼬마 토비',p:['마을에 아이들이 돌아오기 시작했다. 그중 한 꼬마가 나무 막대를 들고 카엘을 졸졸 따라다녔다.','m:토비|형이 그 성검 용사죠?! 저도 커서 형처럼 마물 무찌를 거예요!','k@flustered:형은 농부야. 너도 커서 농부 해. 농부는 마물이랑 안 싸워도 돼.','m:토비|에이, 농부는 멋없어요!','q@proud:훌륭한 안목을 가진 아이로군.'],btn:'…농부도 멋있는데',act:()=>{}},
  {at:7,id:'haral',eb:'동료 합류',t:'어부 하랄',p:['갈대 강변, 마물에게 둘러싸인 낡은 배 위에서 작살을 든 노인이 버티고 있었다.','m:하랄@laugh|이 정도는 별것 아니야. 내가 젊을 때 잡은 고래는 말이지…','q:주인, 저 이야기 길어질 것 같다. 일단 데려가자.','sys:하랄이 합류했어요. 작살을 던져 멀리서 공격해요. 마을에 낚시터를 열 수 있어요.'],btn:'함께 간다',act:()=>{S.joined.haral=true}},
  {at:11,id:'riel',eb:'동료 합류',t:'양봉가 리엘',p:['모르바스가 쓰러지자 숲 어귀로 벌 떼가 몰려들었다. 그 한가운데, 꽃 모자를 쓴 요정이 앉아 있었다.','m:리엘|우리 벌들이 네 밭의 꽃을 좋아하더라. 같이 가 줄게. 아, 저 애 이름은 붕붕이 3호야.','sys:리엘이 합류했어요. 벌 떼로 모든 적을 공격해요. 마을에 양봉장을 열 수 있어요.'],btn:'함께 간다',act:()=>{S.joined.riel=true}},
- {at:21,id:'bron',eb:'동료 합류',t:'광부 브론',p:['협곡 입구의 무너진 갱도에서 곡괭이 소리가 들려왔다. 백 년 동안 갱도를 지킨 드워프였다.','m:브론|…이 바위 좋군. 앞은 내가 막지.','sys:브론이 합류했어요. 앞줄에서 적의 공격을 대신 받아내요. 마을에 광산을 열 수 있어요.'],btn:'함께 간다',act:()=>{S.joined.bron=true}}
+ {at:21,id:'bron',eb:'동료 합류',t:'광부 브론',p:['협곡 입구의 무너진 갱도에서 곡괭이 소리가 들려왔다. 백 년 동안 갱도를 지킨 드워프였다.','m:브론|…이 바위 좋군. 앞은 내가 막지.','sys:브론이 합류했어요. 앞줄에서 적의 공격을 대신 받아내요. 마을에 광산을 열 수 있어요.'],btn:'함께 간다',act:()=>{S.joined.bron=true}},
+ {at:21,id:'toby2',eb:'영주님 만세',t:'토비의 깃발',p:['토비가 "카엘 영주님 만세" 깃발을 만들어 마을 입구에 걸었다.','m:토비|형, 아니 영주님! 저 제자로 받아 주세요!','k:…제자면 밭부터 매자.','m:토비|…그것도 수련이에요?','q:수련이다. 아마도.'],btn:'괭이를 건넨다',act:()=>{}}
 ];
 const QUIPS=[
  ['k','이번 영지만 되찾고 은퇴할 거야.'],['k','여긴 흙이 좋네…'],['k','농부입니다. 용사 아니고요.'],['k','빨리 끝내고 밭에 물 줘야 해.'],['k','호박이 잘 자라고 있으려나.'],
@@ -439,8 +441,8 @@ function para(p){
  if(p.startsWith('sys:'))return`<p class="lore sys">${p.slice(4)}</p>`;
  return`<p class="lore">${p}</p>`}
 function scene(eyebrow,title,paras,btn,alt,illust){
- $('sheet').innerHTML=`${illust?`<img class="illust il-${illust}" src="assets/illust/illust_${illust}.jpg" alt="" onerror="this.remove()">`:''}<div class="eyebrow">${eyebrow}</div><h2>${title}</h2>${paras.map(para).join('')}<div class="acts ${alt?'':'one'}">${alt?`<button id="mAlt">${alt.label}</button>`:''}<button class="pri" id="mGo">${btn}</button></div>`;
- $('modal').hidden=false;$('mGo').focus();$('mGo').onclick=()=>{closeModal();alt&&alt.go&&alt.go()};if(alt)$('mAlt').onclick=closeModal;
+ $('sheet').innerHTML=`${illust?`<img class="illust il-${illust}" src="assets/illust/illust_${illust}.jpg" alt="" onerror="this.remove()">`:''}<div class="eyebrow">${eyebrow}</div><h2>${title}</h2>${paras.map(para).join('')}<div class="acts ${alt&&alt.label?'':'one'}">${alt&&alt.label?`<button id="mAlt">${alt.label}</button>`:''}<button class="pri" id="mGo">${btn}</button></div>`;
+ $('modal').hidden=false;$('mGo').focus();$('mGo').onclick=()=>{closeModal();alt&&alt.go&&alt.go()};if(alt&&alt.label)$('mAlt').onclick=closeModal;
 }
 function chapter(){const st=S.stage;queue(()=>{const r=region(st),i=Math.floor((st-1)/10)%5;scene('제'+(i+1)+'군단 · 점령지',`<img class="bossportrait" src="assets/portraits/portrait_${BOSSID[i]}_idle.png" alt="" onerror="this.remove()">`+r.n,[...r.lore,'sys:이 땅의 지배자 · '+r.boss],'진격한다')})}
 function events(){for(const e of EVENTS)if(S.stage>=e.at&&!S.done[e.id]){S.done[e.id]=true;e.act();syncParty();queue(()=>scene(e.eb,e.t,e.p,e.btn))}
@@ -461,10 +463,14 @@ function rollItem(){
 }
 const slotName=k=>SLOTS.find(s=>s.k===k).n;
 function statLine(it){const p=[];if(it.atk)p.push('공격 +'+fmt(it.atk));if(it.hp)p.push('체력 +'+fmt(it.hp));return p.join(' · ')}
-function gainBoxXp(){if(S.boxLv>=10)return;S.boxXp++;if(S.boxXp>=xpNeed()){S.boxXp=0;S.boxLv++;toast('피트가 더 좋은 물건을 들여왔어요. 성유물 상자 Lv.'+S.boxLv)}}
+function gainBoxXp(){if(S.boxLv>=10)return;S.boxXp++;if(S.boxXp>=xpNeed()){S.boxXp=0;S.boxLv++;
+  if(S.boxLv===5)queue(()=>scene('성유물 상자 Lv.5','단골 대접',['m:피트|단골 대접이야. 이번 물건은 진짜 진품이라고. …이번엔 진짜.','k@flustered:지난번엔 가짜였어요?','m:피트|자, 자! 영웅 등급이 더 잘 나오게 해 놨어!'],'…믿어 볼게요'));
+  else if(S.boxLv===10)queue(()=>scene('성유물 상자 Lv.10','왕국 최고의 상인',['m:피트|형씨 덕분에 내가 왕국 최고의 상인이 됐어. 이제 내 상자엔 신화 등급도 들어 있다고!','q@proud:…저 상인, 처음부터 주인의 재능을 알아본 거로군.','m:피트|아니, 난 돈 냄새를 맡았지.'],'그럴 줄 알았어요'));
+  else toast('피트가 더 좋은 물건을 들여왔어요. 성유물 상자 Lv.'+S.boxLv)}}
 let pending=null;
 function openBox(auto){
  const c=boxCost();if(S.gold<c||pending)return;
+ if(!S.done.pete){S.done.pete=true;queue(()=>scene('수상한 행상인','행상인 피트',['마을 어귀에 낯선 마차가 서 있었다. 짐칸 가득 녹슨 상자가 실려 있었다.','m:피트|어이, 거기 성검 든 형씨! 성유물 상자 하나 어때? 마왕군이 흘리고 간 진품이야. …아마도.','k@surprised:아마도요?','q@angry:주인, 저자 눈빛이 수상하다.','m:피트|수상하긴! 열어 보면 알아. 환불은 안 되지만.','sys:상자를 열면 카엘의 장비가 나와요. 많이 열수록 피트가 더 좋은 물건을 들여와요.'],'한번 열어 본다',{go:()=>openBox(auto)}));return}
  S.gold-=c;gainBoxXp();const it=rollItem(),cur=S.eq[it.slot];
  if(auto){if(score(it)>score(cur)){if(cur)S.gold+=cur.price;S.eq[it.slot]=it;flashSlot(it.slot)}else S.gold+=it.price;renderAll();return}
  if(S.autoSell&&cur&&score(it)<=score(cur)){S.gold+=it.price;toast(GRADES[it.g].n+' '+slotName(it.slot)+' 판매 +'+fmt(it.price));renderAll();return}
@@ -569,7 +575,7 @@ function renderRetire(){
 function retire(p){
  S.memory+=p;S.retires++;S.gold=60;S.stage=1;S.wave=0;S.eq={};S.up={atk:0,hp:0,spd:0,crit:0};for(const k in S.lv)S.lv[k]=1;S.rankSeen=0;
  for(const id in P)delete P[id];mons=[];$('bossbar').hidden=true;syncParty();
- queue(()=>scene('몇 년 뒤','…다시 끌려 나오다',['평화로운 3년이었다. 카엘은 매일 밭을 갈았고, 호박은 해마다 커졌다.','그러던 어느 날, 마계의 문이 다시 열렸다.','q@proud:일어나라, 주인. 은퇴는 끝났다.','k@flustered:…왜 또 나야.'],'괭이 대신 검을 든다',null,'retire'));chapter();renderAll()}
+ queue(()=>scene('몇 년 뒤','…다시 끌려 나오다',['평화로운 3년이었다. 카엘은 매일 밭을 갈았고, 호박은 해마다 커졌다.','그러던 어느 날, 마계의 문이 다시 열렸다.','q@proud:일어나라, 주인. 은퇴는 끝났다.','k@flustered:…왜 또 나야.','m:토비|형! 은퇴했다더니 또 나왔네요! 역시 영웅은 쉬지 않아!'],'괭이 대신 검을 든다',null,'retire'));chapter();renderAll()}
 let mapSig='';
 function renderMapInfo(){
  const c=landCount(),ri=rankIdx(),nx=RANKS[ri+1],r=region(S.stage);
