@@ -504,10 +504,12 @@ function cStats(id){const c=COMP[id],l=S.lv[id],m=allMul(),g=Math.pow(COMP_GROW,
 const stats=id=>id==='kael'?kStats():cStats(id);
 const members=()=>ORDER.filter(id=>id==='kael'||S.joined[id]);
 function power(){return Math.round(members().reduce((a,id)=>{const t=stats(id);return a+(t.atk*6+t.hp)*(1+t.crit)*t.aps*(id==='riel'?1.4:1)},0))}
-const monHp=(st,b)=>20*Math.pow(1.18,st-1)*(b?(isLord(st)?12:8):1);
-const monAtk=(st,b)=>4*Math.pow(1.15,st-1)*(b?(isLord(st)?3:2.5):1);
-const reward=(st,b)=>3*Math.pow(1.16,st-1)*(b?10:1);
-const boxCost=()=>Math.floor(20*Math.pow(1.13,S.stage-1));
+/* 밸런스 손잡이: 영지마다 곱해지는 비율. tools/balance_sim.py 로 맞춤 */
+const BAL={hpG:1.2,atkG:1.17,goldG:1.16,boxG:1.17,bossHp:6,lordHp:12,bossAtk:2.5,lordAtk:3};
+const monHp=(st,b)=>20*Math.pow(BAL.hpG,st-1)*(b?(isLord(st)?BAL.lordHp:BAL.bossHp):1);
+const monAtk=(st,b)=>4*Math.pow(BAL.atkG,st-1)*(b?(isLord(st)?BAL.lordAtk:BAL.bossAtk):1);
+const reward=(st,b)=>3*Math.pow(BAL.goldG,st-1)*(b?10:1);
+const boxCost=()=>Math.floor(20*Math.pow(BAL.boxG,S.stage-1));
 const xpNeed=()=>S.boxLv*10;
 function odds(){const w=BASE_ODDS.map((b,g)=>b*Math.pow(1+.35*(S.boxLv-1),g));const t=w.reduce((a,b)=>a+b);return w.map(x=>x/t*100)}
 const score=it=>it?it.atk*6+it.hp:0;

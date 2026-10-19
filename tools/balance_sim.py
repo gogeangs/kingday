@@ -1,0 +1,22 @@
+"""밸런스 시뮬레이션: 처음부터 자동 전투 + 욕심쟁이 소비(가장 싼 것부터 레벨업·단련·상자)로
+영지마다 걸린 시간을 잰다. 로컬 서버(python3 -m http.server 8765)를 켠 뒤 저장소 루트에서 실행.
+
+    python3 tools/balance_sim.py 3 '{"hpG":1.2}'   # 3시간, BAL 값 덮어쓰기
+"""
+import asyncio,sys,json
+from playwright.async_api import async_playwright
+SP='tools/sim';H=sys.argv[1] if len(sys.argv)>1 else '3';TUNE=sys.argv[2] if len(sys.argv)>2 else '{}'
+async def main():
+  async with async_playwright() as p:
+    b=await p.chromium.launch();pg=await b.new_page(viewport={'width':390,'height':844})
+    await pg.goto('http://localhost:8765/index.html');await pg.evaluate("localStorage.clear()");await pg.reload();await pg.wait_for_timeout(800)
+    await pg.click('#startBtn');await pg.wait_for_timeout(300)
+    js=open(SP+'/balance_sim.js').read().replace('HOURS',H).replace('TUNE',TUNE)
+    r=await pg.evaluate(js)
+    rec=r.pop('rec');tot=0;line=[]
+    for st,tt,w,to in rec:
+      tot+=tt
+      if st%5==0: line.append(f'{st}:{tot//60}m')
+    print('slow',sorted(rec,key=lambda x:-x[1])[:8]);print(TUNE,'|',' '.join(line),'| end',r['stage'],'stuck',r['last'],'gear',r['gearG'],'lv',list(r['lv'].values()))
+    await b.close()
+asyncio.run(main())
