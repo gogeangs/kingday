@@ -438,6 +438,14 @@ const timeGem=sec=>Math.max(1,Math.ceil(sec/180));/* 남은 3분당 이삭 1 */
 const building=()=>S.build&&S.build.k?S.build:null;
 const buildLeft=()=>building()?Math.max(0,(S.build.end-Date.now())/1000):0;
 function finishBuild(){const bd=building();if(!bd)return;const b=BLD.find(x=>x.k===bd.k),l=S.bld[bd.k];S.build=null;S.bld[bd.k]=l+1;if(!l)S.prod[bd.k]=Date.now();toast(b.n+(l?' 확장':' 재건')+' 완료! '+b.eff(l+1));bldSig='';farmSig='';kitSig=''}
+const TUT_GEM=10;
+function buildTutorial(b,l){S.done.tutBuild=true;S.gem=(S.gem||0)+TUT_GEM;
+ queue(()=>scene('황금 이삭 사용법','공사는 시간이 걸려요',[
+  'sys:'+b.n+' '+(l?'확장':'재건')+' 공사가 시작됐어요. 다 지어지려면 '+fmtT(bldTime(l))+' 걸려요.',
+  'k@flustered:벽돌 쌓는 건 자신 있는데… 기다리는 건 좀 지루하네요.',
+  'q@proud:주인, 이걸 받아라. 성검이 축복한 황금 이삭이다. 이삭을 내면 마을 사람들이 힘을 내서 공사를 바로 끝낸다.',
+  'sys:황금 이삭 '+TUT_GEM+'개를 선물로 받았어요. 공사 중인 건물의 파란 "바로 완료" 버튼을 누르면 이삭으로 공사를 끝낼 수 있어요. 이삭은 상단 바의 이삭 버튼(오늘의 할 일·피트의 상점)에서 더 얻어요.'],
+  '이삭으로 바로 완료',{label:'그냥 기다릴래요',go:()=>{if(!building()||!spendGem(timeGem(buildLeft())))return;finishBuild();renderAll()}}))}
 function checkBuild(){if(building()&&Date.now()>=S.build.end)finishBuild()}
 const RANKS=[{at:0,n:'농부'},{at:3,n:'마을 지킴이',k:'지킴이라니… 그냥 이웃 돕는 거예요.'},{at:10,n:'기사',k:'기사 아니고 농부라니까요…'},{at:20,n:'영주',k:'영주요? 세금 계산 같은 거 못 하는데.'},{at:30,n:'백작',k:'백작… 은퇴가 점점 멀어진다.'},{at:40,n:'공작',k:'다음은 설마… 아니겠지.'},{at:50,n:'왕도 진격대장',k:'왕도만 되찾으면 정말 은퇴한다.'}];
 const EVENTS=[
@@ -701,7 +709,7 @@ function renderBlds(){
    return`<div class="row${l?'':' ruin'}">${bldImg(b.k,l)}<div class="info"><b>${b.n}</b>${b.who?`<span class="role">${b.who}</span>`:''}<span class="lvtag">${l?'Lv.'+l:'폐허'}</span>${l?`<div>지금: ${b.eff(l)}</div>${mx?'<div class="nx">최대 레벨</div>':`<div class="nx">다음: ${b.eff(l+1)}</div>`}`:`<div>무너져 있어요</div><div class="nx">재건하면: ${b.eff(1)}</div>`}${bd&&bd.k===b.k?`<div class="bprog"><div class="xp"><div style="width:${(1-buildLeft()/bldTime(l))*100}%"></div></div><span>${l?'확장':'재건'} 공사 중 · ${fmtT(buildLeft())} 남음</span></div>`:mx?'':`<div class="nx" style="color:var(--muted)">공사 시간 ${fmtT(bldTime(l))}</div>`}</div>
    <div class="buys">${bd&&bd.k===b.k?`<button class="buy gem" id="bf-${b.k}">${GEMIMG}${timeGem(buildLeft())}로<br>바로 완료</button>`
    :`<button class="buy" id="bd-${b.k}" ${mx||bd?'disabled':''}>${mx?'최대':bd?'<span class="bl">다른 공사 중</span>':costBtn(l?'확장':'재건',bldCost(b,l))}</button>${mx||bd?'':`<button class="buy gem" id="bg-${b.k}">${GEMIMG}${bldGem(bldCost(b,l))+timeGem(bldTime(l))}로 바로</button>`}`}</div></div>`}).join('');
-  BLD.forEach(b=>{const el=$('bd-'+b.k);if(el)el.onclick=()=>{const l=S.bld[b.k],c=bldCost(b,l);if(l>=b.max||S.gold<c||building())return;S.gold-=c;S.build={k:b.k,end:Date.now()+bldTime(l)*1000};toast(b.n+(l?' 확장':' 재건')+' 공사를 시작했어요 · '+fmtT(bldTime(l)));bldSig='';renderAll()};
+  BLD.forEach(b=>{const el=$('bd-'+b.k);if(el)el.onclick=()=>{const l=S.bld[b.k],c=bldCost(b,l);if(l>=b.max||S.gold<c||building())return;S.gold-=c;S.build={k:b.k,end:Date.now()+bldTime(l)*1000};bldSig='';renderAll();if(!S.done.tutBuild)buildTutorial(b,l);else toast(b.n+(l?' 확장':' 재건')+' 공사를 시작했어요 · '+fmtT(bldTime(l)))};
    const eg=$('bg-'+b.k);if(eg)eg.onclick=()=>{const l=S.bld[b.k];if(l>=b.max||building()||!spendGem(bldGem(bldCost(b,l))+timeGem(bldTime(l))))return;S.build={k:b.k,end:0};finishBuild();renderAll()};
    const ef=$('bf-'+b.k);if(ef)ef.onclick=()=>{if(!building()||!spendGem(timeGem(buildLeft())))return;finishBuild();renderAll()}})}
  BLD.forEach(b=>{const el=$('bd-'+b.k);if(el&&S.bld[b.k]<b.max)el.disabled=!!building()||S.gold<bldCost(b,S.bld[b.k])});
