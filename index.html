@@ -66,6 +66,12 @@ body{background:#0a0d16;color:var(--fg);font-family:var(--f-body);padding:0;marg
 .pack small{font-size:11px;color:var(--good);min-height:15px}
 .pack .price{margin-top:4px;width:100%;background:var(--gold);color:var(--gold-ink);border-radius:9px;padding:5px 0;font-weight:700;font-size:13px;text-align:center}
 .pack .tag{position:absolute;top:-7px;right:6px;font-size:10px;font-weight:700;background:var(--bad);color:#fff;border-radius:999px;padding:1px 7px}
+.adov{position:fixed;inset:0;z-index:60;background:rgba(0,0,0,.88);display:grid;place-items:center}
+.adbox{display:flex;flex-direction:column;align-items:center;gap:6px;color:#fff;text-align:center}
+.adbox small{font-size:12px;color:var(--muted)}
+.adbox b{font-size:56px;font-family:var(--f-display);color:var(--gold)}
+.buy.ad{background:linear-gradient(#2f7a4a,#1d5232);color:#e8ffe8;border:1px solid #5ac07a;display:flex;align-items:center;justify-content:center;gap:4px}
+.buy.ad:disabled{background:var(--panel2);color:var(--muted);border-color:var(--line)}
 .mis{display:flex;align-items:center;gap:10px;background:var(--panel2);border-radius:12px;padding:9px 10px}
 .mis .info{flex:1;min-width:0;font-size:13px}
 .mis .info b{display:block;font-weight:600;margin-bottom:4px}
@@ -377,6 +383,7 @@ button:focus-visible,input:focus-visible{outline:2px solid var(--gold);outline-o
 
 <div class="modal" id="modal" hidden><div class="sheet" id="sheet"></div></div>
 <div class="toast" id="toast" style="opacity:0"></div>
+<div class="adov" id="adOv" hidden><div class="adbox"><small>광고 자리 · 테스트 모드</small><b id="adTxt">3</b><span>초 뒤 보상을 받아요</span></div></div>
 
 <script>
 const $=id=>document.getElementById(id);
@@ -503,7 +510,15 @@ function hydrate(d){const f=fresh();for(const k in d){if(f[k]&&typeof f[k]==='ob
  if((d&&d.v||0)<3){f.rankSeen=rankIdx(f)}return f}
 const MISSIONS=[{k:'kill',n:'마물 100마리 처치',goal:100,r:10},{k:'box',n:'성유물 상자 10번 열기',goal:10,r:10},{k:'harv',n:'작물 10개 수확',goal:10,r:10}],MIS_ALL=20,RANK_GEM=30,LORD_GEM=50;
 function today(){const t=new Date();return t.getFullYear()+'-'+(t.getMonth()+1)+'-'+t.getDate()}
-function daily(){if(!S.daily||S.daily.d!==today())S.daily={d:today(),kill:0,box:0,harv:0,claim:{}};return S.daily}
+function daily(){if(!S.daily||S.daily.d!==today())S.daily={d:today(),kill:0,box:0,harv:0,claim:{},ad:{}};if(!S.daily.ad)S.daily.ad={};return S.daily}
+/* 광고 보상 자리: AD_TEST 동안은 3초짜리 가짜 광고 화면 뒤에 보상. 실제 광고 SDK를 붙일 때 playAd만 바꾸면 됨 */
+const AD_TEST=true,ADS={box:{n:3,t:'성유물 상자 1회 무료'},gem:{n:3,t:'황금 이삭 +5'},farm:{n:2,t:'자라는 작물 바로 키우기'},offline:{n:2,t:'방치 보상 2배'}};
+const adLeft=k=>Math.max(0,ADS[k].n-(daily().ad[k]||0));
+function playAd(done){const o=$('adOv');let n=3;o.hidden=false;$('adTxt').textContent=n;const it=setInterval(()=>{n--;if(n>0){$('adTxt').textContent=n;return}clearInterval(it);o.hidden=true;done()},1000)}
+function watchAd(k,give){if(adLeft(k)<=0)return toast('오늘은 다 봤어요. 내일 다시 받을 수 있어요');playAd(()=>{daily().ad[k]=(daily().ad[k]||0)+1;give();shopSig='';farmSig='';save();renderAll()})}
+function adBox(){watchAd('box',()=>{S.gold+=boxCost();openBox(false)})}
+function adGem(){watchAd('gem',()=>{S.gem=(S.gem||0)+5;toast('피트의 선물! 황금 이삭 +5')})}
+function adFarm(){if(!S.plots.some(p=>plotState(p).st==='grow'))return;watchAd('farm',()=>{S.plots.forEach(p=>{if(plotState(p).st==='grow')p.at=0});toast('리엘의 벌들이 밭을 도왔어요. 모두 다 자랐어요')})}
 function dailyAdd(k,n){const d=daily();d[k]=(d[k]||0)+n}
 function misCan(m){const d=daily();return m?(d[m.k]>=m.goal&&!d.claim[m.k]):MISSIONS.every(x=>d.claim[x.k])&&!d.claim.all}
 function gainGem(n,why){S.gem=(S.gem||0)+n;toast('황금 이삭 +'+n+(why?' · '+why:''))}
@@ -546,6 +561,8 @@ function renderShop(){
  <div class="sec">오늘의 할 일 <small>매일 자정에 새로 시작</small></div>
  ${MISSIONS.map(misRow).join('')}
  <div class="mis"><div class="info"><b>오늘의 할 일 모두 끝내기</b></div><button class="buy" data-m="all" ${misCan(null)?'':'disabled'}>${d.claim.all?'받음':'+'+MIS_ALL+(misCan(null)?' 받기':'')}</button></div>
+ <div class="sec">피트의 무료 선물 <small>광고를 보면 받아요 · 매일 자정 초기화</small></div>
+ ${['box','gem'].map(k=>`<div class="mis"><div class="info"><b>${ADS[k].t}</b><div style="font-size:11px;color:var(--muted)">오늘 ${adLeft(k)} / ${ADS[k].n}회 남음</div></div><button class="buy ad" data-ad="${k}" ${adLeft(k)?'':'disabled'}>▶ 받기</button></div>`).join('')}
  <div class="sec">특별 상품</div>
  ${S.buys.starter?'':`<div class="shoprow hot"><span class="tag">한 번만</span><img class="pk" src="assets/relic/relic_weapon_3.png" alt="" onerror="this.remove()"><div class="info"><b>${STARTER.n}</b><div>전설 등급 성유물 1개 확정<br>+ ${gemI}${STARTER.gem}</div></div><button class="buy" id="starterBuy">${won(STARTER.won)}</button></div>`}
  <div class="shoprow${subOn()?' hot':''}"><img class="pk" src="assets/gem/gem_pack_5.png" alt="" onerror="this.remove()"><div class="info"><b>${SUB.n}</b><div>${subTxt}</div></div>${subBtn}</div>
@@ -554,6 +571,7 @@ function renderShop(){
  <p class="note">황금 이삭은 성유물 상자 10연속(장비 탭), 작물 바로 키우기·건물 바로 짓기(마을 탭), 방치 보상 2배 받기에 써요.</p>`;
  const sh=$('shop');
  sh.querySelectorAll('[data-m]').forEach(b=>b.onclick=()=>{const k=b.dataset.m,m=MISSIONS.find(x=>x.k===k);if(!misCan(m||null))return;daily().claim[k]=true;gainGem(m?m.r:MIS_ALL,m?m.n:'오늘의 할 일 완료');shopSig='';renderAll()});
+ sh.querySelectorAll('[data-ad]').forEach(b=>b.onclick=()=>({box:adBox,gem:adGem})[b.dataset.ad]());
  sh.querySelectorAll('[data-p]').forEach(b=>b.onclick=()=>buyPack(PACKS.find(p=>p.k===b.dataset.p)));
  const sb=$('starterBuy');if(sb)sb.onclick=buyStarter;const ub=$('subBuy');if(ub)ub.onclick=buySub;const uc=$('subClaim');if(uc)uc.onclick=claimSub;
 }
@@ -711,13 +729,13 @@ function renderFarm(){
   if(hasCropArt(ps.c.k))return`<button class="plot art" data-i="${i}">${cropImg('crop_'+ps.c.k+'_'+(ps.ratio<.25?1:ps.ratio<.6?2:3))}<span>${ps.c.n}</span><b>${mmss(ps.left)}</b><i class="pbar"><i style="width:${(ps.ratio*100).toFixed(0)}%"></i></i></button>`;
   return`<button class="plot" data-i="${i}" style="--c:color-mix(in srgb,${ps.c.c} ${Math.round(30+ps.ratio*50)}%,#3a2a20)"><span class="sp" style="transform:scale(${(.4+ps.ratio*.6).toFixed(2)})"></span><span>${ps.c.n}</span><b>${mmss(ps.left)}</b></button>`}).join('');
  const nGrow=S.plots.filter(p=>plotState(p).st==='grow').length,anyReady=S.plots.some(p=>plotState(p).st==='ready'),anyEmpty=S.plots.some(p=>!p)&&CROPS.some(c=>S.seeds[c.k]>0);
- const sig=seeds+cells+anyReady+anyEmpty+(S.gem||0);if(sig===farmSig)return;farmSig=sig;
+ const sig=seeds+cells+anyReady+anyEmpty+(S.gem||0)+adLeft('farm');if(sig===farmSig)return;farmSig=sig;
  fb.innerHTML=`<div class="sec">카엘의 밭 <small>Lv.${S.bld.farm} · ${S.plots.length}칸 · 카엘의 진짜 꿈</small></div><div class="inv">${seeds}</div><div class="plots">${cells}</div>
-  <div class="btns"><button class="buy ghost" id="plantAll" ${anyEmpty?'':'disabled'}>모두 심기</button><button class="buy" id="harvAll" ${anyReady?'':'disabled'}>모두 수확</button></div>${nGrow?`<button class="buy gem" id="growNow">${GEMIMG}${nGrow*GEM_PLOT}로 자라는 작물 ${nGrow}칸 바로 키우기</button>`:''}
+  <div class="btns"><button class="buy ghost" id="plantAll" ${anyEmpty?'':'disabled'}>모두 심기</button><button class="buy" id="harvAll" ${anyReady?'':'disabled'}>모두 수확</button></div>${nGrow?`<button class="buy gem" id="growNow">${GEMIMG}${nGrow*GEM_PLOT}로 자라는 작물 ${nGrow}칸 바로 키우기</button>${adLeft('farm')?`<button class="buy ad" id="adFarm">▶ 광고 보고 바로 키우기 · 오늘 ${adLeft('farm')}회</button>`:''}`:''}
   <p class="note">씨앗은 마물이 가끔 떨어뜨려요. 작물은 게임을 꺼 둔 동안에도 자라요.</p>`;
  fb.querySelectorAll('.plot').forEach(b=>b.onclick=()=>{const i=+b.dataset.i,ps=plotState(S.plots[i]);if(ps.st==='empty')chooseSeed(i);else if(ps.st==='ready'){const n=harvest(i);toast(ps.c.n+' '+n+'개 수확. 카엘이 행복해 보여요');farmSig='';renderAll()}else toast(ps.c.n+' · '+mmss(ps.left)+' 뒤에 수확')});
  $('plantAll').onclick=()=>{S.plots.forEach((p,i)=>{if(p)return;const c=[...CROPS].reverse().find(c=>S.seeds[c.k]>0);if(c)plant(i,c.k)})};
- {const gn=$('growNow');if(gn)gn.onclick=growNow}
+ {const gn=$('growNow');if(gn)gn.onclick=growNow;const af=$('adFarm');if(af)af.onclick=adFarm}
  $('harvAll').onclick=()=>{let t=0;S.plots.forEach((p,i)=>t+=harvest(i));toast('작물 '+t+'개 수확');farmSig='';renderAll()};
 }
 let kitSig='';
@@ -1312,7 +1330,7 @@ function offline(){
  const cap=(6+S.bld.inn)*3600,sec=Math.min(cap,(Date.now()-S.last)/1000);if(sec<60)return;
  const dps=members().reduce((a,id)=>{const t=stats(id);return a+t.atk*t.aps*(1+t.crit)},0),tpk=monHp(S.stage,false)/dps+1.2,g=Math.floor(sec/tpk*reward(S.stage,false)*.5*memMul()*(subOn()?1.5:1));if(g<=0)return;
  S.gold+=g;const hr=Math.floor(sec/3600),mn=Math.floor(sec%3600/60);
- queue(()=>{$('sheet').innerHTML=`<div class="eyebrow">돌아온 카엘</div><h2>영지에서 세금이 걷혔어요</h2><div class="card" style="--c:var(--gold)"><span class="cap">${hr?hr+'시간 ':''}${mn}분 동안</span><div class="t" style="font-size:28px;color:var(--gold)">+${fmt(g)}</div><span class="s">되찾은 영지의 백성들이 보낸 골드예요${S.bld.farm?' · 밭의 작물도 자랐어요':''}</span></div>${para('k:…이 돈, 은퇴 자금으로 모아 둬도 되죠?')}<div class="acts"><button id="mDbl" style="background:linear-gradient(#2c4a8c,#1d3366);color:#ffe08a;border-color:#5a7ac8">2배 받기 · ${GEMIMG.replace('alt=""','alt="" style="width:16px;height:16px;vertical-align:-3px"')}${GEM_OFFLINE}</button><button class="pri" id="mGo">받기</button></div>`;$('modal').hidden=false;$('mGo').onclick=closeModal;$('mDbl').onclick=()=>{if(!spendGem(GEM_OFFLINE))return;S.gold+=g;toast('세금 2배! 골드 +'+fmt(g));closeModal()};$('mGo').focus()});
+ queue(()=>{$('sheet').innerHTML=`<div class="eyebrow">돌아온 카엘</div><h2>영지에서 세금이 걷혔어요</h2><div class="card" style="--c:var(--gold)"><span class="cap">${hr?hr+'시간 ':''}${mn}분 동안</span><div class="t" style="font-size:28px;color:var(--gold)">+${fmt(g)}</div><span class="s">되찾은 영지의 백성들이 보낸 골드예요${S.bld.farm?' · 밭의 작물도 자랐어요':''}</span></div>${para('k:…이 돈, 은퇴 자금으로 모아 둬도 되죠?')}${adLeft('offline')?`<button class="buy ad" id="mAd" style="width:100%;padding:10px">▶ 광고 보고 2배 받기 · 오늘 ${adLeft('offline')}회</button>`:''}<div class="acts"><button id="mDbl" style="background:linear-gradient(#2c4a8c,#1d3366);color:#ffe08a;border-color:#5a7ac8">2배 받기 · ${GEMIMG.replace('alt=""','alt="" style="width:16px;height:16px;vertical-align:-3px"')}${GEM_OFFLINE}</button><button class="pri" id="mGo">받기</button></div>`;$('modal').hidden=false;$('mGo').onclick=closeModal;$('mDbl').onclick=()=>{if(!spendGem(GEM_OFFLINE))return;S.gold+=g;toast('세금 2배! 골드 +'+fmt(g));closeModal()};const ab=$('mAd');if(ab)ab.onclick=()=>watchAd('offline',()=>{S.gold+=g;toast('세금 2배! 골드 +'+fmt(g));closeModal()});$('mGo').focus()});
 }
 
 /* ---------- 시작 ---------- */
