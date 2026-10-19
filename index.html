@@ -73,6 +73,8 @@ body{word-break:keep-all;overflow-wrap:break-word;line-break:strict;background:#
 .autof{width:100%;margin-bottom:6px}
 .seatpick{display:flex;gap:10px;align-items:center;width:100%;text-align:left;background:var(--panel2);border:2px solid transparent;border-radius:14px;padding:8px;margin:6px 0;color:var(--fg);font:inherit;cursor:pointer}.seatpick.on{border-color:var(--gold)}.seatpick .info{display:flex;flex-direction:column;align-items:flex-start;gap:2px;flex:1}.seatpick .gtag{margin-left:0}.seatpick small{font-size:12px;color:var(--muted)}.seatpick i{font-style:normal;font-weight:700;margin-left:4px}.seatpick i.up{color:#7be08f}.seatpick i.down{color:#ff8a7a}.seatpick i.cur{color:var(--gold)}
 .skl.vpas{border-color:rgba(255,194,58,.6);background:rgba(255,194,58,.08)}.skl.vpas b{color:#ffc23a}.skl .vpi{font-size:26px!important;line-height:1!important;width:34px;text-align:center;flex:0 0 auto;color:inherit!important}.vpline{font-size:12px;color:#ffc23a;margin-top:2px}
+.crev{display:flex;flex-direction:column;gap:8px;margin:6px 0 4px}.crc{position:relative;display:flex;gap:10px;align-items:center;background:var(--panel2);border:1px solid color-mix(in srgb,var(--g) 60%,transparent);border-radius:14px;padding:8px 10px;animation:crin .45s ease-out both}.crc .info{flex:1;display:flex;flex-direction:column;align-items:flex-start;gap:2px}.crc .gtag{margin-left:0}.crc small{font-size:12px;color:var(--muted)}.crc .xp{width:100%;margin:3px 0 1px}.crc .cn{position:absolute;right:12px;top:8px;color:var(--g);font-size:18px}.crc i.ok{font-style:normal;color:#7be08f;font-weight:700}
+@keyframes crin{0%{transform:rotateY(90deg) scale(.8);opacity:0}100%{transform:none;opacity:1}}
 .buy.glow{box-shadow:0 0 12px rgba(255,210,60,.8)}
 .cpk{display:flex;align-items:center;justify-content:center;height:64px;font-size:40px;color:#c9a4ff}.cpk b{font-size:16px;margin-left:2px}.gobloot .glc{width:36px;height:36px;border-radius:8px}
 .rtbox{border-radius:12px;padding:10px 12px;margin:8px 0;background:var(--panel2);font-size:13px}.rtbox .rth{font-weight:700;margin-bottom:6px}.rtbox ul{list-style:none;margin:0;padding:0}.rtbox li{display:flex;justify-content:space-between;gap:10px;padding:3px 0;border-top:1px solid rgba(255,255,255,.06)}.rtbox li:first-child{border-top:0}.rtbox li span{color:var(--muted);flex:0 0 auto}.rtbox li b{text-align:right;font-weight:600}.rtbox p{margin:0;line-height:1.5}
@@ -572,6 +574,12 @@ function seatSheet(j){const cur=slotMember(j),ms=jobMembers(j);if(!cur)return to
  <p class="note">교체한 동료는 나간 동료의 체력 비율을 이어받고, 스킬 게이지는 처음부터 채워요.</p><div class="acts one"><button class="pri" id="mGo">닫기</button></div>`;
  $('modal').hidden=false;$('mGo').onclick=closeModal;ms.forEach(id=>faceTo($('sp-'+id),id));
  document.querySelectorAll('[data-pick]').forEach(b=>b.onclick=()=>{if(setMember(j,b.dataset.pick))closeModal()})}
+/* 카드 개봉 창: 이번에 받은 카드와 진행 상황 */
+function cardReveal(list,title){const m={};for(const[id,n]of list)m[id]=(m[id]||0)+n;const ids=Object.keys(m).sort((a,b)=>gr(a).w-gr(b).w);
+ const best=ids[0];$('sheet').innerHTML=`<div class="eyebrow" style="color:${gr(best).c}">${title}</div><h2>카드를 받았어요!</h2>
+ <div class="crev">${ids.map((id,i)=>{const st=recStar(id),mx=st>=starMax(id),n=(S.cards&&S.cards[id])||0,need=starNeed(id),can=!mx&&n>=need;return`<div class="crc" style="--g:${gr(id).c};animation-delay:${i*.18}s"><span class="cfr"><img src="assets/ui/frame_${gr(id).fr}.png" alt="" onerror="this.remove()"><canvas class="portrait" id="rv-${id}"></canvas></span><b class="cn">+${m[id]}</b><div class="info"><b>${COMP[id].n}</b>${gradeTag(id)}<small>${JOBN[JOB[id]]}${st?' · '+'★'.repeat(st):' · 합류 전'}</small>${mx?'<small>별을 모두 모았어요</small>':`<div class="xp"><div style="width:${Math.min(100,n/need*100)}%"></div></div><small>${n} / ${need}${can?` · <i class="ok">${st?'★ 올리기 가능!':'맞이하기 가능!'}</i>`:''}</small>`}</div></div>`}).join('')}</div>
+ <div class="acts"><button id="mX">닫기</button><button class="pri" id="mGo">원정대에서 보기</button></div>`;
+ $('modal').hidden=false;ids.forEach(id=>faceTo($('rv-'+id),id));$('mX').onclick=closeModal;$('mGo').onclick=()=>{closeModal();setTab('pt');setTimeout(()=>{const e=$('pcd-'+best);if(e)e.scrollIntoView({block:'center'})},200)}}
 function recruitUp(id){const stv=recStar(id),need=starNeed(id),n=(S.cards&&S.cards[id])||0;if(stv>=starMax(id)||n<need)return;S.cards[id]-=need;if(!S.rec)S.rec={};S.rec[id]=stv+1;if(!S.lv[id])S.lv[id]=1;partySig='';
  if(stv===0){const R=RECRUITS[id];queue(()=>scene('동료 합류',R.title,R.lines,R.ok))}
  else toast(COMP[id].n+' ★'+(stv+1)+'! 능력치 +'+Math.round((STAR_MUL[stv+1]-1)*100)+'%'+(isRec(id)&&(stv+1===3||stv+1===5)?' · 스킬 강화':''));renderAll()}
@@ -673,7 +681,7 @@ const adLeft=k=>Math.max(0,ADS[k].n-(daily().ad[k]||0));
 function playAd(done){const o=$('adOv');let n=3;o.hidden=false;$('adTxt').textContent=n;const it=setInterval(()=>{n--;if(n>0){$('adTxt').textContent=n;return}clearInterval(it);o.hidden=true;done()},1000)}
 function watchAd(k,give){if(adLeft(k)<=0)return toast('오늘은 다 봤어요. 내일 다시 받을 수 있어요');playAd(()=>{daily().ad[k]=(daily().ad[k]||0)+1;give();shopSig='';farmSig='';save();renderAll()})}
 function adBox(){watchAd('box',()=>{S.gold+=boxCost();openBox(false)})}
-function adCard(){watchAd('card',()=>{const cid=gainCard(3);toast(cid?'피트의 선물! '+COMP[cid].n+' 카드 +3':'아직 모을 수 있는 동료 카드가 없어요')})}
+function adCard(){watchAd('card',()=>{const got=[];for(let i=0;i<3;i++){const cid=gainCard(1);if(cid)got.push([cid,1])}if(got.length)setTimeout(()=>cardReveal(got,'피트의 선물'),50);else toast('아직 모을 수 있는 동료 카드가 없어요')})}
 const adKeys=()=>['box','gem',...(CARDIDS().some(cardOpen)?['card']:[])];
 function adGem(){watchAd('gem',()=>{S.gem=(S.gem||0)+5;toast('피트의 선물! 황금 이삭 +5')})}
 function adFarm(){if(!S.plots.some(p=>plotState(p).st==='grow'))return;watchAd('farm',()=>{S.plots.forEach(p=>{if(plotState(p).st==='grow')p.at=0});toast('리엘의 벌들이 밭을 도왔어요. 모두 다 자랐어요')})}
@@ -724,8 +732,8 @@ function renderShop(){
  ${adKeys().map(k=>`<div class="mis"><div class="info"><b>${ADS[k].t}</b><div style="font-size:11px;color:var(--muted)">오늘 ${adLeft(k)} / ${ADS[k].n}회 남음</div></div><button class="buy ad" data-ad="${k}" ${adLeft(k)?'':'disabled'}>▶ 받기</button></div>`).join('')}`}
  <div class="sec">골드 바꾸기 <small>지금 영지 기준 · 영지가 오를수록 더 많이</small></div>
  <div class="packs">${GOLDX.map((x,i)=>`<button class="pack gx" data-gx="${x.k}">${i?`<span class="tag">${x.h}시간치</span>`:''}<img src="assets/ui/ui_gold.png" alt="" style="transform:scale(${[.8,1,1.15][i]})" onerror="this.remove()"><b>${fmt(goldX(x))}</b><small>${x.n}</small><span class="price">${gemI}${x.gem}</span></button>`).join('')}</div>
- ${CARDIDS().some(cardOpen)?`<div class="sec">동료 카드 <small>동료 카드를 받아요 · 30장은 영웅 확정</small></div>
- <div class="packs">${CARDPK.map((c,i)=>`<button class="pack gx" data-cp="${i}">${i?'<span class="tag">10% 이득</span>':''}<span class="cpk">🂠<b>×${c.n}</b></span><b>카드 ${c.n}장</b><small>${c.n>=30?'동료 1명 합류분':'맛보기'}</small><span class="price">${gemI}${c.gem}</span></button>`).join('')}</div>`:''}
+ ${CARDIDS().some(cardOpen)?`<div class="sec">동료 카드 <small>3장은 무작위 · 30장은 한 동료로 영웅 이상</small></div>
+ <div class="packs">${CARDPK.map((c,i)=>`<button class="pack gx" data-cp="${i}">${i?'<span class="tag">10% 이득</span>':''}<span class="cpk">🂠<b>×${c.n}</b></span><b>카드 ${c.n}장</b><small>${c.n>=30?'한 동료 30장 · 영웅 이상':'무작위 3장'}</small><span class="price">${gemI}${c.gem}</span></button>`).join('')}</div>`:''}
  <div class="sec">특별 상품</div>
  ${S.buys.starter?'':`<div class="shoprow hot"><span class="tag">한 번만</span><img class="pk" src="assets/relic/relic_weapon_3.png" alt="" onerror="this.remove()"><div class="info"><b>${STARTER.n}</b><div>전설 등급 성유물 1개 확정<br>+ ${gemI}${STARTER.gem}</div></div><button class="buy" id="starterBuy">${won(STARTER.won)}</button></div>`}
  <div class="shoprow${subOn()?' hot':''}"><img class="pk" src="assets/gem/gem_pack_5.png" alt="" onerror="this.remove()"><div class="info"><b>${SUB.n}</b><div>${subTxt}</div></div>${subBtn}</div>
@@ -736,7 +744,7 @@ function renderShop(){
  sh.querySelectorAll('[data-m]').forEach(b=>b.onclick=()=>{const k=b.dataset.m,m=MISSIONS.find(x=>x.k===k);if(!misCan(m||null))return;daily().claim[k]=true;if(k==='all'){const cid=gainCard(5);if(cid)setTimeout(()=>toast(COMP[cid].n+' 카드 +5'),1200)}gainGem(m?m.r:MIS_ALL,m?m.n:'오늘의 할 일 완료');shopSig='';renderAll()});
  {const mo=$('misOpen');if(mo)mo.onclick=()=>{misOpen=true;shopSig='';renderShop()};const ao=$('adOpen');if(ao)ao.onclick=()=>{adOpen=true;shopSig='';renderShop()}}
  sh.querySelectorAll('[data-ad]').forEach(b=>b.onclick=()=>({box:adBox,gem:adGem,card:adCard})[b.dataset.ad]());
- sh.querySelectorAll('[data-cp]').forEach(b=>b.onclick=()=>{const c=CARDPK[+b.dataset.cp];if(!CARDIDS().some(x=>cardOpen(x)&&recStar(x)<starMax(x)))return toast('모을 수 있는 동료 카드가 없어요');if(!spendGem(c.gem))return;const cid=gainCard(c.n,c.n>=30&&CARDIDS().some(x=>cardOpen(x)&&GRADE[x]!=='common'&&recStar(x)<starMax(x))?'rare':null);toast(gr(cid).n+' '+COMP[cid].n+' 카드 +'+c.n+'! 원정대 탭에서 확인해요');shopSig='';renderAll()});
+ sh.querySelectorAll('[data-cp]').forEach(b=>b.onclick=()=>{const c=CARDPK[+b.dataset.cp];if(!CARDIDS().some(x=>cardOpen(x)&&recStar(x)<starMax(x)))return toast('모을 수 있는 동료 카드가 없어요');if(!spendGem(c.gem))return;const got=[];if(c.n>=30){const av=g=>CARDIDS().some(x=>cardOpen(x)&&gr(x).w<=GR[g].w&&recStar(x)<starMax(x)),cid=gainCard(c.n,av('epic')?'epic':av('rare')?'rare':null);got.push([cid,c.n])}else for(let i=0;i<c.n;i++){const cid=gainCard(1);if(cid)got.push([cid,1])}shopSig='';renderAll();cardReveal(got,'카드 '+c.n+'장')});
  sh.querySelectorAll('[data-gx]').forEach(b=>b.onclick=()=>buyGoldX(b.dataset.gx));
  sh.querySelectorAll('[data-p]').forEach(b=>b.onclick=()=>buyPack(PACKS.find(p=>p.k===b.dataset.p)));
  const sb=$('starterBuy');if(sb)sb.onclick=buyStarter;const ub=$('subBuy');if(ub)ub.onclick=buySub;const uc=$('subClaim');if(uc)uc.onclick=claimSub;
