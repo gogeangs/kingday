@@ -31,6 +31,7 @@ python3 -m http.server 8000
 | `tools/extract_village.py` | 마을 배경·건물 원본 → 배경 JPG, 512x512 건물 정리 |
 | `tools/extract_mapnodes.py` | 지도 노드 원본 → 256x256 정리 |
 | `tools/extract_relics.py` | 성유물 아이콘 원본 → 256x256 정리 |
+| `tools/balance_sim.py` | 밸런스 시뮬레이션: 처음부터 자동 진행해 영지별 걸린 시간 측정 (`BAL` 값 덮어쓰기 가능) |
 | `tools/extract_ui.py` | UI 시트 → 개별 아이콘 PNG 변환 도구 |
 | `assets/ui/` | 게임에 실제로 쓰는 UI 아이콘과 로고 |
 
