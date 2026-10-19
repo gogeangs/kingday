@@ -63,6 +63,7 @@ body{word-break:keep-all;overflow-wrap:break-word;line-break:strict;background:#
 .pfc.on small{color:var(--gold)}
 .pfc.lock .pfr{filter:grayscale(1) brightness(.6)}
 .pfr.tall{top:-15.625%!important;height:115.625%!important}
+.misdone{display:flex;flex-direction:column;align-items:flex-start;gap:2px;width:100%;margin:12px 0 4px;padding:12px 16px;border-radius:14px;border:1px solid rgba(123,224,143,.35);background:rgba(123,224,143,.08);color:#7be08f;font:inherit;text-align:left;cursor:pointer}.misdone b{font-size:15px}.misdone small{color:var(--muted);font-size:12px}
 .rareloot{display:flex;justify-content:center;margin:6px 0 10px}.rareloot img{width:132px;height:132px;filter:drop-shadow(0 0 14px rgba(255,210,60,.8));animation:rarepop .6s ease-out}
 @keyframes rarepop{0%{transform:scale(.3) rotate(-20deg);opacity:0}70%{transform:scale(1.12)}100%{transform:scale(1)}}
 .pfc.rare:not(.lock){box-shadow:0 0 10px rgba(255,210,60,.55)}
@@ -637,18 +638,19 @@ function buyStarter(){if(S.buys.starter)return;pay('starter',STARTER.won,()=>{S.
 function buySub(){pay('sub',SUB.won,()=>{const base=Math.max(Date.now(),S.sub.until||0);S.sub.until=base+SUB.days*864e5;S.sub.last=today();S.gem+=SUB.now+SUB.day;toast('정기 배송 시작! 황금 이삭 +'+(SUB.now+SUB.day))})}
 function claimSub(){if(!subOn()||S.sub.last===today())return;S.sub.last=today();S.gem+=SUB.day;toast('피트의 마차가 도착했어요. 황금 이삭 +'+SUB.day);shopSig='';renderAll()}
 let shopSig='';
+let misOpen=false;
 function renderShop(){
  if(curTab!=='sh')return;const d=daily();
- const sig=[S.gem,S.stage,JSON.stringify(S.buys),JSON.stringify(S.sub),JSON.stringify(d)].join('|');if(sig===shopSig)return;shopSig=sig;
+ const sig=[misOpen,S.gem,S.stage,JSON.stringify(S.buys),JSON.stringify(S.sub),JSON.stringify(d)].join('|');if(sig===shopSig)return;shopSig=sig;
  const misRow=(m)=>{const v=Math.min(d[m.k],m.goal),done=d.claim[m.k],can=misCan(m);return`<div class="mis"><div class="info"><b>${m.n}</b><div class="xp"><div style="width:${v/m.goal*100}%"></div></div></div><button class="buy" data-m="${m.k}" ${can?'':'disabled'}>${done?'받음':can?'+'+m.r+' 받기':v+' / '+m.goal}</button></div>`};
  const gemI='<img src="assets/gem/ui_gem.png" alt="" style="width:16px;height:16px;vertical-align:-3px" onerror="this.remove()">';
  const subTxt=subOn()?`남은 기간 ${subLeft()}일 · ${S.sub.last===today()?'오늘 배송 받음':'오늘 배송이 도착했어요'}`:`구매 즉시 ${gemI}${SUB.now} + 30일간 매일 ${gemI}${SUB.day}<br>방치 보상 +50%`;
  const subBtn=subOn()?(S.sub.last===today()?`<button class="buy" disabled>받음</button>`:`<button class="buy" id="subClaim">+${SUB.day} 받기</button>`):`<button class="buy" id="subBuy">${won(SUB.won)}</button>`;
  $('shop').innerHTML=`${TEST_PAY?'<div class="testbar">테스트 모드: 실제 결제 없이 누르면 바로 지급돼요. 결제 연동 전까지만 이렇게 동작해요.</div>':''}
  ${para('m:피트|어서 와, 형씨! 오늘도 진품만 들여놨어. …대부분.')}
- <div class="sec">오늘의 할 일 <small>매일 자정에 새로 시작</small></div>
+ ${d.claim.all&&!misOpen?`<button class="misdone" id="misOpen"><b>✓ 오늘의 할 일 완료</b><small>내일 자정에 새 할 일이 열려요 · 눌러서 보기</small></button>`:`<div class="sec">오늘의 할 일 <small>매일 자정에 새로 시작</small></div>
  ${MISSIONS.map(misRow).join('')}
- <div class="mis"><div class="info"><b>오늘의 할 일 모두 끝내기</b></div><button class="buy" data-m="all" ${misCan(null)?'':'disabled'}>${d.claim.all?'받음':'+'+MIS_ALL+(misCan(null)?' 받기':'')}</button></div>
+ <div class="mis"><div class="info"><b>오늘의 할 일 모두 끝내기</b></div><button class="buy" data-m="all" ${misCan(null)?'':'disabled'}>${d.claim.all?'받음':'+'+MIS_ALL+(misCan(null)?' 받기':'')}</button></div>`}
  <div class="sec">피트의 무료 선물 <small>광고를 보면 받아요 · 매일 자정 초기화</small></div>
  ${['box','gem'].map(k=>`<div class="mis"><div class="info"><b>${ADS[k].t}</b><div style="font-size:11px;color:var(--muted)">오늘 ${adLeft(k)} / ${ADS[k].n}회 남음</div></div><button class="buy ad" data-ad="${k}" ${adLeft(k)?'':'disabled'}>▶ 받기</button></div>`).join('')}
  <div class="sec">골드 바꾸기 <small>지금 영지 기준 · 영지가 오를수록 더 많이</small></div>
@@ -661,6 +663,7 @@ function renderShop(){
  <p class="note">황금 이삭은 골드 바꾸기, 성유물 상자 10연속(장비 탭), 작물 바로 키우기·건물 바로 짓기(마을 탭), 방치 보상 2배 받기에 써요.</p>`;
  const sh=$('shop');
  sh.querySelectorAll('[data-m]').forEach(b=>b.onclick=()=>{const k=b.dataset.m,m=MISSIONS.find(x=>x.k===k);if(!misCan(m||null))return;daily().claim[k]=true;gainGem(m?m.r:MIS_ALL,m?m.n:'오늘의 할 일 완료');shopSig='';renderAll()});
+ {const mo=$('misOpen');if(mo)mo.onclick=()=>{misOpen=true;shopSig='';renderShop()}}
  sh.querySelectorAll('[data-ad]').forEach(b=>b.onclick=()=>({box:adBox,gem:adGem})[b.dataset.ad]());
  sh.querySelectorAll('[data-gx]').forEach(b=>b.onclick=()=>buyGoldX(b.dataset.gx));
  sh.querySelectorAll('[data-p]').forEach(b=>b.onclick=()=>buyPack(PACKS.find(p=>p.k===b.dataset.p)));
@@ -974,7 +977,7 @@ function renderAll(){
  $('vlDot').hidden=!ready;
 }
 let curTab=null; // null = 전투 화면
-function setTab(t){if(t===curTab)t=null;curTab=t;document.querySelectorAll('.tab').forEach(b=>b.setAttribute('aria-selected',b.dataset.t===t));['eq','pt','up','vl','mp','sh'].forEach(x=>$('p-'+x).hidden=x!==t);if(t==='vl'){resizeV();farmSig='';kitSig='';bldSig='';requestAnimationFrame(()=>{resizeV();vlScrollTo(vlSel)})}if(t==='mp')resizeM();if(t==='pt')partySig='';if(t==='sh')shopSig='';if(t==='eq'){eqSig=''}renderAll()}
+function setTab(t){if(t===curTab)t=null;if(t!=='sh')misOpen=false;curTab=t;document.querySelectorAll('.tab').forEach(b=>b.setAttribute('aria-selected',b.dataset.t===t));['eq','pt','up','vl','mp','sh'].forEach(x=>$('p-'+x).hidden=x!==t);if(t==='vl'){resizeV();farmSig='';kitSig='';bldSig='';requestAnimationFrame(()=>{resizeV();vlScrollTo(vlSel)})}if(t==='mp')resizeM();if(t==='pt')partySig='';if(t==='sh')shopSig='';if(t==='eq'){eqSig=''}renderAll()}
 document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>setTab(b.dataset.t));
 document.querySelectorAll('[data-close]').forEach(b=>b.onclick=()=>setTab(null));
 $('faceBtn').onclick=()=>{if($('modal').hidden)profileSheet()};$('gemBtn').onclick=()=>setTab('sh');
