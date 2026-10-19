@@ -17,6 +17,6 @@ async def main():
     for st,tt,w,to in rec:
       tot+=tt
       if st%5==0: line.append(f'{st}:{tot//60}m')
-    print('slow',sorted(rec,key=lambda x:-x[1])[:8]);print(TUNE,'|',' '.join(line),'| end',r['stage'],'stuck',r['last'],'gear',r['gearG'],'lv',list(r['lv'].values()))
+    print('stages',[(a,b,c,d) for a,b,c,d in rec if 14<=a<=31]);print('slow',sorted(rec,key=lambda x:-x[1])[:8]);print(TUNE,'|',' '.join(line),'| end',r['stage'],'stuck',r['last'],'gear',r['gearG'],'lv',list(r['lv'].values()))
     await b.close()
 asyncio.run(main())
