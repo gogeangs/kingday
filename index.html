@@ -37,6 +37,22 @@ body{word-break:keep-all;overflow-wrap:break-word;line-break:strict;background:#
 .face::after{content:"⚙";position:absolute;right:-1px;bottom:-1px;width:17px;height:17px;border-radius:50%;background:#0d1220;border:1px solid var(--gold);color:var(--gold);font-size:11px;line-height:15px;text-align:center}
 .face{overflow:visible}
 .face canvas{border-radius:50%}
+.face:has(.pfr){border:0;background:none;width:52px;height:52px}
+.face:has(.pfr) canvas{position:absolute;inset:11%;width:78%;height:78%;border-radius:16%;background:radial-gradient(circle at 50% 35%,#3b5a8a,#1a2440)}
+.face .pfr,.pfbig .pfr,.pfc .pfr{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+.face:has(.pfr)::after{right:-3px;bottom:-3px;z-index:2}
+.pfhead{display:flex;gap:14px;align-items:center;margin:4px 0 12px}
+.pfbig{position:relative;width:112px;height:112px;flex:0 0 auto}
+.pfbig canvas{position:absolute;inset:11%;width:78%;height:78%;border-radius:16%;background:radial-gradient(circle at 50% 35%,#3b5a8a,#1a2440)}
+.pfinfo b{display:block;font-size:20px}.pfinfo small{display:block;color:var(--muted);font-size:13px;margin-top:3px}
+.pfgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.pfc{display:flex;flex-direction:column;align-items:center;gap:3px;background:var(--panel2);border:2px solid transparent;border-radius:12px;padding:6px 2px 7px;color:var(--fg);font:inherit;cursor:pointer;min-width:0}
+.pfc.on{border-color:var(--gold)}.pfc.lock{opacity:.55}
+.pfc .pv{position:relative;width:56px;height:56px}
+.pfc .pv i{position:absolute;inset:12%;border-radius:16%;background:radial-gradient(circle at 50% 35%,#3b5a8a,#1a2440)}
+.pfc.lock .pfr{filter:grayscale(1) brightness(.7)}
+.pfc b{font-size:12px;line-height:1.2;text-align:center;word-break:keep-all}.pfc small{font-size:10.5px;color:var(--muted);line-height:1.2;text-align:center;word-break:keep-all}
+.pfc.on small{color:var(--gold)}
 .setrow{display:flex;justify-content:space-between;align-items:center;gap:10px;background:var(--panel2);border-radius:12px;padding:10px 12px;font-size:13px}
 .setrow b{font-weight:600}
 .setrow small{display:block;color:var(--muted);font-size:11px;margin-top:2px}
@@ -340,7 +356,7 @@ button:focus-visible,input:focus-visible{outline:2px solid var(--gold);outline-o
 
 <div class="app">
   <header class="hud">
-    <button class="face" id="faceBtn" aria-label="설정 열기"><canvas id="faceCv"></canvas></button>
+    <button class="face" id="faceBtn" aria-label="프로필 열기"><canvas id="faceCv"></canvas><img class="pfr" id="hFrame" src="assets/profile/frame_wood.png" alt="" onerror="this.remove()"></button>
     <div class="who"><span class="nm">카엘 <img class="rankimg" id="hRankImg" src="assets/ui/rank_farmer.png" alt="" onerror="this.remove()"><span class="rank" id="hRank">농부</span></span><span class="pow" id="hPow">0</span></div>
     <button class="gempill" id="gemBtn" aria-label="황금 이삭과 오늘의 할 일"><img class="gemimg" src="assets/gem/ui_gem.png" alt="" onerror="this.remove()"><span id="gem">0</span><i class="dot" id="gemDot" hidden></i></button>
     <div class="goldpill"><img class="coinimg" src="assets/ui/ui_gold.png" alt="" onerror="this.outerHTML='<i class=&quot;coin&quot;></i>'"><span id="gold">0</span></div>
@@ -923,7 +939,7 @@ function renderAll(){
  $('gold').textContent=fmt(S.gold);$('gem').textContent=fmt(S.gem||0);$('gemDot').hidden=!(MISSIONS.some(misCan)||misCan(null)||(subOn()&&S.sub.last!==today()));
  $('stLabel').textContent=S.stage>MAXLAND?'왕도 진격로':(Math.floor((S.stage-1)/10)+1)+'-'+((S.stage-1)%10+1)+' '+r.n;
  $('stRegion').textContent=S.stage>MAXLAND?'':terrName(S.stage)+' 탈환전';
- $('hPow').textContent=fmt(power());$('hRank').textContent=RANKS[rankIdx()].n;{const ri=$('hRankImg'),src='assets/ui/'+RANKIMG[rankIdx()]+'.png';if(ri&&!ri.src.endsWith(src))ri.src=src}
+ pfCheck();$('hPow').textContent=fmt(power());$('hRank').textContent=RANKS[rankIdx()].n;{const ri=$('hRankImg'),src='assets/ui/'+RANKIMG[rankIdx()]+'.png';if(ri&&!ri.src.endsWith(src))ri.src=src}
  const c=boxCost();$('openCost').textContent=fmt(c);$('openBtn').disabled=S.gold<c||!!pending;$('quickCost').textContent=fmt(c);$('quickBox').disabled=S.gold<c||!!pending;
  renderPartyRow();if(curTab==='eq')drawEqHero();
  const es=JSON.stringify(S.eq)+JSON.stringify(S.slotEn||{});if(es!==eqSig){eqSig=es;renderSlots()}renderForge();
@@ -941,7 +957,7 @@ let curTab=null; // null = 전투 화면
 function setTab(t){if(t===curTab)t=null;curTab=t;document.querySelectorAll('.tab').forEach(b=>b.setAttribute('aria-selected',b.dataset.t===t));['eq','pt','up','vl','mp','sh'].forEach(x=>$('p-'+x).hidden=x!==t);if(t==='vl'){resizeV();farmSig='';kitSig='';bldSig='';requestAnimationFrame(()=>{resizeV();vlScrollTo(vlSel)})}if(t==='mp')resizeM();if(t==='pt')partySig='';if(t==='sh')shopSig='';if(t==='eq'){eqSig=''}renderAll()}
 document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>setTab(b.dataset.t));
 document.querySelectorAll('[data-close]').forEach(b=>b.onclick=()=>setTab(null));
-$('faceBtn').onclick=()=>{if($('modal').hidden)settingsSheet()};$('gemBtn').onclick=()=>setTab('sh');
+$('faceBtn').onclick=()=>{if($('modal').hidden)profileSheet()};$('gemBtn').onclick=()=>setTab('sh');
 $('quickBox').onclick=()=>openBox(false);
 $('speedBtn').onclick=()=>{S.speed=S.speed===2?1:2;renderSpeed()};
 $('autoBtn').onclick=()=>{S.autoSkill=S.autoSkill===false;renderAuto();toast(S.autoSkill===false?'스킬 자동 사용 꺼짐 · 빛나는 초상화를 눌러 쓰세요':'스킬 자동 사용 켜짐');prowSig=''};
@@ -1431,6 +1447,27 @@ function drawMap(){
 /* ---------- 저장 · 방치 보상 ---------- */
 let noSave=false;
 function save(){if(noSave)return;S.last=Date.now();try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
+/* 프로필 꾸미기: 테두리 */
+const PFRAMES=[
+ {k:'wood',n:'나무 울타리',d:'처음부터',ok:()=>true},
+ {k:'straw',n:'밀짚 화환',d:'칭호 마을 지킴이',ok:()=>rankIdx()>=1},
+ {k:'harvest',n:'풍년 수확',d:'밭 Lv.5',ok:()=>(S.bld.farm||0)>=5},
+ {k:'silver',n:'은빛 기사',d:'칭호 기사',ok:()=>rankIdx()>=2},
+ {k:'gold',n:'황금 영주',d:'칭호 영주',ok:()=>rankIdx()>=3},
+ {k:'amethyst',n:'자수정 장식',d:'전설 성유물 착용',ok:()=>Object.values(S.eq).some(it=>it&&it.g>=4)},
+ {k:'holy',n:'성검의 가호',d:'첫 은퇴',ok:()=>(S.retires||0)>=1},
+ {k:'royal',n:'붉은 왕관',d:'칭호 공작',ok:()=>rankIdx()>=5}];
+const pfHas=k=>k==='wood'||!!(S.pfUnl&&S.pfUnl[k]);
+function pfCheck(){if(!S.pfUnl)S.pfUnl={};for(const f of PFRAMES){if(!S.pfUnl[f.k]&&f.ok()){S.pfUnl[f.k]=1;if(f.k!=='wood'&&S.started)toast('새 프로필 테두리 「'+f.n+'」을 얻었어요')}}
+ const im=$('hFrame'),src='assets/profile/frame_'+(S.pf||'wood')+'.png';if(im&&!im.src.endsWith(src))im.src=src}
+function profileSheet(){pfCheck();const cur=S.pf||'wood',ri=rankIdx();
+ $('sheet').innerHTML=`<div class="eyebrow">프로필</div><div class="pfhead"><div class="pfbig"><canvas id="pfCv"></canvas><img class="pfr" src="assets/profile/frame_${cur}.png" alt=""></div><div class="pfinfo"><b>카엘</b><small>${RANKS[ri].n} · 전투력 ${fmt(power())}</small><small>최고 영지 ${Math.min(S.best,MAXLAND)} · 은퇴 ${S.retires||0}번</small></div></div>
+ <div class="sec">테두리 <small>${PFRAMES.filter(f=>pfHas(f.k)).length} / ${PFRAMES.length}</small></div>
+ <div class="pfgrid">${PFRAMES.map(f=>{const has=pfHas(f.k);return`<button class="pfc${f.k===cur?' on':''}${has?'':' lock'}" data-pf="${f.k}"><span class="pv"><i></i><img class="pfr" src="assets/profile/frame_${f.k}.png" alt=""></span><b>${f.n}</b><small>${f.k===cur?'사용 중':has?'바꾸기':'🔒 '+f.d}</small></button>`}).join('')}</div>
+ <div class="acts"><button id="pfSet">⚙ 설정</button><button class="pri" id="mGo">닫기</button></div>`;
+ $('modal').hidden=false;faceTo($('pfCv'),'kael');$('mGo').onclick=closeModal;$('pfSet').onclick=()=>settingsSheet();
+ document.querySelectorAll('[data-pf]').forEach(b=>b.onclick=()=>{const k=b.dataset.pf,f=PFRAMES.find(x=>x.k===k);if(!pfHas(k))return toast(f.d+' 달성 시 얻어요');S.pf=k;pfCheck();save();profileSheet()});
+}
 function settingsSheet(step){
  $('sheet').innerHTML=`<div class="eyebrow">설정</div><h2>카엘의 수첩</h2>
  <div class="setrow"><div><b>전투 속도</b><small>x2는 마물도 빨라져요</small></div><button class="buy ghost" id="setSpd">x${S.speed||1}</button></div>
