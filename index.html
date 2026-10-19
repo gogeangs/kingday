@@ -32,7 +32,7 @@ body{background:#0a0d16;color:var(--fg);font-family:var(--f-body);padding:0;marg
 .pow::before{content:"⚔";font-size:12px}
 .goldpill{display:flex;align-items:center;gap:6px;background:#0b0f1a;border:1px solid #3a4568;border-radius:999px;padding:5px 12px 5px 6px;font-family:var(--f-body);font-weight:700;font-size:16px;font-variant-numeric:tabular-nums;flex:0 0 auto}
 .gempill{position:relative;display:flex;align-items:center;gap:4px;background:#1a1406;border:1px solid #8a6a1a;border-radius:999px;padding:4px 10px 4px 5px;font-family:var(--f-body);font-weight:700;font-size:14px;color:#ffe08a;font-variant-numeric:tabular-nums;flex:0 0 auto;cursor:pointer}
-.gemimg{width:22px;height:22px;margin:-3px 0;filter:sepia(1) saturate(5) hue-rotate(-10deg) brightness(1.2) drop-shadow(0 0 3px rgba(255,210,80,.9))}
+.gemimg{width:24px;height:24px;margin:-4px 0;filter:drop-shadow(0 1px 2px rgba(0,0,0,.5))}
 .gempill .dot{position:absolute;top:-2px;right:-2px;width:9px;height:9px;border-radius:50%;background:var(--bad);border:1px solid #fff}
 .mis{display:flex;align-items:center;gap:10px;background:var(--panel2);border-radius:12px;padding:9px 10px}
 .mis .info{flex:1;min-width:0;font-size:13px}
@@ -222,7 +222,7 @@ button:focus-visible,input:focus-visible{outline:2px solid var(--gold);outline-o
   <header class="hud">
     <button class="face" id="faceBtn" aria-label="원정대 보기"><canvas id="faceCv"></canvas></button>
     <div class="who"><span class="nm">카엘 <img class="rankimg" id="hRankImg" src="assets/ui/rank_farmer.png" alt="" onerror="this.remove()"><span class="rank" id="hRank">농부</span></span><span class="pow" id="hPow">0</span></div>
-    <button class="gempill" id="gemBtn" aria-label="황금 이삭과 오늘의 할 일"><img class="gemimg" src="assets/ui/item_wheat.png" alt="" onerror="this.remove()"><span id="gem">0</span><i class="dot" id="gemDot" hidden></i></button>
+    <button class="gempill" id="gemBtn" aria-label="황금 이삭과 오늘의 할 일"><img class="gemimg" src="assets/gem/ui_gem.png" alt="" onerror="this.remove()"><span id="gem">0</span><i class="dot" id="gemDot" hidden></i></button>
     <div class="goldpill"><img class="coinimg" src="assets/ui/ui_gold.png" alt="" onerror="this.outerHTML='<i class=&quot;coin&quot;></i>'"><span id="gold">0</span></div>
   </header>
 
@@ -416,7 +416,7 @@ function gainGem(n,why){S.gem=(S.gem||0)+n;toast('황금 이삭 +'+n+(why?' · '
 function gemSheet(){const d=daily();
  const row=(m)=>{const v=Math.min(d[m.k],m.goal),done=d.claim[m.k],can=misCan(m);return`<div class="mis"><div class="info"><b>${m.n}</b><div class="xp"><div style="width:${v/m.goal*100}%"></div></div></div><button class="buy" data-m="${m.k}" ${can?'':'disabled'}>${done?'받음':can?'+'+m.r+' 받기':v+' / '+m.goal}</button></div>`};
  const allDone=d.claim.all,allCan=misCan(null);
- $('sheet').innerHTML=`<div class="eyebrow">왕국의 귀한 곡식</div><h2><img class="gemimg" src="assets/ui/item_wheat.png" alt="" style="width:30px;height:30px;vertical-align:-6px"> 황금 이삭 ${fmt(S.gem||0)}</h2>
+ $('sheet').innerHTML=`<div class="eyebrow">왕국의 귀한 곡식</div><h2><img class="gemimg" src="assets/gem/ui_gem.png" alt="" style="width:32px;height:32px;vertical-align:-7px"> 황금 이삭 ${fmt(S.gem||0)}</h2>
  ${para('q@proud:성검이 축복한 이삭이다. 피트가 보면 눈이 뒤집히지.')}
  <div class="sec">오늘의 할 일 <small>매일 자정에 새로 시작해요</small></div>
  ${MISSIONS.map(row).join('')}
