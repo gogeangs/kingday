@@ -38,7 +38,8 @@ python3 -m http.server 8000
 | 리엘 | 스프라이트 적용 (대기 4, 걷기 6, 공격 4, 피격 2) |
 | 마고 | 스프라이트 적용 (대기 4, 걷기 6, 공격 4, 피격 2) |
 | UI | 로고, 하단 탭 5종, 장비 부위 6종, 등급 테두리 6종, 성유물 상자, 재료 6종 적용 (`assets/ui/`) |
-| 몬스터, 배경, 전투 효과 | 코드 그림 (전투 배경은 2.5D 구도로 개선) |
+| 역병 점액 (에르단 평원 일반 마물·성주) | 스프라이트 적용 (이동 4, 공격 4, 피격 2), `assets/monsters/` |
+| 다른 지역 몬스터, 군단장, 배경, 전투 효과 | 코드 그림 (전투 배경은 2.5D 구도로 개선) |
 
 이미지가 없거나 불러오지 못하면 게임은 자동으로 코드 그림을 씁니다. 그래서 에셋을 하나씩 추가해도 게임이 깨지지 않아요.
 
@@ -46,6 +47,7 @@ python3 -m http.server 8000
 
 1. 동작 시트를 `art/source/<id>_motion_concept.png`에 넣습니다. 진짜 투명 배경이어야 하고, 1줄 대기 4 / 2줄 걷기 6 / 3줄 공격 4 / 4줄 피격 2, 오른쪽을 보는 측면이어야 합니다.
 2. `python3 tools/extract_sprites.py art/source/<id>_motion_concept.png <id>` 를 실행합니다. (`pip install pillow numpy scipy` 필요)
+몬스터는 끝에 `--monster`를 붙입니다 (1줄 이동 4 / 2줄 공격 4 / 3줄 피격 2, 왼쪽을 봄). 그리고 `index.html`의 `MON_SPRITES`에 지역 번호와 시트 이름을 추가합니다.
 3. `index.html`의 `SPRITES`에 `<id>:{idle:4,walk:6,attack:4,hit:2,h:키}` 한 줄을 추가합니다.
 
 ## 화면 구성

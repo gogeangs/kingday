@@ -14,6 +14,8 @@
 사용법
     python3 tools/extract_sprites.py art/source/kael_motion_concept.png kael
     python3 tools/extract_sprites.py art/source/bron_motion_concept.png bron
+    # 몬스터 (1줄 이동 4 / 2줄 공격 4 / 3줄 피격 2, 왼쪽을 봄)
+    python3 tools/extract_sprites.py art/source/slime_plague_motion.png slime_plague --monster
 """
 import sys
 import numpy as np
@@ -25,6 +27,8 @@ FOOT_Y = 250          # 프레임 안에서 발끝이 닿는 높이
 SCALE = 0.795         # 원본 시트 → 게임 프레임 배율 (모든 캐릭터 공통, 상대 크기 유지)
 ALPHA_CUT = 140       # 이보다 흐린 픽셀(콘셉트의 뿌연 후광)은 지움
 ROWS = [("idle", 4), ("walk", 6), ("attack", 4), ("hit", 2)]
+MON_ROWS = [("walk", 4), ("attack", 4), ("hit", 2)]
+MON_SCALE = 0.62
 
 
 def blobs(alpha):
@@ -89,12 +93,15 @@ def own_mask(loose_lab, box):
     return keep
 
 
-def main(src, cid):
+def main(src, cid, monster=False):
+    rows_def = MON_ROWS if monster else ROWS
+    scale = MON_SCALE if monster else SCALE
+    outdir = "assets/monsters" if monster else "assets/characters"
     img = np.array(Image.open(src).convert("RGBA"))
     alpha = img[..., 3]
     loose_lab, _ = ndimage.label(ndimage.binary_dilation(alpha >= ALPHA_CUT, iterations=2))
-    rows = group_rows(blobs(alpha), len(ROWS))
-    for (name, n), row in zip(ROWS, rows):
+    rows = group_rows(blobs(alpha), len(rows_def))
+    for (name, n), row in zip(rows_def, rows):
         row = merge_to(row, n)
         if len(row) != n:
             raise SystemExit(f"{name}: 프레임 {len(row)}개 (필요 {n}개)")
@@ -107,18 +114,18 @@ def main(src, cid):
             m = mine[max(0, y0 - 6): y1 + 4, max(0, x0 - 6): x1 + 6]
             crop[..., 3] = np.where((a < ALPHA_CUT) | ~m, 0, a)
             pic = Image.fromarray(crop)
-            pic = pic.resize((max(1, round(pic.width * SCALE)), max(1, round(pic.height * SCALE))), Image.LANCZOS)
-            ox = i * FRAME + round(FRAME / 2 - (hx - max(0, x0 - 6)) * SCALE)
-            oy = FOOT_Y - round((y1 - max(0, y0 - 6)) * SCALE)
+            pic = pic.resize((max(1, round(pic.width * scale)), max(1, round(pic.height * scale))), Image.LANCZOS)
+            ox = i * FRAME + round(FRAME / 2 - (hx - max(0, x0 - 6)) * scale)
+            oy = FOOT_Y - round((y1 - max(0, y0 - 6)) * scale)
             frame = Image.new("RGBA", (FRAME * n, FRAME), (0, 0, 0, 0))
             frame.paste(pic, (ox, oy), pic)
             # 다른 프레임 칸으로 넘친 부분은 잘라 냄
             cell = frame.crop((i * FRAME, 0, (i + 1) * FRAME, FRAME))
             sheet.alpha_composite(cell, (i * FRAME, 0))
-        out = f"assets/characters/{cid}_{name}.png"
+        out = f"{outdir}/{cid}_{name}.png"
         sheet.save(out, optimize=True)
         print(out, sheet.size)
 
 
 if __name__ == "__main__":
-    main(sys.argv[1], sys.argv[2])
+    main(sys.argv[1], sys.argv[2], "--monster" in sys.argv[3:])
