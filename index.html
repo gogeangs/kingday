@@ -137,7 +137,12 @@ canvas{display:block;width:100%;height:100%}
 .buy.ghost{background:transparent;border:1px solid var(--line);color:var(--fg)}
 .buy.ghost:disabled{color:var(--muted)}
 .note{font-size:12px;color:var(--muted);line-height:1.6;margin:0}
-.village{aspect-ratio:3/1;border-radius:12px;overflow:hidden;border:1px solid var(--line);flex:0 0 auto}
+.vscene{height:clamp(220px,40vh,330px);border-radius:14px;overflow-x:auto;overflow-y:hidden;border:1px solid #4a3a22;box-shadow:inset 0 0 0 1px rgba(255,201,74,.15);scrollbar-width:none;-webkit-overflow-scrolling:touch;overscroll-behavior-x:contain}
+.vscene::-webkit-scrollbar{display:none}
+.vscene canvas{height:100%;width:auto;cursor:pointer}
+.vhint{margin:-6px 0 0;text-align:center;font-size:11px;color:var(--muted)}
+.vsel .row{border:1px solid rgba(255,201,74,.45);background:linear-gradient(#2a2a3a,var(--panel))}
+.vsel .rowic{width:64px;height:64px}
 .mapwrap{border-radius:12px;overflow:hidden;border:1px solid var(--line);flex:0 0 auto;height:440px}
 .inv{display:flex;flex-wrap:wrap;gap:6px}
 .chip{font-size:12px;background:var(--panel2);border-radius:999px;padding:3px 9px;font-variant-numeric:tabular-nums;display:flex;align-items:center;gap:5px}
@@ -260,11 +265,12 @@ button:focus-visible,input:focus-visible{outline:2px solid var(--gold);outline-o
 
     <section class="page" id="p-vl" hidden>
       <div class="phead"><h2>마을</h2><button class="pclose" data-close aria-label="전투로 돌아가기">✕</button></div>
-      <div class="village"><canvas id="vc" aria-label="마을 모습"></canvas></div>
+      <div class="vscene" id="vscene"><canvas id="vc" aria-label="마을 모습. 건물을 누르면 관리 화면이 열려요"></canvas></div>
+      <p class="vhint">건물을 눌러 관리해요 · 좌우로 밀어 마을을 둘러봐요</p>
+      <div id="blds" class="vsel"></div>
+      <p class="note" id="vNote" hidden></p>
       <div class="box" id="farmBox"></div>
       <div class="box" id="kitchen"></div>
-      <div class="sec">마을 재건 <small>건물마다 원정대가 강해져요</small></div>
-      <div id="blds" style="display:flex;flex-direction:column;gap:8px"></div>
     </section>
 
     <section class="page" id="p-mp" hidden>
@@ -542,11 +548,13 @@ function renderKitchen(){
  kb.querySelectorAll('[data-r]').forEach(b=>b.onclick=()=>{const r=RECIPES.find(x=>x.k===b.dataset.r);if(!Object.entries(r.need).every(([k,n])=>S.items[k]>=n))return;for(const[k,n]of Object.entries(r.need))S.items[k]-=n;S.buffs[r.buff]=Math.max(Date.now(),S.buffs[r.buff]||0)+600000;toast(r.n+' 완성! '+r.desc);kitSig='';renderAll()});
  $('sellAll').onclick=()=>{S.gold+=val;keys.forEach(k=>S.items[k]=0);toast('창고 판매 +'+fmt(val));kitSig='';renderAll()};
 }
+const VNOTE={inn:'원정대가 쉬는 곳이에요. 레벨이 오를수록 게임을 꺼 둔 동안 더 오래 세금이 쌓여요.',dock:'잡은 생선은 창고에 쌓여요. 식당에서 요리 재료로 쓰거나 팔 수 있어요.',apiary:'모은 꿀은 창고에 쌓여요. 식당에서 요리 재료로 쓰거나 팔 수 있어요.',mine:'캐낸 광석은 창고에 쌓여요. 식당에서 팔 수 있어요.'};
+function vlPanels(){$('farmBox').hidden=!(vlSel==='farm'&&S.bld.farm);$('kitchen').hidden=!(vlSel==='diner'&&S.bld.farm)||$('kitchen').innerHTML==='';const n=$('vNote'),t=VNOTE[vlSel];n.hidden=!t;if(t)n.textContent=t}
 let bldSig='';
 function renderBlds(){
- const sig=JSON.stringify(S.bld)+JSON.stringify(S.joined)+S.done.marta;
+ const sig=JSON.stringify(S.bld)+JSON.stringify(S.joined)+S.done.marta+vlSel;
  if(sig!==bldSig){bldSig=sig;
-  $('blds').innerHTML=BLD.map(b=>{const l=S.bld[b.k],op=b.open(),mx=l>=b.max;
+  $('blds').innerHTML=BLD.filter(b=>b.k===vlSel).map(b=>{const l=S.bld[b.k],op=b.open(),mx=l>=b.max;
    if(!op)return`<div class="row locked">${bldImg(b.k,0)}<div class="info"><b>${b.n}</b>${b.who?`<span class="role">${b.who}</span>`:''}<div>${b.lock}</div><div class="nx">재건하면: ${b.eff(1)}</div></div><span class="lockchip">잠김</span></div>`;
    return`<div class="row${l?'':' ruin'}">${bldImg(b.k,l)}<div class="info"><b>${b.n}</b>${b.who?`<span class="role">${b.who}</span>`:''}<span class="lvtag">${l?'Lv.'+l:'폐허'}</span>${l?`<div>지금: ${b.eff(l)}</div>${mx?'<div class="nx">최대 레벨</div>':`<div class="nx">다음: ${b.eff(l+1)}</div>`}`:`<div>무너져 있어요</div><div class="nx">재건하면: ${b.eff(1)}</div>`}</div><button class="buy" id="bd-${b.k}" ${mx?'disabled':''}>${mx?'최대':costBtn(l?'확장':'재건',bldCost(b,l))}</button></div>`}).join('');
   BLD.forEach(b=>{const el=$('bd-'+b.k);if(el)el.onclick=()=>{const l=S.bld[b.k],c=bldCost(b,l);if(l>=b.max||S.gold<c)return;S.gold-=c;S.bld[b.k]++;if(!l)S.prod[b.k]=Date.now();toast(b.n+(l?' 확장':' 재건')+' 완료! '+b.eff(l+1));farmSig='';kitSig='';renderAll()}})}
@@ -635,7 +643,7 @@ function renderAll(){
  const bs=S.boxLv+':'+S.boxXp;if(bs!==boxSig){boxSig=bs;renderBox()}
  const us=JSON.stringify(S.up);if(us!==upSig){upSig=us;renderUpg()}
  UPG.forEach(u=>{const b=$('up-'+u.k);if(b&&S.up[u.k]<u.max)b.disabled=S.gold<u.cost(S.up[u.k])});
- renderParty();renderBlds();renderFarm();renderKitchen();renderRetire();renderMapInfo();
+ renderParty();renderBlds();renderFarm();renderKitchen();vlPanels();renderRetire();renderMapInfo();
  const boss=mons.some(m=>m.boss);
  $('pips').innerHTML=Array.from({length:10},(_,i)=>`<i class="pip${i<S.wave?' on':''}"></i>`).join('')+`<i class="pip boss${boss?' on':''}" aria-label="보스"></i>`;
  const now=Date.now();$('buffs').innerHTML=Object.keys(BUFFN).filter(buff).map(b=>`<span class="buff"><img src="assets/ui/buff_${b}.png" alt="" onerror="this.remove()">${BUFFN[b]} ${mmss((S.buffs[b]-now)/1000)}</span>`).join('');
@@ -643,7 +651,7 @@ function renderAll(){
  $('vlDot').hidden=!ready;
 }
 let curTab=null; // null = 전투 화면
-function setTab(t){if(t===curTab)t=null;curTab=t;document.querySelectorAll('.tab').forEach(b=>b.setAttribute('aria-selected',b.dataset.t===t));['eq','pt','up','vl','mp'].forEach(x=>$('p-'+x).hidden=x!==t);if(t==='vl'){resizeV();farmSig='';kitSig=''}if(t==='mp')resizeM();if(t==='pt')partySig='';if(t==='eq'){eqSig=''}renderAll()}
+function setTab(t){if(t===curTab)t=null;curTab=t;document.querySelectorAll('.tab').forEach(b=>b.setAttribute('aria-selected',b.dataset.t===t));['eq','pt','up','vl','mp'].forEach(x=>$('p-'+x).hidden=x!==t);if(t==='vl'){resizeV();farmSig='';kitSig='';bldSig='';requestAnimationFrame(()=>{resizeV();vlScrollTo(vlSel)})}if(t==='mp')resizeM();if(t==='pt')partySig='';if(t==='eq'){eqSig=''}renderAll()}
 document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>setTab(b.dataset.t));
 document.querySelectorAll('[data-close]').forEach(b=>b.onclick=()=>setTab(null));
 $('faceBtn').onclick=()=>setTab('pt');
@@ -974,25 +982,33 @@ function portrait(id){
 
 /* ---------- 마을 풍경 ---------- */
 const vc=$('vc'),vctx=vc.getContext('2d');let VW=0,VH=0;
-function resizeV(){const r=vc.getBoundingClientRect(),d=Math.min(2,window.devicePixelRatio||1);if(!r.width)return;VW=r.width;VH=r.height;vc.width=VW*d;vc.height=VH*d;vctx.setTransform(d,0,0,d,0,0)}
-new ResizeObserver(resizeV).observe(vc);
+function resizeV(){const sh=$('vscene').clientHeight;if(sh&&Math.abs(parseFloat(vc.style.width||0)-sh*3)>1)vc.style.width=sh*3+'px';const r=vc.getBoundingClientRect(),d=Math.min(2,window.devicePixelRatio||1);if(!r.width)return;VW=r.width;VH=r.height;vc.width=VW*d;vc.height=VH*d;vctx.setTransform(d,0,0,d,0,0)}
+new ResizeObserver(resizeV).observe(vc);new ResizeObserver(resizeV).observe($('vscene'));
+let vlSel='farm';
+function vlScrollTo(k,smooth){const sc=$('vscene'),sl=VSLOT.find(x=>x[0]===k);if(!sc||!sl||!VW)return;sc.scrollTo({left:Math.max(0,VW*sl[1]-sc.clientWidth/2),behavior:smooth?'smooth':'auto'})}
+function vlSelect(k){vlSel=k;bldSig='';farmSig='';kitSig='';renderAll();vlScrollTo(k,true)}
+vc.addEventListener('click',e=>{if(!VW)return;const r=vc.getBoundingClientRect(),x=(e.clientX-r.left)/r.width;let best=null,bd=.08;for(const[k,fx]of VSLOT){const d=Math.abs(fx-x);if(d<bd){bd=d;best=k}}if(best)vlSelect(best)});
 const VART=['inn','farm','diner','dock','apiary','mine'];/* 원본이 들어온 건물. 목록에 없으면 bld_ 아이콘을 흑백으로 */
 const VIMG={bg:null,b:{}};(()=>{const bg=new Image();bg.onload=()=>VIMG.bg=bg;bg.src='assets/village/village_bg.jpg';
  for(const b of BLD){const o=VIMG.b[b.k]={};const L=(n,src)=>{const im=new Image();im.onload=()=>o[n]=im;im.src=src};
   if(VART.includes(b.k)){L('ruin','assets/village/'+b.k+'_ruin.png');L('built','assets/village/'+b.k+'_built.png')}else L('icon','assets/ui/bld_'+b.k+'.png')}})();
 const VSLOT=[['farm',.098],['inn',.257],['diner',.413],['dock',.573],['apiary',.739],['mine',.902]];
+function vBadge(k,b,lv,open){if(!open)return null;if(k==='farm'&&lv&&S.plots&&S.plots.some(p=>plotState(p).st==='ready'))return['수확!','#7be08f'];if(k==='farm'&&lv&&S.plots&&S.plots.some(p=>!p)&&CROPS.some(c=>S.seeds[c.k]>0))return['심기','#9be3c0'];if(lv<b.max&&S.gold>=bldCost(b,lv))return[lv?'▲ 확장':'재건 가능','#ffc94a'];return null}
 function drawVillage(){
  if(!VW)return;if(!VIMG.bg)return drawVillageCode();const prev=ctx;ctx=vctx;const hr=new Date().getHours(),night=hr>=19||hr<6;
- ctx.drawImage(VIMG.bg,0,0,VW,VH);
+ ctx.drawImage(VIMG.bg,0,0,VW,VH);if(night){ctx.fillStyle='rgba(10,16,48,.38)';ctx.fillRect(0,0,VW,VH)}
  const bw=VW*.155,base=VH*.64;
  for(const[k,fx]of VSLOT){const lv=S.bld[k],b=BLD.find(x=>x.k===k),o=VIMG.b[k],cx=VW*fx,open=lv>0||b.open();
   const im=lv?(o.built||o.icon):(o.ruin||o.icon);
   if(im){ctx.save();if(!lv&&!o.ruin)ctx.filter='grayscale(1) brightness(.6)';if(!open)ctx.globalAlpha=.55;
    const z=bw*(1+Math.min(lv,10)*.012),bob=lv&&k==='farm'?0:0;ctx.drawImage(im,cx-z/2,base-z*.99+bob,z,z);ctx.restore()}
-  const t=lv?b.n+' '+lv:b.n;ctx.font=`700 ${Math.max(9,VH*.075)}px "IBM Plex Sans KR",sans-serif`;ctx.textAlign='center';
-  const tw=ctx.measureText(t).width+10,th=Math.max(13,VH*.11),ty=VH*.76;ctx.fillStyle=lv?'rgba(30,22,10,.72)':'rgba(30,30,40,.6)';rr(cx-tw/2,ty-th/2,tw,th,th/2);
-  ctx.fillStyle=lv?'#ffe6a8':'#c9cbd6';ctx.textBaseline='middle';ctx.fillText(t,cx,ty+.5);ctx.textBaseline='alphabetic'}
- if(night){ctx.fillStyle='rgba(10,16,48,.42)';ctx.fillRect(0,0,VW,VH)}
+  const sel=k===vlSel,t=(lv?b.n+' Lv.'+lv:open?b.n+' · 폐허':b.n+' · 잠김');ctx.font=`700 ${Math.round(Math.min(14,Math.max(11,VH*.045)))}px "IBM Plex Sans KR",sans-serif`;ctx.textAlign='center';
+  const tw=ctx.measureText(t).width+14,th=Math.round(Math.min(24,Math.max(18,VH*.075))),ty=VH*.74;
+  if(sel){ctx.save();ctx.globalAlpha=.55+.25*Math.sin(T*3);ctx.strokeStyle='#ffc94a';ctx.lineWidth=3;ctx.beginPath();ctx.ellipse(cx,base-bw*.04,bw*.52,bw*.13,0,0,Math.PI*2);ctx.stroke();ctx.restore()}
+  ctx.fillStyle=sel?'rgba(255,201,74,.95)':lv?'rgba(30,22,10,.78)':'rgba(30,30,40,.7)';rr(cx-tw/2,ty-th/2,tw,th,th/2);
+  ctx.fillStyle=sel?'#3a2a00':lv?'#ffe6a8':'#c9cbd6';ctx.textBaseline='middle';ctx.fillText(t,cx,ty+.5);ctx.textBaseline='alphabetic';
+  const bg=vBadge(k,b,lv,open);if(bg){const by=base-bw*1.02+Math.sin(T*3+fx*9)*3;ctx.font=`700 ${Math.round(Math.min(13,Math.max(10,VH*.042)))}px "IBM Plex Sans KR",sans-serif`;const bw2=ctx.measureText(bg[0]).width+14,bh=Math.round(th*.95);
+   ctx.fillStyle=bg[1];rr(cx-bw2/2,by-bh/2,bw2,bh,bh/2);ctx.beginPath();ctx.moveTo(cx-5,by+bh/2-1);ctx.lineTo(cx,by+bh/2+5);ctx.lineTo(cx+5,by+bh/2-1);ctx.fill();ctx.fillStyle='#1a1406';ctx.textBaseline='middle';ctx.fillText(bg[0],cx,by+.5);ctx.textBaseline='alphabetic'}}
  ctx=prev;
 }
 function drawVillageCode(){
