@@ -1125,7 +1125,7 @@ const BOSSIMG={};{const L=(k,f)=>{const im=new Image();im.onload=()=>BOSSIMG[k]=
 /* 보스 발밑 마기 오라: 성주는 붉게, 군단장은 보라·금빛으로 크게. 그림이 있으면 그림, 없으면 코드로 */
 function drawAura(x,y,ss,cmd){const pulse=.75+.25*Math.sin(T*3),w=(cmd?46:38)*ss,h=w*.32;ctx.save();
  const im=BOSSIMG[cmd?'auraCmd':'auraLord'];
- if(im){ctx.globalAlpha*=.9*pulse+.1;ctx.translate(x,y);ctx.scale(1,1);ctx.drawImage(im,-w,-h,w*2,h*2);ctx.restore();return}
+ if(im){const iw=w*2.3,ih=iw*.36;ctx.globalAlpha*=.55+.4*pulse;ctx.drawImage(im,x-iw/2,y-ih/2,iw,ih);ctx.globalCompositeOperation='lighter';ctx.globalAlpha*=.35*pulse;ctx.drawImage(im,x-iw/2,y-ih/2,iw,ih);ctx.restore();return}
  const c1=cmd?'rgba(170,100,255,':'rgba(255,60,80,',c2=cmd?'rgba(255,205,90,':'rgba(120,10,30,';
  const g=ctx.createRadialGradient(x,y,0,x,y,w);g.addColorStop(0,c1+(.45*pulse)+')');g.addColorStop(.7,c1+(.18*pulse)+')');g.addColorStop(1,c1+'0)');
  ctx.translate(x,y);ctx.scale(1,h/w);ctx.fillStyle=g;ctx.beginPath();ctx.arc(0,0,w,0,Math.PI*2);ctx.fill();
