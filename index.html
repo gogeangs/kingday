@@ -498,7 +498,9 @@ const allMul=()=>(1+.04*rankIdx())*memMul();
 /* ---------- 능력치 ---------- */
 function kStats(){let ga=0,gh=0;for(const s of SLOTS){const it=S.eq[s.k];if(it){ga+=it.atk;gh+=it.hp}}const fm=1+.06*S.bld.mine,m=allMul();
  return{atk:(10+S.up.atk*3+ga*fm)*(buff('atk')?1.2:1)*m,hp:(100+S.up.hp*20+gh*fm)*(1+.05*S.bld.diner)*m,aps:(1+S.up.spd*.05)*(buff('spd')?1.2:1),crit:(5+S.up.crit)/100}}
-function cStats(id){const c=COMP[id],l=S.lv[id],m=allMul();return{atk:(c.base.atk+c.per.atk*(l-1))*(1+.08*S.bld.apiary)*(buff('atk')?1.2:1)*m,hp:(c.base.hp+c.per.hp*(l-1))*(1+.05*S.bld.diner)*m,aps:c.base.aps*(buff('spd')?1.2:1),crit:.05}}
+const COMP_GROW=1.1,BLESS=.2;/* 동료 레벨당 능력치 ×1.1, 카엘 성유물 능력치의 20%를 동료도 받음(성검의 축복) */
+function gearSum(){let a=0,h=0;for(const s of SLOTS){const it=S.eq[s.k];if(it){a+=it.atk;h+=it.hp}}const fm=1+.06*S.bld.mine;return{a:a*fm,h:h*fm}}
+function cStats(id){const c=COMP[id],l=S.lv[id],m=allMul(),g=Math.pow(COMP_GROW,l-1),gs=gearSum();return{atk:(c.base.atk*g+gs.a*BLESS)*(1+.08*S.bld.apiary)*(buff('atk')?1.2:1)*m,hp:(c.base.hp*g+gs.h*BLESS)*(1+.05*S.bld.diner)*m,aps:c.base.aps*(buff('spd')?1.2:1),crit:.05}}
 const stats=id=>id==='kael'?kStats():cStats(id);
 const members=()=>ORDER.filter(id=>id==='kael'||S.joined[id]);
 function power(){return Math.round(members().reduce((a,id)=>{const t=stats(id);return a+(t.atk*6+t.hp)*(1+t.crit)*t.aps*(id==='riel'?1.4:1)},0))}
@@ -652,13 +654,13 @@ function renderParty(){
  const sig=JSON.stringify(S.lv)+JSON.stringify(S.joined)+JSON.stringify(S.bld)+JSON.stringify(S.up)+JSON.stringify(S.eq)+buff('atk')+rankIdx()+S.memory;
  if(sig!==partySig){partySig=sig;
   const ord=[...ORDER].sort((a,b)=>(a==='kael'?-2:S.joined[a]?-1:0)-(b==='kael'?-2:S.joined[b]?-1:0));
-  $('ptNote').textContent=S.joined.bron?'브론이 마물의 공격을 대신 받아요. 레벨을 올리면 공격력과 체력이 함께 올라요.':'동료는 영지를 되찾으면 하나씩 합류해요. 레벨을 올리면 공격력과 체력이 함께 올라요.';
+  $('ptNote').textContent=S.joined.bron?'브론이 마물의 공격을 대신 받아요. 성검의 축복으로 카엘 성유물 능력치의 20%를 동료도 함께 받아요.':'동료는 영지를 되찾으면 하나씩 합류해요. 성검의 축복으로 카엘 성유물 능력치의 20%를 동료도 함께 받아요.';
   $('party').innerHTML=ord.map(id=>{const c=COMP[id],has=id==='kael'||S.joined[id];
    if(!has)return`<div class="row locked"><canvas class="portrait" id="pf-${id}"></canvas><div class="info"><b>???</b><span class="role">${c.role}</span><div>${c.join}</div></div></div>`;
    const t=stats(id),line=`공격 ${fmt(t.atk)} · 체력 ${fmt(t.hp)}`;
    if(id==='kael')return`<div class="row"><canvas class="portrait" id="pf-${id}"></canvas><div class="info"><b>${c.n}</b><span class="role">${c.role}</span><span class="lvtag">${RANKS[rankIdx()].n}</span><div>${c.desc}</div><div>${line}</div></div><button class="buy ghost" id="goEq">장비</button></div>`;
    return`<div class="row"><canvas class="portrait" id="pf-${id}"></canvas><div class="info"><b>${c.n}</b><span class="role">${c.role}</span><span class="lvtag">Lv.${S.lv[id]}</span><div>${c.desc}</div><div>${line}</div></div><button class="buy" id="lv-${id}">${costBtn('레벨업',compCost(S.lv[id]))}</button></div>`}).join('');
-  ORDER.forEach(id=>{portrait(id);const b=$('lv-'+id);if(b)b.onclick=()=>{const c=compCost(S.lv[id]);if(S.gold<c)return;S.gold-=c;S.lv[id]++;if(P[id])P[id].hp+=COMP[id].per.hp;renderAll()}});
+  ORDER.forEach(id=>{portrait(id);const b=$('lv-'+id);if(b)b.onclick=()=>{const c=compCost(S.lv[id]);if(S.gold<c)return;const h0=stats(id).hp;S.gold-=c;S.lv[id]++;if(P[id])P[id].hp+=stats(id).hp-h0;renderAll()}});
   const g=$('goEq');if(g)g.onclick=()=>setTab('eq')}
  ORDER.forEach(id=>{const b=$('lv-'+id);if(b)b.disabled=S.gold<compCost(S.lv[id])});
 }
