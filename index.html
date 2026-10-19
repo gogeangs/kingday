@@ -158,6 +158,9 @@ canvas{display:block;width:100%;height:100%}
 .open:active{transform:translateY(2px);box-shadow:0 2px 0 #b9850f}
 .open:disabled{background:var(--panel2);color:var(--muted);box-shadow:none;cursor:default}
 .open.gemopen{background:linear-gradient(#2c4a8c,#1d3366);color:#ffe08a;box-shadow:0 4px 0 #14234a;border:1px solid #5a7ac8}
+.bprog{display:flex;flex-direction:column;gap:3px;margin-top:4px}
+.bprog .xp div{background:#6fa8ff}
+.bprog span{font-size:11px;color:#9cc3ff}
 .buys{display:flex;flex-direction:column;gap:4px;flex:0 0 auto}
 .buy.gem{background:linear-gradient(#2c4a8c,#1d3366);color:#ffe08a;border:1px solid #5a7ac8;padding:6px 8px;font-size:12px;display:flex;align-items:center;justify-content:center;gap:3px}
 .buy.gem img{width:15px;height:15px}
@@ -429,6 +432,13 @@ const BLD=[
  {k:'mine',n:'광산',who:'브론',max:10,base:2000,eff:l=>'카엘 장비 +'+(l*6)+'% · 광석 '+l+'개/2분',open:()=>S.joined.bron,lock:'브론이 합류하면 열려요'}
 ];
 const bldCost=(b,l)=>Math.floor(b.base*Math.pow(2.2,l));
+const bldTime=l=>Math.min(8*3600,Math.round(60*Math.pow(2,l)));/* 공사 시간(초): 1분, 2분, 4분 … 최대 8시간 */
+const fmtT=sec=>{sec=Math.max(0,Math.ceil(sec));const h=Math.floor(sec/3600),m=Math.floor(sec%3600/60),x=sec%60;return h?h+'시간 '+(m?m+'분':''):m?m+'분'+(x&&m<10?' '+x+'초':''):x+'초'};
+const timeGem=sec=>Math.max(1,Math.ceil(sec/180));/* 남은 3분당 이삭 1 */
+const building=()=>S.build&&S.build.k?S.build:null;
+const buildLeft=()=>building()?Math.max(0,(S.build.end-Date.now())/1000):0;
+function finishBuild(){const bd=building();if(!bd)return;const b=BLD.find(x=>x.k===bd.k),l=S.bld[bd.k];S.build=null;S.bld[bd.k]=l+1;if(!l)S.prod[bd.k]=Date.now();toast(b.n+(l?' 확장':' 재건')+' 완료! '+b.eff(l+1));bldSig='';farmSig='';kitSig=''}
+function checkBuild(){if(building()&&Date.now()>=S.build.end)finishBuild()}
 const RANKS=[{at:0,n:'농부'},{at:3,n:'마을 지킴이',k:'지킴이라니… 그냥 이웃 돕는 거예요.'},{at:10,n:'기사',k:'기사 아니고 농부라니까요…'},{at:20,n:'영주',k:'영주요? 세금 계산 같은 거 못 하는데.'},{at:30,n:'백작',k:'백작… 은퇴가 점점 멀어진다.'},{at:40,n:'공작',k:'다음은 설마… 아니겠지.'},{at:50,n:'왕도 진격대장',k:'왕도만 되찾으면 정말 은퇴한다.'}];
 const EVENTS=[
  {at:2,id:'marta',eb:'새로운 주민',t:'농부 마르타',p:['개울 마을을 되찾자, 이웃집 마르타 할머니가 가장 먼저 돌아왔다.','m:마르타|용사? 웃기지 마라. 밭일이나 거들어. 씨앗 가져오면 밭은 내가 봐 주마.','k:…네. 사실 그게 제일 하고 싶은 일이에요.','sys:마을에 밭이 열렸어요. 마물이 떨어뜨리는 씨앗을 심어 보세요. 밀 씨앗 5개를 받았어요.'],btn:'밭으로 간다',act:()=>{S.bld.farm=Math.max(1,S.bld.farm);S.seeds.wheat+=5}},
@@ -641,7 +651,7 @@ function ensurePlots(){const n=plotCount();while(S.plots.length<n)S.plots.push(n
 function plotState(p){if(!p)return{st:'empty'};const c=CROPS.find(x=>x.k===p.k),left=c.t-(Date.now()-p.at)/1000;return left<=0?{st:'ready',c}:{st:'grow',c,left,ratio:1-left/c.t}}
 function plant(i,k){if(S.seeds[k]<=0||S.plots[i])return;S.seeds[k]--;S.plots[i]={k,at:Date.now()};farmSig='';renderAll()}
 function harvest(i){const ps=plotState(S.plots[i]);if(ps.st!=='ready')return 0;const n=2+(Math.random()<.3?1:0);S.items[ps.c.k]+=n;S.plots[i]=null;dailyAdd('harv',n);return n}
-function produce(){const now=Date.now();for(const g of GOODS){const l=S.bld[g.b];if(!l){S.prod[g.b]=now;continue}const iv=120000/l;if(!S.prod[g.b])S.prod[g.b]=now;const n=Math.min(2000,Math.floor((now-S.prod[g.b])/iv));if(n>0){S.items[g.k]+=n;S.prod[g.b]+=n*iv}}}
+function produce(){checkBuild();const now=Date.now();for(const g of GOODS){const l=S.bld[g.b];if(!l){S.prod[g.b]=now;continue}const iv=120000/l;if(!S.prod[g.b])S.prod[g.b]=now;const n=Math.min(2000,Math.floor((now-S.prod[g.b])/iv));if(n>0){S.items[g.k]+=n;S.prod[g.b]+=n*iv}}}
 function chooseSeed(i){
  $('sheet').innerHTML=`<h2>무엇을 심을까요?</h2>${CROPS.map(c=>`<div class="row" style="background:var(--panel2)">${uiImg('seed_'+c.k)}<div class="info"><b>${c.n}</b><div>자라는 시간 ${mmss(c.t)} · 씨앗 ${S.seeds[c.k]}개</div></div><button class="buy" id="sd-${c.k}" ${S.seeds[c.k]?'':'disabled'}>심기</button></div>`).join('')}<div class="acts one"><button id="mX">닫기</button></div>`;
  $('modal').hidden=false;CROPS.forEach(c=>$('sd-'+c.k).onclick=()=>{plant(i,c.k);closeModal()});$('mX').onclick=closeModal;
@@ -684,15 +694,17 @@ const VNOTE={inn:'원정대가 쉬는 곳이에요. 레벨이 오를수록 게�
 function vlPanels(){$('farmBox').hidden=!(vlSel==='farm'&&S.bld.farm);$('kitchen').hidden=!(vlSel==='diner'&&S.bld.farm)||$('kitchen').innerHTML==='';const n=$('vNote'),t=VNOTE[vlSel];n.hidden=!t;if(t)n.textContent=t}
 let bldSig='';
 function renderBlds(){
- const sig=JSON.stringify(S.bld)+JSON.stringify(S.joined)+S.done.marta+vlSel+S.stage;
+ const bd=building(),sig=JSON.stringify(S.bld)+JSON.stringify(S.joined)+S.done.marta+vlSel+S.stage+(bd?bd.k+Math.ceil(buildLeft()):'')+(S.gem||0);
  if(sig!==bldSig){bldSig=sig;
   $('blds').innerHTML=BLD.filter(b=>b.k===vlSel).map(b=>{const l=S.bld[b.k],op=b.open(),mx=l>=b.max;
    if(!op)return`<div class="row locked">${bldImg(b.k,0)}<div class="info"><b>${b.n}</b>${b.who?`<span class="role">${b.who}</span>`:''}<div>${b.lock}</div><div class="nx">재건하면: ${b.eff(1)}</div></div><span class="lockchip">잠김</span></div>`;
-   return`<div class="row${l?'':' ruin'}">${bldImg(b.k,l)}<div class="info"><b>${b.n}</b>${b.who?`<span class="role">${b.who}</span>`:''}<span class="lvtag">${l?'Lv.'+l:'폐허'}</span>${l?`<div>지금: ${b.eff(l)}</div>${mx?'<div class="nx">최대 레벨</div>':`<div class="nx">다음: ${b.eff(l+1)}</div>`}`:`<div>무너져 있어요</div><div class="nx">재건하면: ${b.eff(1)}</div>`}</div><div class="buys"><button class="buy" id="bd-${b.k}" ${mx?'disabled':''}>${mx?'최대':costBtn(l?'확장':'재건',bldCost(b,l))}</button>${mx?'':`<button class="buy gem" id="bg-${b.k}">${GEMIMG}${bldGem(bldCost(b,l))}로 바로</button>`}</div></div>`}).join('');
-  const up=(b,l)=>{S.bld[b.k]++;if(!l)S.prod[b.k]=Date.now();toast(b.n+(l?' 확장':' 재건')+' 완료! '+b.eff(l+1));farmSig='';kitSig='';renderAll()};
-  BLD.forEach(b=>{const el=$('bd-'+b.k);if(el)el.onclick=()=>{const l=S.bld[b.k],c=bldCost(b,l);if(l>=b.max||S.gold<c)return;S.gold-=c;up(b,l)};
-   const eg=$('bg-'+b.k);if(eg)eg.onclick=()=>{const l=S.bld[b.k];if(l>=b.max||!spendGem(bldGem(bldCost(b,l))))return;up(b,l)}})}
- BLD.forEach(b=>{const el=$('bd-'+b.k);if(el&&S.bld[b.k]<b.max)el.disabled=S.gold<bldCost(b,S.bld[b.k])});
+   return`<div class="row${l?'':' ruin'}">${bldImg(b.k,l)}<div class="info"><b>${b.n}</b>${b.who?`<span class="role">${b.who}</span>`:''}<span class="lvtag">${l?'Lv.'+l:'폐허'}</span>${l?`<div>지금: ${b.eff(l)}</div>${mx?'<div class="nx">최대 레벨</div>':`<div class="nx">다음: ${b.eff(l+1)}</div>`}`:`<div>무너져 있어요</div><div class="nx">재건하면: ${b.eff(1)}</div>`}${bd&&bd.k===b.k?`<div class="bprog"><div class="xp"><div style="width:${(1-buildLeft()/bldTime(l))*100}%"></div></div><span>${l?'확장':'재건'} 공사 중 · ${fmtT(buildLeft())} 남음</span></div>`:mx?'':`<div class="nx" style="color:var(--muted)">공사 시간 ${fmtT(bldTime(l))}</div>`}</div>
+   <div class="buys">${bd&&bd.k===b.k?`<button class="buy gem" id="bf-${b.k}">${GEMIMG}${timeGem(buildLeft())}로<br>바로 완료</button>`
+   :`<button class="buy" id="bd-${b.k}" ${mx||bd?'disabled':''}>${mx?'최대':bd?'<span class="bl">다른 공사 중</span>':costBtn(l?'확장':'재건',bldCost(b,l))}</button>${mx||bd?'':`<button class="buy gem" id="bg-${b.k}">${GEMIMG}${bldGem(bldCost(b,l))+timeGem(bldTime(l))}로 바로</button>`}`}</div></div>`}).join('');
+  BLD.forEach(b=>{const el=$('bd-'+b.k);if(el)el.onclick=()=>{const l=S.bld[b.k],c=bldCost(b,l);if(l>=b.max||S.gold<c||building())return;S.gold-=c;S.build={k:b.k,end:Date.now()+bldTime(l)*1000};toast(b.n+(l?' 확장':' 재건')+' 공사를 시작했어요 · '+fmtT(bldTime(l)));bldSig='';renderAll()};
+   const eg=$('bg-'+b.k);if(eg)eg.onclick=()=>{const l=S.bld[b.k];if(l>=b.max||building()||!spendGem(bldGem(bldCost(b,l))+timeGem(bldTime(l))))return;S.build={k:b.k,end:0};finishBuild();renderAll()};
+   const ef=$('bf-'+b.k);if(ef)ef.onclick=()=>{if(!building()||!spendGem(timeGem(buildLeft())))return;finishBuild();renderAll()}})}
+ BLD.forEach(b=>{const el=$('bd-'+b.k);if(el&&S.bld[b.k]<b.max)el.disabled=!!building()||S.gold<bldCost(b,S.bld[b.k])});
 }
 
 /* ---------- 원정대 · 단련 · 지도 ---------- */
@@ -1127,7 +1139,7 @@ const VIMG={bg:null,b:{}};(()=>{const bg=new Image();bg.onload=()=>VIMG.bg=bg;bg
  for(const b of BLD){const o=VIMG.b[b.k]={};const L=(n,src)=>{const im=new Image();im.onload=()=>o[n]=im;im.src=src};
   if(VART.includes(b.k)){L('ruin','assets/village/'+b.k+'_ruin.png');L('built','assets/village/'+b.k+'_built.png')}else L('icon','assets/ui/bld_'+b.k+'.png')}})();
 const VSLOT=[['farm',.098],['inn',.257],['diner',.413],['dock',.573],['apiary',.739],['mine',.902]];
-function vBadge(k,b,lv,open){if(!open)return null;if(k==='farm'&&lv&&S.plots&&S.plots.some(p=>plotState(p).st==='ready'))return['수확!','#7be08f'];if(k==='farm'&&lv&&S.plots&&S.plots.some(p=>!p)&&CROPS.some(c=>S.seeds[c.k]>0))return['심기','#9be3c0'];if(lv<b.max&&S.gold>=bldCost(b,lv))return[lv?'▲ 확장':'재건 가능','#ffc94a'];return null}
+function vBadge(k,b,lv,open){if(!open)return null;if(building()&&S.build.k===k)return['공사 중 '+fmtT(buildLeft()),'#9cc3ff'];if(k==='farm'&&lv&&S.plots&&S.plots.some(p=>plotState(p).st==='ready'))return['수확!','#7be08f'];if(k==='farm'&&lv&&S.plots&&S.plots.some(p=>!p)&&CROPS.some(c=>S.seeds[c.k]>0))return['심기','#9be3c0'];if(!building()&&lv<b.max&&S.gold>=bldCost(b,lv))return[lv?'▲ 확장':'재건 가능','#ffc94a'];return null}
 function drawVillage(){
  if(!VW)return;if(!VIMG.bg)return drawVillageCode();const prev=ctx;ctx=vctx;const hr=new Date().getHours(),night=hr>=19||hr<6;
  ctx.drawImage(VIMG.bg,0,0,VW,VH);if(night){ctx.fillStyle='rgba(10,16,48,.38)';ctx.fillRect(0,0,VW,VH)}
