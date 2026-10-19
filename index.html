@@ -1069,7 +1069,7 @@ function spawn(){
  const ri=Math.floor((S.stage-1)/10)%5,alt=MON_ALT[ri]&&sprOk(MON_ALT[ri])&&Math.random()<.4?MON_ALT[ri]:null,tr=alt?TRAITS[alt.trait]:null;
  if(tr&&alt.trait==='swarm'&&left>n)n++;
  const mx=monHp(S.stage,false)*(n>1?.75:1)*(tr?tr.hp:1);mons=[];for(let i=0;i<n;i++)mons.push({x:W+60+i*40,lane:[.45,.82,.12,.65][i],hp:mx,max:mx,atk:monAtk(S.stage,false)*(n>1?.8:1)*(tr?tr.atk:1),boss:false,cd:.8+i*.35,hit:0,dead:0,alt:!!alt,mv:tr?tr.mv:1,cdm:tr?tr.cd:1});
- if(S.stage>=3&&gobT<=0){gobT=360+Math.random()*360;const gh=monHp(S.stage,false)*5;mons.unshift({x:W+30,lane:.3,hp:gh,max:gh,atk:0,boss:false,cd:1e9,hit:0,dead:0,gob:true,mv:1.4,life:12});
+ if((S.stage>=3||DEMO==='goblin')&&gobT<=0){gobT=DEMO==='goblin'?20:360+Math.random()*360;const gh=monHp(S.stage,false)*5;mons.unshift({x:W+30,lane:.3,hp:gh,max:gh,atk:0,boss:false,cd:1e9,hit:0,dead:0,gob:true,mv:1.4,life:12});
   banner={t:2,txt:'황금 고블린 출현!',sub:'12초 안에 잡으면 보물을 떨군다'};shakeT=.3}
 }
 /* 황금 고블린 희귀 전리품: 배지 0.5%, 테두리 0.2% (잡을 때마다, 이미 있으면 안 나옴) */
@@ -1356,7 +1356,7 @@ function drawMon(r,y,s,m){
  else{const fy=y-30*ss+Math.sin(T*3+ph)*4*ss;ctx.fillStyle=col;ctx.beginPath();ctx.arc(x,fy-6*ss,16*ss,Math.PI,0);ctx.lineTo(x+16*ss,fy+12*ss);for(let i=0;i<4;i++){const xx=x+16*ss-(i+.5)*8*ss;ctx.quadraticCurveTo(xx,fy+(i%2?18:6)*ss+Math.sin(T*6+i)*2*ss,xx-4*ss,fy+12*ss)}ctx.closePath();ctx.globalAlpha=fade*.88;ctx.fill();ctx.globalAlpha=fade;eyes(x-10*ss,fy-4*ss,ss,'#1a3a6a');top=fy-22*ss}
  if(!md){ctx.fillStyle='#3a1a24';ctx.beginPath();ctx.moveTo(x-9*ss,top+3*ss);ctx.lineTo(x-12*ss,top-7*ss);ctx.lineTo(x-4*ss,top+2*ss);ctx.moveTo(x+4*ss,top+2*ss);ctx.lineTo(x+12*ss,top-7*ss);ctx.lineTo(x+9*ss,top+3*ss);ctx.fill()}
  if(m.boss){const mk=BOSSIMG[m.lord?'markCmd':'markLord'];if(mk){const z=(m.lord?44:36)*s,bob=Math.sin(T*3)*3*s;ctx.drawImage(mk,x-z/2,top-z-4*s+bob,z,z)}m.barY=top-(mk?(m.lord?46:38)*s:10*s)}
- else if(m.gob){m.barY=top-12*s;bar(x,m.barY,44*s,m.hp/m.max,'#ffd34a');if(!m.dead&&!m.flee){ctx.save();ctx.font=`800 ${12*s}px sans-serif`;ctx.textAlign='center';ctx.lineWidth=3*s;ctx.strokeStyle='#3a2600';const tx=Math.ceil(Math.max(0,m.life))+'초';ctx.strokeText(tx,x,m.barY-5*s);ctx.fillStyle='#ffe27a';ctx.fillText(tx,x,m.barY-5*s);ctx.restore();if(Math.random()<.3)spawnFx('crit',x+(Math.random()-.5)*30*s,top+Math.random()*40*s,14*s,.3)}}
+ else if(m.gob){m.barY=top-12*s;bar(x,m.barY,44*s,m.hp/m.max,'#ffd34a');if(!m.dead&&!m.flee){ctx.save();ctx.font=`800 ${12*s}px sans-serif`;ctx.textAlign='left';ctx.textBaseline='middle';ctx.lineWidth=3*s;ctx.strokeStyle='#3a2600';const tx='⏱'+Math.ceil(Math.max(0,m.life));ctx.strokeText(tx,x+25*s,m.barY+2*s);ctx.fillStyle=m.life<4?'#ff8a7a':'#ffe27a';ctx.fillText(tx,x+25*s,m.barY+2*s);ctx.restore();if(Math.random()<.3)spawnFx('crit',x+(Math.random()-.5)*30*s,top+Math.random()*40*s,14*s,.3)}}
  else{m.barY=top-12*s;bar(x,m.barY,32*s,m.hp/m.max,'#ff6b7d')}ctx.globalAlpha=1
 }
 function drawProj(p,s){const k=p.t/p.d,x=p.x+(p.tx-p.x)*k,y=p.y+(p.ty-p.y)*k-Math.sin(k*Math.PI)*(p.kind==='harpoon'?4:14)*s;
@@ -1491,6 +1491,9 @@ function drawMap(){
 
 /* ---------- 저장 · 방치 보상 ---------- */
 let noSave=false;
+/* 미리보기: ?demo=goblin → 저장하지 않고 황금 고블린이 곧바로, 이후 20초마다 등장 */
+const DEMO=(()=>{try{return new URLSearchParams(location.search).get('demo')}catch(e){return null}})();
+if(DEMO==='goblin'){noSave=true;gobT=0;setTimeout(()=>toast('황금 고블린 미리보기예요. 이 화면의 진행은 저장되지 않아요'),600)}
 function save(){if(noSave)return;S.last=Date.now();try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
 /* 프로필 꾸미기: 테두리 */
 const PFRAMES=[
