@@ -90,10 +90,23 @@ canvas{display:block;width:100%;height:100%}
 .buffs{display:flex;flex-wrap:wrap;justify-content:center;gap:4px;pointer-events:none}.buffs:empty{display:none}
 .buff{font-size:11px;background:rgba(0,0,0,.55);border:1px solid rgba(255,201,74,.6);color:var(--gold);border-radius:999px;padding:2px 8px 2px 2px;font-variant-numeric:tabular-nums;display:flex;align-items:center;gap:4px}
 .buff img{width:26px;height:26px;margin:-4px 0}
-.bossbar{width:min(300px,90%);background:rgba(10,14,26,.8);border:1px solid rgba(255,107,125,.6);border-radius:10px;padding:5px 9px;font-size:12px;display:flex;align-items:center;gap:8px}
-.bossbar #bossName{max-width:46%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:600}
-.bossbar .track{flex:1;height:6px;background:rgba(255,255,255,.15);border-radius:3px;overflow:hidden}
-.bossbar .fill{height:100%;background:var(--bad);width:100%}
+.bossbar{width:min(320px,92%);background:linear-gradient(rgba(40,8,16,.9),rgba(14,8,20,.9));border:1px solid rgba(255,107,125,.7);border-radius:12px;padding:6px 10px 7px;font-size:12px;display:flex;align-items:center;gap:8px;box-shadow:0 4px 14px rgba(0,0,0,.4)}
+.bossbar.cmd{border-color:#c9a2ff;background:linear-gradient(rgba(36,14,52,.92),rgba(14,8,24,.92));box-shadow:0 0 14px rgba(170,110,255,.35)}
+.bossbar .bb{flex:1;min-width:0;display:flex;flex-direction:column;gap:4px}
+.bossbar .bbtop{display:flex;align-items:center;gap:6px}
+.bossbar .btag{flex:0 0 auto;font-size:10px;font-weight:700;color:#fff;background:#b8233a;border-radius:999px;padding:1px 7px}
+.bossbar.cmd .btag{background:linear-gradient(#a35cff,#6a2fc0)}
+.bossbar #bossName{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:700;font-family:var(--f-display)}
+.bossbar #bosst{flex:0 0 auto;font-weight:700;font-variant-numeric:tabular-nums;color:#ffd6dc}
+.bossbar.hurry #bosst{color:#ff4d63;animation:blink .5s steps(2) infinite}
+.bossbar.hurry{border-color:#ff4d63}
+@keyframes blink{50%{opacity:.35}}
+.bossbar .track{position:relative;height:13px;background:rgba(255,255,255,.12);border-radius:7px;overflow:hidden}
+.bossbar .fill{height:100%;background:linear-gradient(#ff8a98,#e0344c);width:100%;transition:width .15s}
+.bossbar.cmd .fill{background:linear-gradient(#d6a6ff,#8a3fe0)}
+.bossbar #bossHp{position:absolute;inset:0;display:grid;place-items:center;font-size:10px;font-weight:700;color:#fff;text-shadow:0 1px 2px #000;font-variant-numeric:tabular-nums}
+.bossbar .tline{height:2px;background:rgba(255,255,255,.1);border-radius:1px;overflow:hidden}
+.bossbar .tline i{display:block;height:100%;background:#ffc94a;width:100%}
 .ovbottom{position:absolute;left:0;right:0;bottom:0;padding:24px max(12px,env(safe-area-inset-right,0px)) 8px max(12px,env(safe-area-inset-left,0px));display:flex;align-items:flex-end;gap:8px;background:linear-gradient(transparent,rgba(10,14,26,.85) 40%)}
 .prow{flex:1;min-width:0;display:flex;gap:6px}
 .pcard{width:min(52px,17%);display:flex;flex-direction:column;gap:3px;cursor:pointer;padding:0;background:none;border:0}
@@ -278,7 +291,7 @@ button:focus-visible,input:focus-visible{outline:2px solid var(--gold);outline-o
   <div class="stagewrap" id="wrap">
     <canvas id="cv" aria-label="원정대 자동 전투 화면"></canvas>
     <div class="ovtop"><div class="stagepill"><div class="sth"><b id="stLabel">1-1 에르단 평원</b><small id="stRegion">개울 마을</small></div><div class="pips" id="pips"></div></div>
-    <div class="bossbar" id="bossbar" hidden><img id="bossFace" class="bossface" alt="" hidden><span id="bossName">보스</span><div class="track"><div class="fill" id="bossfill"></div></div><span id="bosst">30초</span></div>
+    <div class="bossbar" id="bossbar" hidden><img id="bossFace" class="bossface" alt="" hidden><div class="bb"><div class="bbtop"><span class="btag" id="bossTag">성주</span><span id="bossName">보스</span><span id="bosst">30초</span></div><div class="track"><div class="fill" id="bossfill"></div><span id="bossHp"></span></div><div class="tline"><i id="bossTime"></i></div></div></div>
     <div class="buffs" id="buffs"></div></div>
     <div class="ovbottom">
       <div class="prow" id="partyRow"></div>
@@ -860,7 +873,7 @@ $('autoOpen').onchange=e=>{S.autoOpen=e.target.checked};
 const cv=$('cv'),mainCtx=cv.getContext('2d');let ctx=mainCtx,W=0,Ht=0;
 function resize(){const r=$('wrap').getBoundingClientRect(),d=Math.min(2,window.devicePixelRatio||1);W=r.width;Ht=r.height;cv.width=W*d;cv.height=Ht*d;mainCtx.setTransform(d,0,0,d,0,0)}
 new ResizeObserver(resize).observe($('wrap'));
-let banner=null,P={},mons=[],spawnT=.5,bgX=0,T=0,floats=[],proj=[],bossT=0,engaged=false,quip=null,quipT=6;
+let warn=null,shakeT=0,banner=null,P={},mons=[],spawnT=.5,bgX=0,T=0,floats=[],proj=[],bossT=0,engaged=false,quip=null,quipT=6;
 function say(who,txt){quip={who,txt,t:3.2}}
 function syncParty(){for(const id of members()){if(!P[id])P[id]={hp:stats(id).hp,cd:Math.random()*.5,swing:0,hit:0,down:false}}}
 /* 원정대 대형: [가로 위치, 깊이] (깊이 0 = 지평선 쪽, 1 = 화면 앞쪽) */
@@ -871,7 +884,7 @@ function layout(){const ids=members(),s=Math.min(W/300,Ht/380),top=Ht*.43,bot=Ma
  const front=Math.max(...ids.map(id=>pos[id]));return{ids,pos,py,dsc,front,s,top,bot}}
 const depthAt=(L,lane)=>L.top+(L.bot-L.top)*lane;
 function spawn(){
- if(S.wave>=10){const mx=monHp(S.stage,true);mons=[{x:W+70,lane:.55,hp:mx,max:mx,atk:monAtk(S.stage,true),boss:true,lord:isLord(S.stage),cd:.8,hit:0,dead:0}];bossT=isLord(S.stage)?40:30;$('bossName').textContent=bossName(S.stage);{const f=$('bossFace');if(isLord(S.stage)){f.src='assets/portraits/portrait_'+BOSSID[Math.floor((S.stage-1)/10)%5]+'_idle.png';f.onerror=()=>{f.hidden=true};f.hidden=false}else f.hidden=true}$('bossbar').hidden=false;
+ if(S.wave>=10){const mx=monHp(S.stage,true);mons=[{x:W+70,lane:.55,hp:mx,max:mx,atk:monAtk(S.stage,true),boss:true,lord:isLord(S.stage),cd:.8,hit:0,dead:0}];bossT=isLord(S.stage)?40:30;$('bossName').textContent=bossName(S.stage);{const cm=isLord(S.stage),bb=$('bossbar');bb.classList.toggle('cmd',cm);bb.classList.remove('hurry');$('bossTag').textContent=cm?'군단장':'성주';warn={t:1.4,cmd:cm};shakeT=cm?.6:.4;mons[0].mv=.55}{const f=$('bossFace');if(isLord(S.stage)){f.src='assets/portraits/portrait_'+BOSSID[Math.floor((S.stage-1)/10)%5]+'_idle.png';f.onerror=()=>{f.hidden=true};f.hidden=false}else f.hidden=true}$('bossbar').hidden=false;
   say('q',isLord(S.stage)?'군단장이다! 이번엔 도망치지 마라, 주인!':'성주다! 정신 차려라, 주인!');return}
  const left=10-S.wave;let n=1;if(left>1&&Math.random()<.55)n++;if(left>2&&S.stage>=3&&Math.random()<.35)n++;
  const ri=Math.floor((S.stage-1)/10)%5,alt=MON_ALT[ri]&&sprOk(MON_ALT[ri])&&Math.random()<.4?MON_ALT[ri]:null,tr=alt?TRAITS[alt.trait]:null;
@@ -882,7 +895,9 @@ function addFloat(x,y,txt,col,size){floats.push({x,y,txt,col,size:size||15,t:0})
 function hitMon(m,d,cr,s,gy){m.hp-=d;m.hit=.12;spawnFx(cr?'crit':'hit',m.x+(Math.random()-.5)*10*s,m.y-(m.boss?50:28)*s,(cr?60:42)*s*(m.boss?1.3:1),cr?.36:.24);addFloat(m.x+(Math.random()-.5)*12*s,(m.barY!=null?m.barY-8*s:m.y-(m.boss?95:60)*s),fmt(d),cr?'#ffc94a':'#ffffff',cr?21:14)}
 function resetFight(msg){for(const id of members()){P[id].hp=stats(id).hp;P[id].down=false}mons=[];spawnT=1;S.wave=0;$('bossbar').hidden=true;toast(msg);renderAll()}
 function step(dt){
- T+=dt;const L=layout(),{ids,pos,py,front,s}=L,gy=0;syncParty();for(const m of mons)m.y=depthAt(L,m.lane??.5);if(banner){banner.t-=dt;if(banner.t<=0)banner=null}
+ T+=dt;if(warn){warn.t-=dt;if(warn.t<=0)warn=null}{const cv=$('cv');if(shakeT>0){shakeT-=dt;const a=shakeT*14;cv.style.transform=`translate(${(Math.random()-.5)*a}px,${(Math.random()-.5)*a}px)`}else if(cv.style.transform)cv.style.transform=''}
+ {const bm=mons.find(m=>m.boss);if(bm){$('bossfill').style.width=Math.max(0,bm.hp/bm.max*100)+'%';$('bossHp').textContent=fmt(Math.max(0,bm.hp))+' / '+fmt(bm.max)}}
+ const L=layout(),{ids,pos,py,front,s}=L,gy=0;syncParty();for(const m of mons)m.y=depthAt(L,m.lane??.5);if(banner){banner.t-=dt;if(banner.t<=0)banner=null}
  if(quip){quip.t-=dt;if(quip.t<=0)quip=null}else{quipT-=dt;if(quipT<=0){quipT=12+Math.random()*10;const q=QUIPS[Math.floor(Math.random()*QUIPS.length)];say(q[0],q[1])}}
  for(const id of ids){const p=P[id];p.swing=Math.max(0,p.swing-dt);p.hit=Math.max(0,p.hit-dt)}
  for(const m of mons){m.hit=Math.max(0,m.hit-dt);m.sw=Math.max(0,(m.sw||0)-dt);if(m.dead>0){m.dead-=dt;if(m.dead<=0)m.gone=true}}
@@ -892,7 +907,7 @@ function step(dt){
   spawnT-=dt;if(spawnT<=0){spawn();spawnT=.6}}
  else{
   const alive=mons.filter(m=>m.hp>0&&!m.dead);
-  alive.forEach((m,i)=>{m.tx=m.boss?Math.max(front+60*s,W*.75):Math.max(front+46*s,W*(.66+.1*(i%2))+i*4);if(m.x>m.tx)m.x=Math.max(m.tx,m.x-dt*170*(m.mv||1))});
+  alive.forEach((m,i)=>{m.tx=m.boss?Math.max(front+60*s,W*.66):Math.max(front+46*s,W*(.66+.1*(i%2))+i*4);if(m.x>m.tx)m.x=Math.max(m.tx,m.x-dt*170*(m.mv||1))});
   engaged=alive.length>0&&alive[0].x<=alive[0].tx+1;
   if(!engaged&&alive.length)bgX+=dt*90;
   for(const id of ids){const p=P[id];if(!p.down)p.hp=Math.min(stats(id).hp,p.hp+stats(id).hp*.01*dt)}
@@ -916,7 +931,7 @@ function step(dt){
     toast(bn+' 처치');banner={t:2,txt:tn+' 탈환!',sub:lord?'군단장을 쓰러뜨렸다':'영지를 되찾았다'};say('k',lord?'됐다… 이제 진짜 은퇴해도 되지?':'여기 흙, 다시 살아나겠네.');if((S.stage-1)%10===0)chapter();events()}
    else S.wave++;renderAll()}}
   if(ids.every(i=>P[i].down))return resetFight('성검의 가호로 모두 다시 일어섰어요. 더 강해져서 돌아가요');
-  if(mons.some(m=>m.boss&&m.hp>0&&!m.dead)&&engaged){const lim=isLord(S.stage)?40:30;bossT-=dt;$('bossfill').style.width=Math.max(0,bossT/lim*100)+'%';$('bosst').textContent=Math.ceil(Math.max(0,bossT))+'초';if(bossT<=0)return resetFight('마족이 버텼어요. 더 강해진 뒤 다시 도전해요')}
+  if(mons.some(m=>m.boss&&m.hp>0&&!m.dead)&&engaged){const lim=isLord(S.stage)?40:30;bossT-=dt;$('bossTime').style.width=Math.max(0,bossT/lim*100)+'%';$('bosst').textContent=Math.ceil(Math.max(0,bossT))+'초';$('bossbar').classList.toggle('hurry',bossT<=10);if(bossT<=0)return resetFight('마족이 버텼어요. 더 강해진 뒤 다시 도전해요')}
  }
  floats.forEach(f=>{f.t+=dt;f.y-=dt*40});floats=floats.filter(f=>f.t<.9);
  proj.forEach(p=>p.t+=dt);proj=proj.filter(p=>p.t<p.d);
@@ -1106,13 +1121,26 @@ function drawMember(id,x,y,s,p,walk){
  if(hasSprite(id)){const[a,i]=spriteFrame(id,p,walk&&!p.down);drawSprite(id,x,y,s,a,i)}else DRAW[id](x,y,s,pose(p.down?null:p,walk&&!p.down));ctx.globalAlpha=1;
  bar(x,y-(HEIGHT[id]-2)*s,26*s,p.hp/stats(id).hp,p.down?'#666':'#7be08f');
 }
+const BOSSIMG={};{const L=(k,f)=>{const im=new Image();im.onload=()=>BOSSIMG[k]=im;im.src='assets/ui/'+f+'.png'};L('markLord','boss_mark_lord');L('markCmd','boss_mark_commander');L('auraLord','boss_aura_lord');L('auraCmd','boss_aura_commander')}
+/* 보스 발밑 마기 오라: 성주는 붉게, 군단장은 보라·금빛으로 크게. 그림이 있으면 그림, 없으면 코드로 */
+function drawAura(x,y,ss,cmd){const pulse=.75+.25*Math.sin(T*3),w=(cmd?46:38)*ss,h=w*.32;ctx.save();
+ const im=BOSSIMG[cmd?'auraCmd':'auraLord'];
+ if(im){ctx.globalAlpha*=.9*pulse+.1;ctx.translate(x,y);ctx.scale(1,1);ctx.drawImage(im,-w,-h,w*2,h*2);ctx.restore();return}
+ const c1=cmd?'rgba(170,100,255,':'rgba(255,60,80,',c2=cmd?'rgba(255,205,90,':'rgba(120,10,30,';
+ const g=ctx.createRadialGradient(x,y,0,x,y,w);g.addColorStop(0,c1+(.45*pulse)+')');g.addColorStop(.7,c1+(.18*pulse)+')');g.addColorStop(1,c1+'0)');
+ ctx.translate(x,y);ctx.scale(1,h/w);ctx.fillStyle=g;ctx.beginPath();ctx.arc(0,0,w,0,Math.PI*2);ctx.fill();
+ ctx.rotate(T*.6);ctx.lineWidth=2.5*ss/ (h/w);ctx.strokeStyle=c1+(.85*pulse)+')';ctx.setLineDash([w*.18,w*.1]);ctx.beginPath();ctx.arc(0,0,w*.82,0,Math.PI*2);ctx.stroke();
+ ctx.rotate(-T*1.4);ctx.strokeStyle=c2+(.8*pulse)+')';ctx.setLineDash([w*.06,w*.08]);ctx.beginPath();ctx.arc(0,0,w*.62,0,Math.PI*2);ctx.stroke();
+ if(cmd){ctx.setLineDash([]);for(let i=0;i<6;i++){const a=i/6*Math.PI*2;ctx.fillStyle=c2+(.9*pulse)+')';ctx.beginPath();ctx.arc(Math.cos(a)*w*.82,Math.sin(a)*w*.82,3*ss/(h/w)*.35,0,Math.PI*2);ctx.fill()}}
+ ctx.restore()}
 function drawMon(r,y,s,m){
- const k=m.boss?(m.lord?2:1.7):1,x=m.x,ss=s*k,fade=m.dead>0?m.dead/.35:1;ctx.globalAlpha=fade;
- const col=m.hit>0?'#ffffff':r.col;ell(x,y,18*ss,5*ss,'rgba(0,0,0,.25)');let top;const ph=x*.05;
+ const k=m.boss?(m.lord?1.8:1.5):1,x=m.x,ss=s*k,fade=m.dead>0?m.dead/.35:1;ctx.globalAlpha=fade;
+ const col=m.hit>0?'#ffffff':r.col;if(m.boss)drawAura(x,y,ss,m.lord);ell(x,y,18*ss,5*ss,'rgba(0,0,0,.25)');let top;const ph=x*.05;
  const md=monSprite(r,m),sk=md&&md.lordArt?ss*.8:ss,ly=md&&md.lift?y-md.lift*ss*(1+.08*Math.sin(T*5+ph)):y;
  if(md){const k=md.h*sk/md.fig,moving=m.tx!=null&&m.x>m.tx+1;let a='walk',i=Math.floor(T*8+ph)%md.walk;
   if(m.hit>0||m.dead>0){a='hit';i=m.dead>0?1:0}else if(m.sw>0){a='attack';i=Math.max(0,Math.min(md.attack-1,Math.floor((1-m.sw/.4)*md.attack)))}else if(!moving){i=Math.floor(T*4+ph)%md.walk}
-  ctx.drawImage(MSPR[md.id][a],i*SPR_FRAME,0,SPR_FRAME,SPR_FRAME,x-SPR_FRAME/2*k,ly-SPR_FOOT*k,SPR_FRAME*k,SPR_FRAME*k);
+  if(m.boss&&!m.dead){ctx.save();ctx.shadowColor=m.lord?'rgba(180,110,255,.9)':'rgba(255,60,80,.85)';ctx.shadowBlur=(14+6*Math.sin(T*4))*s;ctx.drawImage(MSPR[md.id][a],i*SPR_FRAME,0,SPR_FRAME,SPR_FRAME,x-SPR_FRAME/2*k,ly-SPR_FOOT*k,SPR_FRAME*k,SPR_FRAME*k);ctx.restore()}
+  else ctx.drawImage(MSPR[md.id][a],i*SPR_FRAME,0,SPR_FRAME,SPR_FRAME,x-SPR_FRAME/2*k,ly-SPR_FOOT*k,SPR_FRAME*k,SPR_FRAME*k);
   if(m.hit>0){ctx.globalCompositeOperation='lighter';ctx.globalAlpha=fade*.35;ctx.drawImage(MSPR[md.id][a],i*SPR_FRAME,0,SPR_FRAME,SPR_FRAME,x-SPR_FRAME/2*k,ly-SPR_FOOT*k,SPR_FRAME*k,SPR_FRAME*k);ctx.globalCompositeOperation='source-over';ctx.globalAlpha=fade}
   top=ly-md.fig*k}
  else if(r.kind==='slime'){const q=Math.sin(T*6+ph)*.08,rx=20*ss*(1+q),ry=17*ss*(1-q);ell(x,y-ry,rx,ry,col);ctx.fillStyle=col;ctx.fillRect(x-rx,y-ry,rx*2,ry);ell(x-7*ss,y-ry*1.3,5*ss,4*ss,'rgba(255,255,255,.35)');eyes(x-10*ss,y-ry,ss,'#3a0a14');top=y-ry*2}
@@ -1123,8 +1151,8 @@ function drawMon(r,y,s,m){
  else if(r.kind==='golem'){ctx.fillStyle=col;const b=Math.sin(T*2+ph)*ss;rr(x-18*ss,y-26*ss,36*ss,26*ss,6*ss);rr(x-13*ss,y-44*ss+b,26*ss,20*ss,6*ss);ctx.fillStyle='rgba(0,0,0,.18)';ctx.fillRect(x-18*ss,y-12*ss,36*ss,3*ss);ctx.fillStyle=col;rr(x+17*ss,y-24*ss,9*ss,16*ss,4*ss);eyes(x-10*ss,y-35*ss+b,ss,'#ff5a3a');top=y-46*ss+b}
  else{const fy=y-30*ss+Math.sin(T*3+ph)*4*ss;ctx.fillStyle=col;ctx.beginPath();ctx.arc(x,fy-6*ss,16*ss,Math.PI,0);ctx.lineTo(x+16*ss,fy+12*ss);for(let i=0;i<4;i++){const xx=x+16*ss-(i+.5)*8*ss;ctx.quadraticCurveTo(xx,fy+(i%2?18:6)*ss+Math.sin(T*6+i)*2*ss,xx-4*ss,fy+12*ss)}ctx.closePath();ctx.globalAlpha=fade*.88;ctx.fill();ctx.globalAlpha=fade;eyes(x-10*ss,fy-4*ss,ss,'#1a3a6a');top=fy-22*ss}
  if(!md){ctx.fillStyle='#3a1a24';ctx.beginPath();ctx.moveTo(x-9*ss,top+3*ss);ctx.lineTo(x-12*ss,top-7*ss);ctx.lineTo(x-4*ss,top+2*ss);ctx.moveTo(x+4*ss,top+2*ss);ctx.lineTo(x+12*ss,top-7*ss);ctx.lineTo(x+9*ss,top+3*ss);ctx.fill()}
- if(m.boss&&!(md&&md.lordArt)){ctx.fillStyle=m.lord?'#ff5d73':'#ffc94a';ctx.beginPath();const cy=top-4*ss;ctx.moveTo(x-8*ss,cy);ctx.lineTo(x-8*ss,cy-8*ss);ctx.lineTo(x-4*ss,cy-4*ss);ctx.lineTo(x,cy-10*ss);ctx.lineTo(x+4*ss,cy-4*ss);ctx.lineTo(x+8*ss,cy-8*ss);ctx.lineTo(x+8*ss,cy);ctx.fill()}
- m.barY=top-(m.boss?22:12)*s;bar(x,m.barY,(m.boss?60:32)*s,m.hp/m.max,'#ff6b7d');ctx.globalAlpha=1
+ if(m.boss){const mk=BOSSIMG[m.lord?'markCmd':'markLord'];if(mk){const z=(m.lord?44:36)*s,bob=Math.sin(T*3)*3*s;ctx.drawImage(mk,x-z/2,top-z-4*s+bob,z,z)}m.barY=top-(mk?(m.lord?46:38)*s:10*s)}
+ else{m.barY=top-12*s;bar(x,m.barY,32*s,m.hp/m.max,'#ff6b7d')}ctx.globalAlpha=1
 }
 function drawProj(p,s){const k=p.t/p.d,x=p.x+(p.tx-p.x)*k,y=p.y+(p.ty-p.y)*k-Math.sin(k*Math.PI)*(p.kind==='harpoon'?4:14)*s;
  if(p.kind==='harpoon'&&fxOk('harpoon')){fxFrame('harpoon',0,x,y,30*s,Math.atan2(p.ty-p.y,p.tx-p.x));return}
@@ -1151,6 +1179,11 @@ function draw(){
  drawFxs();
  ctx.textAlign='center';floats.forEach(f=>{ctx.globalAlpha=1-f.t/.9;ctx.font=`700 ${f.size*Math.max(.9,s)}px Hahmlet, serif`;ctx.lineWidth=3.5;ctx.strokeStyle='rgba(0,0,0,.65)';ctx.strokeText(f.txt,f.x,f.y);ctx.fillStyle=f.col;ctx.fillText(f.txt,f.x,f.y)});ctx.globalAlpha=1;
  drawQuip(pos,s,py.kael??L.top);
+ if(warn){const k=Math.min(1,(1.4-warn.t)*6,warn.t*2.5),cy=Ht*.3,col=warn.cmd?'150,80,255':'255,40,60';ctx.save();ctx.globalAlpha=k;
+  const v=ctx.createRadialGradient(W/2,Ht/2,Math.min(W,Ht)*.3,W/2,Ht/2,Math.max(W,Ht)*.75);v.addColorStop(0,'rgba('+col+',0)');v.addColorStop(1,'rgba('+col+',.55)');ctx.fillStyle=v;ctx.fillRect(0,0,W,Ht);
+  const g=ctx.createLinearGradient(0,0,W,0);g.addColorStop(0,'rgba(20,4,8,0)');g.addColorStop(.2,'rgba(20,4,8,.85)');g.addColorStop(.8,'rgba(20,4,8,.85)');g.addColorStop(1,'rgba(20,4,8,0)');ctx.fillStyle=g;ctx.fillRect(0,cy-26,W,52);
+  ctx.fillStyle='rgba('+col+',.9)';ctx.fillRect(0,cy-26,W,2);ctx.fillRect(0,cy+24,W,2);
+  const sx=(1-Math.min(1,(1.4-warn.t)*4))*40;ctx.textAlign='center';ctx.font=`700 ${Math.round(24*Math.min(1.2,s))}px Hahmlet, serif`;ctx.lineWidth=4;ctx.strokeStyle='#1a0006';const t=warn.cmd?'⚠ 군단장 출현! ⚠':'⚠ 성주 출현! ⚠';ctx.strokeText(t,W/2+sx,cy+8);ctx.fillStyle=warn.cmd?'#e2c4ff':'#ffd2d8';ctx.fillText(t,W/2+sx,cy+8);ctx.restore()}
  if(banner){const k=Math.min(1,(2-banner.t)*5,banner.t*2.5),cy=Ht*.36;ctx.globalAlpha=k;
   if(BANNER.ok){const bw=Math.min(W*.98,460),bh=bw/4,sc=.85+.15*Math.min(1,(2-banner.t)*6);ctx.save();ctx.translate(W/2,cy);ctx.scale(sc,sc);ctx.drawImage(BANNER,-bw/2,-bh*.55,bw,bh);ctx.restore()}
   else{const g=ctx.createLinearGradient(0,0,W,0);g.addColorStop(0,'rgba(20,14,4,0)');g.addColorStop(.2,'rgba(20,14,4,.85)');g.addColorStop(.8,'rgba(20,14,4,.85)');g.addColorStop(1,'rgba(20,14,4,0)');ctx.fillStyle=g;ctx.fillRect(0,cy-34,W,64);
