@@ -674,7 +674,7 @@ function showItem(it,cur){
 function closeModal(){$('modal').hidden=true;pending=null;renderAll();pump()}
 
 /* ---------- 밭 · 부엌 · 마을 ---------- */
-const CROP_ART=['wheat','carrot'],PLOTART=true;/* 성장 단계 그림이 있는 작물 */
+const CROP_ART=['wheat','carrot','pumpkin'],PLOTART=true;/* 성장 단계 그림이 있는 작물 */
 const hasCropArt=k=>CROP_ART.includes(k);
 const cropImg=n=>`<img class="cimg" src="assets/crops/${n}.png" alt="" onerror="this.remove()">`;
 function ensurePlots(){const n=plotCount();while(S.plots.length<n)S.plots.push(null)}
