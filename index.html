@@ -826,7 +826,7 @@ function spawnFx(k,x,y,size,d,vy){if(fxOk(k))fxs.push({k,x,y,size,d,t:0,vy:vy||0
 function fxFrame(k,i,x,y,size,rot){const im=FXI[k],cw=im.cw,h=im.height,w=size*cw/h;ctx.save();ctx.translate(x,y);if(rot)ctx.rotate(rot);ctx.drawImage(im,i*cw,0,cw,h,-w/2,-size/2,w,size);ctx.restore()}
 function drawFxs(){for(const f of fxs){const n=FXDEF[f.k],i=Math.min(n-1,Math.floor(f.t/f.d*n));ctx.globalAlpha=f.t>f.d*.7?Math.max(0,1-(f.t-f.d*.7)/(f.d*.3)):1;fxFrame(f.k,i,f.x,f.y+f.vy*f.t,f.size);ctx.globalAlpha=1}}
 /* 몬스터 스프라이트: 지역 번호 → 시트 이름. 시트는 assets/monsters/<이름>_<walk|attack|hit>.png, 왼쪽을 봄 */
-const MON_SPRITES={0:{id:'slime_plague',walk:4,attack:4,hit:2,fig:150,h:54},
+const MON_SPRITES={0:{id:'slime_plague',walk:4,attack:4,hit:2,fig:150,h:54,boss:{id:'boss_morbas',walk:4,attack:4,hit:2,fig:200,h:76}},
  1:{id:'bat_shadow',walk:4,attack:4,hit:2,fig:180,h:44,lift:30,boss:{id:'boss_seril',walk:4,attack:4,hit:2,fig:195,h:72}},
  2:{id:'golem_steel',walk:4,attack:4,hit:2,fig:190,h:58,boss:{id:'boss_gromak',walk:4,attack:4,hit:2,fig:200,h:74}},
  3:{id:'wraith_frost',walk:4,attack:4,hit:2,fig:185,h:50,lift:18,boss:{id:'boss_aldor',walk:4,attack:4,hit:2,fig:195,h:74}},
