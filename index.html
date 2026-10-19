@@ -1520,7 +1520,7 @@ function pfCheck(){if(!S.pfUnl)S.pfUnl={};for(const f of PFRAMES){if(!S.pfUnl[f.
  {const fb=$('faceBtn');if(fb)fb.classList.toggle('newpf',!S.pfSeen)}
  const im=$('hFrame'),src='assets/profile/frame_'+(S.pf||'wood')+'.png';if(im&&!im.src.endsWith(src)){im.src=src;im.className='pfr'+pfTall(S.pf||'wood')}}
 function profileSheet(){S.pfSeen=1;pfCheck();const cur=S.pf||'wood',ri=rankIdx();
- $('sheet').innerHTML=`<div class="eyebrow">프로필</div><div class="pfhead"><div class="pfbig"><canvas id="pfCv"></canvas><img class="pfr${pfTall(cur)}" src="assets/profile/frame_${cur}.png" alt=""></div><div class="pfinfo"><b>카엘${S.badge&&bdHas(S.badge)?`<img class="pfbd" src="assets/profile/badge_${S.badge}.png" alt="">`:''}</b><small>${RANKS[ri].n} · 전투력 ${fmt(power())}</small><small>최고 영지 ${Math.min(S.best,MAXLAND)} · 은퇴 ${S.retires||0}번</small></div></div>
+ $('sheet').innerHTML=`<div class="eyebrow">프로필</div><div class="pfhead"><div class="pfbig"><canvas id="pfCv"></canvas><img class="pfr${pfTall(cur)}" src="assets/profile/frame_${cur}.png" alt=""></div><div class="pfinfo"><b>카엘${S.badge&&bdHas(S.badge)?`<img class="pfbd" src="assets/profile/badge_${S.badge}.png" alt="">`:''}</b><small>${RANKS[ri].n} · 전투력 ${fmt(power())}</small><small>최고 영지 ${Math.min(S.best,MAXLAND)} · 은퇴 ${S.retires||0}번 · 은퇴의 추억 ${S.memory||0}개</small></div></div>
  <div class="sec">테두리 <small>${PFRAMES.filter(f=>pfHas(f.k)).length} / ${PFRAMES.length}</small></div>
  <div class="pfgrid">${PFRAMES.map(f=>{const has=pfHas(f.k);return`<button class="pfc${f.k===cur?' on':''}${has?'':' lock'}${f.rare?' rare':''}" data-pf="${f.k}"><span class="pv"><i></i><img class="pfr${pfTall(f.k)}" src="assets/profile/frame_${f.k}.png" alt=""></span><b>${f.n}</b><small>${f.k===cur?'사용 중':has?'바꾸기':'🔒 '+f.d}</small></button>`}).join('')}</div>
  <div class="sec">대표 배지 <small>${BADGES.filter(b=>bdHas(b.k)).length} / ${BADGES.length}</small></div>
@@ -1532,10 +1532,6 @@ function profileSheet(){S.pfSeen=1;pfCheck();const cur=S.pf||'wood',ri=rankIdx()
 }
 function settingsSheet(step){
  $('sheet').innerHTML=`<div class="eyebrow">설정</div><h2>카엘의 수첩</h2>
- <div class="setrow"><div><b>전투 속도</b><small>x2는 마물도 빨라져요</small></div><button class="buy ghost" id="setSpd">x${S.speed||1}</button></div>
- <div class="setrow"><div><b>스킬 자동 사용</b><small>끄면 원정대 초상화를 눌러 직접 써요</small></div><button class="buy ghost" id="setSkill">${S.autoSkill===false?'꺼짐':'켜짐'}</button></div>
- <div class="setrow"><div><b>약한 장비 바로 판매</b><small>상자에서 나온 약한 장비를 자동으로 팔아요</small></div><button class="buy ghost" id="setSell">${S.autoSell?'켜짐':'꺼짐'}</button></div>
- <div class="setrow"><div><b>플레이 기록</b><small>최고 영지 ${Math.min(S.best,MAXLAND)} · 은퇴 ${S.retires}번 · 은퇴의 추억 ${S.memory}개</small></div></div>
  <div class="sec">저장 데이터 옮기기 <small>다른 기기·브라우저로</small></div>
  <p class="note">저장은 이 브라우저에만 돼요. 아래 코드를 복사해 두면 다른 곳에서 불러올 수 있어요.</p>
  <textarea class="setcode" id="setCode" spellcheck="false" placeholder="여기에 저장 코드를 붙여 넣고 불러오기를 누르세요"></textarea>
@@ -1545,9 +1541,6 @@ function settingsSheet(step){
  :`<div class="btns"><button class="buy danger" id="setReset">게임 초기화</button></div>`}
  <div class="acts one"><button class="pri" id="mGo">닫기</button></div>`;
  $('modal').hidden=false;$('mGo').onclick=closeModal;
- $('setSpd').onclick=()=>{S.speed=S.speed===2?1:2;renderSpeed();settingsSheet()};
- $('setSkill').onclick=()=>{S.autoSkill=S.autoSkill===false;settingsSheet()};
- $('setSell').onclick=()=>{S.autoSell=!S.autoSell;const a=$('autoSell');if(a)a.checked=S.autoSell;settingsSheet()};
  $('setExp').onclick=()=>{save();const c=btoa(unescape(encodeURIComponent(JSON.stringify(S))));const t=$('setCode');t.value=c;t.select();try{navigator.clipboard.writeText(c).then(()=>toast('저장 코드를 복사했어요'),()=>toast('코드를 길게 눌러 복사하세요'))}catch(e){toast('코드를 길게 눌러 복사하세요')}};
  $('setImp').onclick=()=>{try{const d=JSON.parse(decodeURIComponent(escape(atob($('setCode').value.trim()))));if(!d||typeof d.gold!=='number')throw 0;noSave=true;localStorage.setItem(KEY,JSON.stringify(d));location.reload()}catch(e){toast('저장 코드가 올바르지 않아요')}};
  if(step==='reset'){$('setNo').onclick=()=>settingsSheet();$('setYes').onclick=()=>{noSave=true;try{localStorage.removeItem(KEY)}catch(e){}location.reload()}}
