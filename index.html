@@ -121,11 +121,28 @@ canvas{display:block;width:100%;height:100%}
 .pcard canvas{width:100%;height:100%}
 .pcard .hp{height:4px;border-radius:2px;background:rgba(255,255,255,.15);overflow:hidden}
 .pcard .hp i{display:block;height:100%;background:var(--good)}
-.pcard .sg{height:3px;border-radius:2px;background:rgba(255,255,255,.12);overflow:hidden}
-.pcard .sg i{display:block;height:100%;background:linear-gradient(90deg,#ffc94a,#fff2b0)}
-.pcard .skic{position:absolute;right:-2px;bottom:-2px;width:46%;height:46%;filter:grayscale(.8) brightness(.7) drop-shadow(0 1px 2px #000);transition:transform .2s}
-.pcard.ready .pic{border-color:#fff2b0;box-shadow:0 0 10px 2px rgba(255,201,74,.85);animation:skp 1s ease-in-out infinite}
-.pcard.ready .skic{filter:drop-shadow(0 0 4px #ffc94a);transform:scale(1.15)}
+.pcard .pw{position:relative;display:block;padding:3px}
+.pcard .ring{position:absolute;inset:0;border-radius:12px;padding:3px;background:conic-gradient(#ffc94a calc(var(--g,0)*1%),rgba(255,255,255,.14) 0);-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask:linear-gradient(#000 0 0) content-box exclude,linear-gradient(#000 0 0)}
+.pcard .pic{border-width:1px;display:block}
+.pcard .skic{position:absolute;right:-7px;bottom:-7px;width:44%;height:44%;filter:grayscale(.6) brightness(.85) drop-shadow(0 1px 2px #000);transition:transform .2s,filter .2s;pointer-events:none}
+.pcard .tap{position:absolute;top:-10px;left:50%;transform:translateX(-50%);font-size:10px;font-weight:700;color:#3a2a00;background:#ffc94a;border-radius:999px;padding:0 6px;line-height:15px;display:none;white-space:nowrap;box-shadow:0 1px 3px rgba(0,0,0,.5)}
+.pcard.ready .ring{background:linear-gradient(135deg,#fff2b0,#ffc94a,#ff9a3a);box-shadow:0 0 12px rgba(255,201,74,.9)}
+.pcard.ready .pw{animation:skb .9s ease-in-out infinite}
+.pcard.ready .skic{filter:drop-shadow(0 0 5px #ffc94a);transform:scale(1.2)}
+.pcard.ready.manual .tap{display:block}
+.pcard.shake .pw{animation:skshake .3s}
+@keyframes skb{50%{transform:translateY(-3px)}}
+@keyframes skshake{25%{transform:translateX(-3px)}75%{transform:translateX(3px)}}
+.pcard .hp{margin-top:4px}
+.sktip{position:fixed;z-index:35;width:210px;background:rgba(14,18,32,.96);border:1px solid var(--gold);border-radius:12px;padding:8px 10px;display:flex;gap:8px;box-shadow:0 6px 18px rgba(0,0,0,.5);pointer-events:none}
+.sktip img{width:40px;height:40px;flex:0 0 auto}
+.sktip b{display:block;font-family:var(--f-display);color:var(--gold);font-size:14px}
+.sktip span{display:block;font-size:11px;color:#c9d2ea;line-height:1.45}
+.sktip i{display:block;margin-top:4px;height:4px;border-radius:2px;background:rgba(255,255,255,.15);overflow:hidden}
+.sktip i u{display:block;height:100%;background:#ffc94a}
+.qbtn.auto{font-family:var(--f-body);font-size:10px;letter-spacing:.02em;filter:grayscale(.9) brightness(.7)}
+.qbtn.auto.on{filter:none;background:radial-gradient(circle at 50% 35%,#ffd66b,#c98a10);color:var(--gold-ink)}
+.buff.sk{border-color:#9cc3ff;color:#dbe8ff}
 @keyframes skp{50%{box-shadow:0 0 16px 4px rgba(255,201,74,.95)}}
 @media (prefers-reduced-motion:reduce){.pcard.ready .pic{animation:none}}
 .skl{display:flex;gap:6px;align-items:flex-start;margin-top:4px;padding:5px 7px;border-radius:8px;background:rgba(255,201,74,.08);border:1px solid rgba(255,201,74,.25)}
@@ -315,6 +332,7 @@ button:focus-visible,input:focus-visible{outline:2px solid var(--gold);outline-o
       <div class="prow" id="partyRow"></div>
       <div class="qbtns">
         <button class="qbtn" id="quickBox" aria-label="성유물 상자 열기"><img src="assets/ui/relic_chest.png" alt="" onerror="this.replaceWith(document.createTextNode('상자'))"><small id="quickCost">20</small></button>
+        <button class="qbtn auto" id="autoBtn" aria-label="스킬 자동 사용">AUTO</button>
         <button class="qbtn" id="speedBtn" aria-label="전투 속도">x1</button>
       </div>
     </div>
@@ -868,7 +886,7 @@ function renderAll(){
  renderParty();renderBlds();renderFarm();renderKitchen();vlPanels();renderShop();renderRetire();renderMapInfo();
  const boss=mons.some(m=>m.boss);
  $('pips').innerHTML=Array.from({length:10},(_,i)=>`<i class="pip${i<S.wave?' on':''}"></i>`).join('')+`<i class="pip boss${boss?' on':''}" aria-label="보스"></i>`;
- const now=Date.now();$('buffs').innerHTML=Object.keys(BUFFN).filter(buff).map(b=>`<span class="buff"><img src="assets/ui/buff_${b}.png" alt="" onerror="this.remove()">${BUFFN[b]} ${mmss((S.buffs[b]-now)/1000)}</span>`).join('');
+ const now=Date.now();$('buffs').innerHTML=Object.keys(BUFFN).filter(buff).map(b=>`<span class="buff"><img src="assets/ui/buff_${b}.png" alt="" onerror="this.remove()">${BUFFN[b]} ${mmss((S.buffs[b]-now)/1000)}</span>`).join('')+[['shield','bron'],['honey','riel'],['feast','margo']].filter(([k])=>SKX[k]>0).map(([k,id])=>`<span class="buff sk"><img src="assets/skills/skill_${id}.png" alt="" onerror="this.remove()">${SKILLS[id].n} ${Math.ceil(SKX[k])}초</span>`).join('');renderAuto();
  const ready=S.bld.farm&&S.plots.some(p=>plotState(p).st==='ready');
  $('vlDot').hidden=!ready;
 }
@@ -879,15 +897,17 @@ document.querySelectorAll('[data-close]').forEach(b=>b.onclick=()=>setTab(null))
 $('faceBtn').onclick=()=>{if($('modal').hidden)settingsSheet()};$('gemBtn').onclick=()=>setTab('sh');
 $('quickBox').onclick=()=>openBox(false);
 $('speedBtn').onclick=()=>{S.speed=S.speed===2?1:2;renderSpeed()};
+$('autoBtn').onclick=()=>{S.autoSkill=S.autoSkill===false;renderAuto();toast(S.autoSkill===false?'스킬 자동 사용 꺼짐 · 빛나는 초상화를 눌러 쓰세요':'스킬 자동 사용 켜짐');prowSig=''};
+function renderAuto(){const b=$('autoBtn');if(b)b.classList.toggle('on',S.autoSkill!==false)}
 function renderSpeed(){const b=$('speedBtn');b.textContent='x'+(S.speed||1);b.classList.toggle('on',S.speed===2)}
 /* 전투 화면 아래 원정대 초상화 줄 */
 let prowSig='';
 function renderPartyRow(){
  const ids=ORDER.filter(id=>id==='kael'||S.joined[id]),sig=ids.join()+ids.map(hasSprite).join();
  if(sig!==prowSig){prowSig=sig;
-  $('partyRow').innerHTML=[...ids,...['kael','bron','haral','riel','margo'].filter(id=>!ids.includes(id))].map(id=>ids.includes(id)?`<button class="pcard" id="pc-${id}" aria-label="${COMP[id].n}"><span class="pic"><canvas id="pcv-${id}"></canvas>${SKIMG[id]?`<img class="skic" src="assets/skills/skill_${id}.png" alt="">`:''}</span><span class="hp"><i id="php-${id}"></i></span><span class="sg"><i id="psg-${id}"></i></span></button>`:`<span class="pcard empty"><span class="pic"></span><span class="hp"></span></span>`).join('');
-  ids.forEach(id=>{faceTo($('pcv-'+id),id);$('pc-'+id).onclick=()=>{if(skFull(id)&&engaged){castSkill(id)}else setTab('pt')}})}
- ids.forEach(id=>{const p=P[id];if(!p)return;const el=$('php-'+id);if(el)el.style.width=Math.max(0,p.hp/stats(id).hp*100)+'%';const c=$('pc-'+id);if(c){c.classList.toggle('down',!!p.down);c.classList.toggle('ready',skFull(id))}const g=$('psg-'+id);if(g)g.style.width=Math.min(100,(p.sg||0)/SKILLS[id].need*100)+'%'});
+  $('partyRow').innerHTML=[...ids,...['kael','bron','haral','riel','margo'].filter(id=>!ids.includes(id))].map(id=>ids.includes(id)?`<button class="pcard" id="pc-${id}" aria-label="${COMP[id].n}"><span class="pw"><span class="ring" id="prg-${id}"></span><span class="pic"><canvas id="pcv-${id}"></canvas></span>${SKIMG[id]?`<img class="skic" src="assets/skills/skill_${id}.png" alt="">`:''}<b class="tap">탭!</b></span><span class="hp"><i id="php-${id}"></i></span></button>`:`<span class="pcard empty"><span class="pic"></span><span class="hp"></span></span>`).join('');
+  ids.forEach(id=>{faceTo($('pcv-'+id),id);bindSkillBtn(id)})}
+ ids.forEach(id=>{const p=P[id];if(!p)return;const el=$('php-'+id);if(el)el.style.width=Math.max(0,p.hp/stats(id).hp*100)+'%';const c=$('pc-'+id);if(c){c.classList.toggle('down',!!p.down);c.classList.toggle('ready',skFull(id));c.classList.toggle('manual',S.autoSkill===false)}const g=$('prg-'+id);if(g)g.style.setProperty('--g',Math.min(100,(p.sg||0)/SKILLS[id].need*100).toFixed(0))});
 }
 /* 얼굴 확대 그림 (초상화 줄, 상단 바) */
 const PFIMG={};function pfImg(id){if(!(id in PFIMG)){const im=new Image();im.onload=()=>{im.ok=true;prowSig='';partySig=''};im.src='assets/portraits/portrait_'+id+'_idle.png';PFIMG[id]=im}return PFIMG[id].ok?PFIMG[id]:null}
@@ -915,7 +935,17 @@ const SKILLS={
 const SKIMG={},CUTIMG={};for(const id in SKILLS){const a=new Image();a.onload=()=>{SKIMG[id]=a;prowSig=''};a.src='assets/skills/skill_'+id+'.png';const b=new Image();b.onload=()=>CUTIMG[id]=b;b.src='assets/portraits/portrait_'+id+'_'+SKILLS[id].face+'.png'}
 const SKX={shield:0,honey:0,feast:0,honeyTick:0};let cut=null;
 const skFull=id=>P[id]&&!P[id].down&&(P[id].sg||0)>=SKILLS[id].need;
-function chargeSkill(id){const p=P[id];if(p)p.sg=Math.min(SKILLS[id].need,(p.sg||0)+1)}
+function chargeSkill(id){const p=P[id];if(!p)return;p.sg=Math.min(SKILLS[id].need,(p.sg||0)+1);if(p.sg>=SKILLS[id].need&&!S.done.tutSkill&&$('modal').hidden){S.done.tutSkill=true;const was=S.autoSkill;S.autoSkill=false;queue(()=>scene('특수 스킬','동료들의 힘이 모였다',['q@proud:주인, 원정대의 힘이 가득 찼다! 빛나는 초상화를 눌러 봐라.','sys:초상화 둘레의 금색 고리가 다 차면 특수 스킬을 쓸 수 있어요. 오른쪽 아래 AUTO를 켜 두면 알아서 써요. 초상화를 길게 누르면 스킬 설명이 나와요.'],'알겠어',{go:()=>{S.autoSkill=was}}))}}
+function skTip(id,el){hideTip();const r=el.getBoundingClientRect(),p=P[id],g=Math.min(100,((p&&p.sg)||0)/SKILLS[id].need*100),d=document.createElement('div');d.className='sktip';d.id='skTip';
+ d.innerHTML=`<img src="assets/skills/skill_${id}.png" alt="" onerror="this.remove()"><div><b>${SKILLS[id].n}</b><span>${COMP[id].n} · ${SKILLS[id].d}</span><i><u style="width:${g}%"></u></i></div>`;document.body.appendChild(d);
+ d.style.left=Math.max(8,Math.min(innerWidth-218,r.left+r.width/2-105))+'px';d.style.top=(r.top-d.offsetHeight-10)+'px'}
+function hideTip(){const t=$('skTip');if(t)t.remove()}
+function bindSkillBtn(id){const el=$('pc-'+id);if(!el)return;let lp=null,long=false;
+ el.onpointerdown=e=>{long=false;lp=setTimeout(()=>{long=true;skTip(id,el)},420)};
+ const up=()=>{clearTimeout(lp);setTimeout(hideTip,long?1400:0)};el.onpointerup=up;el.onpointerleave=up;el.onpointercancel=up;el.oncontextmenu=e=>e.preventDefault();
+ el.onclick=()=>{if(long)return;if(skFull(id)&&engaged){castSkill(id);return}
+  el.classList.remove('shake');void el.offsetWidth;el.classList.add('shake');
+  const p=P[id];if(p&&p.down)toast(COMP[id].n+'은(는) 쓰러져 있어요');else if(!engaged&&skFull(id))toast('싸우는 중에만 쓸 수 있어요');else toast(SKILLS[id].n+' · 게이지 '+Math.floor(((p&&p.sg)||0)/SKILLS[id].need*100)+'%')}}
 function castSkill(id){const p=P[id];if(!skFull(id)||!engaged)return false;const L=layout(),{pos,py,s}=L,t=stats(id),alive=mons.filter(m=>m.hp>0&&!m.dead);if(!alive.length)return false;
  p.sg=0;p.swing=.4;cut={id,t:1.6};quip=null;
  const cx=alive.reduce((a,m)=>a+m.x,0)/alive.length,cy=alive.reduce((a,m)=>a+m.y,0)/alive.length;
