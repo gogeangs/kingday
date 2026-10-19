@@ -152,6 +152,10 @@ button:focus-visible,input:focus-visible{outline:2px solid var(--gold);outline-o
 .lore.q{color:var(--gold)}
 .lore.k{color:#a8e6b0}
 .lore .who{display:block;font-family:var(--f-body);font-size:11px;letter-spacing:.08em;opacity:.75}
+.talk{display:flex;gap:10px;align-items:flex-end;margin:0}
+.talk .pface{width:64px;height:64px;flex:0 0 auto;border-radius:12px;background:radial-gradient(circle at 50% 40%,#2c4a7a,#141a29);border:2px solid #c9952a;object-fit:cover;object-position:50% 20%}
+.talk.q .pface{background:radial-gradient(circle at 50% 50%,#203a66,#0d1220);border-color:#5ab4ff;object-position:50% 40%}
+.talk .lore{flex:1;min-width:0;background:rgba(0,0,0,.22);border-radius:12px;padding:8px 12px}
 .lore.sys{font-family:var(--f-body);font-size:13px;color:var(--muted);border-top:1px solid var(--line);padding-top:10px}
 .cmp{display:grid;grid-template-columns:1fr 1fr;gap:8px}
 .card{border:2px solid var(--c,var(--line));border-radius:12px;padding:10px;display:flex;flex-direction:column;align-items:center;gap:4px;min-width:0;background:var(--panel2)}
@@ -289,7 +293,7 @@ const REGIONS=[
   lore:['강철의 군단장 그로마크가 드워프 대장간을 빼앗아 밤낮없이 마족의 무기를 찍어 내고 있다.','k:곡괭이질은 괭이질이랑 비슷하겠지? …아마도.']},
  {n:'서리 무덤',sky:['#14283e','#4f87ad'],hill:'#36597a',hill2:'#5d88a6',ground:'#c3d9e6',kind:'ghost',col:'#bfe6ff',mn:'서리 망령',boss:'망령의 군단장 알도르',
   terr:['얼어붙은 길','기사의 묘비','서리 예배당','눈보라 고개','잠든 막사','얼음 회랑','은빛 깃발 터','망령의 정원','서리 성벽','망령의 무덤'],
-  lore:['은빛 기사단이 잠든 얼음 무덤. 망령의 군단장 알도르가 형제들의 무덤을 지키고 있다.','q:…알도르. 내 두 번째 주인이었던 자다. 주인, 이번만큼은 진지하게 싸워 다오.']},
+  lore:['은빛 기사단이 잠든 얼음 무덤. 망령의 군단장 알도르가 형제들의 무덤을 지키고 있다.','q@moved:…알도르. 내 두 번째 주인이었던 자다. 주인, 이번만큼은 진지하게 싸워 다오.']},
  {n:'잿불 심연',sky:['#220b0b','#922f1a'],hill:'#3a1812',hill2:'#58261a',ground:'#33241f',kind:'slime',col:'#ff6a3a',mn:'잿불 점액',boss:'화염의 군단장 이그니스',
   terr:['잿빛 들판','불타는 숲','용암 강','마족 야영지','검은 탑','재의 다리','불꽃 제단','유황 계곡','심연의 계단','마계의 문'],
   lore:['마계의 문이 열린 곳. 화염의 군단장 이그니스가 문을 지키며 끝없이 증원을 들여보내고 있다.','q:이 문을 닫으면 왕도로 가는 길이 열린다. 왕좌가 코앞이다, 주인!','k:왕좌 말고 은퇴가 코앞이었으면 좋겠는데.']}
@@ -390,9 +394,15 @@ const sceneQ=[];
 function queue(fn){sceneQ.push(fn);pump()}
 let titleOpen=true;
 function pump(){if(!titleOpen&&$('modal').hidden&&!pending&&sceneQ.length)sceneQ.shift()()}
+/* 대화 초상화: 'k@smile:대사', 'q@angry:대사' 처럼 표정을 고를 수 있어요. 없으면 기본 표정 */
+const PORTRAIT={k:{id:'kael',def:'idle',moods:['idle','surprised','smile','flustered']},q:{id:'luminar',def:'proud',moods:['proud','angry','moved']}};
+function guessMood(w,t){if(w==='k'){if(/\?|누구|왜|설마/.test(t))return'surprised';if(/…|못 하|아니고|멀어|싫/.test(t))return'flustered';if(/좋|은퇴|흙|행복/.test(t))return'smile';return'idle'}
+ if(/!|당장|정신|마라|도망/.test(t)&&/주인/.test(t))return/당장|정신|도망/.test(t)?'angry':'proud';if(/300년|드디어|운명|보람/.test(t))return'moved';return'proud'}
+function pfaceHtml(w,mood){const d=PORTRAIT[w];return`<img class="pface" src="assets/portraits/portrait_${d.id}_${mood}.png" alt="" onerror="this.remove()">`}
 function para(p){
- if(p.startsWith('q:'))return`<p class="lore q"><span class="who">성검 루미나르</span>${p.slice(2)}</p>`;
- if(p.startsWith('k:'))return`<p class="lore k"><span class="who">카엘</span>${p.slice(2)}</p>`;
+ const m=p.match(/^([kq])(?:@(\w+))?:/);
+ if(m){const w=m[1],t=p.slice(m[0].length),mood=m[2]||guessMood(w,t);
+  return`<div class="talk ${w}">${pfaceHtml(w,mood)}<p class="lore ${w}"><span class="who">${w==='q'?'성검 루미나르':'카엘'}</span>${t}</p></div>`}
  if(p.startsWith('m:')){const[w,t]=p.slice(2).split('|');return`<p class="lore q" style="color:#ffd9a8"><span class="who">${w}</span>${t}</p>`}
  if(p.startsWith('sys:'))return`<p class="lore sys">${p.slice(4)}</p>`;
  return`<p class="lore">${p}</p>`}
@@ -402,13 +412,13 @@ function scene(eyebrow,title,paras,btn,alt){
 }
 function chapter(){const st=S.stage;queue(()=>{const r=region(st);scene('제'+(Math.floor((st-1)/10)+1)+'군단 · 점령지',r.n,r.lore,'진격한다')})}
 function events(){for(const e of EVENTS)if(S.stage>=e.at&&!S.done[e.id]){S.done[e.id]=true;e.act();syncParty();queue(()=>scene(e.eb,e.t,e.p,e.btn))}
- const ri=rankIdx();if(ri>S.rankSeen){S.rankSeen=ri;const r=RANKS[ri];queue(()=>scene('칭호 상승',r.n+' 카엘',['되찾은 영지가 '+r.at+'곳에 이르자, 사람들이 카엘을 '+r.n+'(이)라고 부르기 시작했다.','k:'+r.k,'q:하하! 한 걸음 더 왕좌에 가까워졌다!','sys:모든 원정대 능력치 +4%'],'…알겠어요'))}
+ const ri=rankIdx();if(ri>S.rankSeen){S.rankSeen=ri;const r=RANKS[ri];queue(()=>scene('칭호 상승',r.n+' 카엘',['되찾은 영지가 '+r.at+'곳에 이르자, 사람들이 카엘을 '+r.n+'(이)라고 부르기 시작했다.','k@flustered:'+r.k,'q@proud:하하! 한 걸음 더 왕좌에 가까워졌다!','sys:모든 원정대 능력치 +4%'],'…알겠어요'))}
  renderAll()}
 function intro(){queue(()=>scene('왕이 되는 그날까지 · 프롤로그','밭에 박힌 쇠막대',[
  '300년 전 봉인되었던 마계의 문이 열렸다. 마왕군은 하룻밤 만에 에르단 왕국을 집어삼켰고, 왕은 전사했다.',
  '변두리 마을의 농부 카엘은 그날도 밭을 갈고 있었다. 마물이 마을로 쏟아지자, 그는 밭에 박혀 있던 녹슨 쇠막대를 뽑아 휘둘렀다.',
- 'q:…드디어 나를 뽑는 자가 나타났군. 300년 기다렸다, 주인. 이제 왕이 되러 가자.',
- 'k:누구세요? 그리고 전 농부인데요.',
+ 'q@moved:…드디어 나를 뽑는 자가 나타났군. 300년 기다렸다, 주인. 이제 왕이 되러 가자.',
+ 'k@surprised:누구세요? 그리고 전 농부인데요.',
  'sys:마족에게 빼앗긴 영지를 하나씩 되찾고, 동료를 모아 폐허가 된 마을을 다시 세우세요.'],'일단 마을부터 지키자'));chapter()}
 
 /* ---------- 장비 ---------- */
@@ -436,7 +446,7 @@ const LUMQ=['흥, 내 격에는 한참 못 미친다.','그럭저럭… 봐줄 �
 function showItem(it,cur){
  const d=score(it)-score(cur);
  $('sheet').innerHTML=`<h2>성유물을 얻었어요</h2><div class="cmp">${card(it,'새 장비')}${card(cur,'착용 중')}</div>
- <div class="diff ${d>0?'up':d<0?'down':''}">전투력 ${d>=0?'▲':'▼'} ${fmt(Math.abs(d))}</div>${para('q:'+LUMQ[it.g])}
+ <div class="diff ${d>0?'up':d<0?'down':''}">전투력 ${d>=0?'▲':'▼'} ${fmt(Math.abs(d))}</div>${para('q@'+(it.g<1?'angry':it.g>=4?'moved':'proud')+':'+LUMQ[it.g])}
  <div class="acts"><button id="mSell">판매 +${fmt(it.price)}</button><button class="pri" id="mEq">장착</button></div>`;
  $('modal').hidden=false;
  $('mEq').onclick=()=>{const c=S.eq[it.slot];if(c)S.gold+=c.price;S.eq[it.slot]=it;closeModal();flashSlot(it.slot);if(c)toast('이전 장비 판매 +'+fmt(c.price))};
@@ -520,12 +530,12 @@ function renderRetire(){
   <div class="meter"><div class="kv"><span>은퇴 자금</span><b>${fmt(S.gold)} / ${fmt(t)}</b></div><div class="xp"><div style="width:${pct.toFixed(1)}%"></div></div></div>
   <p class="note">영지를 되찾을수록 목표 금액이 올라가요. 카엘은 아직 이 사실을 몰라요.</p>
   <button class="buy" id="retireBtn" ${can?'':'disabled'}>${can?'은퇴하기 · 추억 +'+pts:'영지 19곳을 되찾으면 은퇴할 수 있어요'}</button>`;
- $('retireBtn').onclick=()=>{if(S.stage<20)return;const p=retirePts();queue(()=>scene('은퇴하기','드디어 은퇴?',['k:좋아, 이 정도면 충분해. 난 밭으로 돌아간다.','q:주인! 아직 왕좌가…!','sys:되찾은 영지, 골드, 장비, 단련, 동료 레벨이 처음으로 돌아가요. 마을 건물, 밭, 동료 합류, 상자 레벨은 유지돼요. 은퇴의 추억 '+p+'개를 얻어 모든 능력치와 골드 획득이 영구히 '+(p*5)+'% 늘어나요.'],'은퇴한다',{label:'아직은 아니야',go:()=>retire(p)}))};
+ $('retireBtn').onclick=()=>{if(S.stage<20)return;const p=retirePts();queue(()=>scene('은퇴하기','드디어 은퇴?',['k@smile:좋아, 이 정도면 충분해. 난 밭으로 돌아간다.','q@angry:주인! 아직 왕좌가…!','sys:되찾은 영지, 골드, 장비, 단련, 동료 레벨이 처음으로 돌아가요. 마을 건물, 밭, 동료 합류, 상자 레벨은 유지돼요. 은퇴의 추억 '+p+'개를 얻어 모든 능력치와 골드 획득이 영구히 '+(p*5)+'% 늘어나요.'],'은퇴한다',{label:'아직은 아니야',go:()=>retire(p)}))};
 }
 function retire(p){
  S.memory+=p;S.retires++;S.gold=60;S.stage=1;S.wave=0;S.eq={};S.up={atk:0,hp:0,spd:0,crit:0};for(const k in S.lv)S.lv[k]=1;S.rankSeen=0;
  for(const id in P)delete P[id];mons=[];$('bossbar').hidden=true;syncParty();
- queue(()=>scene('몇 년 뒤','…다시 끌려 나오다',['평화로운 3년이었다. 카엘은 매일 밭을 갈았고, 호박은 해마다 커졌다.','그러던 어느 날, 마계의 문이 다시 열렸다.','q:일어나라, 주인. 은퇴는 끝났다.','k:…왜 또 나야.'],'괭이 대신 검을 든다'));chapter();renderAll()}
+ queue(()=>scene('몇 년 뒤','…다시 끌려 나오다',['평화로운 3년이었다. 카엘은 매일 밭을 갈았고, 호박은 해마다 커졌다.','그러던 어느 날, 마계의 문이 다시 열렸다.','q@proud:일어나라, 주인. 은퇴는 끝났다.','k@flustered:…왜 또 나야.'],'괭이 대신 검을 든다'));chapter();renderAll()}
 let mapSig='';
 function renderMapInfo(){
  const c=landCount(),ri=rankIdx(),nx=RANKS[ri+1],r=region(S.stage);
