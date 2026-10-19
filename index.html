@@ -252,6 +252,11 @@ canvas{display:block;width:100%;height:100%}
 .plot.empty .sp{background:transparent;border:1px dashed #8a6a50}
 .plot.ready{border-color:var(--gold);box-shadow:0 0 0 1px var(--gold) inset}
 .plot.ready b{color:var(--gold)}
+.plot{position:relative}
+.ptag{position:absolute;top:4px;left:4px;width:22px;height:22px;z-index:2;filter:drop-shadow(0 1px 2px #000);background:rgba(10,14,26,.7);border-radius:50%;padding:2px}
+.ptag.free{width:auto;height:auto;font-size:9px;font-weight:700;color:#c9cbd6;padding:1px 5px;border-radius:999px}
+.plot.editing{outline:2px dashed #ffc94a;outline-offset:-3px}
+.buy.ghost.on{border-color:var(--gold);color:var(--gold)}
 .plot.lockp{border:1px dashed #c9a24a;background:linear-gradient(#3a3020,#2a2018)}
 .plot.lockp .cimg{filter:grayscale(.6) brightness(.6)}
 .plot.lockp b{display:flex;align-items:center;gap:2px;color:#ffe08a}
@@ -754,30 +759,36 @@ function plotState(p){if(!p)return{st:'empty'};const c=CROPS.find(x=>x.k===p.k),
 function plant(i,k){if(S.seeds[k]<=0||S.plots[i])return;S.seeds[k]--;S.plots[i]={k,at:Date.now()};farmSig='';renderAll()}
 function harvest(i){const ps=plotState(S.plots[i]);if(ps.st!=='ready')return 0;const n=2+(Math.random()<.3?1:0);S.items[ps.c.k]+=n;S.plots[i]=null;dailyAdd('harv',n);return n}
 function produce(){checkBuild();const now=Date.now();for(const g of GOODS){const l=S.bld[g.b];if(!l){S.prod[g.b]=now;continue}const iv=120000/l;if(!S.prod[g.b])S.prod[g.b]=now;const n=Math.min(2000,Math.floor((now-S.prod[g.b])/iv));if(n>0){S.items[g.k]+=n;S.prod[g.b]+=n*iv}}}
-function chooseSeed(i){
+function chooseSeed(i){const tg=plotTag(i);if(tg){const c=CROPS.find(x=>x.k===tg);if(S.seeds[tg]>0)plant(i,tg);else toast(c.n+' 전용 밭이에요. '+c.n+' 씨앗이 없어요');return}
  $('sheet').innerHTML=`<h2>무엇을 심을까요?</h2>${CROPS.map(c=>`<div class="row" style="background:var(--panel2)">${uiImg('seed_'+c.k)}<div class="info"><b>${c.n}</b><div>자라는 시간 ${mmss(c.t)} · 씨앗 ${S.seeds[c.k]}개</div></div><button class="buy" id="sd-${c.k}" ${S.seeds[c.k]?'':'disabled'}>심기</button></div>`).join('')}<div class="acts one"><button id="mX">닫기</button></div>`;
  $('modal').hidden=false;CROPS.forEach(c=>$('sd-'+c.k).onclick=()=>{plant(i,c.k);closeModal()});$('mX').onclick=closeModal;
 }
+/* 밭 지정: 칸마다 한 작물만 심도록 정해 둘 수 있음 (null = 자유) */
+let plotEdit=false;
+const plotTag=i=>(S.plotTag||[])[i]||null;
+function cycleTag(i){if(!S.plotTag)S.plotTag=[];const order=[null,...CROPS.map(c=>c.k)],cur=plotTag(i);S.plotTag[i]=order[(order.indexOf(cur)+1)%order.length];farmSig='';renderAll()}
 let farmSig='';
 function renderFarm(){
  const fb=$('farmBox');
  if(!S.bld.farm){if(farmSig!=='locked'){farmSig='locked';fb.innerHTML=`<div class="sec">카엘의 밭 <small>잠김</small></div><p class="note">역병에 물든 땅이라 아직 아무것도 자라지 않아요. 개울 마을을 되찾으면 마르타 할머니가 돌아와 밭을 일궈 줘요.</p>`}return}
  ensurePlots();
  const seeds=CROPS.map(c=>`<span class="chip" style="--c:${c.c}">${uiImg('seed_'+c.k,'chipic')}${c.n} 씨앗 ${S.seeds[c.k]}</span>`).join('');
+ const tagMark=i=>{const t=plotTag(i);return t?`<img class="ptag" src="assets/ui/item_${t}.png" alt="" onerror="this.remove()">`:(plotEdit?'<span class="ptag free">자유</span>':'')};
  const cells=S.plots.map((p,i)=>{const ps=plotState(p);
-  if(ps.st==='empty')return`<button class="plot empty${PLOTART?' art':''}" data-i="${i}">${PLOTART?cropImg('plot_empty'):'<span class="sp"></span>'}<span>빈 밭</span><b>심기</b></button>`;
-  if(ps.st==='ready')return`<button class="plot ready${hasCropArt(ps.c.k)?' art':''}" data-i="${i}" style="--c:${ps.c.c}">${hasCropArt(ps.c.k)?cropImg('crop_'+ps.c.k+'_4'):'<span class="sp"></span>'}<span>${ps.c.n}</span><b>수확</b></button>`;
-  if(hasCropArt(ps.c.k))return`<button class="plot art" data-i="${i}">${cropImg('crop_'+ps.c.k+'_'+(ps.ratio<.25?1:ps.ratio<.6?2:3))}<span>${ps.c.n}</span><b>${mmss(ps.left)}</b><i class="pbar"><i style="width:${(ps.ratio*100).toFixed(0)}%"></i></i></button>`;
-  return`<button class="plot" data-i="${i}" style="--c:color-mix(in srgb,${ps.c.c} ${Math.round(30+ps.ratio*50)}%,#3a2a20)"><span class="sp" style="transform:scale(${(.4+ps.ratio*.6).toFixed(2)})"></span><span>${ps.c.n}</span><b>${mmss(ps.left)}</b></button>`}).join('')
+  if(ps.st==='empty')return`<button class="plot empty${PLOTART?' art':''}${plotEdit?' editing':''}" data-i="${i}">${tagMark(i)}${PLOTART?cropImg('plot_empty'):'<span class="sp"></span>'}<span>${plotTag(i)?CROPS.find(c=>c.k===plotTag(i)).n+' 밭':'빈 밭'}</span><b>${plotEdit?'바꾸기':'심기'}</b></button>`;
+  if(ps.st==='ready')return`<button class="plot${plotEdit?' editing':''} ready${hasCropArt(ps.c.k)?' art':''}" data-i="${i}"${plotEdit?' data-edit="1"':''} style="--c:${ps.c.c}">${hasCropArt(ps.c.k)?cropImg('crop_'+ps.c.k+'_4'):'<span class="sp"></span>'}<span>${ps.c.n}</span><b>수확</b></button>`;
+  if(hasCropArt(ps.c.k))return`<button class="plot art${plotEdit?' editing':''}" data-i="${i}">${tagMark(i)}${cropImg('crop_'+ps.c.k+'_'+(ps.ratio<.25?1:ps.ratio<.6?2:3))}<span>${ps.c.n}</span><b>${mmss(ps.left)}</b><i class="pbar"><i style="width:${(ps.ratio*100).toFixed(0)}%"></i></i></button>`;
+  return`<button class="plot" data-i="${i}"${plotEdit?' data-edit="1"':''} style="--c:color-mix(in srgb,${ps.c.c} ${Math.round(30+ps.ratio*50)}%,#3a2a20)"><span class="sp" style="transform:scale(${(.4+ps.ratio*.6).toFixed(2)})"></span><span>${ps.c.n}</span><b>${mmss(ps.left)}</b></button>`}).join('')
   +GEM_PLOTS.slice(S.gemPlots||0).map((c,j)=>`<button class="plot art lockp${j?' later':''}" data-gp="${j}">${cropImg('plot_empty')}<span>${j?'잠긴 밭':'새 밭 일구기'}</span><b>${j?'🔒':`${GEMIMG}${c}`}</b></button>`).join('');
- const nGrow=S.plots.filter(p=>plotState(p).st==='grow').length,anyReady=S.plots.some(p=>plotState(p).st==='ready'),anyEmpty=S.plots.some(p=>!p)&&CROPS.some(c=>S.seeds[c.k]>0);
- const sig=seeds+cells+anyReady+anyEmpty+(S.gem||0)+adLeft('farm')+(S.gemPlots||0);if(sig===farmSig)return;farmSig=sig;
- fb.innerHTML=`<div class="sec">카엘의 밭 <small>Lv.${S.bld.farm} · ${S.plots.length}칸${S.gemPlots?' (황금 밭 '+S.gemPlots+'칸)':''} · 카엘의 진짜 꿈</small></div><div class="inv">${seeds}</div><div class="plots">${cells}</div>
-  <div class="btns"><button class="buy ghost" id="plantAll" ${anyEmpty?'':'disabled'}>모두 심기</button><button class="buy" id="harvAll" ${anyReady?'':'disabled'}>모두 수확</button></div>${nGrow?`<button class="buy gem" id="growNow">${GEMIMG}${nGrow*GEM_PLOT}로 자라는 작물 ${nGrow}칸 바로 키우기</button>${adLeft('farm')?`<button class="buy ad" id="adFarm">▶ 광고 보고 바로 키우기 · 오늘 ${adLeft('farm')}회</button>`:''}`:''}
+ const nGrow=S.plots.filter(p=>plotState(p).st==='grow').length,anyReady=S.plots.some(p=>plotState(p).st==='ready'),anyEmpty=S.plots.some((p,i)=>!p&&(plotTag(i)?S.seeds[plotTag(i)]>0:CROPS.some(c=>S.seeds[c.k]>0)));
+ const sig=seeds+cells+anyReady+anyEmpty+(S.gem||0)+adLeft('farm')+(S.gemPlots||0)+plotEdit;if(sig===farmSig)return;farmSig=sig;
+ fb.innerHTML=`<div class="sec">카엘의 밭 <small>Lv.${S.bld.farm} · ${S.plots.length}칸${S.gemPlots?' (황금 밭 '+S.gemPlots+'칸)':''} · 카엘의 진짜 꿈</small></div><div class="inv">${seeds}</div>${plotEdit?'<p class="note" style="color:#ffe08a">밭을 누를 때마다 자유 → 밀 → 은빛 당근 → 달빛 호박 순서로 바뀌어요. 지정한 밭에는 그 작물만 심어져요.</p>':''}<div class="plots">${cells}</div>
+  <div class="btns"><button class="buy ghost${plotEdit?' on':''}" id="plotEdit">${plotEdit?'지정 끝내기':'밭 지정'}</button><button class="buy ghost" id="plantAll" ${anyEmpty&&!plotEdit?'':'disabled'}>모두 심기</button><button class="buy" id="harvAll" ${anyReady?'':'disabled'}>모두 수확</button></div>${nGrow?`<button class="buy gem" id="growNow">${GEMIMG}${nGrow*GEM_PLOT}로 자라는 작물 ${nGrow}칸 바로 키우기</button>${adLeft('farm')?`<button class="buy ad" id="adFarm">▶ 광고 보고 바로 키우기 · 오늘 ${adLeft('farm')}회</button>`:''}`:''}
   <p class="note">씨앗은 마물이 가끔 떨어뜨려요. 작물은 게임을 꺼 둔 동안에도 자라요.</p>`;
  fb.querySelectorAll('[data-gp]').forEach(b=>b.onclick=()=>{if(+b.dataset.gp)return toast('앞의 밭부터 일궈야 해요');buyGemPlot()});
- fb.querySelectorAll('.plot:not([data-gp])').forEach(b=>b.onclick=()=>{const i=+b.dataset.i,ps=plotState(S.plots[i]);if(ps.st==='empty')chooseSeed(i);else if(ps.st==='ready'){const n=harvest(i);toast(ps.c.n+' '+n+'개 수확. 카엘이 행복해 보여요');farmSig='';renderAll()}else toast(ps.c.n+' · '+mmss(ps.left)+' 뒤에 수확')});
- $('plantAll').onclick=()=>{S.plots.forEach((p,i)=>{if(p)return;const c=[...CROPS].reverse().find(c=>S.seeds[c.k]>0);if(c)plant(i,c.k)})};
+ fb.querySelectorAll('.plot:not([data-gp])').forEach(b=>b.onclick=()=>{const i=+b.dataset.i;if(plotEdit)return cycleTag(i);const ps=plotState(S.plots[i]);if(ps.st==='empty')chooseSeed(i);else if(ps.st==='ready'){const n=harvest(i);toast(ps.c.n+' '+n+'개 수확. 카엘이 행복해 보여요');farmSig='';renderAll()}else toast(ps.c.n+' · '+mmss(ps.left)+' 뒤에 수확')});
+ $('plotEdit').onclick=()=>{plotEdit=!plotEdit;farmSig='';renderAll()};
+ $('plantAll').onclick=()=>{S.plots.forEach((p,i)=>{if(p)return;const t=plotTag(i);if(t){if(S.seeds[t]>0)plant(i,t);return}const c=[...CROPS].reverse().find(c=>S.seeds[c.k]>0);if(c)plant(i,c.k)})};
  {const gn=$('growNow');if(gn)gn.onclick=growNow;const af=$('adFarm');if(af)af.onclick=adFarm}
  $('harvAll').onclick=()=>{let t=0;S.plots.forEach((p,i)=>t+=harvest(i));toast('작물 '+t+'개 수확');farmSig='';renderAll()};
 }
