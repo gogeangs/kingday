@@ -480,7 +480,7 @@ function openBox(auto){
  if(S.autoSell&&cur&&score(it)<=score(cur)){S.gold+=it.price;toast(GRADES[it.g].n+' '+slotName(it.slot)+' 판매 +'+fmt(it.price));renderAll();return}
  pending=it;showItem(it,cur);renderAll();
 }
-const RELIC_T=[1,2];/* 그림이 들어온 단계. 1 기본(일반·고급) 2 정예(희귀·영웅) 3 전설(전설·신화) */
+const RELIC_T=[1,2,3];/* 그림이 들어온 단계. 1 기본(일반·고급) 2 정예(희귀·영웅) 3 전설(전설·신화) */
 const relicTier=g=>g<2?1:g<4?2:3,relicSrc=it=>it&&RELIC_T.includes(relicTier(it.g))?`assets/relic/relic_${it.slot}_${relicTier(it.g)}.png`:null;
 function relicIcon(it){const src=relicSrc(it);return src?`<span class="relicic"><img class="fr" src="assets/ui/frame_${FRAMES[it.g]}.png" alt="" onerror="this.remove()"><img class="ri" src="${src}" alt="" onerror="this.replaceWith(document.createRange().createContextualFragment(svg('${it.slot}')))"></span>`:svg(it.slot)}
 function card(it,cap){
