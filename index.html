@@ -1229,17 +1229,21 @@ function drawMap(){
  if(!MW)return;const prev=ctx;ctx=mctx;
  ctx.fillStyle='#1a2034';ctx.fillRect(0,0,MW,MH);
  const rows=REGIONS.length,top=10,bottomPad=CAPIMG.locked?104:56,rh=(MH-top-bottomPad)/rows,padX=22,dx=(MW-padX*2)/9,cur=S.stage-1,R=Math.min(dx*.34,11);
- const pts=[];for(let i=0;i<rows;i++)for(let j=0;j<10;j++){const col=i%2?9-j:j;pts.push({x:padX+col*dx,y:top+i*rh+rh*.55,i,j})}
+ const pts=[];for(let i=0;i<rows;i++)for(let j=0;j<10;j++){const col=i%2?9-j:j;pts.push({x:padX+col*dx,y:top+i*rh+rh*.64,i,j})}
  for(let i=0;i<rows;i++){const r=REGIONS[i];ctx.fillStyle=r.hill;ctx.globalAlpha=.35;rr(4,top+i*rh+2,MW-8,rh-4,10);ctx.globalAlpha=1;
-  ctx.textAlign='center';ctx.font=`700 12px Hahmlet, serif`;const nw=ctx.measureText(r.n+'  ').width;ctx.font=`500 10px "IBM Plex Sans KR",sans-serif`;const bw=ctx.measureText(r.boss).width,lx=MW/2-(nw+bw)/2;
-  ctx.textAlign='left';ctx.fillStyle='#dfe5f2';ctx.font=`700 12px Hahmlet, serif`;ctx.fillText(r.n,lx,top+i*rh+16);ctx.fillStyle='#97a2c3';ctx.font=`500 10px "IBM Plex Sans KR",sans-serif`;ctx.fillText(r.boss,lx+nw,top+i*rh+16)}
+}
+ const regionLabels=()=>{for(let i=0;i<rows;i++){const r=REGIONS[i];
+  ctx.font=`700 12px Hahmlet, serif`;const nw=ctx.measureText(r.n+'  ').width;ctx.font=`500 10px "IBM Plex Sans KR",sans-serif`;const bw=ctx.measureText(r.boss).width,lx=MW/2-(nw+bw)/2,ly=top+i*rh+15;
+  ctx.fillStyle='rgba(13,18,32,.72)';rr(lx-8,ly-12,nw+bw+16,17,8);
+  ctx.textAlign='left';ctx.fillStyle='#dfe5f2';ctx.font=`700 12px Hahmlet, serif`;ctx.fillText(r.n,lx,ly);ctx.fillStyle='#97a2c3';ctx.font=`500 10px "IBM Plex Sans KR",sans-serif`;ctx.fillText(r.boss,lx+nw,ly)}};
  ctx.lineWidth=3;for(let k=0;k<pts.length-1;k++){ctx.strokeStyle=k<cur?'#5fae6b':'#4a2232';ctx.beginPath();ctx.moveTo(pts[k].x,pts[k].y);ctx.lineTo(pts[k+1].x,pts[k+1].y);ctx.stroke()}
- const NI=MAPNODE;pts.forEach((p,k)=>{const lord=p.j===9,rad=lord?R*1.35:R;
-  if(NI.ok){const rn=RNODE[p.i]&&RNODE[p.i][lord?'boss':'enemy'],im=k<cur?NI.captured:rn||(k===cur?NI.current:lord?NI.boss:NI.enemy),z=rad*(k===cur?3.1:rn?(lord?2.9:2.6):2.5);if(k===cur){const pr=rad+5+Math.sin(T*4)*2;ctx.globalAlpha=.5;ctx.strokeStyle='#ffc94a';ctx.lineWidth=2.5;ctx.beginPath();ctx.arc(p.x,p.y,pr,0,Math.PI*2);ctx.stroke();ctx.globalAlpha=1}ctx.drawImage(im,p.x-z/2,p.y-z*.62-(k===cur?Math.abs(Math.sin(T*3))*3:0),z,z);return}
+ const NI=MAPNODE;pts.forEach((p,k)=>{const lord=p.j===9,rad=lord?R*1.25:R;
+  if(NI.ok){const rn=RNODE[p.i]&&RNODE[p.i][lord?'boss':'enemy'],im=k<cur?NI.captured:rn||(k===cur?NI.current:lord?NI.boss:NI.enemy),z=Math.min(rh*.78,rad*(k===cur?2.9:rn?(lord?2.5:2.4):2.4));if(k===cur){const pr=rad+5+Math.sin(T*4)*2;ctx.globalAlpha=.5;ctx.strokeStyle='#ffc94a';ctx.lineWidth=2.5;ctx.beginPath();ctx.arc(p.x,p.y,pr,0,Math.PI*2);ctx.stroke();ctx.globalAlpha=1}ctx.drawImage(im,p.x-z/2,p.y-z*.62-(k===cur?Math.abs(Math.sin(T*3))*3:0),z,z);return}
   if(k<cur){ell(p.x,p.y,rad,rad,'#5fae6b');ctx.strokeStyle='#eaffea';ctx.lineWidth=1.8;ctx.beginPath();ctx.moveTo(p.x-rad*.4,p.y);ctx.lineTo(p.x-rad*.05,p.y+rad*.35);ctx.lineTo(p.x+rad*.45,p.y-rad*.35);ctx.stroke()}
   else{ell(p.x,p.y,rad,rad,k===cur?'#7a2b3a':'#4a1f2c');ctx.fillStyle='#c25a6a';ctx.beginPath();ctx.moveTo(p.x-rad*.5,p.y-rad*.1);ctx.lineTo(p.x-rad*.7,p.y-rad*.75);ctx.lineTo(p.x-rad*.15,p.y-rad*.3);ctx.moveTo(p.x+rad*.15,p.y-rad*.3);ctx.lineTo(p.x+rad*.7,p.y-rad*.75);ctx.lineTo(p.x+rad*.5,p.y-rad*.1);ctx.fill()}
   if(lord){ctx.strokeStyle=k<cur?'#ffc94a':'#ff6b7d';ctx.lineWidth=2;ctx.beginPath();ctx.arc(p.x,p.y,rad+2,0,Math.PI*2);ctx.stroke()}
   if(k===cur){const pr=rad+5+Math.sin(T*4)*2;ctx.strokeStyle='#ffc94a';ctx.lineWidth=2.5;ctx.beginPath();ctx.arc(p.x,p.y,pr,0,Math.PI*2);ctx.stroke()}});
+ regionLabels();
  const kx=MW/2,ky=MH-bottomPad/2,done=cur>=MAXLAND,cap=CAPIMG[done?'open':'locked'];if(cap){const z=bottomPad*1.05;ctx.drawImage(cap,kx-z-6,MH-z-2,z,z)}else{ctx.fillStyle=done?'#ffc94a':'#4a3a2a';ctx.beginPath();ctx.moveTo(kx-16,ky+8);ctx.lineTo(kx-16,ky-6);ctx.lineTo(kx-8,ky+1);ctx.lineTo(kx,ky-12);ctx.lineTo(kx+8,ky+1);ctx.lineTo(kx+16,ky-6);ctx.lineTo(kx+16,ky+8);ctx.fill();}
  ctx.fillStyle='#dfe5f2';ctx.font='700 12px Hahmlet, serif';ctx.textAlign='left';ctx.fillText('왕도 아스테리온',kx+24,ky+2);ctx.fillStyle='#97a2c3';ctx.font='500 10px "IBM Plex Sans KR",sans-serif';ctx.fillText(done?'진격로가 열렸어요':'다섯 군단을 몰아내면 열려요',kx+24,ky+16);
  if(cur<MAXLAND){const p=pts[cur];ctx.font='600 9.5px "IBM Plex Sans KR",sans-serif';const t=terrName(S.stage),tw=ctx.measureText(t).width+10;let bx=Math.max(4,Math.min(MW-tw-4,p.x-tw/2)),byy=p.y+R*1.2+3;ctx.fillStyle='rgba(255,201,74,.95)';ctx.beginPath();ctx.moveTo(p.x-4,byy);ctx.lineTo(p.x,byy-4);ctx.lineTo(p.x+4,byy);ctx.fill();rr(bx,byy,tw,14,5);ctx.fillStyle='#3a2a00';ctx.textAlign='center';ctx.fillText(t,bx+tw/2,byy+10)}
