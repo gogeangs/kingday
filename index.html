@@ -685,13 +685,20 @@ function mixc(a,b,t){const p=h=>[1,3,5].map(i=>parseInt(h.slice(i,i+2),16)),A=p(
 const DECO=['windmill','trees','spires','graves','volcano'];
 function rnd(i){const x=Math.sin(i*127.1+311.7)*43758.5453;return x-Math.floor(x)}
 /* 배경 이미지: assets/bg/<지역>_<sky|far|mid|ground>.png, 가로 반복. 없으면 아래 코드 배경 */
-const BG_IMG={0:'erdan'},BGI={};
+const BG_IMG={0:'erdan',1:'dusk'},BG_FULL={dusk:true},BGI={};
 function loadBgs(){for(const k in BG_IMG){const n=BG_IMG[k];BGI[n]={};for(const l of['sky','far','mid','ground']){const im=new Image();im.onload=()=>{im.ok=true;if(l==='ground')im.base=baseColor(im)};im.src='assets/bg/'+n+'_'+l+'.png';BGI[n][l]=im}}}
 function baseColor(im){const c=document.createElement('canvas');c.width=c.height=1;const x=c.getContext('2d');x.drawImage(im,0,im.height*.75,im.width,im.height*.25,0,0,1,1);const d=x.getImageData(0,0,1,1).data;return[d[0],d[1],d[2]]}
 function bgReady(r){const n=BG_IMG[REGIONS.indexOf(r)];return n&&['sky','far','mid','ground'].every(l=>BGI[n][l].ok)?BGI[n]:null}
 function tileLayer(im,bottom,h,speed){const w=im.width*h/im.height,off=((bgX*speed)%w+w)%w;for(let x=-off;x<W;x+=w)ctx.drawImage(im,x,bottom-h,w+1,h)}
 function drawBg(r,L){
  const B=bgReady(r);
+ const BN=BG_IMG[REGIONS.indexOf(r)];
+ if(B&&BG_FULL[BN]){const hz=L.top-Ht*.05;
+  tileLayer(B.sky,hz+Ht*.1,Math.max(hz+Ht*.1,W*B.sky.height/B.sky.width*1.3),.04);
+  tileLayer(B.far,hz+Ht*.05,Ht*.2,.12);
+  tileLayer(B.mid,hz+Ht*.15,Ht*.27,.3);
+  tileLayer(B.ground,Ht,Ht-hz+Ht*.06,.9);
+  const vg=ctx.createLinearGradient(0,Ht*.72,0,Ht);vg.addColorStop(0,'rgba(0,0,0,0)');vg.addColorStop(1,'rgba(0,0,0,.35)');ctx.fillStyle=vg;ctx.fillRect(0,Ht*.72,W,Ht*.28);return}
  if(B){const hz=L.top-Ht*.05;
   tileLayer(B.sky,hz+Ht*.08,Math.max(hz+Ht*.08,W*B.sky.height/B.sky.width*1.6),.04);
   tileLayer(B.far,hz+Ht*.035,Ht*.15,.12);
@@ -819,10 +826,14 @@ function spawnFx(k,x,y,size,d,vy){if(fxOk(k))fxs.push({k,x,y,size,d,t:0,vy:vy||0
 function fxFrame(k,i,x,y,size,rot){const im=FXI[k],cw=im.cw,h=im.height,w=size*cw/h;ctx.save();ctx.translate(x,y);if(rot)ctx.rotate(rot);ctx.drawImage(im,i*cw,0,cw,h,-w/2,-size/2,w,size);ctx.restore()}
 function drawFxs(){for(const f of fxs){const n=FXDEF[f.k],i=Math.min(n-1,Math.floor(f.t/f.d*n));ctx.globalAlpha=f.t>f.d*.7?Math.max(0,1-(f.t-f.d*.7)/(f.d*.3)):1;fxFrame(f.k,i,f.x,f.y+f.vy*f.t,f.size);ctx.globalAlpha=1}}
 /* 몬스터 스프라이트: 지역 번호 → 시트 이름. 시트는 assets/monsters/<이름>_<walk|attack|hit>.png, 왼쪽을 봄 */
-const MON_SPRITES={0:{id:'slime_plague',walk:4,attack:4,hit:2,fig:150,h:54}};
+const MON_SPRITES={0:{id:'slime_plague',walk:4,attack:4,hit:2,fig:150,h:54},
+ 1:{id:'bat_shadow',walk:4,attack:4,hit:2,fig:180,h:44,lift:30,boss:{id:'boss_seril',walk:4,attack:4,hit:2,fig:195,h:72}}};
 const MSPR={};
-function loadMonSprites(){for(const k in MON_SPRITES){const d=MON_SPRITES[k];MSPR[d.id]={};for(const a of['walk','attack','hit']){const im=new Image();im.onload=()=>{im.ok=true};im.src='assets/monsters/'+d.id+'_'+a+'.png';MSPR[d.id][a]=im}}}
-function monSprite(r){const d=MON_SPRITES[REGIONS.indexOf(r)];if(!d)return null;const m=MSPR[d.id];return m&&['walk','attack','hit'].every(a=>m[a]&&m[a].ok)?d:null}
+function loadMonSprites(){for(const k in MON_SPRITES){for(const d of[MON_SPRITES[k],MON_SPRITES[k].boss].filter(Boolean)){MSPR[d.id]={};for(const a of['walk','attack','hit']){const im=new Image();im.onload=()=>{im.ok=true};im.src='assets/monsters/'+d.id+'_'+a+'.png';MSPR[d.id][a]=im}}}}
+const sprOk=d=>{const m=d&&MSPR[d.id];return!!m&&['walk','attack','hit'].every(a=>m[a]&&m[a].ok)};
+function monSprite(r,mon){const d=MON_SPRITES[REGIONS.indexOf(r)];if(!d)return null;
+ if(mon&&mon.lord&&d.boss){return sprOk(d.boss)?Object.assign({lordArt:true},d.boss):null} // 군단장은 전용 그림 (없으면 코드 그림)
+ return sprOk(d)?d:null}
 function loadSprites(){for(const id in SPRITES){SPR[id]={};for(const a of['idle','walk','attack','hit']){const im=new Image();
  im.onload=()=>{im.ok=true;if(hasSprite(id)){HEIGHT[id]=SPRITES[id].h;partySig='';prowSig='';eqSig='';if(id==='kael')faceTo($('faceCv'),'kael')}};im.onerror=()=>{im.bad=true};im.src='assets/characters/'+id+'_'+a+'.png';SPR[id][a]=im}}}
 const hasSprite=id=>!!SPR[id]&&['idle','walk','attack','hit'].every(a=>SPR[id][a].ok);
@@ -844,12 +855,12 @@ function drawMember(id,x,y,s,p,walk){
 function drawMon(r,y,s,m){
  const k=m.boss?(m.lord?2:1.7):1,x=m.x,ss=s*k,fade=m.dead>0?m.dead/.35:1;ctx.globalAlpha=fade;
  const col=m.hit>0?'#ffffff':r.col;ell(x,y,18*ss,5*ss,'rgba(0,0,0,.25)');let top;const ph=x*.05;
- const md=monSprite(r);
- if(md){const k=md.h*ss/md.fig,moving=m.tx!=null&&m.x>m.tx+1;let a='walk',i=Math.floor(T*8+ph)%md.walk;
+ const md=monSprite(r,m),sk=md&&md.lordArt?ss*.8:ss,ly=md&&md.lift?y-md.lift*ss*(1+.08*Math.sin(T*5+ph)):y;
+ if(md){const k=md.h*sk/md.fig,moving=m.tx!=null&&m.x>m.tx+1;let a='walk',i=Math.floor(T*8+ph)%md.walk;
   if(m.hit>0||m.dead>0){a='hit';i=m.dead>0?1:0}else if(m.sw>0){a='attack';i=Math.max(0,Math.min(md.attack-1,Math.floor((1-m.sw/.4)*md.attack)))}else if(!moving){i=Math.floor(T*4+ph)%md.walk}
-  ctx.drawImage(MSPR[md.id][a],i*SPR_FRAME,0,SPR_FRAME,SPR_FRAME,x-SPR_FRAME/2*k,y-SPR_FOOT*k,SPR_FRAME*k,SPR_FRAME*k);
-  if(m.hit>0){ctx.globalCompositeOperation='lighter';ctx.globalAlpha=fade*.35;ctx.drawImage(MSPR[md.id][a],i*SPR_FRAME,0,SPR_FRAME,SPR_FRAME,x-SPR_FRAME/2*k,y-SPR_FOOT*k,SPR_FRAME*k,SPR_FRAME*k);ctx.globalCompositeOperation='source-over';ctx.globalAlpha=fade}
-  top=y-md.fig*k}
+  ctx.drawImage(MSPR[md.id][a],i*SPR_FRAME,0,SPR_FRAME,SPR_FRAME,x-SPR_FRAME/2*k,ly-SPR_FOOT*k,SPR_FRAME*k,SPR_FRAME*k);
+  if(m.hit>0){ctx.globalCompositeOperation='lighter';ctx.globalAlpha=fade*.35;ctx.drawImage(MSPR[md.id][a],i*SPR_FRAME,0,SPR_FRAME,SPR_FRAME,x-SPR_FRAME/2*k,ly-SPR_FOOT*k,SPR_FRAME*k,SPR_FRAME*k);ctx.globalCompositeOperation='source-over';ctx.globalAlpha=fade}
+  top=ly-md.fig*k}
  else if(r.kind==='slime'){const q=Math.sin(T*6+ph)*.08,rx=20*ss*(1+q),ry=17*ss*(1-q);ell(x,y-ry,rx,ry,col);ctx.fillStyle=col;ctx.fillRect(x-rx,y-ry,rx*2,ry);ell(x-7*ss,y-ry*1.3,5*ss,4*ss,'rgba(255,255,255,.35)');eyes(x-10*ss,y-ry,ss,'#3a0a14');top=y-ry*2}
  else if(r.kind==='bat'){const fy=y-46*ss+Math.sin(T*5+ph)*5*ss,fl=Math.sin(T*18+ph)*8*ss;ctx.fillStyle=col;
   ctx.beginPath();ctx.moveTo(x,fy);ctx.lineTo(x+26*ss,fy-12*ss+fl);ctx.lineTo(x+18*ss,fy+6*ss);ctx.closePath();ctx.fill();
@@ -858,7 +869,7 @@ function drawMon(r,y,s,m){
  else if(r.kind==='golem'){ctx.fillStyle=col;const b=Math.sin(T*2+ph)*ss;rr(x-18*ss,y-26*ss,36*ss,26*ss,6*ss);rr(x-13*ss,y-44*ss+b,26*ss,20*ss,6*ss);ctx.fillStyle='rgba(0,0,0,.18)';ctx.fillRect(x-18*ss,y-12*ss,36*ss,3*ss);ctx.fillStyle=col;rr(x+17*ss,y-24*ss,9*ss,16*ss,4*ss);eyes(x-10*ss,y-35*ss+b,ss,'#ff5a3a');top=y-46*ss+b}
  else{const fy=y-30*ss+Math.sin(T*3+ph)*4*ss;ctx.fillStyle=col;ctx.beginPath();ctx.arc(x,fy-6*ss,16*ss,Math.PI,0);ctx.lineTo(x+16*ss,fy+12*ss);for(let i=0;i<4;i++){const xx=x+16*ss-(i+.5)*8*ss;ctx.quadraticCurveTo(xx,fy+(i%2?18:6)*ss+Math.sin(T*6+i)*2*ss,xx-4*ss,fy+12*ss)}ctx.closePath();ctx.globalAlpha=fade*.88;ctx.fill();ctx.globalAlpha=fade;eyes(x-10*ss,fy-4*ss,ss,'#1a3a6a');top=fy-22*ss}
  if(!md){ctx.fillStyle='#3a1a24';ctx.beginPath();ctx.moveTo(x-9*ss,top+3*ss);ctx.lineTo(x-12*ss,top-7*ss);ctx.lineTo(x-4*ss,top+2*ss);ctx.moveTo(x+4*ss,top+2*ss);ctx.lineTo(x+12*ss,top-7*ss);ctx.lineTo(x+9*ss,top+3*ss);ctx.fill()}
- if(m.boss){ctx.fillStyle=m.lord?'#ff5d73':'#ffc94a';ctx.beginPath();const cy=top-4*ss;ctx.moveTo(x-8*ss,cy);ctx.lineTo(x-8*ss,cy-8*ss);ctx.lineTo(x-4*ss,cy-4*ss);ctx.lineTo(x,cy-10*ss);ctx.lineTo(x+4*ss,cy-4*ss);ctx.lineTo(x+8*ss,cy-8*ss);ctx.lineTo(x+8*ss,cy);ctx.fill()}
+ if(m.boss&&!(md&&md.lordArt)){ctx.fillStyle=m.lord?'#ff5d73':'#ffc94a';ctx.beginPath();const cy=top-4*ss;ctx.moveTo(x-8*ss,cy);ctx.lineTo(x-8*ss,cy-8*ss);ctx.lineTo(x-4*ss,cy-4*ss);ctx.lineTo(x,cy-10*ss);ctx.lineTo(x+4*ss,cy-4*ss);ctx.lineTo(x+8*ss,cy-8*ss);ctx.lineTo(x+8*ss,cy);ctx.fill()}
  bar(x,top-(m.boss?22:12)*s,(m.boss?60:32)*s,m.hp/m.max,'#ff6b7d');ctx.globalAlpha=1
 }
 function drawProj(p,s){const k=p.t/p.d,x=p.x+(p.tx-p.x)*k,y=p.y+(p.ty-p.y)*k-Math.sin(k*Math.PI)*(p.kind==='harpoon'?4:14)*s;

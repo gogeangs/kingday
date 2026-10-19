@@ -3,6 +3,9 @@
 - 하늘을 뺀 3장은 그림에 박힌 체크무늬(회백색 격자)를 위쪽부터 지워 진짜 투명으로 만듭니다.
 - 왼쪽 끝과 오른쪽 끝을 섞어서 가로로 반복해도 이음새가 보이지 않게 만듭니다.
     python3 tools/extract_bg.py art/source/erdan_layer_concept_a.png erdan
+따로 받은 레이어 4장(<지역>_sky/far/mid/ground.png, 진짜 투명)은 --layers 로 처리합니다:
+    python3 tools/extract_bg.py art/source/dusk --layers
+위쪽 투명 부분을 잘라 내고 좌우 반복만 맞춥니다.
 """
 import sys
 import numpy as np
@@ -81,5 +84,23 @@ def main(src, region):
         print(out, rgba.shape[1], "x", rgba.shape[0])
 
 
+def layers(prefix):
+    region = prefix.rsplit("/", 1)[-1]
+    for name in NAMES:
+        rgba = np.array(Image.open(f"{prefix}_{name}.png").convert("RGBA"))
+        if name != "sky":
+            a = rgba[..., 3]
+            rgba[..., 3] = np.where(a < 12, 0, a)
+            rows = np.nonzero((rgba[..., 3] > 0).mean(1) > 0.002)[0]
+            rgba = rgba[max(0, rows.min() - 2):]
+        rgba = make_tileable(rgba)
+        out = f"assets/bg/{region}_{name}.png"
+        Image.fromarray(rgba).save(out, optimize=True)
+        print(out, rgba.shape[1], "x", rgba.shape[0])
+
+
 if __name__ == "__main__":
-    main(sys.argv[1], sys.argv[2])
+    if "--layers" in sys.argv:
+        layers(sys.argv[1])
+    else:
+        main(sys.argv[1], sys.argv[2])
