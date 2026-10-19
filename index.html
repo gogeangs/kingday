@@ -90,8 +90,10 @@ canvas{display:block;width:100%;height:100%}
 .eqstats{display:grid;grid-template-columns:repeat(2,1fr);gap:4px 12px;font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums}
 .eqstats b{color:var(--fg);float:right}
 .title{position:absolute;inset:0;z-index:40;display:flex;flex-direction:column;align-items:center;justify-content:space-between;padding:56px 24px calc(48px + env(safe-area-inset-bottom,0px));background:linear-gradient(rgba(10,14,26,.94),rgba(10,14,26,.2) 34%,rgba(10,14,26,.2) 52%,rgba(10,14,26,.98) 78%)}
+.title .titlebg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:50% 70%;z-index:-1;animation:none;filter:none}
+.title{isolation:isolate}
 .title img{width:min(340px,90%);filter:drop-shadow(0 8px 18px rgba(0,0,0,.5));animation:float 4s ease-in-out infinite}
-.title .tsub{font-family:var(--f-display);font-size:14px;color:#fff;text-shadow:0 1px 4px #000;text-align:center}
+.title .tsub{background:rgba(10,14,26,.6);padding:4px 12px;border-radius:999px;font-family:var(--f-display);font-size:14px;color:#fff;text-shadow:0 1px 4px #000;text-align:center}
 .title .tstart{font-family:var(--f-display);font-weight:700;font-size:22px;border:2px solid #fff3c4;border-radius:14px;padding:14px 48px;background:linear-gradient(#ffd66b,#e0a020);color:var(--gold-ink);cursor:pointer;box-shadow:0 5px 0 #a8700a,0 10px 24px rgba(0,0,0,.4)}
 .title .tlogo-fallback{font-family:var(--f-display);font-weight:700;font-size:40px;color:var(--gold);text-shadow:0 3px 0 #6b4a10}
 @keyframes float{50%{transform:translateY(-6px)}}
@@ -165,6 +167,9 @@ button:focus-visible,input:focus-visible{outline:2px solid var(--gold);outline-o
 .sheet{border:22px solid transparent;border-image:url(assets/ui/frame_popup.png) 70 fill / 22px stretch;background:var(--panel) padding-box;border-radius:0;padding:10px 6px 8px}
 .bossportrait{display:block;width:120px;height:120px;margin:0 auto 6px;object-fit:contain;filter:drop-shadow(0 4px 10px rgba(255,60,60,.35))}
 .bossface{width:34px;height:34px;margin:-10px 0 -10px -4px;object-fit:cover;object-position:50% 15%;border-radius:50%;border:2px solid var(--bad);background:#2a0e14}
+.illust{display:block;width:calc(100% + 12px);margin:-10px -6px 4px;aspect-ratio:16/10;object-fit:cover;object-position:50% 45%;border-radius:4px}
+.illust.il-prologue{object-position:50% 34%}
+.illust.il-retire{object-position:50% 48%}
 .lore.sys{font-family:var(--f-body);font-size:13px;color:var(--muted);border-top:1px solid var(--line);padding-top:10px}
 .cmp{display:grid;grid-template-columns:1fr 1fr;gap:8px}
 .card{border:2px solid var(--c,var(--line));border-radius:12px;padding:10px;display:flex;flex-direction:column;align-items:center;gap:4px;min-width:0;background:var(--panel2)}
@@ -263,7 +268,7 @@ button:focus-visible,input:focus-visible{outline:2px solid var(--gold);outline-o
     <button class="tab" role="tab" data-t="mp" aria-selected="false"><img src="assets/ui/tab_map.png" alt="" onerror="this.remove()">지도</button>
   </nav>
 
-  <div class="title" id="title">
+  <div class="title" id="title"><img class="titlebg" src="assets/illust/illust_title.jpg" alt="" onerror="this.remove()">
     <img src="assets/ui/logo.png" alt="왕이 되는 그날까지" onerror="this.outerHTML='<div class=&quot;tlogo-fallback&quot;>왕이 되는 그날까지</div>'">
     <div style="display:flex;flex-direction:column;align-items:center;gap:14px">
       <div class="tsub">마족에게 빼앗긴 땅을 되찾는 농부의 여정</div>
@@ -421,8 +426,8 @@ function para(p){
   return id?`<div class="talk m"><img class="pface" src="assets/portraits/portrait_${id}_${mood}.png" alt="" onerror="this.remove()">${line}</div>`:line}
  if(p.startsWith('sys:'))return`<p class="lore sys">${p.slice(4)}</p>`;
  return`<p class="lore">${p}</p>`}
-function scene(eyebrow,title,paras,btn,alt){
- $('sheet').innerHTML=`<div class="eyebrow">${eyebrow}</div><h2>${title}</h2>${paras.map(para).join('')}<div class="acts ${alt?'':'one'}">${alt?`<button id="mAlt">${alt.label}</button>`:''}<button class="pri" id="mGo">${btn}</button></div>`;
+function scene(eyebrow,title,paras,btn,alt,illust){
+ $('sheet').innerHTML=`${illust?`<img class="illust il-${illust}" src="assets/illust/illust_${illust}.jpg" alt="" onerror="this.remove()">`:''}<div class="eyebrow">${eyebrow}</div><h2>${title}</h2>${paras.map(para).join('')}<div class="acts ${alt?'':'one'}">${alt?`<button id="mAlt">${alt.label}</button>`:''}<button class="pri" id="mGo">${btn}</button></div>`;
  $('modal').hidden=false;$('mGo').focus();$('mGo').onclick=()=>{closeModal();alt&&alt.go&&alt.go()};if(alt)$('mAlt').onclick=closeModal;
 }
 function chapter(){const st=S.stage;queue(()=>{const r=region(st),i=Math.floor((st-1)/10)%5;scene('제'+(i+1)+'군단 · 점령지',`<img class="bossportrait" src="assets/portraits/portrait_${BOSSID[i]}_idle.png" alt="" onerror="this.remove()">`+r.n,[...r.lore,'sys:이 땅의 지배자 · '+r.boss],'진격한다')})}
@@ -434,7 +439,7 @@ function intro(){queue(()=>scene('왕이 되는 그날까지 · 프롤로그','�
  '변두리 마을의 농부 카엘은 그날도 밭을 갈고 있었다. 마물이 마을로 쏟아지자, 그는 밭에 박혀 있던 녹슨 쇠막대를 뽑아 휘둘렀다.',
  'q@moved:…드디어 나를 뽑는 자가 나타났군. 300년 기다렸다, 주인. 이제 왕이 되러 가자.',
  'k@surprised:누구세요? 그리고 전 농부인데요.',
- 'sys:마족에게 빼앗긴 영지를 하나씩 되찾고, 동료를 모아 폐허가 된 마을을 다시 세우세요.'],'일단 마을부터 지키자'));chapter()}
+ 'sys:마족에게 빼앗긴 영지를 하나씩 되찾고, 동료를 모아 폐허가 된 마을을 다시 세우세요.'],'일단 마을부터 지키자',null,'prologue'));chapter()}
 
 /* ---------- 장비 ---------- */
 function rollItem(){
@@ -550,7 +555,7 @@ function renderRetire(){
 function retire(p){
  S.memory+=p;S.retires++;S.gold=60;S.stage=1;S.wave=0;S.eq={};S.up={atk:0,hp:0,spd:0,crit:0};for(const k in S.lv)S.lv[k]=1;S.rankSeen=0;
  for(const id in P)delete P[id];mons=[];$('bossbar').hidden=true;syncParty();
- queue(()=>scene('몇 년 뒤','…다시 끌려 나오다',['평화로운 3년이었다. 카엘은 매일 밭을 갈았고, 호박은 해마다 커졌다.','그러던 어느 날, 마계의 문이 다시 열렸다.','q@proud:일어나라, 주인. 은퇴는 끝났다.','k@flustered:…왜 또 나야.'],'괭이 대신 검을 든다'));chapter();renderAll()}
+ queue(()=>scene('몇 년 뒤','…다시 끌려 나오다',['평화로운 3년이었다. 카엘은 매일 밭을 갈았고, 호박은 해마다 커졌다.','그러던 어느 날, 마계의 문이 다시 열렸다.','q@proud:일어나라, 주인. 은퇴는 끝났다.','k@flustered:…왜 또 나야.'],'괭이 대신 검을 든다',null,'retire'));chapter();renderAll()}
 let mapSig='';
 function renderMapInfo(){
  const c=landCount(),ri=rankIdx(),nx=RANKS[ri+1],r=region(S.stage);
