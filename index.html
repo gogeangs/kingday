@@ -66,7 +66,8 @@ body{word-break:keep-all;overflow-wrap:break-word;line-break:strict;background:#
 .misdone{display:flex;flex-direction:column;align-items:flex-start;gap:2px;width:100%;margin:12px 0 4px;padding:12px 16px;border-radius:14px;border:1px solid rgba(123,224,143,.35);background:rgba(123,224,143,.08);color:#7be08f;font:inherit;text-align:left;cursor:pointer}.misdone b{font-size:15px}.misdone small{color:var(--muted);font-size:12px}
 .gobloot{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin:2px 0 8px}.gobloot .gl{flex:1 1 0;min-width:68px;max-width:96px;display:flex;flex-direction:column;align-items:center;gap:2px;background:var(--panel2);border:1px solid rgba(255,210,60,.35);border-radius:12px;padding:8px 4px}.gobloot .gl img,.gobloot .gl .relicic,.gobloot .gl svg{width:36px;height:36px}.gobloot .gl b{font-size:14px;color:var(--c,#ffd34a)}.gobloot .gl small{font-size:11px;color:var(--muted)}.gobloot .gl.rare{border-color:#ffd34a;box-shadow:0 0 10px rgba(255,210,60,.5)}
 .stars{color:#ffd34a;font-size:12px;letter-spacing:1px;margin-left:4px}.jobsec{margin:12px 2px 4px;font-weight:700;font-size:14px;color:var(--gold)}.jobsec small{color:var(--muted);font-weight:400;margin-left:6px;font-size:12px}.row.bench{opacity:.8}
-.ccard{display:flex;gap:10px;align-items:center;background:var(--panel2);border:1px solid rgba(201,164,255,.35);border-radius:14px;padding:10px;margin-top:8px}.ccard.locked{opacity:.6}.ccard:not(.own) .portrait{filter:grayscale(.85) brightness(.75)}.ccard .info{flex:1;min-width:0}.ccard .xp{margin:6px 0 2px}.buy.glow{box-shadow:0 0 12px rgba(255,210,60,.8)}
+.ccard{display:flex;gap:10px;align-items:center;background:var(--panel2);border:1px solid rgba(201,164,255,.35);border-radius:14px;padding:10px;margin-top:8px}.ccard.locked{opacity:.6}.ccard:not(.own) .portrait{filter:grayscale(.85) brightness(.75)}.ccard .info{flex:1;min-width:0}.ccard .xp{margin:6px 0 2px}.cbtns{display:flex;flex-direction:column;gap:6px;align-items:stretch}.wish{background:none;border:1px solid var(--line);border-radius:10px;color:var(--muted);font:inherit;font-size:12px;padding:4px 8px;cursor:pointer}.wish.on{color:#ff8fb1;border-color:#ff8fb1}
+.buy.glow{box-shadow:0 0 12px rgba(255,210,60,.8)}
 .cpk{display:flex;align-items:center;justify-content:center;height:64px;font-size:40px;color:#c9a4ff}.cpk b{font-size:16px;margin-left:2px}.gobloot .glc{width:36px;height:36px;border-radius:8px}
 .rareloot{display:flex;justify-content:center;margin:6px 0 10px}.rareloot img{width:132px;height:132px;filter:drop-shadow(0 0 14px rgba(255,210,60,.8));animation:rarepop .6s ease-out}
 @keyframes rarepop{0%{transform:scale(.3) rotate(-20deg);opacity:0}70%{transform:scale(1.12)}100%{transform:scale(1)}}
@@ -518,12 +519,15 @@ const COMP={
  haral:{n:'하랄',role:'어부 · 원거리',desc:'허풍쟁이 늙은 어부. 작살을 던져 멀리서 공격한다.',join:'갈대 강변에서 합류',base:{atk:11,hp:90,aps:.9},per:{atk:3.4,hp:18}},
  riel:{n:'리엘',role:'양봉가 · 광역',desc:'400살 요정 양봉가. 벌 떼로 모든 적을 공격한다.',join:'어스름 숲에서 합류',base:{atk:9,hp:70,aps:.7},per:{atk:3.2,hp:14}},
  margo:{n:'마고',role:'요리사 · 회복',desc:'식당 아주머니. 수프를 던져 가장 다친 동료를 치유한다.',join:'풍차 언덕에서 합류',base:{atk:4,hp:95,aps:.8},per:{atk:1.5,hp:19}},
+ nella:{n:'넬라',role:'어부 · 원거리',desc:'갈대 강변의 씩씩한 그물 어부 소녀. 하랄을 "할배"라 부르며 따라다닌다. 그물을 던져 마물을 느리게 만든다.',join:'동료 카드 30장을 모으면 합류',base:{atk:9,hp:96,aps:1},per:{atk:3,hp:19}},
  luka:{n:'루카',role:'요리사 · 회복',desc:'새벽마다 빵을 굽는 수줍은 제빵사. 카엘의 밀로 빵을 굽는 게 꿈이다. 갓 구운 빵을 던져 동료를 치유한다.',join:'동료 카드 30장을 모으면 합류',base:{atk:5,hp:82,aps:.9},per:{atk:1.7,hp:16}}
 };
 /* ---------- 직업 자리 · 모집 동료 ---------- */
-const JOB={bron:'miner',haral:'fisher',riel:'keeper',margo:'cook',luka:'cook'},JOBN={miner:'광부',fisher:'어부',keeper:'양봉가',cook:'요리사'};
+const JOB={bron:'miner',haral:'fisher',riel:'keeper',margo:'cook',luka:'cook',nella:'fisher'},JOBN={miner:'광부',fisher:'어부',keeper:'양봉가',cook:'요리사'};
 const JSLOT=['miner','kael','fisher','keeper','cook'],STORY={miner:'bron',fisher:'haral',keeper:'riel',cook:'margo'};
-const RECRUITS={luka:{job:'cook'}},STAR_NEED=[30,20,40,80,150],STAR_MUL=[1,1,1.2,1.4,1.6,2];
+const RECRUITS={
+ luka:{job:'cook',title:'제빵사 루카',lines:['m:루카|저, 저기… 카엘 씨 밭의 밀로 빵을 구워 보고 싶어서 따라왔어요.','k@surprised:내 밀로? …은퇴하면 빵집 옆에 밭 하나 더 일궈야겠네.','q@proud:흥, 또 식객이 늘었군. 뭐, 빵 냄새는 나쁘지 않다.','sys:원정대 탭의 요리사 자리에서 마고 대신 출전시킬 수 있어요.'],ok:'잘 부탁해, 루카'},
+ nella:{job:'fisher',title:'그물 어부 넬라',lines:['m:넬라|하랄 할배! 또 혼자 허풍 떨면서 다니지? 이번엔 나도 같이 간다!','m:하랄@laugh|허허, 이 녀석 그물 솜씨는 나보다 낫지. 고래만 빼고.','k@flustered:…원정대가 점점 마을 잔치가 되어 가네.','sys:원정대 탭의 어부 자리에서 하랄 대신 출전시킬 수 있어요.'],ok:'잘 부탁해, 넬라'}},STAR_NEED=[30,20,40,80,150],STAR_MUL=[1,1,1.2,1.4,1.6,2];
 const recStar=id=>(S.rec&&S.rec[id])||0,isRec=id=>id in RECRUITS;
 const owned=id=>id==='kael'||(isRec(id)?recStar(id)>0:!!S.joined[id]);
 const cardOpen=id=>!!S.joined[STORY[RECRUITS[id].job]];
@@ -531,11 +535,11 @@ const starMul=id=>isRec(id)?STAR_MUL[recStar(id)]:1,skPow=id=>isRec(id)?(recStar
 function slotMember(j){if(j==='kael')return'kael';const pk=S.party&&S.party[j];if(pk&&owned(pk))return pk;return S.joined[STORY[j]]?STORY[j]:null}
 const jobMembers=j=>[STORY[j],...Object.keys(RECRUITS).filter(id=>RECRUITS[id].job===j)].filter(owned);
 function recruitUp(id){const stv=recStar(id),need=STAR_NEED[stv],n=(S.cards&&S.cards[id])||0;if(stv>=5||n<need)return;S.cards[id]-=need;if(!S.rec)S.rec={};S.rec[id]=stv+1;if(!S.lv[id])S.lv[id]=1;partySig='';
- if(stv===0)queue(()=>scene('동료 합류','제빵사 '+COMP[id].n,['m:루카|저, 저기… 카엘 씨 밭의 밀로 빵을 구워 보고 싶어서 따라왔어요.','k@surprised:내 밀로? …은퇴하면 빵집 옆에 밭 하나 더 일궈야겠네.','q@proud:흥, 또 식객이 늘었군. 뭐, 빵 냄새는 나쁘지 않다.','sys:원정대 탭의 요리사 자리에서 마고 대신 출전시킬 수 있어요.'],'잘 부탁해, 루카'));
+ if(stv===0){const R=RECRUITS[id];queue(()=>scene('동료 합류',R.title,R.lines,R.ok))}
  else toast(COMP[id].n+' ★'+(stv+1)+'! 능력치 +'+Math.round((STAR_MUL[stv+1]-1)*100)+'%'+(stv+1===3||stv+1===5?' · 스킬 강화':''));renderAll()}
-function gainCard(n,src){const ids=Object.keys(RECRUITS).filter(cardOpen);if(!ids.length)return null;if(!S.cards)S.cards={};const id=ids[Math.floor(Math.random()*ids.length)];S.cards[id]=(S.cards[id]||0)+n;stat('card',n);partySig='';return id}
+function gainCard(n,src){const ids=Object.keys(RECRUITS).filter(id=>cardOpen(id)&&recStar(id)<5);if(!ids.length)return null;if(!S.cards)S.cards={};const w=S.wish&&ids.includes(S.wish)?S.wish:null,id=w&&Math.random()<.5?w:ids[Math.floor(Math.random()*ids.length)];S.cards[id]=(S.cards[id]||0)+n;stat('card',n);partySig='';return id}
 const ORDER=['bron','kael','haral','riel','margo'];
-const HEIGHT={kael:66,bron:54,haral:66,riel:66,margo:64,luka:66};
+const HEIGHT={kael:66,bron:54,haral:66,riel:66,margo:64,luka:66,nella:62};
 const compCost=l=>Math.floor(25*Math.pow(1.16,l-1));
 const UPG=[
  {k:'atk',n:'검 휘두르기',max:99999,cost:l=>10*Math.pow(1.15,l),val:l=>'공격력 +'+(l*3),next:l=>'+'+((l+1)*3)},
@@ -761,7 +765,7 @@ function queue(fn){sceneQ.push(fn);pump()}
 let titleOpen=true;
 function pump(){if(!titleOpen&&$('modal').hidden&&!pending&&sceneQ.length)sceneQ.shift()()}
 /* 대화 초상화: 'k@smile:대사', 'q@angry:대사' 처럼 표정을 고를 수 있어요. 없으면 기본 표정 */
-const NPCID={'루카':'luka','브론':'bron','하랄':'haral','리엘':'riel','마고':'margo','마르타':'marta','피트':'pete','토비':'toby','모르바스':'morbas','세릴':'seril','그로마크':'gromak','알도르':'aldor','이그니스':'ignis'};
+const NPCID={'넬라':'nella','루카':'luka','브론':'bron','하랄':'haral','리엘':'riel','마고':'margo','마르타':'marta','피트':'pete','토비':'toby','모르바스':'morbas','세릴':'seril','그로마크':'gromak','알도르':'aldor','이그니스':'ignis'};
 const BOSSID=['morbas','seril','gromak','aldor','ignis'];
 const PORTRAIT={k:{id:'kael',def:'idle',moods:['idle','surprised','smile','flustered']},q:{id:'luminar',def:'proud',moods:['proud','angry','moved']}};
 function guessMood(w,t){if(w==='k'){if(/\?|누구|왜|설마/.test(t))return'surprised';if(/…|못 하|아니고|멀어|싫/.test(t))return'flustered';if(/좋|은퇴|흙|행복/.test(t))return'smile';return'idle'}
@@ -912,7 +916,7 @@ function renderBlds(){
 /* ---------- 원정대 · 단련 · 지도 ---------- */
 let partySig='';
 function renderParty(){
- const sig=JSON.stringify(S.cards||{})+JSON.stringify(S.rec||{})+JSON.stringify(S.party||{})+JSON.stringify(S.lv)+JSON.stringify(S.joined)+JSON.stringify(S.bld)+JSON.stringify(S.up)+JSON.stringify(S.eq)+buff('atk')+rankIdx()+S.memory;
+ const sig=(S.wish||'')+JSON.stringify(S.cards||{})+JSON.stringify(S.rec||{})+JSON.stringify(S.party||{})+JSON.stringify(S.lv)+JSON.stringify(S.joined)+JSON.stringify(S.bld)+JSON.stringify(S.up)+JSON.stringify(S.eq)+buff('atk')+rankIdx()+S.memory;
  if(sig!==partySig){partySig=sig;
   const rowOf=(id,bench)=>{const c=COMP[id],has=owned(id);
    if(!has)return`<div class="row locked"><canvas class="portrait" id="pf-${id}"></canvas><div class="info"><b>???</b><span class="role">${c.role}</span><div>${c.join}</div></div></div>`;
@@ -924,11 +928,11 @@ function renderParty(){
   const recs=Object.keys(RECRUITS).map(id=>{const c=COMP[id],op=cardOpen(id),stv=recStar(id),n=(S.cards&&S.cards[id])||0,need=STAR_NEED[stv],mx=stv>=5;
    return`<div class="ccard${op?'':' locked'}${stv?' own':''}"><canvas class="portrait" id="pcd-${id}"></canvas><div class="info"><b>${op?c.n:'???'}</b><span class="role">${JOBN[RECRUITS[id].job]}</span>${stv?`<span class="stars">${'★'.repeat(stv)}${'☆'.repeat(5-stv)}</span>`:''}
     ${!op?`<div>${COMP[STORY[RECRUITS[id].job]].n}이(가) 합류하면 카드가 나오기 시작해요</div>`:mx?'<div>별을 모두 모았어요</div>':`<div class="xp"><div style="width:${Math.min(100,n/need*100)}%"></div></div><div>카드 ${n} / ${need}</div>`}</div>
-    ${op&&!mx?`<button class="buy${n>=need?' glow':''}" id="rc-${id}" ${n>=need?'':'disabled'}>${stv?'★ 올리기':'맞이하기'}</button>`:''}</div>`}).join('');
-  $('party').innerHTML=rows+`<div class="sec" style="margin-top:14px">동료 카드 <small>카드를 모아 새 동료를 맞이해요</small></div><p class="note">마물·성주·군단장·황금 고블린·오늘의 할 일·피트의 상점에서 카드를 얻어요. 은퇴해도 카드와 별은 남아요.</p>${recs}`;
+    ${op&&!mx?`<div class="cbtns"><button class="buy${n>=need?' glow':''}" id="rc-${id}" ${n>=need?'':'disabled'}>${stv?'★ 올리기':'맞이하기'}</button><button class="wish${S.wish===id?' on':''}" id="ws-${id}">${S.wish===id?'♥ 희망 중':'♡ 희망'}</button></div>`:''}</div>`}).join('');
+  $('party').innerHTML=rows+`<div class="sec" style="margin-top:14px">동료 카드 <small>카드를 모아 새 동료를 맞이해요</small></div><p class="note">마물·성주·군단장·황금 고블린·오늘의 할 일·피트의 상점에서 카드를 얻어요. ♡ 희망을 눌러 두면 그 동료 카드가 절반 확률로 나와요. 은퇴해도 카드와 별은 남아요.</p>${recs}`;
   [...ORDER,...Object.keys(RECRUITS)].forEach(id=>{portrait(id);const b=$('lv-'+id);if(b)b.onclick=()=>{const c=compCost(S.lv[id]||1);if(S.gold<c)return;const h0=stats(id).hp;S.gold-=c;S.lv[id]=(S.lv[id]||1)+1;if(P[id])P[id].hp+=stats(id).hp-h0;renderAll()};
    const go=$('go-'+id);if(go)go.onclick=()=>{if(!S.party)S.party={};S.party[JOB[id]]=id;partySig='';prowSig='';toast(COMP[id].n+'이(가) '+JOBN[JOB[id]]+' 자리로 출전해요');renderAll()};
-   const rc=$('rc-'+id);if(rc)rc.onclick=()=>recruitUp(id);const cd=$('pcd-'+id);if(cd&&cardOpen(id))faceTo(cd,id)});
+   const rc=$('rc-'+id);if(rc)rc.onclick=()=>recruitUp(id);const ws=$('ws-'+id);if(ws)ws.onclick=()=>{S.wish=S.wish===id?null:id;partySig='';toast(S.wish?COMP[id].n+' 카드가 더 잘 나와요 (절반)':'희망 동료를 해제했어요');renderAll()};const cd=$('pcd-'+id);if(cd&&cardOpen(id))faceTo(cd,id)});
   const g=$('goEq');if(g)g.onclick=()=>setTab('eq')}
  [...ORDER,...Object.keys(RECRUITS)].forEach(id=>{const b=$('lv-'+id);if(b)b.disabled=S.gold<compCost(S.lv[id]||1)});
 }
@@ -1058,6 +1062,7 @@ const SKILLS={
  haral:{n:'고래잡이 작살',d:'모든 적을 꿰뚫는 거대 작살, 공격력 3배 (보스에게 2배)',line:'이건 내가 잡은 고래보다 작군!',need:20,face:'laugh'},
  riel:{n:'벌통 엎기',d:'6초 동안 모든 적에게 지속 피해, 적의 공격이 느려짐',line:'붕붕이들, 가자!',need:22,face:'laugh'},
  margo:{n:'가마솥 한 그릇',d:'원정대 체력 30% 회복, 8초 동안 공격력 20% 증가',line:'다들 한 그릇씩 먹고 힘내!',need:20,face:'laugh'},
+ nella:{n:'만선의 그물',d:'모든 적에게 공격력 2배 피해, 4초 동안 묶어서 공격을 못 하게 함 (보스는 2초, ★3·★5에서 강화)',line:'다 걸렸다! 오늘은 만선이야!',need:20,face:'laugh'},
  luka:{n:'아침 빵 배달',d:'원정대 체력 20% 회복, 8초 동안 공격 속도 30% 증가 (★3·★5에서 강화)',line:'가, 갓 구운 빵 왔어요!',need:18,face:'laugh'}};
 const SKIMG={},CUTIMG={};for(const id in SKILLS){const a=new Image();a.onload=()=>{SKIMG[id]=a;prowSig=''};a.src='assets/skills/skill_'+id+'.png';const b=new Image();b.onload=()=>CUTIMG[id]=b;b.src='assets/portraits/portrait_'+id+'_'+SKILLS[id].face+'.png'}
 const SKX={shield:0,honey:0,feast:0,honeyTick:0,bake:0};let cut=null;
@@ -1081,6 +1086,7 @@ function castSkill(id){const p=P[id];if(!skFull(id)||!engaged)return false;const
  else if(id==='haral'){for(const m of alive)hitMon(m,t.atk*3*(m.boss?2:1)*(SKX.feast>0?1.2:1),true,s,0);const tg=alive[alive.length-1];if(fxOk('skill_haral'))spawnFx('skill_haral',(pos.haral+tg.x)/2+30*s,(py.haral+tg.y)/2-40*s,120*s,.55);else proj.push({x:pos.haral+12*s,y:py.haral-40*s,tx:tg.x+40*s,ty:tg.y-30*s,t:0,d:.35,kind:'harpoon',big:2.4})}
  else if(id==='riel'){SKX.honey=6;SKX.honeyTick=0;spawnFx('skill_riel',cx,cy-40*s,150*s,.9)}
  else if(id==='margo'){for(const j of members()){const q=P[j];if(!q)continue;if(q.down){q.down=false;q.hp=0}q.hp=Math.min(stats(j).hp,q.hp+stats(j).hp*.3);spawnFx('heal',pos[j],py[j]-24*s,70*s,.6)}SKX.feast=8;{const ids=members(),mx=ids.reduce((a,j)=>a+pos[j],0)/ids.length,my=ids.reduce((a,j)=>a+py[j],0)/ids.length;spawnFx('skill_margo',mx,my-60*s,190*s,.9)}}
+ else if(id==='nella'){const k=skPow(id);for(const m of alive){hitMon(m,t.atk*2*k*(SKX.feast>0?1.2:1),true,s,0);m.bind=(m.boss?2:4)*k;addFloat(m.x,m.y-80*s,'꽁꽁!','#9be3ff',13)}if(fxOk('skill_nella'))spawnFx('skill_nella',cx,cy-40*s,170*s,.8)}
  else if(id==='luka'){const k=skPow(id);for(const j of members()){const q=P[j];if(!q)continue;if(q.down){q.down=false;q.hp=0}q.hp=Math.min(stats(j).hp,q.hp+stats(j).hp*.2*k);spawnFx('heal',pos[j],py[j]-24*s,64*s,.6)}SKX.bake=8*k;{const ids=members(),mx=ids.reduce((a,j)=>a+pos[j],0)/ids.length,my=ids.reduce((a,j)=>a+py[j],0)/ids.length;spawnFx('skill_luka',mx,my-60*s,190*s,.9)}}
  prowSig='';return true}
 function stepSkills(dt,L,alive){const{ids,s}=L;for(const k of['shield','feast','bake'])SKX[k]=Math.max(0,SKX[k]-dt);
@@ -1098,7 +1104,7 @@ function drawSkillFx(L){const{pos,py,s,front}=L;
 let flash=0;
 function syncParty(){for(const id of members()){if(!P[id])P[id]={hp:stats(id).hp,cd:Math.random()*.5,swing:0,hit:0,down:false}}}
 /* 원정대 대형: [가로 위치, 깊이] (깊이 0 = 지평선 쪽, 1 = 화면 앞쪽) */
-const FORM={kael:[.46,.34],bron:[.58,.72],haral:[.31,1],riel:[.17,.16],margo:[.10,.58],luka:[.10,.58]};
+const FORM={kael:[.46,.34],bron:[.58,.72],haral:[.31,1],riel:[.17,.16],margo:[.10,.58],luka:[.10,.58],nella:[.31,1]};
 function layout(){const ids=members(),s=Math.min(W/300,Ht/380),top=Ht*.43,bot=Math.max(top+60,Ht-118),pos={},py={},dsc={};
  const solo=ids.length===1;
  ids.forEach(id=>{const f=solo?[.42,.55]:FORM[id];pos[id]=W*f[0];py[id]=top+(bot-top)*f[1];dsc[id]=.9+.14*f[1]});
@@ -1136,7 +1142,7 @@ function step(dt){
  const L=layout(),{ids,pos,py,front,s}=L,gy=0;syncParty();for(const m of mons)m.y=depthAt(L,m.lane??.5);if(banner){banner.t-=dt;if(banner.t<=0)banner=null}
  if(quip){quip.t-=dt;if(quip.t<=0)quip=null}else{quipT-=dt;if(quipT<=0){quipT=12+Math.random()*10;const q=QUIPS[Math.floor(Math.random()*QUIPS.length)];say(q[0],q[1])}}
  for(const id of ids){const p=P[id];p.swing=Math.max(0,p.swing-dt);p.hit=Math.max(0,p.hit-dt)}
- gobT-=dt;for(const m of mons){if(m.flee){m.x+=dt*300;if(m.x>W+80)m.gone=true}m.hit=Math.max(0,m.hit-dt);m.sw=Math.max(0,(m.sw||0)-dt);if(m.dead>0){m.dead-=dt;if(m.dead<=0)m.gone=true}}
+ gobT-=dt;for(const m of mons){if(m.slow>0)m.slow-=dt;if(m.bind>0)m.bind-=dt;if(m.flee){m.x+=dt*300;if(m.x>W+80)m.gone=true}m.hit=Math.max(0,m.hit-dt);m.sw=Math.max(0,(m.sw||0)-dt);if(m.dead>0){m.dead-=dt;if(m.dead<=0)m.gone=true}}
  mons=mons.filter(m=>!m.gone);
  if(!mons.length){engaged=false;bgX+=dt*90;
   for(const id of ids){const p=P[id],mx=stats(id).hp;if(p.down){p.down=false;p.hp=mx*.3}p.hp=Math.min(mx,p.hp+mx*.04*dt)}
@@ -1154,11 +1160,12 @@ function step(dt){
      if(low){const h=t.atk*3.2;P[low].hp=Math.min(stats(low).hp,P[low].hp+h);p.swing=.3;spawnFx('heal',pos[low],py[low]-24*s,62*s,.55);addFloat(pos[low],py[low]-(HEIGHT[low]+8)*s,'+'+fmt(h),'#7be08f',13);proj.push({x:pos[id]+10*s,y:py[id]-50*s,tx:pos[low],ty:py[low]-40*s,t:0,d:.3,kind:'soup'});continue}}
     if(!tgt)continue;const cr=Math.random()<t.crit,d=t.atk*(cr?2:1)*(.9+Math.random()*.2)*(SKX.feast>0?1.2:1);p.swing=.22;
     if(id==='riel'){for(const m of alive)if(m.hp>0)hitMon(m,d*.7,cr,s,gy);proj.push({x:pos.riel+10*s,y:py.riel-46*s,tx:tgt.x,ty:tgt.y-30*s,t:0,d:.35,kind:'bees'})}
+    else if(id==='nella'){hitMon(tgt,d,cr,s,gy);tgt.slow=2;proj.push({x:pos[id]+12*s,y:py[id]-40*s,tx:tgt.x,ty:tgt.y-28*s,t:0,d:.3,kind:'net'})}
     else if(id==='haral'){hitMon(tgt,d,cr,s,gy);proj.push({x:pos.haral+12*s,y:py.haral-40*s,tx:tgt.x,ty:tgt.y-28*s,t:0,d:.2,kind:'harpoon'})}
     else if(JOB[id]==='cook'){hitMon(tgt,d,cr,s,gy);proj.push({x:pos[id]+10*s,y:py[id]-50*s,tx:tgt.x,ty:tgt.y-30*s,t:0,d:.3,kind:'soup'})}
     else hitMon(tgt,d,cr,s,gy)}
    stepSkills(dt,L,alive);
-   for(const m of alive){if(m.hp<=0||m.gob)continue;m.cd-=dt*(SKX.honey>0?.5:1);if(m.cd>0)continue;m.cd=1.2*(m.cdm||1);m.sw=.4;
+   for(const m of alive){if(m.hp<=0||m.gob)continue;if(m.bind>0)continue;m.cd-=dt*(SKX.honey>0?.5:1)*(m.slow>0?.6:1);if(m.cd>0)continue;m.cd=1.2*(m.cdm||1);m.sw=.4;
     const tk=ids.find(i=>JOB[i]==='miner'),tid=(tk&&P[tk]&&!P[tk].down)?tk:ids.find(i=>!P[i].down);if(!tid)continue;
     const q=P[tid],dm=m.atk*(SKX.shield>0?.5:1);q.hp-=dm;q.hit=.15;addFloat(pos[tid],py[tid]-(HEIGHT[tid]+8)*s,'-'+fmt(dm),'#ff6b7d',13);if(q.hp<=0){q.hp=0;q.down=true}}
   }
@@ -1312,17 +1319,17 @@ function drawMargo(x,y,s,o){
  ctx.fillStyle='#ffffff';rr(x-6*s,top-56*s,14*s,6*s,2*s);ell(x-3*s,top-60*s,5*s,4.5*s,'#fff');ell(x+3*s,top-62*s,5.5*s,5*s,'#fff');ell(x+7*s,top-59*s,4*s,4*s,'#fff');
  const a=o.sw>0?(-1.2+(1-o.sw/.3)*1.8):-.3;ctx.save();ctx.translate(x+11*s,top-26*s);ctx.rotate(a);ctx.fillStyle='#b9c0cf';ctx.fillRect(-1*s,-18*s,2*s,18*s);ell(0,-20*s,4*s,3*s,'#b9c0cf');ctx.restore();
 }
-const DRAW={kael:drawKael,bron:drawBron,haral:drawHaral,riel:drawRiel,margo:drawMargo,luka:(x,y,s,o)=>{ctx.save();ctx.filter='hue-rotate(150deg) saturate(1.3)';drawMargo(x,y,s,o);ctx.restore()}};
+const DRAW={kael:drawKael,bron:drawBron,haral:drawHaral,riel:drawRiel,margo:drawMargo,luka:(x,y,s,o)=>{ctx.save();ctx.filter='hue-rotate(150deg) saturate(1.3)';drawMargo(x,y,s,o);ctx.restore()},nella:(x,y,s,o)=>{ctx.save();ctx.filter='hue-rotate(200deg) saturate(1.3)';drawHaral(x,y,s,o);ctx.restore()}};
 
 /* ---------- 이미지 에셋 ----------
    assets/characters/<id>_<동작>.png : 256x256 프레임을 가로로 이은 시트, 발끝 y=250, 머리 중심 x=128.
    이미지가 없거나 아직 안 불러졌으면 위의 코드 그림(DRAW)을 그대로 씁니다. 전투 로직은 이미지와 무관합니다. */
-const SPRITES={kael:{idle:4,walk:6,attack:4,hit:2,h:70},bron:{idle:4,walk:6,attack:4,hit:2,h:74},haral:{idle:4,walk:6,attack:4,hit:2,h:72},riel:{idle:4,walk:6,attack:4,hit:2,h:76},margo:{idle:4,walk:6,attack:4,hit:2,h:72},luka:{idle:4,walk:6,attack:4,hit:2,h:72}};
+const SPRITES={kael:{idle:4,walk:6,attack:4,hit:2,h:70},bron:{idle:4,walk:6,attack:4,hit:2,h:74},haral:{idle:4,walk:6,attack:4,hit:2,h:72},riel:{idle:4,walk:6,attack:4,hit:2,h:76},margo:{idle:4,walk:6,attack:4,hit:2,h:72},luka:{idle:4,walk:6,attack:4,hit:2,h:72},nella:{idle:4,walk:6,attack:4,hit:2,h:68}};
 const SPR_FRAME=256,SPR_FOOT=250,SPR_FIG=171; // SPR_FIG: 프레임 안에서 카엘의 키(px) → 코드 그림 키 66과 맞춤
 const SPR={};
 /* 전투 효과: assets/fx/fx_<이름>.png, 256 칸(작살은 512x256)을 가로로 이은 시트. 없으면 코드 효과 */
 const BANNER=new Image();BANNER.onload=()=>{BANNER.ok=true};
-const FXDEF={hit:4,crit:5,bees:4,heal:5,coin:4,harpoon:1,soup:1,skill_kael:4,skill_bron:4,skill_haral:4,skill_riel:4,skill_margo:4,skill_luka:4},FXI={};let fxs=[];
+const FXDEF={hit:4,crit:5,bees:4,heal:5,coin:4,harpoon:1,soup:1,skill_kael:4,skill_bron:4,skill_haral:4,skill_riel:4,skill_margo:4,skill_luka:4,skill_nella:4},FXI={};let fxs=[];
 function loadFx(){for(const k in FXDEF){const im=new Image();im.onload=()=>{im.ok=true;im.cw=im.width/FXDEF[k]};im.src='assets/fx/fx_'+k+'.png';FXI[k]=im}}
 const fxOk=k=>FXI[k]&&FXI[k].ok;
 function spawnFx(k,x,y,size,d,vy){if(fxOk(k))fxs.push({k,x,y,size,d,t:0,vy:vy||0})}
@@ -1353,7 +1360,7 @@ function monSprite(r,mon){if(mon&&mon.gob)return gobSprite();const ri=REGIONS.in
 function loadSprites(){for(const id in SPRITES){SPR[id]={};for(const a of['idle','walk','attack','hit']){const im=new Image();
  im.onload=()=>{im.ok=true;if(hasSprite(id)){HEIGHT[id]=SPRITES[id].h;partySig='';prowSig='';eqSig='';if(id==='kael')faceTo($('faceCv'),'kael')}};im.onerror=()=>{im.bad=true;const al=SPRITE_ALT[id];if(al&&SPR[al]){SPR[id][a]=SPR[al][a];SPR[id].alt=true;prowSig='';partySig=''}};im.src='assets/characters/'+id+'_'+a+'.png';SPR[id][a]=im}}}
 /* 그림이 오기 전 임시: 같은 직업 동료 그림을 색만 바꿔 씀 */
-const SPRITE_ALT={luka:'margo'};
+const SPRITE_ALT={luka:'margo',nella:'haral'};
 const hasSprite=id=>!!SPR[id]&&['idle','walk','attack','hit'].every(a=>SPR[id][a].ok);
 function spriteFrame(id,p,walk){const d=SPRITES[id];
  if(!p)return['idle',0];
@@ -1400,6 +1407,7 @@ function drawMon(r,y,s,m){
  else if(r.kind==='golem'){ctx.fillStyle=col;const b=Math.sin(T*2+ph)*ss;rr(x-18*ss,y-26*ss,36*ss,26*ss,6*ss);rr(x-13*ss,y-44*ss+b,26*ss,20*ss,6*ss);ctx.fillStyle='rgba(0,0,0,.18)';ctx.fillRect(x-18*ss,y-12*ss,36*ss,3*ss);ctx.fillStyle=col;rr(x+17*ss,y-24*ss,9*ss,16*ss,4*ss);eyes(x-10*ss,y-35*ss+b,ss,'#ff5a3a');top=y-46*ss+b}
  else{const fy=y-30*ss+Math.sin(T*3+ph)*4*ss;ctx.fillStyle=col;ctx.beginPath();ctx.arc(x,fy-6*ss,16*ss,Math.PI,0);ctx.lineTo(x+16*ss,fy+12*ss);for(let i=0;i<4;i++){const xx=x+16*ss-(i+.5)*8*ss;ctx.quadraticCurveTo(xx,fy+(i%2?18:6)*ss+Math.sin(T*6+i)*2*ss,xx-4*ss,fy+12*ss)}ctx.closePath();ctx.globalAlpha=fade*.88;ctx.fill();ctx.globalAlpha=fade;eyes(x-10*ss,fy-4*ss,ss,'#1a3a6a');top=fy-22*ss}
  if(!md){ctx.fillStyle='#3a1a24';ctx.beginPath();ctx.moveTo(x-9*ss,top+3*ss);ctx.lineTo(x-12*ss,top-7*ss);ctx.lineTo(x-4*ss,top+2*ss);ctx.moveTo(x+4*ss,top+2*ss);ctx.lineTo(x+12*ss,top-7*ss);ctx.lineTo(x+9*ss,top+3*ss);ctx.fill()}
+ if(m.bind>0&&!m.dead){const nr=(m.boss?34:24)*s,ny=(top+y)/2;ctx.save();ctx.globalAlpha=Math.min(1,m.bind)*.85;ctx.strokeStyle='#d9e6ee';ctx.lineWidth=1.4*s;ctx.beginPath();ctx.ellipse(x,ny,nr,nr*1.15,0,0,Math.PI*2);for(let i=-2;i<=2;i++){ctx.moveTo(x+i*nr*.4,ny-nr*1.1);ctx.lineTo(x+i*nr*.4,ny+nr*1.1);ctx.moveTo(x-nr,ny+i*nr*.45);ctx.lineTo(x+nr,ny+i*nr*.45)}ctx.stroke();ctx.restore()}
  if(m.boss){const mk=BOSSIMG[m.lord?'markCmd':'markLord'];if(mk){const z=(m.lord?44:36)*s,bob=Math.sin(T*3)*3*s;ctx.drawImage(mk,x-z/2,top-z-4*s+bob,z,z)}m.barY=top-(mk?(m.lord?46:38)*s:10*s)}
  else if(m.gob){m.barY=top-12*s;bar(x,m.barY,44*s,m.hp/m.max,'#ffd34a');if(!m.dead&&!m.flee){ctx.save();ctx.font=`800 ${12*s}px sans-serif`;ctx.textAlign='left';ctx.textBaseline='middle';ctx.lineWidth=3*s;ctx.strokeStyle='#3a2600';const tx='⏱'+Math.ceil(Math.max(0,m.life));ctx.strokeText(tx,x+25*s,m.barY+2*s);ctx.fillStyle=m.life<4?'#ff8a7a':'#ffe27a';ctx.fillText(tx,x+25*s,m.barY+2*s);ctx.restore();if(Math.random()<.3)spawnFx('crit',x+(Math.random()-.5)*30*s,top+Math.random()*40*s,14*s,.3)}}
  else{m.barY=top-12*s;bar(x,m.barY,32*s,m.hp/m.max,'#ff6b7d')}ctx.globalAlpha=1
@@ -1410,6 +1418,7 @@ function drawProj(p,s){const k=p.t/p.d,x=p.x+(p.tx-p.x)*k,y=p.y+(p.ty-p.y)*k-Mat
  if(p.kind==='soup'&&fxOk('soup')){fxFrame('soup',0,x,y,26*s,Math.sin(k*Math.PI*2)*.4);return}
  if(p.kind==='harpoon'){const a=Math.atan2(p.ty-p.y,p.tx-p.x);ctx.save();ctx.translate(x,y);ctx.rotate(a);ctx.strokeStyle='#8a6a48';ctx.lineWidth=2*s;ctx.beginPath();ctx.moveTo(-18*s,0);ctx.lineTo(0,0);ctx.stroke();ctx.fillStyle='#cfd6e0';ctx.beginPath();ctx.moveTo(6*s,0);ctx.lineTo(0,-3*s);ctx.lineTo(0,3*s);ctx.fill();ctx.restore()}
  else if(p.kind==='bees'){for(let i=0;i<5;i++){const bx=x+Math.sin(T*20+i*1.7)*6*s,by=y+Math.cos(T*17+i*2.3)*5*s;ell(bx,by,2*s,1.5*s,'#f2c230')}}
+ else if(p.kind==='net'){const r=(6+k*8)*s;ctx.save();ctx.translate(x,y);ctx.rotate(T*6);ctx.strokeStyle='#d9e6ee';ctx.lineWidth=1.2*s;ctx.beginPath();ctx.arc(0,0,r,0,Math.PI*2);for(let i=-1;i<=1;i++){ctx.moveTo(i*r*.5,-r*.9);ctx.lineTo(i*r*.5,r*.9);ctx.moveTo(-r*.9,i*r*.5);ctx.lineTo(r*.9,i*r*.5)}ctx.stroke();ctx.restore()}
  else{ell(x,y,4.5*s,3*s,'#e8e2d8');ell(x,y-1*s,3.5*s,1.6*s,'#e08a3a')}}
 function drawQuip(pos,s,gy,pyo){
  if(!quip)return;const id=COMP[quip.who]&&quip.who!=='kael'&&pos[quip.who]!=null?quip.who:'kael',x=pos[id];if(x==null)return;if(id!=='kael'&&pyo)gy=pyo[id];const txt=quip.txt,who=quip.who==='q'?'루미나르':id==='kael'?'카엘':COMP[id].n;
