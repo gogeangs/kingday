@@ -432,21 +432,31 @@ const BLD=[
  {k:'mine',n:'광산',who:'브론',max:10,base:2000,eff:l=>'카엘 장비 +'+(l*6)+'% · 광석 '+l+'개/2분',open:()=>S.joined.bron,lock:'브론이 합류하면 열려요'}
 ];
 const bldCost=(b,l)=>Math.floor(b.base*Math.pow(2.2,l));
-const bldTime=l=>Math.min(8*3600,Math.round(60*Math.pow(2,l)));/* 공사 시간(초): 1분, 2분, 4분 … 최대 8시간 */
+const bldK=k=>BLD.find(x=>x.k===k);
+const bldTime=(b,l)=>Math.min(12*3600,Math.round(60*Math.sqrt(b.base/120)*Math.pow(2,l)));/* 공사 시간(초): 비싼 건물일수록 길게(√(기본값/120)배), 레벨마다 2배, 최대 12시간 */
 const fmtT=sec=>{sec=Math.max(0,Math.ceil(sec));const h=Math.floor(sec/3600),m=Math.floor(sec%3600/60),x=sec%60;return h?h+'시간 '+(m?m+'분':''):m?m+'분'+(x&&m<10?' '+x+'초':''):x+'초'};
 const timeGem=sec=>Math.max(1,Math.ceil(sec/180));/* 남은 3분당 이삭 1 */
+const BQ_MAX=2;/* 공사 중 1 + 대기 2 */
 const building=()=>S.build&&S.build.k?S.build:null;
 const buildLeft=()=>building()?Math.max(0,(S.build.end-Date.now())/1000):0;
-function finishBuild(){const bd=building();if(!bd)return;const b=BLD.find(x=>x.k===bd.k),l=S.bld[bd.k];S.build=null;S.bld[bd.k]=l+1;if(!l)S.prod[bd.k]=Date.now();toast(b.n+(l?' 확장':' 재건')+' 완료! '+b.eff(l+1));bldSig='';farmSig='';kitSig=''}
+const bq=()=>S.bq||(S.bq=[]);
+const inBuild=k=>(building()&&S.build.k===k)||bq().includes(k);
+function startNext(at){const k=bq().shift();if(!k)return;const b=bldK(k),l=S.bld[k];if(l>=b.max)return startNext(at);S.build={k,end:at+bldTime(b,l)*1000,dur:bldTime(b,l)}}
+function finishBuild(quiet){const bd=building();if(!bd)return;const b=bldK(bd.k),l=S.bld[bd.k],end=bd.end;S.build=null;S.bld[bd.k]=l+1;if(!l)S.prod[bd.k]=Date.now();if(!quiet)toast(b.n+(l?' 확장':' 재건')+' 완료! '+b.eff(l+1));bldSig='';farmSig='';kitSig='';startNext(Math.min(Date.now(),Math.max(end,0))||Date.now())}
+function orderBuild(b){const l=S.bld[b.k],c=bldCost(b,l);if(l>=b.max||S.gold<c||inBuild(b.k))return;
+ if(building()){if(bq().length>=BQ_MAX)return;S.gold-=c;bq().push(b.k);toast(b.n+' 공사를 예약했어요 · 앞 공사가 끝나면 시작해요');bldSig='';renderAll();return}
+ S.gold-=c;S.build={k:b.k,end:Date.now()+bldTime(b,l)*1000,dur:bldTime(b,l)};bldSig='';renderAll();
+ if(!S.done.tutBuild)buildTutorial(b,l);else toast(b.n+(l?' 확장':' 재건')+' 공사를 시작했어요 · '+fmtT(bldTime(b,l)))}
+function cancelQueued(k){const i=bq().indexOf(k);if(i<0)return;bq().splice(i,1);const b=bldK(k);S.gold+=bldCost(b,S.bld[k]);toast(b.n+' 예약을 취소했어요. 골드를 돌려받았어요');bldSig='';renderAll()}
 const TUT_GEM=10;
 function buildTutorial(b,l){S.done.tutBuild=true;S.gem=(S.gem||0)+TUT_GEM;
  queue(()=>scene('황금 이삭 사용법','공사는 시간이 걸려요',[
-  'sys:'+b.n+' '+(l?'확장':'재건')+' 공사가 시작됐어요. 다 지어지려면 '+fmtT(bldTime(l))+' 걸려요.',
+  'sys:'+b.n+' '+(l?'확장':'재건')+' 공사가 시작됐어요. 다 지어지려면 '+fmtT(bldTime(b,l))+' 걸려요. 비싼 건물일수록 공사가 오래 걸려요.',
   'k@flustered:벽돌 쌓는 건 자신 있는데… 기다리는 건 좀 지루하네요.',
   'q@proud:주인, 이걸 받아라. 성검이 축복한 황금 이삭이다. 이삭을 내면 마을 사람들이 힘을 내서 공사를 바로 끝낸다.',
-  'sys:황금 이삭 '+TUT_GEM+'개를 선물로 받았어요. 공사 중인 건물의 파란 "바로 완료" 버튼을 누르면 이삭으로 공사를 끝낼 수 있어요. 이삭은 상단 바의 이삭 버튼(오늘의 할 일·피트의 상점)에서 더 얻어요.'],
+  'sys:황금 이삭 '+TUT_GEM+'개를 선물로 받았어요. 공사 중인 건물의 파란 "바로 완료" 버튼을 누르면 이삭으로 공사를 끝낼 수 있어요. 공사 중에도 다른 건물을 '+BQ_MAX+'개까지 예약해 두면 차례로 지어져요.'],
   '이삭으로 바로 완료',{label:'그냥 기다릴래요',go:()=>{if(!building()||!spendGem(timeGem(buildLeft())))return;finishBuild();renderAll()}}))}
-function checkBuild(){if(building()&&Date.now()>=S.build.end)finishBuild()}
+function checkBuild(){let n=0;while(building()&&Date.now()>=S.build.end&&n++<10)finishBuild(n>1)}
 const RANKS=[{at:0,n:'농부'},{at:3,n:'마을 지킴이',k:'지킴이라니… 그냥 이웃 돕는 거예요.'},{at:10,n:'기사',k:'기사 아니고 농부라니까요…'},{at:20,n:'영주',k:'영주요? 세금 계산 같은 거 못 하는데.'},{at:30,n:'백작',k:'백작… 은퇴가 점점 멀어진다.'},{at:40,n:'공작',k:'다음은 설마… 아니겠지.'},{at:50,n:'왕도 진격대장',k:'왕도만 되찾으면 정말 은퇴한다.'}];
 const EVENTS=[
  {at:2,id:'marta',eb:'새로운 주민',t:'농부 마르타',p:['개울 마을을 되찾자, 이웃집 마르타 할머니가 가장 먼저 돌아왔다.','m:마르타|용사? 웃기지 마라. 밭일이나 거들어. 씨앗 가져오면 밭은 내가 봐 주마.','k:…네. 사실 그게 제일 하고 싶은 일이에요.','sys:마을에 밭이 열렸어요. 마물이 떨어뜨리는 씨앗을 심어 보세요. 밀 씨앗 5개를 받았어요.'],btn:'밭으로 간다',act:()=>{S.bld.farm=Math.max(1,S.bld.farm);S.seeds.wheat+=5}},
@@ -702,17 +712,19 @@ const VNOTE={inn:'원정대가 쉬는 곳이에요. 레벨이 오를수록 게�
 function vlPanels(){$('farmBox').hidden=!(vlSel==='farm'&&S.bld.farm);$('kitchen').hidden=!(vlSel==='diner'&&S.bld.farm)||$('kitchen').innerHTML==='';const n=$('vNote'),t=VNOTE[vlSel];n.hidden=!t;if(t)n.textContent=t}
 let bldSig='';
 function renderBlds(){
- const bd=building(),sig=JSON.stringify(S.bld)+JSON.stringify(S.joined)+S.done.marta+vlSel+S.stage+(bd?bd.k+Math.ceil(buildLeft()):'')+(S.gem||0);
+ const bd=building(),sig=JSON.stringify(S.bld)+JSON.stringify(S.joined)+S.done.marta+vlSel+S.stage+(bd?bd.k+Math.ceil(buildLeft()):'')+(S.gem||0)+bq().join();
  if(sig!==bldSig){bldSig=sig;
   $('blds').innerHTML=BLD.filter(b=>b.k===vlSel).map(b=>{const l=S.bld[b.k],op=b.open(),mx=l>=b.max;
    if(!op)return`<div class="row locked">${bldImg(b.k,0)}<div class="info"><b>${b.n}</b>${b.who?`<span class="role">${b.who}</span>`:''}<div>${b.lock}</div><div class="nx">재건하면: ${b.eff(1)}</div></div><span class="lockchip">잠김</span></div>`;
-   return`<div class="row${l?'':' ruin'}">${bldImg(b.k,l)}<div class="info"><b>${b.n}</b>${b.who?`<span class="role">${b.who}</span>`:''}<span class="lvtag">${l?'Lv.'+l:'폐허'}</span>${l?`<div>지금: ${b.eff(l)}</div>${mx?'<div class="nx">최대 레벨</div>':`<div class="nx">다음: ${b.eff(l+1)}</div>`}`:`<div>무너져 있어요</div><div class="nx">재건하면: ${b.eff(1)}</div>`}${bd&&bd.k===b.k?`<div class="bprog"><div class="xp"><div style="width:${(1-buildLeft()/bldTime(l))*100}%"></div></div><span>${l?'확장':'재건'} 공사 중 · ${fmtT(buildLeft())} 남음</span></div>`:mx?'':`<div class="nx" style="color:var(--muted)">공사 시간 ${fmtT(bldTime(l))}</div>`}</div>
+   return`<div class="row${l?'':' ruin'}">${bldImg(b.k,l)}<div class="info"><b>${b.n}</b>${b.who?`<span class="role">${b.who}</span>`:''}<span class="lvtag">${l?'Lv.'+l:'폐허'}</span>${l?`<div>지금: ${b.eff(l)}</div>${mx?'<div class="nx">최대 레벨</div>':`<div class="nx">다음: ${b.eff(l+1)}</div>`}`:`<div>무너져 있어요</div><div class="nx">재건하면: ${b.eff(1)}</div>`}${bd&&bd.k===b.k?`<div class="bprog"><div class="xp"><div style="width:${(1-buildLeft()/(bd.dur||bldTime(b,l)))*100}%"></div></div><span>${l?'확장':'재건'} 공사 중 · ${fmtT(buildLeft())} 남음</span></div>`:bq().includes(b.k)?`<div class="bprog"><span>공사 예약 ${bq().indexOf(b.k)+1}번째 · 앞 공사가 끝나면 ${fmtT(bldTime(b,l))} 동안 지어요</span></div>`:mx?'':`<div class="nx" style="color:var(--muted)">공사 시간 ${fmtT(bldTime(b,l))}</div>`}</div>
    <div class="buys">${bd&&bd.k===b.k?`<button class="buy gem" id="bf-${b.k}">${GEMIMG}${timeGem(buildLeft())}로<br>바로 완료</button>`
-   :`<button class="buy" id="bd-${b.k}" ${mx||bd?'disabled':''}>${mx?'최대':bd?'<span class="bl">다른 공사 중</span>':costBtn(l?'확장':'재건',bldCost(b,l))}</button>${mx||bd?'':`<button class="buy gem" id="bg-${b.k}">${GEMIMG}${bldGem(bldCost(b,l))+timeGem(bldTime(l))}로 바로</button>`}`}</div></div>`}).join('');
-  BLD.forEach(b=>{const el=$('bd-'+b.k);if(el)el.onclick=()=>{const l=S.bld[b.k],c=bldCost(b,l);if(l>=b.max||S.gold<c||building())return;S.gold-=c;S.build={k:b.k,end:Date.now()+bldTime(l)*1000};bldSig='';renderAll();if(!S.done.tutBuild)buildTutorial(b,l);else toast(b.n+(l?' 확장':' 재건')+' 공사를 시작했어요 · '+fmtT(bldTime(l)))};
-   const eg=$('bg-'+b.k);if(eg)eg.onclick=()=>{const l=S.bld[b.k];if(l>=b.max||building()||!spendGem(bldGem(bldCost(b,l))+timeGem(bldTime(l))))return;S.build={k:b.k,end:0};finishBuild();renderAll()};
+   :bq().includes(b.k)?`<button class="buy ghost" id="bc-${b.k}">예약 취소</button>`
+   :`<button class="buy" id="bd-${b.k}" ${mx||(bd&&bq().length>=BQ_MAX)?'disabled':''}>${mx?'최대':bd&&bq().length>=BQ_MAX?'<span class="bl">예약이 가득 찼어요</span>':costBtn(bd?'예약':l?'확장':'재건',bldCost(b,l))}</button>${mx?'':`<button class="buy gem" id="bg-${b.k}">${GEMIMG}${bldGem(bldCost(b,l))+timeGem(bldTime(b,l))}로 바로</button>`}`}</div></div>`}).join('');
+  BLD.forEach(b=>{const el=$('bd-'+b.k);if(el)el.onclick=()=>orderBuild(b);
+   const bc=$('bc-'+b.k);if(bc)bc.onclick=()=>cancelQueued(b.k);
+   const eg=$('bg-'+b.k);if(eg)eg.onclick=()=>{const l=S.bld[b.k];if(l>=b.max||inBuild(b.k)||!spendGem(bldGem(bldCost(b,l))+timeGem(bldTime(b,l))))return;S.bld[b.k]=l+1;if(!l)S.prod[b.k]=Date.now();toast(b.n+(l?' 확장':' 재건')+' 완료! '+b.eff(l+1));bldSig='';farmSig='';kitSig='';renderAll()};
    const ef=$('bf-'+b.k);if(ef)ef.onclick=()=>{if(!building()||!spendGem(timeGem(buildLeft())))return;finishBuild();renderAll()}})}
- BLD.forEach(b=>{const el=$('bd-'+b.k);if(el&&S.bld[b.k]<b.max)el.disabled=!!building()||S.gold<bldCost(b,S.bld[b.k])});
+ BLD.forEach(b=>{const el=$('bd-'+b.k);if(el&&S.bld[b.k]<b.max)el.disabled=(building()&&bq().length>=BQ_MAX)||S.gold<bldCost(b,S.bld[b.k])});
 }
 
 /* ---------- 원정대 · 단련 · 지도 ---------- */
@@ -1152,7 +1164,7 @@ const VIMG={bg:null,b:{}};(()=>{const bg=new Image();bg.onload=()=>VIMG.bg=bg;bg
  for(const b of BLD){const o=VIMG.b[b.k]={};const L=(n,src)=>{const im=new Image();im.onload=()=>o[n]=im;im.src=src};
   if(VART.includes(b.k)){L('ruin','assets/village/'+b.k+'_ruin.png');L('built','assets/village/'+b.k+'_built.png')}else L('icon','assets/ui/bld_'+b.k+'.png')}})();
 const VSLOT=[['farm',.098],['inn',.257],['diner',.413],['dock',.573],['apiary',.739],['mine',.902]];
-function vBadge(k,b,lv,open){if(!open)return null;if(building()&&S.build.k===k)return['공사 중 '+fmtT(buildLeft()),'#9cc3ff'];if(k==='farm'&&lv&&S.plots&&S.plots.some(p=>plotState(p).st==='ready'))return['수확!','#7be08f'];if(k==='farm'&&lv&&S.plots&&S.plots.some(p=>!p)&&CROPS.some(c=>S.seeds[c.k]>0))return['심기','#9be3c0'];if(!building()&&lv<b.max&&S.gold>=bldCost(b,lv))return[lv?'▲ 확장':'재건 가능','#ffc94a'];return null}
+function vBadge(k,b,lv,open){if(!open)return null;if(building()&&S.build.k===k)return['공사 중 '+fmtT(buildLeft()),'#9cc3ff'];if(bq().includes(k))return['예약 '+(bq().indexOf(k)+1),'#c9d6f2'];if(k==='farm'&&lv&&S.plots&&S.plots.some(p=>plotState(p).st==='ready'))return['수확!','#7be08f'];if(k==='farm'&&lv&&S.plots&&S.plots.some(p=>!p)&&CROPS.some(c=>S.seeds[c.k]>0))return['심기','#9be3c0'];if(!inBuild(k)&&!(building()&&bq().length>=BQ_MAX)&&lv<b.max&&S.gold>=bldCost(b,lv))return[lv?'▲ 확장':'재건 가능','#ffc94a'];return null}
 function drawVillage(){
  if(!VW)return;if(!VIMG.bg)return drawVillageCode();const prev=ctx;ctx=vctx;const hr=new Date().getHours(),night=hr>=19||hr<6;
  ctx.drawImage(VIMG.bg,0,0,VW,VH);if(night){ctx.fillStyle='rgba(10,16,48,.38)';ctx.fillRect(0,0,VW,VH)}
