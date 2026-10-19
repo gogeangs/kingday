@@ -627,7 +627,7 @@ function claimSub(){if(!subOn()||S.sub.last===today())return;S.sub.last=today();
 let shopSig='';
 function renderShop(){
  if(curTab!=='sh')return;const d=daily();
- const sig=[S.gem,JSON.stringify(S.buys),JSON.stringify(S.sub),JSON.stringify(d)].join('|');if(sig===shopSig)return;shopSig=sig;
+ const sig=[S.gem,S.stage,JSON.stringify(S.buys),JSON.stringify(S.sub),JSON.stringify(d)].join('|');if(sig===shopSig)return;shopSig=sig;
  const misRow=(m)=>{const v=Math.min(d[m.k],m.goal),done=d.claim[m.k],can=misCan(m);return`<div class="mis"><div class="info"><b>${m.n}</b><div class="xp"><div style="width:${v/m.goal*100}%"></div></div></div><button class="buy" data-m="${m.k}" ${can?'':'disabled'}>${done?'받음':can?'+'+m.r+' 받기':v+' / '+m.goal}</button></div>`};
  const gemI='<img src="assets/gem/ui_gem.png" alt="" style="width:16px;height:16px;vertical-align:-3px" onerror="this.remove()">';
  const subTxt=subOn()?`남은 기간 ${subLeft()}일 · ${S.sub.last===today()?'오늘 배송 받음':'오늘 배송이 도착했어요'}`:`구매 즉시 ${gemI}${SUB.now} + 30일간 매일 ${gemI}${SUB.day}<br>방치 보상 +50%`;
@@ -639,15 +639,18 @@ function renderShop(){
  <div class="mis"><div class="info"><b>오늘의 할 일 모두 끝내기</b></div><button class="buy" data-m="all" ${misCan(null)?'':'disabled'}>${d.claim.all?'받음':'+'+MIS_ALL+(misCan(null)?' 받기':'')}</button></div>
  <div class="sec">피트의 무료 선물 <small>광고를 보면 받아요 · 매일 자정 초기화</small></div>
  ${['box','gem'].map(k=>`<div class="mis"><div class="info"><b>${ADS[k].t}</b><div style="font-size:11px;color:var(--muted)">오늘 ${adLeft(k)} / ${ADS[k].n}회 남음</div></div><button class="buy ad" data-ad="${k}" ${adLeft(k)?'':'disabled'}>▶ 받기</button></div>`).join('')}
+ <div class="sec">골드 바꾸기 <small>지금 영지 기준 · 영지가 오를수록 더 많이</small></div>
+ <div class="packs">${GOLDX.map((x,i)=>`<button class="pack gx" data-gx="${x.k}">${i?`<span class="tag">${x.h}시간치</span>`:''}<img src="assets/ui/ui_gold.png" alt="" style="transform:scale(${[.8,1,1.15][i]})" onerror="this.remove()"><b>${fmt(goldX(x))}</b><small>${x.n}</small><span class="price">${gemI}${x.gem}</span></button>`).join('')}</div>
  <div class="sec">특별 상품</div>
  ${S.buys.starter?'':`<div class="shoprow hot"><span class="tag">한 번만</span><img class="pk" src="assets/relic/relic_weapon_3.png" alt="" onerror="this.remove()"><div class="info"><b>${STARTER.n}</b><div>전설 등급 성유물 1개 확정<br>+ ${gemI}${STARTER.gem}</div></div><button class="buy" id="starterBuy">${won(STARTER.won)}</button></div>`}
  <div class="shoprow${subOn()?' hot':''}"><img class="pk" src="assets/gem/gem_pack_5.png" alt="" onerror="this.remove()"><div class="info"><b>${SUB.n}</b><div>${subTxt}</div></div>${subBtn}</div>
  <div class="sec">황금 이삭 <small>상품마다 첫 구매는 2배</small></div>
  <div class="packs">${PACKS.map((p,i)=>{const first=!S.buys[p.k];return`<button class="pack" data-p="${p.k}">${first?'<span class="tag">2배</span>':''}<img src="assets/gem/gem_pack_${i+1}.png" alt="" onerror="this.remove()"><b>${fmt(p.gem)}</b><small>${first?'+'+fmt(p.gem)+' 보너스':''}</small><span class="price">${won(p.won)}</span></button>`}).join('')}</div>
- <p class="note">황금 이삭은 성유물 상자 10연속(장비 탭), 작물 바로 키우기·건물 바로 짓기(마을 탭), 방치 보상 2배 받기에 써요.</p>`;
+ <p class="note">황금 이삭은 골드 바꾸기, 성유물 상자 10연속(장비 탭), 작물 바로 키우기·건물 바로 짓기(마을 탭), 방치 보상 2배 받기에 써요.</p>`;
  const sh=$('shop');
  sh.querySelectorAll('[data-m]').forEach(b=>b.onclick=()=>{const k=b.dataset.m,m=MISSIONS.find(x=>x.k===k);if(!misCan(m||null))return;daily().claim[k]=true;gainGem(m?m.r:MIS_ALL,m?m.n:'오늘의 할 일 완료');shopSig='';renderAll()});
  sh.querySelectorAll('[data-ad]').forEach(b=>b.onclick=()=>({box:adBox,gem:adGem})[b.dataset.ad]());
+ sh.querySelectorAll('[data-gx]').forEach(b=>b.onclick=()=>buyGoldX(b.dataset.gx));
  sh.querySelectorAll('[data-p]').forEach(b=>b.onclick=()=>buyPack(PACKS.find(p=>p.k===b.dataset.p)));
  const sb=$('starterBuy');if(sb)sb.onclick=buyStarter;const ub=$('subBuy');if(ub)ub.onclick=buySub;const uc=$('subClaim');if(uc)uc.onclick=claimSub;
 }
@@ -1513,6 +1516,11 @@ function settingsSheet(step){
  else $('setReset').onclick=()=>settingsSheet('reset');
 }
 function load(){try{const d=JSON.parse(localStorage.getItem(KEY));if(d&&typeof d.gold==='number')return hydrate(d)}catch(e){}return null}
+/* 황금 이삭 → 골드: 지금 영지에서 사냥으로 버는 골드 N시간치 */
+const GOLDX=[{k:'g1',n:'골드 주머니',gem:30,h:2},{k:'g2',n:'골드 자루',gem:100,h:8},{k:'g3',n:'골드 금고',gem:250,h:24}];
+function goldRate(){const dps=members().reduce((a,id)=>{const t=stats(id);return a+t.atk*t.aps*(1+t.crit)},0),tpk=monHp(S.stage,false)/Math.max(1,dps)+1.2;return reward(S.stage,false)/tpk*memMul()}
+const goldX=x=>Math.max(100,Math.floor(goldRate()*3600*x.h));
+function buyGoldX(k){const x=GOLDX.find(v=>v.k===k),g=goldX(x);if(!spendGem(x.gem))return;S.gold+=g;toast(x.n+' 구매! 골드 +'+fmt(g));shopSig='';renderAll()}
 function offline(){
  const cap=(6+S.bld.inn)*3600,sec=Math.min(cap,(Date.now()-S.last)/1000);if(sec<60)return;
  const dps=members().reduce((a,id)=>{const t=stats(id);return a+t.atk*t.aps*(1+t.crit)},0),tpk=monHp(S.stage,false)/dps+1.2,g=Math.floor(sec/tpk*reward(S.stage,false)*.5*memMul()*(subOn()?1.5:1));if(g<=0)return;
