@@ -919,7 +919,7 @@ function renderParty(){
    const t=stats(id),line=`공격 ${fmt(t.atk)} · 체력 ${fmt(t.hp)}`,st=isRec(id)?`<span class="stars">${'★'.repeat(recStar(id))}${'☆'.repeat(5-recStar(id))}</span>`:'';
    if(id==='kael')return`<div class="row"><canvas class="portrait" id="pf-${id}"></canvas><div class="info"><b>${c.n}</b><span class="role">${c.role}</span><span class="lvtag">${RANKS[rankIdx()].n}</span><div>${c.desc}</div><div>${line}</div></div><button class="buy ghost" id="goEq">장비</button><div class="skl"><img src="assets/skills/skill_${id}.png" alt="" onerror="this.remove()"><div><b>${SKILLS[id].n}</b><span>${SKILLS[id].d}</span></div></div></div>`;
    return`<div class="row${bench?' bench':''}"><canvas class="portrait" id="pf-${id}"></canvas><div class="info"><b>${c.n}</b>${st}<span class="role">${c.role}</span><span class="lvtag">${bench?'대기':'Lv.'+(S.lv[id]||1)}</span><div>${c.desc}</div><div>${line}</div></div>${bench?`<button class="buy ghost" id="go-${id}">출전</button>`:`<button class="buy" id="lv-${id}">${costBtn('레벨업',compCost(S.lv[id]||1))}</button>`}<div class="skl"><img src="assets/skills/skill_${id}.png" alt="" onerror="this.remove()"><div><b>${SKILLS[id].n}</b><span>${SKILLS[id].d}</span></div></div></div>`};
-  const rows=JSLOT.map(j=>{if(j==='kael')return rowOf('kael');const act=slotMember(j),all=jobMembers(j);
+  const rows=['kael',...JSLOT.filter(j=>j!=='kael'&&slotMember(j)),...JSLOT.filter(j=>j!=='kael'&&!slotMember(j))].map(j=>{if(j==='kael')return rowOf('kael');const act=slotMember(j),all=jobMembers(j);
    return(all.length>1?`<div class="jobsec">${JOBN[j]} 자리 <small>한 명만 출전해요</small></div>`:'')+rowOf(act||STORY[j])+all.filter(x=>x!==act).map(x=>rowOf(x,true)).join('')}).join('');
   const recs=Object.keys(RECRUITS).map(id=>{const c=COMP[id],op=cardOpen(id),stv=recStar(id),n=(S.cards&&S.cards[id])||0,need=STAR_NEED[stv],mx=stv>=5;
    return`<div class="ccard${op?'':' locked'}"><canvas class="portrait" id="pcd-${id}"></canvas><div class="info"><b>${op?c.n:'???'}</b><span class="role">${JOBN[RECRUITS[id].job]}</span>${stv?`<span class="stars">${'★'.repeat(stv)}${'☆'.repeat(5-stv)}</span>`:''}
@@ -1081,7 +1081,7 @@ function castSkill(id){const p=P[id];if(!skFull(id)||!engaged)return false;const
  else if(id==='haral'){for(const m of alive)hitMon(m,t.atk*3*(m.boss?2:1)*(SKX.feast>0?1.2:1),true,s,0);const tg=alive[alive.length-1];if(fxOk('skill_haral'))spawnFx('skill_haral',(pos.haral+tg.x)/2+30*s,(py.haral+tg.y)/2-40*s,120*s,.55);else proj.push({x:pos.haral+12*s,y:py.haral-40*s,tx:tg.x+40*s,ty:tg.y-30*s,t:0,d:.35,kind:'harpoon',big:2.4})}
  else if(id==='riel'){SKX.honey=6;SKX.honeyTick=0;spawnFx('skill_riel',cx,cy-40*s,150*s,.9)}
  else if(id==='margo'){for(const j of members()){const q=P[j];if(!q)continue;if(q.down){q.down=false;q.hp=0}q.hp=Math.min(stats(j).hp,q.hp+stats(j).hp*.3);spawnFx('heal',pos[j],py[j]-24*s,70*s,.6)}SKX.feast=8;{const ids=members(),mx=ids.reduce((a,j)=>a+pos[j],0)/ids.length,my=ids.reduce((a,j)=>a+py[j],0)/ids.length;spawnFx('skill_margo',mx,my-60*s,190*s,.9)}}
- else if(id==='luka'){const k=skPow(id);for(const j of members()){const q=P[j];if(!q)continue;if(q.down){q.down=false;q.hp=0}q.hp=Math.min(stats(j).hp,q.hp+stats(j).hp*.2*k);spawnFx('heal',pos[j],py[j]-24*s,64*s,.6)}SKX.bake=8*k}
+ else if(id==='luka'){const k=skPow(id);for(const j of members()){const q=P[j];if(!q)continue;if(q.down){q.down=false;q.hp=0}q.hp=Math.min(stats(j).hp,q.hp+stats(j).hp*.2*k);spawnFx('heal',pos[j],py[j]-24*s,64*s,.6)}SKX.bake=8*k;{const ids=members(),mx=ids.reduce((a,j)=>a+pos[j],0)/ids.length,my=ids.reduce((a,j)=>a+py[j],0)/ids.length;spawnFx('skill_luka',mx,my-60*s,190*s,.9)}}
  prowSig='';return true}
 function stepSkills(dt,L,alive){const{ids,s}=L;for(const k of['shield','feast','bake'])SKX[k]=Math.max(0,SKX[k]-dt);
  if(SKX.honey>0){SKX.honey-=dt;SKX.honeyTick-=dt;if(SKX.honeyTick<=0&&P.riel){SKX.honeyTick=.5;const a=stats('riel').atk*.5;for(const m of alive)if(m.hp>0){hitMon(m,a,false,s,0);if(Math.random()<.5)spawnFx('bees',m.x,m.y-36*s,46*s,.45)}}}
@@ -1322,7 +1322,7 @@ const SPR_FRAME=256,SPR_FOOT=250,SPR_FIG=171; // SPR_FIG: 프레임 안에서 �
 const SPR={};
 /* 전투 효과: assets/fx/fx_<이름>.png, 256 칸(작살은 512x256)을 가로로 이은 시트. 없으면 코드 효과 */
 const BANNER=new Image();BANNER.onload=()=>{BANNER.ok=true};
-const FXDEF={hit:4,crit:5,bees:4,heal:5,coin:4,harpoon:1,soup:1,skill_kael:4,skill_bron:4,skill_haral:4,skill_riel:4,skill_margo:4},FXI={};let fxs=[];
+const FXDEF={hit:4,crit:5,bees:4,heal:5,coin:4,harpoon:1,soup:1,skill_kael:4,skill_bron:4,skill_haral:4,skill_riel:4,skill_margo:4,skill_luka:4},FXI={};let fxs=[];
 function loadFx(){for(const k in FXDEF){const im=new Image();im.onload=()=>{im.ok=true;im.cw=im.width/FXDEF[k]};im.src='assets/fx/fx_'+k+'.png';FXI[k]=im}}
 const fxOk=k=>FXI[k]&&FXI[k].ok;
 function spawnFx(k,x,y,size,d,vy){if(fxOk(k))fxs.push({k,x,y,size,d,t:0,vy:vy||0})}

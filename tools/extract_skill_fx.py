@@ -39,3 +39,4 @@ rm = load("art/source/fx/fx_skill_riel_margo.png"); H = rm.shape[0]
 row = (rm[..., 3] > 40).sum(1); mid = H // 3 + int(np.argmin(row[H // 3: 2 * H // 3]))
 build(rm[:mid], "fx_skill_riel", 384, 256)
 build(rm[mid:], "fx_skill_margo", 256, 288, bottom=True)
+build(load("art/source/fx/fx_skill_luka.png"), "fx_skill_luka", 256, 288, bottom=True)
