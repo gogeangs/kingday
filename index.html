@@ -780,7 +780,7 @@ const DRAW={kael:drawKael,bron:drawBron,haral:drawHaral,riel:drawRiel,margo:draw
 /* ---------- 이미지 에셋 ----------
    assets/characters/<id>_<동작>.png : 256x256 프레임을 가로로 이은 시트, 발끝 y=250, 머리 중심 x=128.
    이미지가 없거나 아직 안 불러졌으면 위의 코드 그림(DRAW)을 그대로 씁니다. 전투 로직은 이미지와 무관합니다. */
-const SPRITES={kael:{idle:4,walk:6,attack:4,hit:2,h:70},bron:{idle:4,walk:6,attack:4,hit:2,h:74},haral:{idle:4,walk:6,attack:4,hit:2,h:72}};
+const SPRITES={kael:{idle:4,walk:6,attack:4,hit:2,h:70},bron:{idle:4,walk:6,attack:4,hit:2,h:74},haral:{idle:4,walk:6,attack:4,hit:2,h:72},riel:{idle:4,walk:6,attack:4,hit:2,h:76}};
 const SPR_FRAME=256,SPR_FOOT=250,SPR_FIG=171; // SPR_FIG: 프레임 안에서 카엘의 키(px) → 코드 그림 키 66과 맞춤
 const SPR={};
 function loadSprites(){for(const id in SPRITES){SPR[id]={};for(const a of['idle','walk','attack','hit']){const im=new Image();
