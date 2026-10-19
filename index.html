@@ -183,6 +183,7 @@ canvas{display:block;width:100%;height:100%}
 .slot .enb{position:absolute;top:6%;right:8%;font-size:10px;font-weight:700;color:#fff;background:linear-gradient(#ff9a3a,#c95a10);border-radius:999px;padding:0 5px;line-height:15px;box-shadow:0 1px 2px #000}
 .forge{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
 .fg{display:flex;flex-direction:column;align-items:center;gap:2px;background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:6px 4px;color:var(--fg);font:inherit;cursor:pointer}
+.tagchk{display:block;margin:10px 2px 2px;font-size:14px;color:var(--fg)}.tagchk input{width:18px;height:18px;vertical-align:-3px;margin-right:6px;accent-color:#f6c445}.tagchk small{display:block;margin:3px 0 0 26px;font-size:12px;opacity:.7}
 .fg img{width:30px;height:30px}
 .fg b{font-size:12px;font-weight:700}
 .fg b i{font-style:normal;color:#ff9a3a}
@@ -772,8 +773,8 @@ function plant(i,k){if(S.seeds[k]<=0||S.plots[i])return;S.seeds[k]--;S.plots[i]=
 function harvest(i){const ps=plotState(S.plots[i]);if(ps.st!=='ready')return 0;const n=2+(Math.random()<.3?1:0);S.items[ps.c.k]+=n;S.plots[i]=null;dailyAdd('harv',n);return n}
 function produce(){checkBuild();const now=Date.now();for(const g of GOODS){const l=S.bld[g.b];if(!l){S.prod[g.b]=now;continue}const iv=120000/l;if(!S.prod[g.b])S.prod[g.b]=now;const n=Math.min(2000,Math.floor((now-S.prod[g.b])/iv));if(n>0){S.items[g.k]+=n;S.prod[g.b]+=n*iv}}}
 function chooseSeed(i){const tg=plotTag(i);if(tg){const c=CROPS.find(x=>x.k===tg);if(S.seeds[tg]>0)plant(i,tg);else toast(c.n+' 전용 밭이에요. '+c.n+' 씨앗이 없어요');return}
- $('sheet').innerHTML=`<h2>무엇을 심을까요?</h2>${CROPS.map(c=>`<div class="row" style="background:var(--panel2)">${uiImg('seed_'+c.k)}<div class="info"><b>${c.n}</b><div>자라는 시간 ${mmss(c.t)} · 씨앗 ${S.seeds[c.k]}개</div></div><button class="buy" id="sd-${c.k}" ${S.seeds[c.k]?'':'disabled'}>심기</button></div>`).join('')}<div class="acts one"><button id="mX">닫기</button></div>`;
- $('modal').hidden=false;CROPS.forEach(c=>$('sd-'+c.k).onclick=()=>{plant(i,c.k);closeModal()});$('mX').onclick=closeModal;
+ $('sheet').innerHTML=`<h2>무엇을 심을까요?</h2>${CROPS.map(c=>`<div class="row" style="background:var(--panel2)">${uiImg('seed_'+c.k)}<div class="info"><b>${c.n}</b><div>자라는 시간 ${mmss(c.t)} · 씨앗 ${S.seeds[c.k]}개</div></div><button class="buy" id="sd-${c.k}" ${S.seeds[c.k]?'':'disabled'}>심기</button></div>`).join('')}<label class="tagchk"><input type="checkbox" id="sdTag"> 이 칸을 고른 작물 전용 밭으로 지정<small>다음부터 '모두 심기'를 해도 이 칸엔 그 작물만 심어져요</small></label><div class="acts one"><button id="mX">닫기</button></div>`;
+ $('modal').hidden=false;CROPS.forEach(c=>$('sd-'+c.k).onclick=()=>{if($('sdTag').checked){if(!S.plotTag)S.plotTag=[];S.plotTag[i]=c.k;toast(c.n+' 전용 밭으로 지정했어요')}plant(i,c.k);closeModal()});$('mX').onclick=closeModal;
 }
 /* 밭 지정: 칸마다 한 작물만 심도록 정해 둘 수 있음 (null = 자유) */
 let plotEdit=false;
