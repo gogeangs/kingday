@@ -105,7 +105,10 @@ body{word-break:keep-all;overflow-wrap:break-word;line-break:strict;background:#
 .setcode{width:100%;min-height:72px;border-radius:10px;border:1px solid var(--line);background:#0b0f1a;color:var(--fg);font:12px/1.4 ui-monospace,monospace;padding:8px;resize:vertical;user-select:text;-webkit-user-select:text;box-sizing:border-box}
 .buy.danger{background:#5a1a24;color:#ffd6dc;border:1px solid var(--bad)}
 .who{min-width:0;flex:1;display:flex;flex-direction:column;gap:2px}
-.who .nm{font-family:var(--f-display);font-weight:700;font-size:16px;display:flex;align-items:center;gap:6px;white-space:nowrap}
+.who .nm{font-family:var(--f-display);font-weight:700;font-size:16px;display:flex;align-items:center;gap:6px;white-space:nowrap;min-width:0;overflow:hidden}
+.who .nm .rank{flex:0 0 auto}
+@media (max-width:420px){.who .nm .rankimg{display:none}.who .nm{gap:5px}}
+@media (max-width:375px){.hud{gap:6px!important}.gempill,.goldpill{padding-left:7px!important;padding-right:9px!important;gap:3px!important}.gplus{width:14px;height:14px;font-size:11px;margin-left:2px}.who .nm{font-size:15px}}
 .rank{font-family:var(--f-body);font-size:11px;font-weight:600;color:var(--gold-ink);background:var(--gold);border-radius:999px;padding:1px 7px}
 .pow{font-size:13px;color:var(--gold);font-variant-numeric:tabular-nums;display:flex;align-items:center;gap:4px}
 .pow::before{content:"⚔";font-size:12px}
@@ -786,7 +789,8 @@ function open10(){if(pending||!$('modal').hidden)return;if(!spendGem(GEM10))retu
  <p class="lore sys">나머지를 팔아 골드 +${fmt(sold)}</p><div class="acts one"><button class="pri" id="mGo">확인</button></div>`;
  $('modal').hidden=false;$('mGo').onclick=closeModal}
 function growNow(){const g=S.plots.filter(p=>plotState(p).st==='grow');if(!g.length)return;if(!spendGem(g.length*GEM_PLOT))return;g.forEach(p=>{p.at=0});toast('리엘의 벌들이 밭을 도왔어요. 모두 다 자랐어요');farmSig='';renderAll()}
-function fmt(n){n=Math.floor(n);if(n<1e4)return n.toLocaleString('ko-KR');const u=['','K','M','B','T','aa','ab','ac'];let i=0;while(n>=1000&&i<u.length-1){n/=1000;i++}return(n<10?n.toFixed(2):n<100?n.toFixed(1):Math.floor(n))+u[i]}
+const FMTU=['','K','M','B','T',...Array.from({length:26*26},(_,i)=>String.fromCharCode(97+Math.floor(i/26))+String.fromCharCode(97+i%26))];
+function fmt(n){if(!isFinite(n))return'∞';n=Math.floor(n);if(n<1e4)return n.toLocaleString('ko-KR');const u=FMTU;let i=0;while(n>=1000&&i<u.length-1){n/=1000;i++}return(n<10?n.toFixed(2):n<100?n.toFixed(1):Math.floor(n))+u[i]}
 function mmss(sec){sec=Math.max(0,Math.ceil(sec));const m=Math.floor(sec/60),s=sec%60;return m+':'+String(s).padStart(2,'0')}
 const region=st=>REGIONS[Math.floor((st-1)/10)%REGIONS.length];
 const terrName=st=>region(st).terr[(st-1)%10];
@@ -849,7 +853,7 @@ function para(p){
  return`<p class="lore">${p}</p>`}
 function scene(eyebrow,title,paras,btn,alt,illust){
  $('sheet').innerHTML=`${illust?`<img class="illust il-${illust}" src="assets/illust/illust_${illust}.jpg" alt="" onerror="this.remove()">`:''}<div class="eyebrow">${eyebrow}</div><h2>${title}</h2>${paras.map(para).join('')}<div class="acts ${alt&&alt.label?'':'one'}">${alt&&alt.label?`<button id="mAlt">${alt.label}</button>`:''}<button class="pri" id="mGo">${btn}</button></div>`;
- $('modal').hidden=false;$('mGo').focus();$('mGo').onclick=()=>{closeModal();alt&&alt.go&&alt.go()};if(alt&&alt.label)$('mAlt').onclick=closeModal;
+ $('modal').hidden=false;$('mGo').focus({preventScroll:true});$('mGo').onclick=()=>{closeModal();alt&&alt.go&&alt.go()};if(alt&&alt.label)$('mAlt').onclick=closeModal;
 }
 function chapter(){const st=S.stage;queue(()=>{const r=region(st),i=Math.floor((st-1)/10)%5;scene('제'+(i+1)+'군단 · 점령지',`<img class="bossportrait" src="assets/portraits/portrait_${BOSSID[i]}_idle.png" alt="" onerror="this.remove()">`+r.n,[...r.lore,'sys:이 땅의 지배자 · '+r.boss],'진격한다')})}
 function events(){for(const e of EVENTS)if(S.stage>=e.at&&!S.done[e.id]){S.done[e.id]=true;e.act();syncParty();queue(()=>scene(e.eb,e.t,e.p,e.btn))}
@@ -899,7 +903,7 @@ function showItem(it,cur){
  <div class="acts"><button id="mSell">판매 +${fmt(it.price)}</button><button class="pri" id="mEq">장착</button></div>`;
  $('modal').hidden=false;
  $('mEq').onclick=()=>{const c=S.eq[it.slot];if(c)S.gold+=c.price;S.eq[it.slot]=it;closeModal();flashSlot(it.slot);if(c)toast('이전 장비 판매 +'+fmt(c.price))};
- $('mSell').onclick=()=>{S.gold+=it.price;closeModal()};$('mEq').focus();
+ $('mSell').onclick=()=>{S.gold+=it.price;closeModal()};$('mEq').focus({preventScroll:true});
 }
 function closeModal(){$('modal').hidden=true;pending=null;renderAll();pump()}
 
@@ -992,7 +996,7 @@ const GUIDE=[
  {ok:()=>!S.bld.farm||(S.stat&&S.stat.harv>0),t:'밭에 씨앗을 심고 수확해요',go:()=>{setTab('vl');setTimeout(()=>vlSelect('farm'),50)}},
  {ok:()=>Object.values(daily().claim||{}).some(Boolean),t:'피트의 상점에서 오늘의 할 일 보상을 받아요',go:()=>setTab('sh')},
  {ok:()=>S.best<20||(S.retires||0)>0,t:'단련 탭에서 첫 은퇴를 해 봐요',go:()=>setTab('up')}];
-let guideSig='';function renderGuide(){const g=$('guide');if(!g)return;const i=GUIDE.findIndex(x=>!x.ok()),sig=i+'|'+(curTab||'');if(sig===guideSig)return;guideSig=sig;
+let guideSig='';function renderGuide(){const g=$('guide');if(!g)return;const i=(S.retires>0||S.best>30)?-1:GUIDE.findIndex((x,j)=>!x.ok()&&!(j<3&&S.best>12)),sig=i+'|'+(curTab||'');if(sig===guideSig)return;guideSig=sig;
  if(i<0||S.guideOff){g.hidden=true;return}g.hidden=false;g.innerHTML=`<span class="gtg">다음 할 일</span>${GUIDE[i].t}<b>›</b>`;g.onclick=()=>GUIDE[i].go()}
 /* 숫자 반짝임: 전투력은 오를 때마다, 골드는 한 번에 크게(10% 이상) 바뀔 때만 */
 const NF={};function numFlash(id,v,big){const el=$(id);if(!el)return;const o=NF[id];el.textContent=fmt(v);NF[id]=v;if(o==null||v===o)return;const d=v-o;if(big&&Math.abs(d)<Math.max(50,o*.1))return;if(!big&&Math.abs(d)<1)return;
@@ -1026,7 +1030,7 @@ function renderParty(){
     ${op&&!mx?`<div class="cbtns"><button class="buy${n>=need?' glow':''}" id="rc-${id}" ${n>=need?'':'disabled'}>${stv?'★ 올리기':'맞이하기'}</button><button class="wish${S.wish===id?' on':''}" id="ws-${id}">${S.wish===id?'♥ 희망 중':'♡ 희망'}</button></div>`:''}</div>`}).join('');
   const board=`<div class="sec">편성 <small>자리를 눌러 동료를 바꿔요</small></div><div class="board">${JSLOT.map(j=>{const id=slotMember(j),multi=j!=='kael'&&jobMembers(j).length>1;return`<button class="seat${id?'':' empty'}" data-seat="${j}">${id?`<span class="cfr" style="--g:${id==='kael'?'#ffd34a':gr(id).c}"><img src="assets/ui/frame_${id==='kael'?'legendary':gr(id).fr}.png" alt="" onerror="this.remove()"><canvas class="portrait" id="st-${j}"></canvas></span>`:'<span class="cfr"><span class="q">?</span></span>'}<b>${j==='kael'?'카엘':JOBN[j]}</b><small>${id?(id==='kael'?'용사':COMP[id].n+' '+'★'.repeat(recStar(id))):'합류 전'}</small>${multi?'<i class="sw">⇄</i>':''}${j!=='kael'&&betterBench(j)?'<i class="rd"></i>':''}</button>`}).join('')}</div><button class="buy ghost autof" id="autoForm" ${JSLOT.some(j=>j!=='kael'&&jobMembers(j).length>1)?'':'disabled'}>추천 편성 · 가장 강한 동료로</button>`;
   const crow=id=>{const c=COMP[id];if(!owned(id))return`<div class="crow locked"><canvas class="cface" id="cf-${id}"></canvas><div class="info"><b>???</b><small>${c.role} · ${c.join}</small></div></div>`;
-   const j=JOB[id],on=id==='kael'||slotMember(j)===id;return`<div class="crow" role="button" tabindex="0" data-det="${id}"><canvas class="cface" id="cf-${id}"></canvas><div class="info"><b>${c.n}${id==='kael'?'':gradeTag(id)+starTxt(id)}</b><small>${id==='kael'?RANKS[rankIdx()].n:(on?'출전':'대기')+' · Lv.'+(S.lv[id]||1)} · 전투력 ${fmt(id==='kael'?power():cPow(id))}</small></div>${id==='kael'?'<span class="buy ghost sm">장비</span>':on?`<button class="buy sm" id="lv-${id}">${costBtn('Lv↑',compCost(S.lv[id]||1))}</button>`:'<span class="benchtag">대기</span>'}</div>`};
+   const j=JOB[id],on=id==='kael'||slotMember(j)===id;return`<div class="crow" role="button" tabindex="0" data-det="${id}"><canvas class="cface" id="cf-${id}"></canvas><div class="info"><b>${c.n}${id==='kael'?'':gradeTag(id)+starTxt(id)}</b><small>${id==='kael'?RANKS[rankIdx()].n:(on?'출전':'대기')+' · Lv.'+(S.lv[id]||1)} · ${id==='kael'?'원정대 전투력 '+fmt(power()):'전투력 '+fmt(cPow(id))}</small></div>${id==='kael'?'<span class="buy ghost sm">장비</span>':on?`<button class="buy sm" id="lv-${id}">${costBtn('Lv↑',compCost(S.lv[id]||1))}</button>`:'<span class="benchtag">대기</span>'}</div>`};
   const list=['kael',...JSLOT.filter(j=>j!=='kael').flatMap(j=>[slotMember(j),...jobMembers(j).filter(x=>x!==slotMember(j))].filter(Boolean)),...JSLOT.filter(j=>j!=='kael'&&!slotMember(j)).map(j=>STORY[j])];
   window._rowOf=rowOf;
   $('ptNote').hidden=ptTab!=='form';
@@ -1066,7 +1070,7 @@ function retireConfirm(p){const eqN=Object.values(S.eq).filter(Boolean).length,u
  <div class="rtbox keep"><div class="rth">그대로 남아요</div><p>마을 건물·밭·재료, 동료 합류와 모집 동료의 카드·별, 대장간 강화, 성유물 상자 레벨, 황금 이삭, 프로필 테두리·배지</p></div>
  <div class="rtbox gain"><div class="rth">얻는 것</div><p>은퇴의 추억 <b>+${p}개</b> → 모든 능력치·골드 획득 <b>+${(S.memory+p)*5}%</b> (지금 +${S.memory*5}%), 영구 적용</p></div>
  <div class="acts"><button id="mAlt">취소</button><button class="pri danger" id="mGo">은퇴 확정</button></div>`;
- $('modal').hidden=false;$('mAlt').onclick=closeModal;$('mAlt').focus();$('mGo').onclick=()=>{closeModal();retire(p)}}
+ $('modal').hidden=false;$('mAlt').onclick=closeModal;$('mAlt').focus({preventScroll:true});$('mGo').onclick=()=>{closeModal();retire(p)}}
 function retire(p){
  S.memory+=p;S.retires++;S.gold=60;S.stage=1;S.wave=0;S.eq={};S.up={atk:0,hp:0,spd:0,crit:0};for(const k in S.lv)S.lv[k]=1;S.rankSeen=0;
  for(const id in P)delete P[id];mons=[];$('bossbar').hidden=true;syncParty();
@@ -1153,6 +1157,7 @@ function setTab(t){if(t===curTab)t=null;if(t==='pt')dotSeen();if(t!=='sh')misOpe
 document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>setTab(b.dataset.t));
 document.querySelectorAll('[data-close]').forEach(b=>b.onclick=()=>setTab(null));
 document.querySelectorAll('#ptTabs [data-pt]').forEach(b=>b.onclick=()=>{ptTab=b.dataset.pt;partySig='';$('p-pt').scrollTop=0;renderAll()});
+new MutationObserver(()=>{$('sheet').scrollTop=0}).observe($('sheet'),{childList:true});
 $('faceBtn').onclick=()=>{if($('modal').hidden)profileSheet()};$('gemBtn').onclick=()=>setTab('sh');
 $('quickBox').onclick=()=>openBox(false);
 $('speedBtn').onclick=()=>{S.speed=S.speed===2?1:2;renderSpeed()};
@@ -1751,7 +1756,7 @@ function offline(){
  const cap=(6+S.bld.inn)*3600,sec=Math.min(cap,(Date.now()-S.last)/1000);if(sec<60)return;
  const dps=members().reduce((a,id)=>{const t=stats(id);return a+t.atk*t.aps*(1+t.crit)},0),tpk=monHp(S.stage,false)/dps+1.2,g=Math.floor(sec/tpk*reward(S.stage,false)*.5*memMul()*(subOn()?1.5:1));if(g<=0)return;
  S.gold+=g;const hr=Math.floor(sec/3600),mn=Math.floor(sec%3600/60);
- queue(()=>{$('sheet').innerHTML=`<div class="eyebrow">돌아온 카엘</div><h2>영지에서 세금이 걷혔어요</h2><div class="card" style="--c:var(--gold)"><span class="cap">${hr?hr+'시간 ':''}${mn}분 동안</span><div class="t" style="font-size:28px;color:var(--gold)">+${fmt(g)}</div><span class="s">되찾은 영지의 백성들이 보낸 골드예요${S.bld.farm?' · 밭의 작물도 자랐어요':''}</span></div>${para('k:…이 돈, 은퇴 자금으로 모아 둬도 되죠?')}${adLeft('offline')?`<button class="buy ad" id="mAd" style="width:100%;padding:10px">▶ 광고 보고 2배 받기 · 오늘 ${adLeft('offline')}회</button>`:''}<div class="acts"><button id="mDbl" style="background:linear-gradient(#2c4a8c,#1d3366);color:#ffe08a;border-color:#5a7ac8">2배 받기 · ${GEMIMG.replace('alt=""','alt="" style="width:16px;height:16px;vertical-align:-3px"')}${GEM_OFFLINE}</button><button class="pri" id="mGo">받기</button></div>`;$('modal').hidden=false;$('mGo').onclick=closeModal;$('mDbl').onclick=()=>{if(!spendGem(GEM_OFFLINE))return;S.gold+=g;toast('세금 2배! 골드 +'+fmt(g));closeModal()};const ab=$('mAd');if(ab)ab.onclick=()=>watchAd('offline',()=>{S.gold+=g;toast('세금 2배! 골드 +'+fmt(g));closeModal()});$('mGo').focus()});
+ queue(()=>{$('sheet').innerHTML=`<div class="eyebrow">돌아온 카엘</div><h2>영지에서 세금이 걷혔어요</h2><div class="card" style="--c:var(--gold)"><span class="cap">${hr?hr+'시간 ':''}${mn}분 동안</span><div class="t" style="font-size:28px;color:var(--gold)">+${fmt(g)}</div><span class="s">되찾은 영지의 백성들이 보낸 골드예요${S.bld.farm?' · 밭의 작물도 자랐어요':''}</span></div>${para('k:…이 돈, 은퇴 자금으로 모아 둬도 되죠?')}${adLeft('offline')?`<button class="buy ad" id="mAd" style="width:100%;padding:10px">▶ 광고 보고 2배 받기 · 오늘 ${adLeft('offline')}회</button>`:''}<div class="acts"><button id="mDbl" style="background:linear-gradient(#2c4a8c,#1d3366);color:#ffe08a;border-color:#5a7ac8">2배 받기 · ${GEMIMG.replace('alt=""','alt="" style="width:16px;height:16px;vertical-align:-3px"')}${GEM_OFFLINE}</button><button class="pri" id="mGo">받기</button></div>`;$('modal').hidden=false;$('mGo').onclick=closeModal;$('mDbl').onclick=()=>{if(!spendGem(GEM_OFFLINE))return;S.gold+=g;toast('세금 2배! 골드 +'+fmt(g));closeModal()};const ab=$('mAd');if(ab)ab.onclick=()=>watchAd('offline',()=>{S.gold+=g;toast('세금 2배! 골드 +'+fmt(g));closeModal()});$('mGo').focus({preventScroll:true})});
 }
 
 /* ---------- 시작 ---------- */
