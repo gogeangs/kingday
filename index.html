@@ -127,7 +127,7 @@ canvas{display:block;width:100%;height:100%}
 .buy.ghost{background:transparent;border:1px solid var(--line);color:var(--fg)}
 .buy.ghost:disabled{color:var(--muted)}
 .note{font-size:12px;color:var(--muted);line-height:1.6;margin:0}
-.village{height:150px;border-radius:12px;overflow:hidden;border:1px solid var(--line);flex:0 0 auto}
+.village{aspect-ratio:3/1;border-radius:12px;overflow:hidden;border:1px solid var(--line);flex:0 0 auto}
 .mapwrap{border-radius:12px;overflow:hidden;border:1px solid var(--line);flex:0 0 auto;height:440px}
 .inv{display:flex;flex-wrap:wrap;gap:6px}
 .chip{font-size:12px;background:var(--panel2);border-radius:999px;padding:3px 9px;font-variant-numeric:tabular-nums;display:flex;align-items:center;gap:5px}
@@ -160,7 +160,7 @@ button:focus-visible,input:focus-visible{outline:2px solid var(--gold);outline-o
 .talk.q .pface{background:radial-gradient(circle at 50% 50%,#203a66,#0d1220);border-color:#5ab4ff;object-position:50% 40%}
 .talk .lore{flex:1;min-width:0;background:rgba(0,0,0,.22);border-radius:12px;padding:8px 12px}
 .rowic{width:52px;height:52px;flex:0 0 auto;object-fit:contain;filter:drop-shadow(0 2px 3px rgba(0,0,0,.4))}
-.row.locked .rowic,.row.ruin .rowic{filter:grayscale(1) brightness(.6)}
+.row.locked .rowic,.row.ruin .rowic{filter:grayscale(1) brightness(.6)}.row.ruin .rowic.art{filter:none}.row.locked .rowic.art{filter:brightness(.6)}
 .chipic{width:20px;height:20px;margin:-3px 0}
 .rankimg{width:28px;height:28px;margin:-6px -2px}
 .rankbig{display:block;width:96px;height:96px;margin:0 auto 4px}
@@ -337,6 +337,7 @@ const CROPS=[
 const GOODS=[{k:'fish',n:'생선',c:'#7fb7e0',sell:8,b:'dock'},{k:'honey',n:'꿀',c:'#f2b630',sell:10,b:'apiary'},{k:'ore',n:'광석',c:'#a9a9b8',sell:14,b:'mine'}];
 const icoImg=k=>`<img src="assets/ui/item_${k==='wheat'?'wheat':k}.png" alt="" onerror="this.replaceWith(document.createElement('i'))">`;
 const uiImg=(n,c)=>`<img class="${c||'rowic'}" src="assets/ui/${n}.png" alt="" onerror="this.remove()">`;
+const bldImg=(k,l)=>VART.includes(k)?`<img class="rowic art" src="assets/village/${k}_${l?'built':'ruin'}.png" alt="" onerror="this.remove()">`:uiImg('bld_'+k);
 const RANKIMG=['rank_farmer','rank_guard','rank_knight','rank_lord','rank_count','rank_duke','rank_king'];
 const ITEMN=Object.fromEntries([...CROPS,...GOODS].map(x=>[x.k,x.n]));
 const RECIPES=[
@@ -522,8 +523,8 @@ function renderBlds(){
  const sig=JSON.stringify(S.bld)+JSON.stringify(S.joined)+S.done.marta;
  if(sig!==bldSig){bldSig=sig;
   $('blds').innerHTML=BLD.map(b=>{const l=S.bld[b.k],op=b.open(),mx=l>=b.max;
-   if(!op)return`<div class="row locked">${uiImg('bld_'+b.k)}<div class="info"><b>${b.n}</b><span class="lvtag">폐허</span><div>${b.lock}</div></div></div>`;
-   return`<div class="row${l?'':' ruin'}">${uiImg('bld_'+b.k)}<div class="info"><b>${b.n}</b><span class="lvtag">${l?'Lv.'+l:'폐허'}</span><div>${b.who?b.who+'의 '+b.n+' · ':''}${l?b.eff(l):'아직 무너져 있어요'}${mx?'':' → '+b.eff(l+1)}</div></div><button class="buy" id="bd-${b.k}" ${mx?'disabled':''}>${mx?'최대':(l?'':'재건 ')+fmt(bldCost(b,l))}</button></div>`}).join('');
+   if(!op)return`<div class="row locked">${bldImg(b.k,0)}<div class="info"><b>${b.n}</b><span class="lvtag">폐허</span><div>${b.lock}</div></div></div>`;
+   return`<div class="row${l?'':' ruin'}">${bldImg(b.k,l)}<div class="info"><b>${b.n}</b><span class="lvtag">${l?'Lv.'+l:'폐허'}</span><div>${b.who?b.who+'의 '+b.n+' · ':''}${l?b.eff(l):'아직 무너져 있어요'}${mx?'':' → '+b.eff(l+1)}</div></div><button class="buy" id="bd-${b.k}" ${mx?'disabled':''}>${mx?'최대':(l?'':'재건 ')+fmt(bldCost(b,l))}</button></div>`}).join('');
   BLD.forEach(b=>{const el=$('bd-'+b.k);if(el)el.onclick=()=>{const l=S.bld[b.k],c=bldCost(b,l);if(l>=b.max||S.gold<c)return;S.gold-=c;S.bld[b.k]++;if(!l)S.prod[b.k]=Date.now();toast(b.n+(l?' 확장':' 재건')+' 완료! '+b.eff(l+1));farmSig='';kitSig='';renderAll()}})}
  BLD.forEach(b=>{const el=$('bd-'+b.k);if(el&&S.bld[b.k]<b.max)el.disabled=S.gold<bldCost(b,S.bld[b.k])});
 }
@@ -949,7 +950,26 @@ function portrait(id){
 const vc=$('vc'),vctx=vc.getContext('2d');let VW=0,VH=0;
 function resizeV(){const r=vc.getBoundingClientRect(),d=Math.min(2,window.devicePixelRatio||1);if(!r.width)return;VW=r.width;VH=r.height;vc.width=VW*d;vc.height=VH*d;vctx.setTransform(d,0,0,d,0,0)}
 new ResizeObserver(resizeV).observe(vc);
+const VART=['inn','farm','diner'];/* 원본이 들어온 건물. 나머지는 bld_ 아이콘을 흑백으로 */
+const VIMG={bg:null,b:{}};(()=>{const bg=new Image();bg.onload=()=>VIMG.bg=bg;bg.src='assets/village/village_bg.jpg';
+ for(const b of BLD){const o=VIMG.b[b.k]={};const L=(n,src)=>{const im=new Image();im.onload=()=>o[n]=im;im.src=src};
+  if(VART.includes(b.k)){L('ruin','assets/village/'+b.k+'_ruin.png');L('built','assets/village/'+b.k+'_built.png')}else L('icon','assets/ui/bld_'+b.k+'.png')}})();
+const VSLOT=[['farm',.098],['inn',.257],['diner',.413],['dock',.573],['apiary',.739],['mine',.902]];
 function drawVillage(){
+ if(!VW)return;if(!VIMG.bg)return drawVillageCode();const prev=ctx;ctx=vctx;const hr=new Date().getHours(),night=hr>=19||hr<6;
+ ctx.drawImage(VIMG.bg,0,0,VW,VH);
+ const bw=VW*.155,base=VH*.64;
+ for(const[k,fx]of VSLOT){const lv=S.bld[k],b=BLD.find(x=>x.k===k),o=VIMG.b[k],cx=VW*fx,open=lv>0||b.open();
+  const im=lv?(o.built||o.icon):(o.ruin||o.icon);
+  if(im){ctx.save();if(!lv&&!o.ruin)ctx.filter='grayscale(1) brightness(.6)';if(!open)ctx.globalAlpha=.55;
+   const z=bw*(1+Math.min(lv,10)*.012),bob=lv&&k==='farm'?0:0;ctx.drawImage(im,cx-z/2,base-z*.99+bob,z,z);ctx.restore()}
+  const t=lv?b.n+' '+lv:b.n;ctx.font=`700 ${Math.max(9,VH*.075)}px "IBM Plex Sans KR",sans-serif`;ctx.textAlign='center';
+  const tw=ctx.measureText(t).width+10,th=Math.max(13,VH*.11),ty=VH*.76;ctx.fillStyle=lv?'rgba(30,22,10,.72)':'rgba(30,30,40,.6)';rr(cx-tw/2,ty-th/2,tw,th,th/2);
+  ctx.fillStyle=lv?'#ffe6a8':'#c9cbd6';ctx.textBaseline='middle';ctx.fillText(t,cx,ty+.5);ctx.textBaseline='alphabetic'}
+ if(night){ctx.fillStyle='rgba(10,16,48,.42)';ctx.fillRect(0,0,VW,VH)}
+ ctx=prev;
+}
+function drawVillageCode(){
  if(!VW)return;const prev=ctx;ctx=vctx;const hr=new Date().getHours(),night=hr>=19||hr<6,s=Math.min(VH/150,VW/360),by=VH*.76,win=night?'#ffd27a':'#2a3550';
  const g=ctx.createLinearGradient(0,0,0,VH);g.addColorStop(0,night?'#0e1530':'#4a78b0');g.addColorStop(1,night?'#2b2f55':'#b9d4e6');ctx.fillStyle=g;ctx.fillRect(0,0,VW,VH);
  if(night){for(let i=0;i<24;i++){ctx.fillStyle=`rgba(255,255,255,${.3+.4*Math.abs(Math.sin(T+i))})`;ctx.fillRect((i*97)%VW,(i*37)%(VH*.45),1.5,1.5)}ell(VW*.9,VH*.17,9*s,9*s,'#f4f0d8')}else ell(VW*.9,VH*.17,11*s,11*s,'#ffe9a8');
