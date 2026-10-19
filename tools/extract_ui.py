@@ -79,3 +79,47 @@ def tidy(name, size):
 
 for k, v in BATTLE.items():
     tidy(k, v)
+
+
+# ---------- 메뉴 UI 시트 (art/source/ui_menu_concept.png) ----------
+MENU = ["bld_farm", "bld_inn", "bld_diner", "bld_dock", "bld_apiary", "bld_mine",
+        "seed_wheat", "seed_carrot", "seed_pumpkin",
+        "node_captured", "node_enemy", "node_boss", "node_current",
+        "rank_farmer", "rank_guard", "rank_knight", "rank_lord", "rank_count", "rank_duke", "rank_king",
+        "frame_popup", "frame_dialog"]
+
+
+def menu():
+    img = np.array(Image.open("art/source/ui_menu_concept.png").convert("RGBA"))
+    a = img[..., 3]
+    img[..., 3] = np.where(a < 40, 0, a)
+    lab, _ = ndimage.label(ndimage.binary_closing(img[..., 3] > 160, iterations=3))
+    boxes = []
+    for sl in ndimage.find_objects(lab):
+        y0, y1, x0, x1 = sl[0].start, sl[0].stop, sl[1].start, sl[1].stop
+        if (y1 - y0) * (x1 - x0) > 4000:
+            boxes.append((x0, y0, x1, y1))
+    boxes.sort(key=lambda b: ((b[1] + b[3]) // 2 // 170, b[0]))
+    if len(boxes) != len(MENU):
+        raise SystemExit(f"메뉴 UI 조각 {len(boxes)}개 (필요 {len(MENU)}개)")
+    for name, (x0, y0, x1, y1) in zip(MENU, boxes):
+        pad = 4
+        crop = img[max(0, y0 - pad): y1 + pad, max(0, x0 - pad): x1 + pad].copy()
+        if name.startswith("frame_"):  # 창 틀: 안쪽 빈칸에 남은 붉은 번짐 제거
+            h, w = crop.shape[:2]
+            inner = crop[int(h * .16): int(h * .84), int(w * .1): int(w * .9)]
+            inner[..., 3] = np.where(inner[..., 3] < 250, 0, inner[..., 3])
+        pic = Image.fromarray(crop)
+        if name.startswith("frame_"):
+            pic.save(f"assets/ui/{name}.png", optimize=True)
+            print(name, pic.size)
+            continue
+        side = max(pic.size)
+        sq = Image.new("RGBA", (side, side), (0, 0, 0, 0))
+        sq.alpha_composite(pic, ((side - pic.width) // 2, (side - pic.height) // 2))
+        sq.resize((256, 256), Image.LANCZOS).save(f"assets/ui/{name}.png", optimize=True)
+        print(name, (256, 256))
+
+
+if __name__ == "__main__":
+    menu()
