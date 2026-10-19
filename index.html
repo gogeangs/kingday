@@ -163,6 +163,8 @@ button:focus-visible,input:focus-visible{outline:2px solid var(--gold);outline-o
 .rankimg{width:28px;height:28px;margin:-6px -2px}
 .rankbig{display:block;width:96px;height:96px;margin:0 auto 4px}
 .sheet{border:22px solid transparent;border-image:url(assets/ui/frame_popup.png) 70 fill / 22px stretch;background:var(--panel) padding-box;border-radius:0;padding:10px 6px 8px}
+.bossportrait{display:block;width:120px;height:120px;margin:0 auto 6px;object-fit:contain;filter:drop-shadow(0 4px 10px rgba(255,60,60,.35))}
+.bossface{width:34px;height:34px;margin:-10px 0 -10px -4px;object-fit:cover;object-position:50% 15%;border-radius:50%;border:2px solid var(--bad);background:#2a0e14}
 .lore.sys{font-family:var(--f-body);font-size:13px;color:var(--muted);border-top:1px solid var(--line);padding-top:10px}
 .cmp{display:grid;grid-template-columns:1fr 1fr;gap:8px}
 .card{border:2px solid var(--c,var(--line));border-radius:12px;padding:10px;display:flex;flex-direction:column;align-items:center;gap:4px;min-width:0;background:var(--panel2)}
@@ -195,7 +197,7 @@ button:focus-visible,input:focus-visible{outline:2px solid var(--gold);outline-o
     <canvas id="cv" aria-label="원정대 자동 전투 화면"></canvas>
     <div class="ovtop"><div class="stagepill"><b id="stLabel">1-1 에르단 평원</b><small id="stRegion">개울 마을</small><div class="pips" id="pips"></div></div></div>
     <div class="buffs" id="buffs"></div>
-    <div class="bossbar" id="bossbar" hidden><span id="bossName">보스</span><div class="track"><div class="fill" id="bossfill"></div></div><span id="bosst">30초</span></div>
+    <div class="bossbar" id="bossbar" hidden><img id="bossFace" class="bossface" alt="" hidden><span id="bossName">보스</span><div class="track"><div class="fill" id="bossfill"></div></div><span id="bosst">30초</span></div>
     <div class="ovbottom">
       <div class="prow" id="partyRow"></div>
       <div class="qbtns">
@@ -404,7 +406,8 @@ function queue(fn){sceneQ.push(fn);pump()}
 let titleOpen=true;
 function pump(){if(!titleOpen&&$('modal').hidden&&!pending&&sceneQ.length)sceneQ.shift()()}
 /* 대화 초상화: 'k@smile:대사', 'q@angry:대사' 처럼 표정을 고를 수 있어요. 없으면 기본 표정 */
-const NPCID={'브론':'bron','하랄':'haral','리엘':'riel','마고':'margo'};
+const NPCID={'브론':'bron','하랄':'haral','리엘':'riel','마고':'margo','마르타':'marta','피트':'pete','토비':'toby','모르바스':'morbas','세릴':'seril','그로마크':'gromak','알도르':'aldor','이그니스':'ignis'};
+const BOSSID=['morbas','seril','gromak','aldor','ignis'];
 const PORTRAIT={k:{id:'kael',def:'idle',moods:['idle','surprised','smile','flustered']},q:{id:'luminar',def:'proud',moods:['proud','angry','moved']}};
 function guessMood(w,t){if(w==='k'){if(/\?|누구|왜|설마/.test(t))return'surprised';if(/…|못 하|아니고|멀어|싫/.test(t))return'flustered';if(/좋|은퇴|흙|행복/.test(t))return'smile';return'idle'}
  if(/!|당장|정신|마라|도망/.test(t)&&/주인/.test(t))return/당장|정신|도망/.test(t)?'angry':'proud';if(/300년|드디어|운명|보람/.test(t))return'moved';return'proud'}
@@ -422,7 +425,7 @@ function scene(eyebrow,title,paras,btn,alt){
  $('sheet').innerHTML=`<div class="eyebrow">${eyebrow}</div><h2>${title}</h2>${paras.map(para).join('')}<div class="acts ${alt?'':'one'}">${alt?`<button id="mAlt">${alt.label}</button>`:''}<button class="pri" id="mGo">${btn}</button></div>`;
  $('modal').hidden=false;$('mGo').focus();$('mGo').onclick=()=>{closeModal();alt&&alt.go&&alt.go()};if(alt)$('mAlt').onclick=closeModal;
 }
-function chapter(){const st=S.stage;queue(()=>{const r=region(st);scene('제'+(Math.floor((st-1)/10)+1)+'군단 · 점령지',r.n,r.lore,'진격한다')})}
+function chapter(){const st=S.stage;queue(()=>{const r=region(st),i=Math.floor((st-1)/10)%5;scene('제'+(i+1)+'군단 · 점령지',`<img class="bossportrait" src="assets/portraits/portrait_${BOSSID[i]}_idle.png" alt="" onerror="this.remove()">`+r.n,[...r.lore,'sys:이 땅의 지배자 · '+r.boss],'진격한다')})}
 function events(){for(const e of EVENTS)if(S.stage>=e.at&&!S.done[e.id]){S.done[e.id]=true;e.act();syncParty();queue(()=>scene(e.eb,e.t,e.p,e.btn))}
  const ri=rankIdx();if(ri>S.rankSeen){S.rankSeen=ri;const r=RANKS[ri];queue(()=>scene('칭호 상승',uiImg(RANKIMG[ri],'rankbig')+r.n+' 카엘',['되찾은 영지가 '+r.at+'곳에 이르자, 사람들이 카엘을 '+r.n+'(이)라고 부르기 시작했다.','k@flustered:'+r.k,'q@proud:하하! 한 걸음 더 왕좌에 가까워졌다!','sys:모든 원정대 능력치 +4%'],'…알겠어요'))}
  renderAll()}
@@ -649,7 +652,7 @@ function layout(){const ids=members(),s=Math.min(W/300,Ht/380),top=Ht*.46,bot=Ma
  const front=Math.max(...ids.map(id=>pos[id]));return{ids,pos,py,dsc,front,s,top,bot}}
 const depthAt=(L,lane)=>L.top+(L.bot-L.top)*lane;
 function spawn(){
- if(S.wave>=10){const mx=monHp(S.stage,true);mons=[{x:W+70,lane:.55,hp:mx,max:mx,atk:monAtk(S.stage,true),boss:true,lord:isLord(S.stage),cd:.8,hit:0,dead:0}];bossT=isLord(S.stage)?40:30;$('bossName').textContent=bossName(S.stage);$('bossbar').hidden=false;
+ if(S.wave>=10){const mx=monHp(S.stage,true);mons=[{x:W+70,lane:.55,hp:mx,max:mx,atk:monAtk(S.stage,true),boss:true,lord:isLord(S.stage),cd:.8,hit:0,dead:0}];bossT=isLord(S.stage)?40:30;$('bossName').textContent=bossName(S.stage);{const f=$('bossFace');if(isLord(S.stage)){f.src='assets/portraits/portrait_'+BOSSID[Math.floor((S.stage-1)/10)%5]+'_idle.png';f.onerror=()=>{f.hidden=true};f.hidden=false}else f.hidden=true}$('bossbar').hidden=false;
   say('q',isLord(S.stage)?'군단장이다! 이번엔 도망치지 마라, 주인!':'성주다! 정신 차려라, 주인!');return}
  const left=10-S.wave;let n=1;if(left>1&&Math.random()<.55)n++;if(left>2&&S.stage>=3&&Math.random()<.35)n++;
  const mx=monHp(S.stage,false)*(n>1?.75:1);mons=[];for(let i=0;i<n;i++)mons.push({x:W+60+i*40,lane:[.45,.82,.12][i],hp:mx,max:mx,atk:monAtk(S.stage,false)*(n>1?.8:1),boss:false,cd:.8+i*.35,hit:0,dead:0});
