@@ -680,7 +680,30 @@ function hills(H,base,amp,len,off,col,w){ctx.fillStyle=col;ctx.beginPath();ctx.m
 function mixc(a,b,t){const p=h=>[1,3,5].map(i=>parseInt(h.slice(i,i+2),16)),A=p(a),B=p(b);return'rgb('+A.map((v,i)=>Math.round(v+(B[i]-v)*t)).join(',')+')'}
 const DECO=['windmill','trees','spires','graves','volcano'];
 function rnd(i){const x=Math.sin(i*127.1+311.7)*43758.5453;return x-Math.floor(x)}
+/* 배경 이미지: assets/bg/<지역>_<sky|far|mid|ground>.png, 가로 반복. 없으면 아래 코드 배경 */
+const BG_IMG={0:'erdan'},BGI={};
+function loadBgs(){for(const k in BG_IMG){const n=BG_IMG[k];BGI[n]={};for(const l of['sky','far','mid','ground']){const im=new Image();im.onload=()=>{im.ok=true;if(l==='ground')im.base=baseColor(im)};im.src='assets/bg/'+n+'_'+l+'.png';BGI[n][l]=im}}}
+function baseColor(im){const c=document.createElement('canvas');c.width=c.height=1;const x=c.getContext('2d');x.drawImage(im,0,im.height*.75,im.width,im.height*.25,0,0,1,1);const d=x.getImageData(0,0,1,1).data;return[d[0],d[1],d[2]]}
+function bgReady(r){const n=BG_IMG[REGIONS.indexOf(r)];return n&&['sky','far','mid','ground'].every(l=>BGI[n][l].ok)?BGI[n]:null}
+function tileLayer(im,bottom,h,speed){const w=im.width*h/im.height,off=((bgX*speed)%w+w)%w;for(let x=-off;x<W;x+=w)ctx.drawImage(im,x,bottom-h,w+1,h)}
 function drawBg(r,L){
+ const B=bgReady(r);
+ if(B){const hz=L.top-Ht*.05;
+  tileLayer(B.sky,hz+Ht*.08,Math.max(hz+Ht*.08,W*B.sky.height/B.sky.width*1.6),.04);
+  tileLayer(B.far,hz+Ht*.035,Ht*.15,.12);
+  const c=B.ground.base||[150,110,60],cs=`rgb(${c})`,bandB=hz+Ht*.24;
+  const fg=ctx.createLinearGradient(0,bandB,0,Ht);fg.addColorStop(0,cs);fg.addColorStop(1,`rgb(${c.map(v=>Math.round(v*.55))})`);ctx.fillStyle=fg;ctx.fillRect(0,hz+Ht*.1,W,Ht);
+  for(let i=0;i<40;i++){const d=rnd(i*3+1),y=bandB-Ht*.02+(Ht-bandB)*d,sp=.5+d*.8,span=W+60,x=((rnd(i*3+2)*span-bgX*sp)%span+span)%span-30,z=.8+d*1.2,t=rnd(i*3+5);
+   if(t<.45){ctx.strokeStyle=`rgba(${c.map(v=>Math.round(v*1.25))},.9)`;ctx.lineWidth=1.6*z;ctx.beginPath();for(let k=-1;k<=1;k++){ctx.moveTo(x+k*3*z,y);ctx.lineTo(x+k*6*z,y-9*z)}ctx.stroke()}
+   else if(t<.8){ell(x,y,7*z,3.5*z,`rgba(${c.map(v=>Math.round(v*.6))},.8)`);ell(x-1*z,y-1.5*z,5.5*z,2.6*z,`rgba(${c.map(v=>Math.min(255,Math.round(v*1.15)))},.9)`)}
+   else{ell(x,y,9*z,2.5*z,`rgba(${c.map(v=>Math.round(v*.7))},.6)`)}}
+  tileLayer(B.mid,hz+Ht*.085,Ht*.16,.3);
+  tileLayer(B.ground,bandB,Ht*.24,.9);
+  const fd=ctx.createLinearGradient(0,bandB-Ht*.07,0,bandB+2);fd.addColorStop(0,`rgba(${c},0)`);fd.addColorStop(1,cs);ctx.fillStyle=fd;ctx.fillRect(0,bandB-Ht*.07,W,Ht*.07+2);
+  const vg=ctx.createLinearGradient(0,Ht*.72,0,Ht);vg.addColorStop(0,'rgba(0,0,0,0)');vg.addColorStop(1,'rgba(0,0,0,.4)');ctx.fillStyle=vg;ctx.fillRect(0,Ht*.72,W,Ht*.28);
+  return}
+ drawBgCode(r,L)}
+function drawBgCode(r,L){
  const hz=L.top-Ht*.05,deco=DECO[REGIONS.indexOf(r)]||'windmill',dark=deco==='trees'||deco==='graves'||deco==='volcano';
  const g=ctx.createLinearGradient(0,0,0,hz+30);g.addColorStop(0,r.sky[0]);g.addColorStop(1,r.sky[1]);ctx.fillStyle=g;ctx.fillRect(0,0,W,hz+30);
  const sx=W*.8,sy=Ht*.13,sg=ctx.createRadialGradient(sx,sy,0,sx,sy,Ht*.22);sg.addColorStop(0,dark?'rgba(230,240,255,.55)':'rgba(255,250,220,.75)');sg.addColorStop(1,'rgba(255,255,255,0)');ctx.fillStyle=sg;ctx.fillRect(0,0,W,hz);
@@ -929,7 +952,7 @@ function loop(ts){const dt=Math.min(.1,(ts-(last||ts))/1000);last=ts;step(dt*(S.
  draw();if(curTab==='vl')drawVillage();if(curTab==='mp')drawMap();
  requestAnimationFrame(loop)}
 function start(data){
- loadSprites();loadMonSprites();
+ loadSprites();loadMonSprites();loadBgs();
  S=(data&&typeof data.gold==='number')?hydrate(data):(load()||hydrate({gold:60}));
  $('autoSell').checked=S.autoSell;$('autoOpen').checked=S.autoOpen;
  const isNew=!S.started;S.started=true;S.v=3;syncParty();resize();produce();renderSpeed();
