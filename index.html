@@ -1273,14 +1273,14 @@ const MON_SPRITES={0:{id:'slime_plague',walk:4,attack:4,hit:2,fig:150,h:54,boss:
 const TRAITS={tank:{hp:1.6,atk:.9,mv:.6,cd:1.15,n:'단단함'},swift:{hp:.7,atk:1.1,mv:1.7,cd:.8,n:'빠름'},swarm:{hp:.55,atk:.6,mv:1.2,cd:1,n:'떼'},guard:{hp:1.4,atk:.85,mv:.8,cd:1.1,n:'방패'},flier:{hp:.8,atk:1.05,mv:1.5,cd:.9,n:'비행'}};
 const MON_ALT={0:{id:'scarecrow_cursed',walk:4,attack:4,hit:2,fig:150,h:46,trait:'tank'},1:{id:'wolf_shadow',walk:4,attack:4,hit:2,fig:150,h:40,trait:'swift'},2:{id:'goblin_pick',walk:4,attack:4,hit:2,fig:150,h:40,trait:'swarm'},3:{id:'skeleton_frost',walk:4,attack:4,hit:2,fig:150,h:46,trait:'guard'},4:{id:'imp_flame',walk:4,attack:4,hit:2,fig:150,h:40,lift:26,trait:'flier'}};
 const MSPR={};
-function loadMonSprites(){for(const k in MON_SPRITES){for(const d of[MON_SPRITES[k],MON_SPRITES[k].boss,MON_ALT[k]].filter(Boolean)){MSPR[d.id]={};for(const a of['walk','attack','hit']){const im=new Image();im.onload=()=>{im.ok=true};im.src='assets/monsters/'+d.id+'_'+a+'.png';MSPR[d.id][a]=im}}}}
+function loadMonSprites(){for(const k of[...Object.keys(MON_SPRITES),'gob']){for(const d of(k==='gob'?[GOB]:[MON_SPRITES[k],MON_SPRITES[k].boss,MON_ALT[k]]).filter(Boolean)){MSPR[d.id]={};for(const a of['walk','attack','hit']){const im=new Image();im.onload=()=>{im.ok=true};im.src='assets/monsters/'+d.id+'_'+a+'.png';MSPR[d.id][a]=im}}}}
 /* 황금 고블린: 곡괭이 고블린 그림을 금빛으로 물들여 씀 (전용 그림이 오면 goblin_gold_*.png로 교체) */
-const GOB={id:'goblin_gold',walk:4,attack:4,hit:2,fig:150,h:46};
-function gobSprite(){if(sprOk(GOB))return GOB;const src=MSPR.goblin_pick;if(!src||!['walk','attack','hit'].every(a=>src[a]&&src[a].ok))return null;
- MSPR.goblin_gold={};for(const a of['walk','attack','hit']){const im=src[a],c=document.createElement('canvas');c.width=im.width;c.height=im.height;const x=c.getContext('2d');
+const GOB={id:'goblin_gold',walk:4,attack:4,hit:2,fig:150,h:46},GOBT={id:'goblin_gold_t',walk:4,attack:4,hit:2,fig:150,h:44};
+function gobSprite(){if(sprOk(GOB))return GOB;if(sprOk(GOBT))return GOBT;const src=MSPR.goblin_pick;if(!src||!['walk','attack','hit'].every(a=>src[a]&&src[a].ok))return null;
+ MSPR.goblin_gold_t={};for(const a of['walk','attack','hit']){const im=src[a],c=document.createElement('canvas');c.width=im.width;c.height=im.height;const x=c.getContext('2d');
   x.drawImage(im,0,0);x.globalCompositeOperation='color';x.fillStyle='#ffc21a';x.fillRect(0,0,c.width,c.height);x.globalCompositeOperation='destination-in';x.drawImage(im,0,0);
-  x.globalCompositeOperation='overlay';x.globalAlpha=.35;x.fillStyle='#fff3b0';x.fillRect(0,0,c.width,c.height);x.globalCompositeOperation='destination-in';x.globalAlpha=1;x.drawImage(im,0,0);c.ok=true;MSPR.goblin_gold[a]=c}
- return GOB}
+  x.globalCompositeOperation='overlay';x.globalAlpha=.35;x.fillStyle='#fff3b0';x.fillRect(0,0,c.width,c.height);x.globalCompositeOperation='destination-in';x.globalAlpha=1;x.drawImage(im,0,0);c.ok=true;MSPR.goblin_gold_t[a]=c}
+ return GOBT}
 const sprOk=d=>{const m=d&&MSPR[d.id];return!!m&&['walk','attack','hit'].every(a=>m[a]&&m[a].ok)};
 function monSprite(r,mon){if(mon&&mon.gob)return gobSprite();const ri=REGIONS.indexOf(r),d=MON_SPRITES[ri];if(!d)return null;if(mon&&mon.alt){const a=MON_ALT[ri];return a&&sprOk(a)?a:null}
  if(mon&&mon.lord&&d.boss){return sprOk(d.boss)?Object.assign({lordArt:true},d.boss):null} // 군단장은 전용 그림 (없으면 코드 그림)
@@ -1319,12 +1319,12 @@ function drawMon(r,y,s,m){
  const k=m.boss?(m.lord?1.8:1.5):m.gob?1.3:1,x=m.x,ss=s*k,fade=m.dead>0?m.dead/.35:1;ctx.globalAlpha=fade;
  const col=m.hit>0?'#ffffff':r.col;if(m.boss)drawAura(x,y,ss,m.lord);ell(x,y,18*ss,5*ss,'rgba(0,0,0,.25)');let top;const ph=x*.05;
  const md=monSprite(r,m),sk=md&&md.lordArt?ss*.8:ss,ly=md&&md.lift?y-md.lift*ss*(1+.08*Math.sin(T*5+ph)):y;
- if(md){const k=md.h*sk/md.fig,moving=m.tx!=null&&m.x>m.tx+1;let a='walk',i=Math.floor(T*8+ph)%md.walk;
+ if(md){if(m.flee){ctx.save();ctx.translate(x,0);ctx.scale(-1,1);ctx.translate(-x,0)}const k=md.h*sk/md.fig,moving=m.tx!=null&&m.x>m.tx+1;let a='walk',i=Math.floor(T*8+ph)%md.walk;
   if(m.hit>0||m.dead>0){a='hit';i=m.dead>0?1:0}else if(m.sw>0){a='attack';i=Math.max(0,Math.min(md.attack-1,Math.floor((1-m.sw/.4)*md.attack)))}else if(!moving){i=Math.floor(T*4+ph)%md.walk}
   if((m.boss||m.gob)&&!m.dead){ctx.save();ctx.shadowColor=m.gob?'rgba(255,210,60,.95)':m.lord?'rgba(180,110,255,.9)':'rgba(255,60,80,.85)';ctx.shadowBlur=(14+6*Math.sin(T*4))*s;ctx.drawImage(MSPR[md.id][a],i*SPR_FRAME,0,SPR_FRAME,SPR_FRAME,x-SPR_FRAME/2*k,ly-SPR_FOOT*k,SPR_FRAME*k,SPR_FRAME*k);ctx.restore()}
   else ctx.drawImage(MSPR[md.id][a],i*SPR_FRAME,0,SPR_FRAME,SPR_FRAME,x-SPR_FRAME/2*k,ly-SPR_FOOT*k,SPR_FRAME*k,SPR_FRAME*k);
   if(m.hit>0){ctx.globalCompositeOperation='lighter';ctx.globalAlpha=fade*.35;ctx.drawImage(MSPR[md.id][a],i*SPR_FRAME,0,SPR_FRAME,SPR_FRAME,x-SPR_FRAME/2*k,ly-SPR_FOOT*k,SPR_FRAME*k,SPR_FRAME*k);ctx.globalCompositeOperation='source-over';ctx.globalAlpha=fade}
-  top=ly-md.fig*k}
+  top=ly-md.fig*k;if(m.flee)ctx.restore()}
  else if(r.kind==='slime'){const q=Math.sin(T*6+ph)*.08,rx=20*ss*(1+q),ry=17*ss*(1-q);ell(x,y-ry,rx,ry,col);ctx.fillStyle=col;ctx.fillRect(x-rx,y-ry,rx*2,ry);ell(x-7*ss,y-ry*1.3,5*ss,4*ss,'rgba(255,255,255,.35)');eyes(x-10*ss,y-ry,ss,'#3a0a14');top=y-ry*2}
  else if(r.kind==='bat'){const fy=y-46*ss+Math.sin(T*5+ph)*5*ss,fl=Math.sin(T*18+ph)*8*ss;ctx.fillStyle=col;
   ctx.beginPath();ctx.moveTo(x,fy);ctx.lineTo(x+26*ss,fy-12*ss+fl);ctx.lineTo(x+18*ss,fy+6*ss);ctx.closePath();ctx.fill();
