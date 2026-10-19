@@ -996,12 +996,13 @@ function drawVillageCode(){
 const mc=$('mc'),mctx=mc.getContext('2d');let MW=0,MH=0;
 function resizeM(){const r=mc.getBoundingClientRect(),d=Math.min(2,window.devicePixelRatio||1);if(!r.width)return;MW=r.width;MH=r.height;mc.width=MW*d;mc.height=MH*d;mctx.setTransform(d,0,0,d,0,0)}
 new ResizeObserver(resizeM).observe(mc);
+const CAPIMG={};for(const k of['locked','open']){const im=new Image();im.onload=()=>CAPIMG[k]=im;im.src='assets/map/capital_'+k+'.png'}
 const RNODE=['erdan','dusk','canyon','frost','ash'].map(r=>{const o={};for(const t of['enemy','boss']){const im=new Image();im.onload=()=>o[t]=im;im.src='assets/map/'+r+'_'+t+'.png'}return o});/* 지역별 노드. 없으면 공용 노드 */
 const MAPNODE={ok:false};(()=>{let n=0;for(const k of['captured','enemy','boss','current']){const im=new Image();im.onload=()=>{if(++n===4)MAPNODE.ok=true};im.src='assets/ui/node_'+k+'.png';MAPNODE[k]=im}})();
 function drawMap(){
  if(!MW)return;const prev=ctx;ctx=mctx;
  ctx.fillStyle='#1a2034';ctx.fillRect(0,0,MW,MH);
- const rows=REGIONS.length,top=10,bottomPad=56,rh=(MH-top-bottomPad)/rows,padX=22,dx=(MW-padX*2)/9,cur=S.stage-1,R=Math.min(dx*.34,11);
+ const rows=REGIONS.length,top=10,bottomPad=CAPIMG.locked?104:56,rh=(MH-top-bottomPad)/rows,padX=22,dx=(MW-padX*2)/9,cur=S.stage-1,R=Math.min(dx*.34,11);
  const pts=[];for(let i=0;i<rows;i++)for(let j=0;j<10;j++){const col=i%2?9-j:j;pts.push({x:padX+col*dx,y:top+i*rh+rh*.55,i,j})}
  for(let i=0;i<rows;i++){const r=REGIONS[i];ctx.fillStyle=r.hill;ctx.globalAlpha=.35;rr(4,top+i*rh+2,MW-8,rh-4,10);ctx.globalAlpha=1;
   ctx.textAlign='center';ctx.font=`700 12px Hahmlet, serif`;const nw=ctx.measureText(r.n+'  ').width;ctx.font=`500 10px "IBM Plex Sans KR",sans-serif`;const bw=ctx.measureText(r.boss).width,lx=MW/2-(nw+bw)/2;
@@ -1013,7 +1014,7 @@ function drawMap(){
   else{ell(p.x,p.y,rad,rad,k===cur?'#7a2b3a':'#4a1f2c');ctx.fillStyle='#c25a6a';ctx.beginPath();ctx.moveTo(p.x-rad*.5,p.y-rad*.1);ctx.lineTo(p.x-rad*.7,p.y-rad*.75);ctx.lineTo(p.x-rad*.15,p.y-rad*.3);ctx.moveTo(p.x+rad*.15,p.y-rad*.3);ctx.lineTo(p.x+rad*.7,p.y-rad*.75);ctx.lineTo(p.x+rad*.5,p.y-rad*.1);ctx.fill()}
   if(lord){ctx.strokeStyle=k<cur?'#ffc94a':'#ff6b7d';ctx.lineWidth=2;ctx.beginPath();ctx.arc(p.x,p.y,rad+2,0,Math.PI*2);ctx.stroke()}
   if(k===cur){const pr=rad+5+Math.sin(T*4)*2;ctx.strokeStyle='#ffc94a';ctx.lineWidth=2.5;ctx.beginPath();ctx.arc(p.x,p.y,pr,0,Math.PI*2);ctx.stroke()}});
- const kx=MW/2,ky=MH-bottomPad/2,done=cur>=MAXLAND;ctx.fillStyle=done?'#ffc94a':'#4a3a2a';ctx.beginPath();ctx.moveTo(kx-16,ky+8);ctx.lineTo(kx-16,ky-6);ctx.lineTo(kx-8,ky+1);ctx.lineTo(kx,ky-12);ctx.lineTo(kx+8,ky+1);ctx.lineTo(kx+16,ky-6);ctx.lineTo(kx+16,ky+8);ctx.fill();
+ const kx=MW/2,ky=MH-bottomPad/2,done=cur>=MAXLAND,cap=CAPIMG[done?'open':'locked'];if(cap){const z=bottomPad*1.05;ctx.drawImage(cap,kx-z-6,MH-z-2,z,z)}else{ctx.fillStyle=done?'#ffc94a':'#4a3a2a';ctx.beginPath();ctx.moveTo(kx-16,ky+8);ctx.lineTo(kx-16,ky-6);ctx.lineTo(kx-8,ky+1);ctx.lineTo(kx,ky-12);ctx.lineTo(kx+8,ky+1);ctx.lineTo(kx+16,ky-6);ctx.lineTo(kx+16,ky+8);ctx.fill();}
  ctx.fillStyle='#dfe5f2';ctx.font='700 12px Hahmlet, serif';ctx.textAlign='left';ctx.fillText('왕도 아스테리온',kx+24,ky+2);ctx.fillStyle='#97a2c3';ctx.font='500 10px "IBM Plex Sans KR",sans-serif';ctx.fillText(done?'진격로가 열렸어요':'다섯 군단을 몰아내면 열려요',kx+24,ky+16);
  if(cur<MAXLAND){const p=pts[cur];ctx.font='600 10px "IBM Plex Sans KR",sans-serif';const t=terrName(S.stage),tw=ctx.measureText(t).width+12;let bx=Math.max(4,Math.min(MW-tw-4,p.x-tw/2)),byy=p.y+R*(p.j===9?1.35:1)+6;ctx.fillStyle='rgba(255,201,74,.95)';rr(bx,byy,tw,16,6);ctx.fillStyle='#3a2a00';ctx.textAlign='center';ctx.fillText(t,bx+tw/2,byy+11.5)}
  ctx=prev;
