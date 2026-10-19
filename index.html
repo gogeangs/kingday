@@ -60,6 +60,9 @@ body{word-break:keep-all;overflow-wrap:break-word;line-break:strict;background:#
 .pfc b{font-size:12px;line-height:1.2;text-align:center;word-break:keep-all}.pfc small{font-size:10.5px;color:var(--muted);line-height:1.2;text-align:center;word-break:keep-all}
 .pfc.on small{color:var(--gold)}
 .pfc.lock .pfr{filter:grayscale(1) brightness(.6)}
+.rareloot{display:flex;justify-content:center;margin:6px 0 10px}.rareloot img{width:132px;height:132px;filter:drop-shadow(0 0 14px rgba(255,210,60,.8));animation:rarepop .6s ease-out}
+@keyframes rarepop{0%{transform:scale(.3) rotate(-20deg);opacity:0}70%{transform:scale(1.12)}100%{transform:scale(1)}}
+.pfc.rare:not(.lock){box-shadow:0 0 10px rgba(255,210,60,.55)}
 .pfbd{width:24px;height:24px;vertical-align:-4px;margin-left:5px}
 .hbadge{width:20px;height:20px;vertical-align:-4px;margin-right:2px}
 .hbadge[hidden]{display:none}
@@ -1063,11 +1066,18 @@ function spawn(){
  if(S.stage>=3&&gobT<=0){gobT=360+Math.random()*360;const gh=monHp(S.stage,false)*5;mons.unshift({x:W+30,lane:.3,hp:gh,max:gh,atk:0,boss:false,cd:1e9,hit:0,dead:0,gob:true,mv:1.4,life:12});
   banner={t:2,txt:'황금 고블린 출현!',sub:'12초 안에 잡으면 보물을 떨군다'};shakeT=.3}
 }
+/* 황금 고블린 희귀 전리품: 배지 1.5%, 테두리 0.7% (잡을 때마다, 이미 있으면 안 나옴) */
+const GOB_RARE={badge:.015,frame:.007};
+function gobRare(){const got=[];S.bdUnl=S.bdUnl||{};S.pfUnl=S.pfUnl||{};
+ if(!bdHas('goblin')&&Math.random()<GOB_RARE.badge){S.bdUnl.goblin=1;got.push(['badge','배지','고블린 사냥꾼'])}
+ if(!pfHas('goblin')&&Math.random()<GOB_RARE.frame){S.pfUnl.goblin=1;got.push(['frame','프로필 테두리','황금 고블린'])}
+ for(const[t,kind,n]of got)queue(()=>{$('sheet').innerHTML=`<div class="eyebrow" style="color:#ffd34a">아주 드문 전리품!</div><h2>${kind} 「${n}」</h2><div class="rareloot"><img src="assets/profile/${t}_goblin.png" alt=""></div>${para('q@moved:황금 고블린이 이런 걸 숨기고 있었다니… 주인, 오늘은 운이 좋군.')}<p class="note" style="text-align:center">프로필(얼굴 누르기)에서 ${t==='frame'?'끼울':'달'} 수 있어요</p><div class="acts"><button id="mX">닫기</button><button class="pri" id="mGo">바로 ${t==='frame'?'끼우기':'달기'}</button></div>`;$('modal').hidden=false;
+  $('mX').onclick=closeModal;$('mGo').onclick=()=>{if(t==='frame')S.pf='goblin';else S.badge='goblin';pfCheck();save();closeModal()}})}
 function gobDrop(m,s){const g=Math.floor(reward(S.stage,false)*30*(buff('gold')?1.5:1)*memMul()),gem=5+Math.floor(Math.random()*6);S.gold+=g;stat('gob',1);
  spawnFx('coin',m.x,m.y-30*s,70*s,.8,-70*s);addFloat(m.x,m.y-40*s,'+'+fmt(g),'#ffc94a',20);addFloat(m.x,m.y-66*s,'황금 이삭 +'+gem,'#ffe27a',14);
  const it=rollItem(Math.max(2,rollItem().g));
  toast('황금 고블린을 잡았어요! 골드 +'+fmt(g));setTimeout(()=>gainGem(gem,'황금 고블린'),900);
- queue(()=>{if(pending)return;pending=it;showItem(it,S.eq[it.slot]);$('sheet').querySelector('h2').textContent='황금 고블린의 보물'})}
+ queue(()=>{if(pending)return;pending=it;showItem(it,S.eq[it.slot]);$('sheet').querySelector('h2').textContent='황금 고블린의 보물'});gobRare()}
 function addFloat(x,y,txt,col,size){floats.push({x,y,txt,col,size:size||15,t:0})}
 function hitMon(m,d,cr,s,gy){m.hp-=d;m.hit=.12;spawnFx(cr?'crit':'hit',m.x+(Math.random()-.5)*10*s,m.y-(m.boss?50:28)*s,(cr?60:42)*s*(m.boss?1.3:1),cr?.36:.24);addFloat(m.x+(Math.random()-.5)*12*s,(m.barY!=null?m.barY-8*s:m.y-(m.boss?95:60)*s),fmt(d),cr?'#ffc94a':'#ffffff',cr?21:14)}
 function resetFight(msg){SKX.shield=SKX.honey=SKX.feast=0;for(const id of members()){P[id].hp=stats(id).hp;P[id].down=false}mons=[];spawnT=1;S.wave=0;$('bossbar').hidden=true;toast(msg);renderAll()}
@@ -1485,7 +1495,8 @@ const PFRAMES=[
  {k:'gold',n:'황금 영주',d:'칭호 영주',ok:()=>rankIdx()>=3},
  {k:'amethyst',n:'자수정 장식',d:'전설 성유물 착용',ok:()=>Object.values(S.eq).some(it=>it&&it.g>=4)},
  {k:'holy',n:'성검의 가호',d:'첫 은퇴',ok:()=>(S.retires||0)>=1},
- {k:'royal',n:'붉은 왕관',d:'칭호 공작',ok:()=>rankIdx()>=5}];
+ {k:'royal',n:'붉은 왕관',d:'칭호 공작',ok:()=>rankIdx()>=5},
+ {k:'goblin',n:'황금 고블린',d:'황금 고블린 희귀 전리품',ok:()=>false,rare:1}];
 const stat=(k,n)=>{if(!S.stat)S.stat={};S.stat[k]=(S.stat[k]||0)+n},st=k=>(S.stat&&S.stat[k])||0;
 const BADGES=[
  {k:'pumpkin',n:'첫 달빛 호박',d:'달빛 호박 수확',ok:()=>st('pump')>=1},
@@ -1495,7 +1506,8 @@ const BADGES=[
  {k:'chest',n:'상자 사냥꾼',d:'성유물 상자 Lv.10',ok:()=>S.boxLv>=10},
  {k:'horns',n:'군단장 사냥꾼',d:'군단장 처치',ok:()=>Object.keys(S.gemLord||{}).length>=1},
  {k:'retire',n:'은퇴 전문가',d:'은퇴 3번',ok:()=>(S.retires||0)>=3},
- {k:'king',n:'농부 왕',d:'영지 50곳 모두 탈환',ok:()=>S.best>MAXLAND}];
+ {k:'king',n:'농부 왕',d:'영지 50곳 모두 탈환',ok:()=>S.best>MAXLAND},
+ {k:'goblin',n:'고블린 사냥꾼',d:'황금 고블린 희귀 전리품',ok:()=>false,rare:1}];
 const bdHas=k=>!!(S.bdUnl&&S.bdUnl[k]);
 const pfHas=k=>k==='wood'||!!(S.pfUnl&&S.pfUnl[k]);
 function pfCheck(){if(!S.pfUnl)S.pfUnl={};for(const f of PFRAMES){if(!S.pfUnl[f.k]&&f.ok()){S.pfUnl[f.k]=1;if(f.k!=='wood'&&S.started)toast('새 프로필 테두리 「'+f.n+'」을 얻었어요')}}
@@ -1505,13 +1517,13 @@ function pfCheck(){if(!S.pfUnl)S.pfUnl={};for(const f of PFRAMES){if(!S.pfUnl[f.
 function profileSheet(){pfCheck();const cur=S.pf||'wood',ri=rankIdx();
  $('sheet').innerHTML=`<div class="eyebrow">프로필</div><div class="pfhead"><div class="pfbig"><canvas id="pfCv"></canvas><img class="pfr" src="assets/profile/frame_${cur}.png" alt=""></div><div class="pfinfo"><b>카엘${S.badge&&bdHas(S.badge)?`<img class="pfbd" src="assets/profile/badge_${S.badge}.png" alt="">`:''}</b><small>${RANKS[ri].n} · 전투력 ${fmt(power())}</small><small>최고 영지 ${Math.min(S.best,MAXLAND)} · 은퇴 ${S.retires||0}번</small></div></div>
  <div class="sec">테두리 <small>${PFRAMES.filter(f=>pfHas(f.k)).length} / ${PFRAMES.length}</small></div>
- <div class="pfgrid">${PFRAMES.map(f=>{const has=pfHas(f.k);return`<button class="pfc${f.k===cur?' on':''}${has?'':' lock'}" data-pf="${f.k}"><span class="pv"><i></i><img class="pfr" src="assets/profile/frame_${f.k}.png" alt=""></span><b>${f.n}</b><small>${f.k===cur?'사용 중':has?'바꾸기':'🔒 '+f.d}</small></button>`}).join('')}</div>
+ <div class="pfgrid">${PFRAMES.map(f=>{const has=pfHas(f.k);return`<button class="pfc${f.k===cur?' on':''}${has?'':' lock'}${f.rare?' rare':''}" data-pf="${f.k}"><span class="pv"><i></i><img class="pfr" src="assets/profile/frame_${f.k}.png" alt=""></span><b>${f.n}</b><small>${f.k===cur?'사용 중':has?'바꾸기':'🔒 '+f.d}</small></button>`}).join('')}</div>
  <div class="sec">대표 배지 <small>${BADGES.filter(b=>bdHas(b.k)).length} / ${BADGES.length}</small></div>
- <div class="pfgrid">${BADGES.map(b=>{const has=bdHas(b.k),on=S.badge===b.k;return`<button class="pfc bd${on?' on':''}${has?'':' lock'}" data-bd="${b.k}"><span class="pv"><img class="pfr" src="assets/profile/badge_${b.k}.png" alt=""></span><b>${b.n}</b><small>${on?'다는 중':has?'달기':'🔒 '+b.d}</small></button>`}).join('')}</div>
+ <div class="pfgrid">${BADGES.map(b=>{const has=bdHas(b.k),on=S.badge===b.k;return`<button class="pfc bd${on?' on':''}${has?'':' lock'}${b.rare?' rare':''}" data-bd="${b.k}"><span class="pv"><img class="pfr" src="assets/profile/badge_${b.k}.png" alt=""></span><b>${b.n}</b><small>${on?'다는 중':has?'달기':'🔒 '+b.d}</small></button>`}).join('')}</div>
  <div class="acts"><button id="pfSet">⚙ 설정</button><button class="pri" id="mGo">닫기</button></div>`;
  $('modal').hidden=false;faceTo($('pfCv'),'kael');$('mGo').onclick=closeModal;$('pfSet').onclick=()=>settingsSheet();
- document.querySelectorAll('[data-bd]').forEach(b=>b.onclick=()=>{const k=b.dataset.bd,f=BADGES.find(x=>x.k===k);if(!bdHas(k))return toast(f.d+' 달성 시 얻어요');S.badge=S.badge===k?null:k;pfCheck();save();profileSheet()});
- document.querySelectorAll('[data-pf]').forEach(b=>b.onclick=()=>{const k=b.dataset.pf,f=PFRAMES.find(x=>x.k===k);if(!pfHas(k))return toast(f.d+' 달성 시 얻어요');S.pf=k;pfCheck();save();profileSheet()});
+ document.querySelectorAll('[data-bd]').forEach(b=>b.onclick=()=>{const k=b.dataset.bd,f=BADGES.find(x=>x.k===k);if(!bdHas(k))return toast(f.rare?'황금 고블린을 잡으면 아주 드물게 얻어요':f.d+' 달성 시 얻어요');S.badge=S.badge===k?null:k;pfCheck();save();profileSheet()});
+ document.querySelectorAll('[data-pf]').forEach(b=>b.onclick=()=>{const k=b.dataset.pf,f=PFRAMES.find(x=>x.k===k);if(!pfHas(k))return toast(f.rare?'황금 고블린을 잡으면 아주 드물게 얻어요':f.d+' 달성 시 얻어요');S.pf=k;pfCheck();save();profileSheet()});
 }
 function settingsSheet(step){
  $('sheet').innerHTML=`<div class="eyebrow">설정</div><h2>카엘의 수첩</h2>
