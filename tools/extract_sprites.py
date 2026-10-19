@@ -93,7 +93,7 @@ def own_mask(loose_lab, box):
     return keep
 
 
-def main(src, cid, monster=False):
+def main(src, cid, monster=False, center=False):
     rows_def = MON_ROWS if monster else ROWS
     scale = MON_SCALE if monster else SCALE
     outdir = "assets/monsters" if monster else "assets/characters"
@@ -119,7 +119,7 @@ def main(src, cid, monster=False):
         for i, box in enumerate(row):
             x0, y0, x1, y1 = box[:4]
             was_split = len(box) > 4
-            hx = head_x(alpha, (x0, y0, x1, y1))
+            hx = (x0 + x1) / 2 if center else head_x(alpha, (x0, y0, x1, y1))  # --center: 가로로 긴 마물(늑대 등)은 몸 전체 가운데로
             mine = np.ones_like(alpha, bool) if was_split else own_mask(loose_lab, (x0, y0, x1, y1))
             inside = alpha[y0:y1, x0:x1] > 200
             if inside.sum() and (inside & mine[y0:y1, x0:x1]).sum() < inside.sum() * 0.5:
@@ -144,4 +144,4 @@ def main(src, cid, monster=False):
 
 
 if __name__ == "__main__":
-    main(sys.argv[1], sys.argv[2], "--monster" in sys.argv[3:])
+    main(sys.argv[1], sys.argv[2], "--monster" in sys.argv[3:], "--center" in sys.argv[3:])
