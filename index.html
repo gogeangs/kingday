@@ -31,6 +31,14 @@ body{background:#0a0d16;color:var(--fg);font-family:var(--f-body);padding:0;marg
 .pow{font-size:13px;color:var(--gold);font-variant-numeric:tabular-nums;display:flex;align-items:center;gap:4px}
 .pow::before{content:"⚔";font-size:12px}
 .goldpill{display:flex;align-items:center;gap:6px;background:#0b0f1a;border:1px solid #3a4568;border-radius:999px;padding:5px 12px 5px 6px;font-family:var(--f-body);font-weight:700;font-size:16px;font-variant-numeric:tabular-nums;flex:0 0 auto}
+.gempill{position:relative;display:flex;align-items:center;gap:4px;background:#1a1406;border:1px solid #8a6a1a;border-radius:999px;padding:4px 10px 4px 5px;font-family:var(--f-body);font-weight:700;font-size:14px;color:#ffe08a;font-variant-numeric:tabular-nums;flex:0 0 auto;cursor:pointer}
+.gemimg{width:22px;height:22px;margin:-3px 0;filter:sepia(1) saturate(5) hue-rotate(-10deg) brightness(1.2) drop-shadow(0 0 3px rgba(255,210,80,.9))}
+.gempill .dot{position:absolute;top:-2px;right:-2px;width:9px;height:9px;border-radius:50%;background:var(--bad);border:1px solid #fff}
+.mis{display:flex;align-items:center;gap:10px;background:var(--panel2);border-radius:12px;padding:9px 10px}
+.mis .info{flex:1;min-width:0;font-size:13px}
+.mis .info b{display:block;font-weight:600;margin-bottom:4px}
+.mis .xp{height:5px}
+.mis .buy{min-width:72px;padding:7px 8px}
 .coinimg{width:26px;height:26px;margin:-4px -2px -4px -4px}
 .coin{width:20px;height:20px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#fff3c4,var(--gold) 55%,#c98a10);box-shadow:inset 0 -2px 0 #a8700a}
 .stagewrap{position:relative;flex:1;min-height:0;overflow:hidden}
@@ -214,6 +222,7 @@ button:focus-visible,input:focus-visible{outline:2px solid var(--gold);outline-o
   <header class="hud">
     <button class="face" id="faceBtn" aria-label="원정대 보기"><canvas id="faceCv"></canvas></button>
     <div class="who"><span class="nm">카엘 <img class="rankimg" id="hRankImg" src="assets/ui/rank_farmer.png" alt="" onerror="this.remove()"><span class="rank" id="hRank">농부</span></span><span class="pow" id="hPow">0</span></div>
+    <button class="gempill" id="gemBtn" aria-label="황금 이삭과 오늘의 할 일"><img class="gemimg" src="assets/ui/item_wheat.png" alt="" onerror="this.remove()"><span id="gem">0</span><i class="dot" id="gemDot" hidden></i></button>
     <div class="goldpill"><img class="coinimg" src="assets/ui/ui_gold.png" alt="" onerror="this.outerHTML='<i class=&quot;coin&quot;></i>'"><span id="gold">0</span></div>
   </header>
 
@@ -394,10 +403,29 @@ const KEY='acorn-idle-v1';
 let S;
 function fresh(){return{gold:0,stage:1,wave:0,boxLv:1,boxXp:0,up:{atk:0,hp:0,spd:0,crit:0},eq:{},autoSell:false,autoOpen:false,last:Date.now(),best:1,started:false,
  joined:{},done:{},lv:{bron:1,haral:1,riel:1,margo:1},bld:{inn:0,farm:0,diner:0,dock:0,apiary:0,mine:0},plots:[],seeds:{wheat:0,carrot:0,pumpkin:0},
- items:{wheat:0,carrot:0,pumpkin:0,fish:0,honey:0,ore:0},prod:{},buffs:{},rankSeen:0,memory:0,retires:0,v:3}}
+ items:{wheat:0,carrot:0,pumpkin:0,fish:0,honey:0,ore:0},prod:{},buffs:{},rankSeen:0,memory:0,retires:0,gem:0,gemRank:0,gemLord:{},daily:{d:'',kill:0,box:0,harv:0,claim:{}},v:3}}
 function hydrate(d){const f=fresh();for(const k in d){if(f[k]&&typeof f[k]==='object'&&!Array.isArray(f[k])&&d[k]&&typeof d[k]==='object')f[k]=Object.assign(f[k],d[k]);else f[k]=d[k]}
  if(d&&d.crops){for(const k in d.crops)f.items[k]=(f.items[k]||0)+d.crops[k];delete f.crops}
  if((d&&d.v||0)<3){f.rankSeen=rankIdx(f)}return f}
+const MISSIONS=[{k:'kill',n:'마물 100마리 처치',goal:100,r:10},{k:'box',n:'성유물 상자 10번 열기',goal:10,r:10},{k:'harv',n:'작물 10개 수확',goal:10,r:10}],MIS_ALL=20,RANK_GEM=30,LORD_GEM=50;
+function today(){const t=new Date();return t.getFullYear()+'-'+(t.getMonth()+1)+'-'+t.getDate()}
+function daily(){if(!S.daily||S.daily.d!==today())S.daily={d:today(),kill:0,box:0,harv:0,claim:{}};return S.daily}
+function dailyAdd(k,n){const d=daily();d[k]=(d[k]||0)+n}
+function misCan(m){const d=daily();return m?(d[m.k]>=m.goal&&!d.claim[m.k]):MISSIONS.every(x=>d.claim[x.k])&&!d.claim.all}
+function gainGem(n,why){S.gem=(S.gem||0)+n;toast('황금 이삭 +'+n+(why?' · '+why:''))}
+function gemSheet(){const d=daily();
+ const row=(m)=>{const v=Math.min(d[m.k],m.goal),done=d.claim[m.k],can=misCan(m);return`<div class="mis"><div class="info"><b>${m.n}</b><div class="xp"><div style="width:${v/m.goal*100}%"></div></div></div><button class="buy" data-m="${m.k}" ${can?'':'disabled'}>${done?'받음':can?'+'+m.r+' 받기':v+' / '+m.goal}</button></div>`};
+ const allDone=d.claim.all,allCan=misCan(null);
+ $('sheet').innerHTML=`<div class="eyebrow">왕국의 귀한 곡식</div><h2><img class="gemimg" src="assets/ui/item_wheat.png" alt="" style="width:30px;height:30px;vertical-align:-6px"> 황금 이삭 ${fmt(S.gem||0)}</h2>
+ ${para('q@proud:성검이 축복한 이삭이다. 피트가 보면 눈이 뒤집히지.')}
+ <div class="sec">오늘의 할 일 <small>매일 자정에 새로 시작해요</small></div>
+ ${MISSIONS.map(row).join('')}
+ <div class="mis"><div class="info"><b>오늘의 할 일 모두 끝내기</b></div><button class="buy" data-m="all" ${allCan?'':'disabled'}>${allDone?'받음':'+'+MIS_ALL+(allCan?' 받기':'')}</button></div>
+ <p class="note">그 밖에 칭호가 오를 때 +${RANK_GEM}, 군단장을 처음 쓰러뜨릴 때 +${LORD_GEM}을 얻어요. 황금 이삭으로 쓸 수 있는 곳(상점)은 곧 열려요.</p>
+ <div class="acts one"><button class="pri" id="mGo">닫기</button></div>`;
+ $('modal').hidden=false;$('mGo').onclick=closeModal;
+ $('sheet').querySelectorAll('[data-m]').forEach(b=>b.onclick=()=>{const k=b.dataset.m,m=MISSIONS.find(x=>x.k===k);if(!misCan(m||null))return;daily().claim[k]=true;gainGem(m?m.r:MIS_ALL,m?m.n:'오늘의 할 일 완료');renderAll();gemSheet()});
+}
 function fmt(n){n=Math.floor(n);if(n<1e4)return n.toLocaleString('ko-KR');const u=['','K','M','B','T','aa','ab','ac'];let i=0;while(n>=1000&&i<u.length-1){n/=1000;i++}return(n<10?n.toFixed(2):n<100?n.toFixed(1):Math.floor(n))+u[i]}
 function mmss(sec){sec=Math.max(0,Math.ceil(sec));const m=Math.floor(sec/60),s=sec%60;return m+':'+String(s).padStart(2,'0')}
 const region=st=>REGIONS[Math.floor((st-1)/10)%REGIONS.length];
@@ -456,7 +484,7 @@ function scene(eyebrow,title,paras,btn,alt,illust){
 }
 function chapter(){const st=S.stage;queue(()=>{const r=region(st),i=Math.floor((st-1)/10)%5;scene('제'+(i+1)+'군단 · 점령지',`<img class="bossportrait" src="assets/portraits/portrait_${BOSSID[i]}_idle.png" alt="" onerror="this.remove()">`+r.n,[...r.lore,'sys:이 땅의 지배자 · '+r.boss],'진격한다')})}
 function events(){for(const e of EVENTS)if(S.stage>=e.at&&!S.done[e.id]){S.done[e.id]=true;e.act();syncParty();queue(()=>scene(e.eb,e.t,e.p,e.btn))}
- const ri=rankIdx();if(ri>S.rankSeen){S.rankSeen=ri;const r=RANKS[ri];queue(()=>scene('칭호 상승',uiImg(RANKIMG[ri],'rankbig')+r.n+' 카엘',['되찾은 영지가 '+r.at+'곳에 이르자, 사람들이 카엘을 '+r.n+'(이)라고 부르기 시작했다.','k@flustered:'+r.k,'q@proud:하하! 한 걸음 더 왕좌에 가까워졌다!','sys:모든 원정대 능력치 +4%'],'…알겠어요'))}
+ const ri=rankIdx();if(ri>S.rankSeen){S.rankSeen=ri;const r=RANKS[ri],gg=ri>(S.gemRank||0);if(gg){S.gemRank=ri;S.gem=(S.gem||0)+RANK_GEM};queue(()=>scene('칭호 상승',uiImg(RANKIMG[ri],'rankbig')+r.n+' 카엘',['되찾은 영지가 '+r.at+'곳에 이르자, 사람들이 카엘을 '+r.n+'(이)라고 부르기 시작했다.','k@flustered:'+r.k,'q@proud:하하! 한 걸음 더 왕좌에 가까워졌다!','sys:모든 원정대 능력치 +4%'+(gg?' · 황금 이삭 +'+RANK_GEM:'')],'…알겠어요'))}
  renderAll()}
 function intro(){queue(()=>scene('왕이 되는 그날까지 · 프롤로그','밭에 박힌 쇠막대',[
  '300년 전 봉인되었던 마계의 문이 열렸다. 마왕군은 하룻밤 만에 에르단 왕국을 집어삼켰고, 왕은 전사했다.',
@@ -481,7 +509,7 @@ let pending=null;
 function openBox(auto){
  const c=boxCost();if(S.gold<c||pending)return;
  if(!S.done.pete){S.done.pete=true;queue(()=>scene('수상한 행상인','행상인 피트',['마을 어귀에 낯선 마차가 서 있었다. 짐칸 가득 녹슨 상자가 실려 있었다.','m:피트|어이, 거기 성검 든 형씨! 성유물 상자 하나 어때? 마왕군이 흘리고 간 진품이야. …아마도.','k@surprised:아마도요?','q@angry:주인, 저자 눈빛이 수상하다.','m:피트|수상하긴! 열어 보면 알아. 환불은 안 되지만.','sys:상자를 열면 카엘의 장비가 나와요. 많이 열수록 피트가 더 좋은 물건을 들여와요.'],'한번 열어 본다',{go:()=>openBox(auto)}));return}
- S.gold-=c;gainBoxXp();const it=rollItem(),cur=S.eq[it.slot];
+ S.gold-=c;gainBoxXp();dailyAdd('box',1);const it=rollItem(),cur=S.eq[it.slot];
  if(auto){if(score(it)>score(cur)){if(cur)S.gold+=cur.price;S.eq[it.slot]=it;flashSlot(it.slot)}else S.gold+=it.price;renderAll();return}
  if(S.autoSell&&cur&&score(it)<=score(cur)){S.gold+=it.price;toast(GRADES[it.g].n+' '+slotName(it.slot)+' 판매 +'+fmt(it.price));renderAll();return}
  pending=it;showItem(it,cur);renderAll();
@@ -509,7 +537,7 @@ function closeModal(){$('modal').hidden=true;pending=null;renderAll();pump()}
 function ensurePlots(){const n=plotCount();while(S.plots.length<n)S.plots.push(null)}
 function plotState(p){if(!p)return{st:'empty'};const c=CROPS.find(x=>x.k===p.k),left=c.t-(Date.now()-p.at)/1000;return left<=0?{st:'ready',c}:{st:'grow',c,left,ratio:1-left/c.t}}
 function plant(i,k){if(S.seeds[k]<=0||S.plots[i])return;S.seeds[k]--;S.plots[i]={k,at:Date.now()};farmSig='';renderAll()}
-function harvest(i){const ps=plotState(S.plots[i]);if(ps.st!=='ready')return 0;const n=2+(Math.random()<.3?1:0);S.items[ps.c.k]+=n;S.plots[i]=null;return n}
+function harvest(i){const ps=plotState(S.plots[i]);if(ps.st!=='ready')return 0;const n=2+(Math.random()<.3?1:0);S.items[ps.c.k]+=n;S.plots[i]=null;dailyAdd('harv',n);return n}
 function produce(){const now=Date.now();for(const g of GOODS){const l=S.bld[g.b];if(!l){S.prod[g.b]=now;continue}const iv=120000/l;if(!S.prod[g.b])S.prod[g.b]=now;const n=Math.min(2000,Math.floor((now-S.prod[g.b])/iv));if(n>0){S.items[g.k]+=n;S.prod[g.b]+=n*iv}}}
 function chooseSeed(i){
  $('sheet').innerHTML=`<h2>무엇을 심을까요?</h2>${CROPS.map(c=>`<div class="row" style="background:var(--panel2)">${uiImg('seed_'+c.k)}<div class="info"><b>${c.n}</b><div>자라는 시간 ${mmss(c.t)} · 씨앗 ${S.seeds[c.k]}개</div></div><button class="buy" id="sd-${c.k}" ${S.seeds[c.k]?'':'disabled'}>심기</button></div>`).join('')}<div class="acts one"><button id="mX">닫기</button></div>`;
@@ -633,7 +661,7 @@ function renderBox(){
 }
 function renderAll(){
  if(!S)return;const r=region(S.stage);
- $('gold').textContent=fmt(S.gold);
+ $('gold').textContent=fmt(S.gold);$('gem').textContent=fmt(S.gem||0);$('gemDot').hidden=!(MISSIONS.some(misCan)||misCan(null));
  $('stLabel').textContent=S.stage>MAXLAND?'왕도 진격로':(Math.floor((S.stage-1)/10)+1)+'-'+((S.stage-1)%10+1)+' '+r.n;
  $('stRegion').textContent=S.stage>MAXLAND?'':terrName(S.stage)+' 탈환전';
  $('hPow').textContent=fmt(power());$('hRank').textContent=RANKS[rankIdx()].n;{const ri=$('hRankImg'),src='assets/ui/'+RANKIMG[rankIdx()]+'.png';if(ri&&!ri.src.endsWith(src))ri.src=src}
@@ -654,7 +682,7 @@ let curTab=null; // null = 전투 화면
 function setTab(t){if(t===curTab)t=null;curTab=t;document.querySelectorAll('.tab').forEach(b=>b.setAttribute('aria-selected',b.dataset.t===t));['eq','pt','up','vl','mp'].forEach(x=>$('p-'+x).hidden=x!==t);if(t==='vl'){resizeV();farmSig='';kitSig='';bldSig='';requestAnimationFrame(()=>{resizeV();vlScrollTo(vlSel)})}if(t==='mp')resizeM();if(t==='pt')partySig='';if(t==='eq'){eqSig=''}renderAll()}
 document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>setTab(b.dataset.t));
 document.querySelectorAll('[data-close]').forEach(b=>b.onclick=()=>setTab(null));
-$('faceBtn').onclick=()=>setTab('pt');
+$('faceBtn').onclick=()=>setTab('pt');$('gemBtn').onclick=()=>{if($('modal').hidden)gemSheet()};
 $('quickBox').onclick=()=>openBox(false);
 $('speedBtn').onclick=()=>{S.speed=S.speed===2?1:2;renderSpeed()};
 function renderSpeed(){const b=$('speedBtn');b.textContent='x'+(S.speed||1);b.classList.toggle('on',S.speed===2)}
@@ -729,9 +757,9 @@ function step(dt){
     const tid=(S.joined.bron&&P.bron&&!P.bron.down)?'bron':ids.find(i=>!P[i].down);if(!tid)continue;
     const q=P[tid];q.hp-=m.atk;q.hit=.15;addFloat(pos[tid],py[tid]-(HEIGHT[tid]+8)*s,'-'+fmt(m.atk),'#ff6b7d',13);if(q.hp<=0){q.hp=0;q.down=true}}
   }
-  for(const m of mons){if(m.hp<=0&&!m.dead){m.dead=.35;spawnFx('coin',m.x,m.y-26*s,34*s,.6,-60*s);const g=reward(S.stage,m.boss)*(buff('gold')?1.5:1)*memMul();S.gold+=g;addFloat(m.x,m.y-30*s,'+'+fmt(g),'#ffc94a',14);
+  for(const m of mons){if(m.hp<=0&&!m.dead){m.dead=.35;spawnFx('coin',m.x,m.y-26*s,34*s,.6,-60*s);const g=reward(S.stage,m.boss)*(buff('gold')?1.5:1)*memMul();S.gold+=g;dailyAdd('kill',1);addFloat(m.x,m.y-30*s,'+'+fmt(g),'#ffc94a',14);
    if(S.bld.farm)for(const c of[...CROPS].reverse())if(Math.random()<c.drop*(m.boss?5:1)){S.seeds[c.k]++;addFloat(m.x,m.y-50*s,c.n+' 씨앗','#9be38a',12);break}
-   if(m.boss){const bn=bossName(S.stage),lord=isLord(S.stage),tn=terrName(S.stage);S.stage++;S.best=Math.max(S.best,S.stage);S.wave=0;$('bossbar').hidden=true;
+   if(m.boss){const bn=bossName(S.stage),lord=isLord(S.stage),tn=terrName(S.stage);if(lord&&!S.gemLord[S.stage]){S.gemLord[S.stage]=1;setTimeout(()=>gainGem(LORD_GEM,'군단장 첫 처치'),2300)}S.stage++;S.best=Math.max(S.best,S.stage);S.wave=0;$('bossbar').hidden=true;
     toast(bn+' 처치');banner={t:2,txt:tn+' 탈환!',sub:lord?'군단장을 쓰러뜨렸다':'영지를 되찾았다'};say('k',lord?'됐다… 이제 진짜 은퇴해도 되지?':'여기 흙, 다시 살아나겠네.');if((S.stage-1)%10===0)chapter();events()}
    else S.wave++;renderAll()}}
   if(ids.every(i=>P[i].down))return resetFight('성검의 가호로 모두 다시 일어섰어요. 더 강해져서 돌아가요');
