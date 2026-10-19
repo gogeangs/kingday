@@ -157,6 +157,10 @@ canvas{display:block;width:100%;height:100%}
 .open{font-family:var(--f-display);font-weight:700;font-size:19px;border:0;border-radius:12px;padding:12px;background:var(--gold);color:var(--gold-ink);cursor:pointer;display:flex;justify-content:center;align-items:center;gap:8px;box-shadow:0 4px 0 #b9850f}
 .open:active{transform:translateY(2px);box-shadow:0 2px 0 #b9850f}
 .open:disabled{background:var(--panel2);color:var(--muted);box-shadow:none;cursor:default}
+.open.gemopen{background:linear-gradient(#2c4a8c,#1d3366);color:#ffe08a;box-shadow:0 4px 0 #14234a;border:1px solid #5a7ac8}
+.buys{display:flex;flex-direction:column;gap:4px;flex:0 0 auto}
+.buy.gem{background:linear-gradient(#2c4a8c,#1d3366);color:#ffe08a;border:1px solid #5a7ac8;padding:6px 8px;font-size:12px;display:flex;align-items:center;justify-content:center;gap:3px}
+.buy.gem img{width:15px;height:15px}
 .open small{font-size:14px;opacity:.75;font-family:var(--f-body);display:flex;align-items:center;gap:3px}
 .row{display:flex;align-items:center;gap:10px;background:var(--panel);border-radius:12px;padding:10px 12px}
 .row .info{flex:1;min-width:0}
@@ -289,6 +293,8 @@ button:focus-visible,input:focus-visible{outline:2px solid var(--gold);outline-o
           <label class="tg"><input type="checkbox" id="autoOpen"> 자동 열기</label>
         </div>
         <button class="open" id="openBtn">상자 열기 <small><img src="assets/ui/ui_gold.png" alt="" style="width:20px;height:20px" onerror="this.remove()"><span id="openCost">20</span></small></button>
+        <button class="open gemopen" id="open10">10연속 열기 <small><img src="assets/gem/ui_gem.png" alt="" style="width:20px;height:20px" onerror="this.remove()">100</small></button>
+        <p class="note" style="margin-top:-4px">10연속은 영웅 등급 이상 1개 확정이에요. 등급별 확률은 위와 같아요. 더 좋은 장비는 바로 장착하고 나머지는 팔아요.</p>
         <p class="note">행상인 피트의 성유물은 카엘만 착용해요.</p>
       </div>
     </section>
@@ -495,12 +501,30 @@ function renderShop(){
  <div class="shoprow${subOn()?' hot':''}"><img class="pk" src="assets/gem/gem_pack_5.png" alt="" onerror="this.remove()"><div class="info"><b>${SUB.n}</b><div>${subTxt}</div></div>${subBtn}</div>
  <div class="sec">황금 이삭 <small>상품마다 첫 구매는 2배</small></div>
  <div class="packs">${PACKS.map((p,i)=>{const first=!S.buys[p.k];return`<button class="pack" data-p="${p.k}">${first?'<span class="tag">2배</span>':''}<img src="assets/gem/gem_pack_${i+1}.png" alt="" onerror="this.remove()"><b>${fmt(p.gem)}</b><small>${first?'+'+fmt(p.gem)+' 보너스':''}</small><span class="price">${won(p.won)}</span></button>`}).join('')}</div>
- <p class="note">황금 이삭은 곧 성유물 상자, 밭 즉시 수확, 건물 즉시 재건에 쓸 수 있어요.</p>`;
+ <p class="note">황금 이삭은 성유물 상자 10연속(장비 탭), 작물 바로 키우기·건물 바로 짓기(마을 탭), 방치 보상 2배 받기에 써요.</p>`;
  const sh=$('shop');
  sh.querySelectorAll('[data-m]').forEach(b=>b.onclick=()=>{const k=b.dataset.m,m=MISSIONS.find(x=>x.k===k);if(!misCan(m||null))return;daily().claim[k]=true;gainGem(m?m.r:MIS_ALL,m?m.n:'오늘의 할 일 완료');shopSig='';renderAll()});
  sh.querySelectorAll('[data-p]').forEach(b=>b.onclick=()=>buyPack(PACKS.find(p=>p.k===b.dataset.p)));
  const sb=$('starterBuy');if(sb)sb.onclick=buyStarter;const ub=$('subBuy');if(ub)ub.onclick=buySub;const uc=$('subClaim');if(uc)uc.onclick=claimSub;
 }
+const GEM10=100,GEM_PLOT=5,GEM_OFFLINE=20;
+const GEMIMG='<img src="assets/gem/ui_gem.png" alt="" onerror="this.remove()">';
+function spendGem(n){if((S.gem||0)<n){toast('황금 이삭이 부족해요. 피트의 상점에서 구할 수 있어요');return false}S.gem-=n;return true}
+const gemGold=()=>reward(S.stage,false)*20;/* 이삭 1개 ≈ 마물 20마리 골드 */
+const bldGem=c=>Math.max(5,Math.ceil(c/gemGold()));
+function open10(){if(pending||!$('modal').hidden)return;if(!spendGem(GEM10))return;
+ const its=[];for(let i=0;i<10;i++){gainBoxXp();dailyAdd('box',1);its.push(rollItem())}
+ if(!its.some(x=>x.g>=3))its[9]=rollItem(3);
+ let sold=0;const eq=[];for(const it of its){const cur=S.eq[it.slot];if(score(it)>score(cur)){if(cur)sold+=cur.price;S.eq[it.slot]=it;eq.push(it)}else sold+=it.price}
+ S.gold+=sold;eqSig='';renderAll();
+ const cnt=GRADES.map((g,i)=>[g,its.filter(x=>x.g===i).length]).filter(x=>x[1]);
+ $('sheet').innerHTML=`<div class="eyebrow">성유물 상자 10연속</div><h2>피트의 특별 배달</h2>
+ <div class="odds" style="justify-content:center;font-size:13px">${cnt.map(([g,n])=>`<span style="--c:${g.c}">${g.n} ${n}개</span>`).join('')}</div>
+ <div style="display:flex;flex-wrap:wrap;gap:6px;justify-content:center">${its.map(it=>`<div style="width:56px;display:flex;flex-direction:column;align-items:center;font-size:10px;font-weight:700;color:${GRADES[it.g].c}">${relicIcon(it).replace('class="relicic"','class="relicic" style="width:56px;height:56px"')}${eq.includes(it)?'장착':'&nbsp;'}</div>`).join('')}</div>
+ ${para(eq.length?'q@proud:좋다! 더 강한 성유물 '+eq.length+'개를 바로 걸쳤다.':'q@angry:흥, 지금 것보다 나은 게 없군.')}
+ <p class="lore sys">나머지를 팔아 골드 +${fmt(sold)}</p><div class="acts one"><button class="pri" id="mGo">확인</button></div>`;
+ $('modal').hidden=false;$('mGo').onclick=closeModal}
+function growNow(){const g=S.plots.filter(p=>plotState(p).st==='grow');if(!g.length)return;if(!spendGem(g.length*GEM_PLOT))return;g.forEach(p=>{p.at=0});toast('리엘의 벌들이 밭을 도왔어요. 모두 다 자랐어요');farmSig='';renderAll()}
 function fmt(n){n=Math.floor(n);if(n<1e4)return n.toLocaleString('ko-KR');const u=['','K','M','B','T','aa','ab','ac'];let i=0;while(n>=1000&&i<u.length-1){n/=1000;i++}return(n<10?n.toFixed(2):n<100?n.toFixed(1):Math.floor(n))+u[i]}
 function mmss(sec){sec=Math.max(0,Math.ceil(sec));const m=Math.floor(sec/60),s=sec%60;return m+':'+String(s).padStart(2,'0')}
 const region=st=>REGIONS[Math.floor((st-1)/10)%REGIONS.length];
@@ -632,13 +656,14 @@ function renderFarm(){
   if(ps.st==='empty')return`<button class="plot empty" data-i="${i}"><span class="sp"></span><span>빈 밭</span><b>심기</b></button>`;
   if(ps.st==='ready')return`<button class="plot ready" data-i="${i}" style="--c:${ps.c.c}"><span class="sp"></span><span>${ps.c.n}</span><b>수확</b></button>`;
   return`<button class="plot" data-i="${i}" style="--c:color-mix(in srgb,${ps.c.c} ${Math.round(30+ps.ratio*50)}%,#3a2a20)"><span class="sp" style="transform:scale(${(.4+ps.ratio*.6).toFixed(2)})"></span><span>${ps.c.n}</span><b>${mmss(ps.left)}</b></button>`}).join('');
- const anyReady=S.plots.some(p=>plotState(p).st==='ready'),anyEmpty=S.plots.some(p=>!p)&&CROPS.some(c=>S.seeds[c.k]>0);
- const sig=seeds+cells+anyReady+anyEmpty;if(sig===farmSig)return;farmSig=sig;
+ const nGrow=S.plots.filter(p=>plotState(p).st==='grow').length,anyReady=S.plots.some(p=>plotState(p).st==='ready'),anyEmpty=S.plots.some(p=>!p)&&CROPS.some(c=>S.seeds[c.k]>0);
+ const sig=seeds+cells+anyReady+anyEmpty+(S.gem||0);if(sig===farmSig)return;farmSig=sig;
  fb.innerHTML=`<div class="sec">카엘의 밭 <small>Lv.${S.bld.farm} · ${S.plots.length}칸 · 카엘의 진짜 꿈</small></div><div class="inv">${seeds}</div><div class="plots">${cells}</div>
-  <div class="btns"><button class="buy ghost" id="plantAll" ${anyEmpty?'':'disabled'}>모두 심기</button><button class="buy" id="harvAll" ${anyReady?'':'disabled'}>모두 수확</button></div>
+  <div class="btns"><button class="buy ghost" id="plantAll" ${anyEmpty?'':'disabled'}>모두 심기</button><button class="buy" id="harvAll" ${anyReady?'':'disabled'}>모두 수확</button></div>${nGrow?`<button class="buy gem" id="growNow">${GEMIMG}${nGrow*GEM_PLOT}로 자라는 작물 ${nGrow}칸 바로 키우기</button>`:''}
   <p class="note">씨앗은 마물이 가끔 떨어뜨려요. 작물은 게임을 꺼 둔 동안에도 자라요.</p>`;
  fb.querySelectorAll('.plot').forEach(b=>b.onclick=()=>{const i=+b.dataset.i,ps=plotState(S.plots[i]);if(ps.st==='empty')chooseSeed(i);else if(ps.st==='ready'){const n=harvest(i);toast(ps.c.n+' '+n+'개 수확. 카엘이 행복해 보여요');farmSig='';renderAll()}else toast(ps.c.n+' · '+mmss(ps.left)+' 뒤에 수확')});
  $('plantAll').onclick=()=>{S.plots.forEach((p,i)=>{if(p)return;const c=[...CROPS].reverse().find(c=>S.seeds[c.k]>0);if(c)plant(i,c.k)})};
+ {const gn=$('growNow');if(gn)gn.onclick=growNow}
  $('harvAll').onclick=()=>{let t=0;S.plots.forEach((p,i)=>t+=harvest(i));toast('작물 '+t+'개 수확');farmSig='';renderAll()};
 }
 let kitSig='';
@@ -659,12 +684,14 @@ const VNOTE={inn:'원정대가 쉬는 곳이에요. 레벨이 오를수록 게�
 function vlPanels(){$('farmBox').hidden=!(vlSel==='farm'&&S.bld.farm);$('kitchen').hidden=!(vlSel==='diner'&&S.bld.farm)||$('kitchen').innerHTML==='';const n=$('vNote'),t=VNOTE[vlSel];n.hidden=!t;if(t)n.textContent=t}
 let bldSig='';
 function renderBlds(){
- const sig=JSON.stringify(S.bld)+JSON.stringify(S.joined)+S.done.marta+vlSel;
+ const sig=JSON.stringify(S.bld)+JSON.stringify(S.joined)+S.done.marta+vlSel+S.stage;
  if(sig!==bldSig){bldSig=sig;
   $('blds').innerHTML=BLD.filter(b=>b.k===vlSel).map(b=>{const l=S.bld[b.k],op=b.open(),mx=l>=b.max;
    if(!op)return`<div class="row locked">${bldImg(b.k,0)}<div class="info"><b>${b.n}</b>${b.who?`<span class="role">${b.who}</span>`:''}<div>${b.lock}</div><div class="nx">재건하면: ${b.eff(1)}</div></div><span class="lockchip">잠김</span></div>`;
-   return`<div class="row${l?'':' ruin'}">${bldImg(b.k,l)}<div class="info"><b>${b.n}</b>${b.who?`<span class="role">${b.who}</span>`:''}<span class="lvtag">${l?'Lv.'+l:'폐허'}</span>${l?`<div>지금: ${b.eff(l)}</div>${mx?'<div class="nx">최대 레벨</div>':`<div class="nx">다음: ${b.eff(l+1)}</div>`}`:`<div>무너져 있어요</div><div class="nx">재건하면: ${b.eff(1)}</div>`}</div><button class="buy" id="bd-${b.k}" ${mx?'disabled':''}>${mx?'최대':costBtn(l?'확장':'재건',bldCost(b,l))}</button></div>`}).join('');
-  BLD.forEach(b=>{const el=$('bd-'+b.k);if(el)el.onclick=()=>{const l=S.bld[b.k],c=bldCost(b,l);if(l>=b.max||S.gold<c)return;S.gold-=c;S.bld[b.k]++;if(!l)S.prod[b.k]=Date.now();toast(b.n+(l?' 확장':' 재건')+' 완료! '+b.eff(l+1));farmSig='';kitSig='';renderAll()}})}
+   return`<div class="row${l?'':' ruin'}">${bldImg(b.k,l)}<div class="info"><b>${b.n}</b>${b.who?`<span class="role">${b.who}</span>`:''}<span class="lvtag">${l?'Lv.'+l:'폐허'}</span>${l?`<div>지금: ${b.eff(l)}</div>${mx?'<div class="nx">최대 레벨</div>':`<div class="nx">다음: ${b.eff(l+1)}</div>`}`:`<div>무너져 있어요</div><div class="nx">재건하면: ${b.eff(1)}</div>`}</div><div class="buys"><button class="buy" id="bd-${b.k}" ${mx?'disabled':''}>${mx?'최대':costBtn(l?'확장':'재건',bldCost(b,l))}</button>${mx?'':`<button class="buy gem" id="bg-${b.k}">${GEMIMG}${bldGem(bldCost(b,l))}로 바로</button>`}</div></div>`}).join('');
+  const up=(b,l)=>{S.bld[b.k]++;if(!l)S.prod[b.k]=Date.now();toast(b.n+(l?' 확장':' 재건')+' 완료! '+b.eff(l+1));farmSig='';kitSig='';renderAll()};
+  BLD.forEach(b=>{const el=$('bd-'+b.k);if(el)el.onclick=()=>{const l=S.bld[b.k],c=bldCost(b,l);if(l>=b.max||S.gold<c)return;S.gold-=c;up(b,l)};
+   const eg=$('bg-'+b.k);if(eg)eg.onclick=()=>{const l=S.bld[b.k];if(l>=b.max||!spendGem(bldGem(bldCost(b,l))))return;up(b,l)}})}
  BLD.forEach(b=>{const el=$('bd-'+b.k);if(el&&S.bld[b.k]<b.max)el.disabled=S.gold<bldCost(b,S.bld[b.k])});
 }
 
@@ -780,7 +807,7 @@ function faceTo(c,id){if(!c)return;const r=c.getBoundingClientRect(),w=r.width||
  const pim=pfImg(id);if(pim){pc.drawImage(pim,0,0,512,512,-w*.12,-h*.02,w*1.24,h*1.24);return}
  const prev=ctx;ctx=pc;const z=w/48;
  if(hasSprite(id))drawSprite(id,w*.5,(id==='bron'?84:90)*z,1.3*z,'idle',0);else DRAW[id](w*.44,(id==='margo'?104:id==='bron'?86:97)*z,1.5*z,pose(null,false));ctx=prev}
-$('openBtn').onclick=()=>openBox(false);
+$('openBtn').onclick=()=>openBox(false);$('open10').onclick=open10;
 $('autoSell').onchange=e=>{S.autoSell=e.target.checked};
 $('autoOpen').onchange=e=>{S.autoOpen=e.target.checked};
 
@@ -1198,7 +1225,7 @@ function offline(){
  const cap=(6+S.bld.inn)*3600,sec=Math.min(cap,(Date.now()-S.last)/1000);if(sec<60)return;
  const dps=members().reduce((a,id)=>{const t=stats(id);return a+t.atk*t.aps*(1+t.crit)},0),tpk=monHp(S.stage,false)/dps+1.2,g=Math.floor(sec/tpk*reward(S.stage,false)*.5*memMul()*(subOn()?1.5:1));if(g<=0)return;
  S.gold+=g;const hr=Math.floor(sec/3600),mn=Math.floor(sec%3600/60);
- queue(()=>{$('sheet').innerHTML=`<div class="eyebrow">돌아온 카엘</div><h2>영지에서 세금이 걷혔어요</h2><div class="card" style="--c:var(--gold)"><span class="cap">${hr?hr+'시간 ':''}${mn}분 동안</span><div class="t" style="font-size:28px;color:var(--gold)">+${fmt(g)}</div><span class="s">되찾은 영지의 백성들이 보낸 골드예요${S.bld.farm?' · 밭의 작물도 자랐어요':''}</span></div>${para('k:…이 돈, 은퇴 자금으로 모아 둬도 되죠?')}<div class="acts one"><button class="pri" id="mGo">받기</button></div>`;$('modal').hidden=false;$('mGo').onclick=closeModal;$('mGo').focus()});
+ queue(()=>{$('sheet').innerHTML=`<div class="eyebrow">돌아온 카엘</div><h2>영지에서 세금이 걷혔어요</h2><div class="card" style="--c:var(--gold)"><span class="cap">${hr?hr+'시간 ':''}${mn}분 동안</span><div class="t" style="font-size:28px;color:var(--gold)">+${fmt(g)}</div><span class="s">되찾은 영지의 백성들이 보낸 골드예요${S.bld.farm?' · 밭의 작물도 자랐어요':''}</span></div>${para('k:…이 돈, 은퇴 자금으로 모아 둬도 되죠?')}<div class="acts"><button id="mDbl" style="background:linear-gradient(#2c4a8c,#1d3366);color:#ffe08a;border-color:#5a7ac8">2배 받기 · ${GEMIMG.replace('alt=""','alt="" style="width:16px;height:16px;vertical-align:-3px"')}${GEM_OFFLINE}</button><button class="pri" id="mGo">받기</button></div>`;$('modal').hidden=false;$('mGo').onclick=closeModal;$('mDbl').onclick=()=>{if(!spendGem(GEM_OFFLINE))return;S.gold+=g;toast('세금 2배! 골드 +'+fmt(g));closeModal()};$('mGo').focus()});
 }
 
 /* ---------- 시작 ---------- */
