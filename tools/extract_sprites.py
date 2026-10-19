@@ -103,19 +103,29 @@ def main(src, cid, monster=False):
     rows = group_rows(blobs(alpha), len(rows_def))
     for (name, n), row in zip(rows_def, rows):
         row = merge_to(row, n)
+        while len(row) < n:  # 이펙트로 붙은 프레임: 가장 넓은 조각을 가장 얇은 세로줄에서 나눔
+            i = max(range(len(row)), key=lambda k: row[k][2] - row[k][0])
+            x0, y0, x1, y1 = row[i]
+            col = (alpha[y0:y1, x0:x1] > 200).sum(0)
+            q = (x1 - x0) // 4
+            m = x0 + q + int(np.argmin(col[q: (x1 - x0) - q]))
+            row[i:i + 1] = [[x0, y0, m, y1, 1], [m, y0, x1, y1, 1]]  # 5번째 값 1 = 나눈 프레임
         if len(row) != n:
             raise SystemExit(f"{name}: 프레임 {len(row)}개 (필요 {n}개)")
         sheet = Image.new("RGBA", (FRAME * n, FRAME), (0, 0, 0, 0))
-        for i, (x0, y0, x1, y1) in enumerate(row):
+        for i, box in enumerate(row):
+            x0, y0, x1, y1 = box[:4]
+            was_split = len(box) > 4
             hx = head_x(alpha, (x0, y0, x1, y1))
-            mine = own_mask(loose_lab, (x0, y0, x1, y1))
-            crop = img[max(0, y0 - 6): y1 + 4, max(0, x0 - 6): x1 + 6].copy()
+            mine = np.ones_like(alpha, bool) if was_split else own_mask(loose_lab, (x0, y0, x1, y1))
+            px = 0 if was_split else 6
+            crop = img[max(0, y0 - 6): y1 + 4, max(0, x0 - px): x1 + px].copy()
             a = crop[..., 3]
-            m = mine[max(0, y0 - 6): y1 + 4, max(0, x0 - 6): x1 + 6]
+            m = mine[max(0, y0 - 6): y1 + 4, max(0, x0 - px): x1 + px]
             crop[..., 3] = np.where((a < ALPHA_CUT) | ~m, 0, a)
             pic = Image.fromarray(crop)
             pic = pic.resize((max(1, round(pic.width * scale)), max(1, round(pic.height * scale))), Image.LANCZOS)
-            ox = i * FRAME + round(FRAME / 2 - (hx - max(0, x0 - 6)) * scale)
+            ox = i * FRAME + round(FRAME / 2 - (hx - max(0, x0 - px)) * scale)
             oy = FOOT_Y - round((y1 - max(0, y0 - 6)) * scale)
             frame = Image.new("RGBA", (FRAME * n, FRAME), (0, 0, 0, 0))
             frame.paste(pic, (ox, oy), pic)

@@ -93,6 +93,12 @@ def layers(prefix):
             rgba[..., 3] = np.where(a < 12, 0, a)
             rows = np.nonzero((rgba[..., 3] > 0).mean(1) > 0.002)[0]
             rgba = rgba[max(0, rows.min() - 2):]
+            # 위쪽 가장자리를 부드럽게 (레이어 경계에 생기는 가로줄 방지)
+            colmask = rgba[..., 3] > 0
+            first = np.where(colmask.any(0), colmask.argmax(0), rgba.shape[0])
+            yy = np.arange(rgba.shape[0])[:, None]
+            fade = np.clip((yy - first[None, :]) / 10.0, 0, 1)
+            rgba[..., 3] = (rgba[..., 3] * fade).astype(np.uint8)
         rgba = make_tileable(rgba)
         out = f"assets/bg/{region}_{name}.png"
         Image.fromarray(rgba).save(out, optimize=True)
