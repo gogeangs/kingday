@@ -40,6 +40,8 @@ body{word-break:keep-all;overflow-wrap:break-word;line-break:strict;background:#
 .hud{display:flex;align-items:center;gap:10px;padding-top:max(8px,env(safe-area-inset-top,0px));padding-bottom:8px;flex:0 0 auto;padding-left:max(12px,env(safe-area-inset-left,0px));padding-right:max(12px,env(safe-area-inset-right,0px));background:linear-gradient(#0d1220,#141a29);border-bottom:1px solid #2a3350;z-index:6}
 .face{position:relative;width:48px;height:48px;border-radius:50%;border:2px solid var(--gold);background:radial-gradient(circle at 50% 35%,#3b5a8a,#1a2440);overflow:hidden;flex:0 0 auto;padding:0;cursor:pointer}
 .face canvas{width:100%;height:100%}
+.face.newpf::before{content:"꾸미기";position:absolute;left:50%;top:100%;transform:translate(-50%,3px);z-index:3;background:#ff5a6e;color:#fff;font-size:10px;font-weight:700;line-height:15px;padding:0 5px;border-radius:8px;white-space:nowrap;animation:pfbob 1.2s ease-in-out infinite}
+@keyframes pfbob{50%{transform:translate(-50%,0)}}
 .face::after{content:"⚙";position:absolute;right:-1px;bottom:-1px;width:17px;height:17px;border-radius:50%;background:#0d1220;border:1px solid var(--gold);color:var(--gold);font-size:11px;line-height:15px;text-align:center}
 .face{overflow:visible}
 .face canvas{border-radius:50%}
@@ -1515,8 +1517,9 @@ const pfHas=k=>k==='wood'||!!(S.pfUnl&&S.pfUnl[k]);
 function pfCheck(){if(!S.pfUnl)S.pfUnl={};for(const f of PFRAMES){if(!S.pfUnl[f.k]&&f.ok()){S.pfUnl[f.k]=1;if(f.k!=='wood'&&S.started)toast('새 프로필 테두리 「'+f.n+'」을 얻었어요')}}
  if(!S.bdUnl)S.bdUnl={};for(const b of BADGES){if(!S.bdUnl[b.k]&&b.ok()){S.bdUnl[b.k]=1;if(S.started)toast('새 배지 「'+b.n+'」을 얻었어요')}}
  const hb=$('hBadge');if(hb){const bs=S.badge&&bdHas(S.badge)?'assets/profile/badge_'+S.badge+'.png':'';if(!bs)hb.hidden=true;else{hb.hidden=false;if(!hb.src.endsWith(bs))hb.src=bs}}
+ {const fb=$('faceBtn');if(fb)fb.classList.toggle('newpf',!S.pfSeen)}
  const im=$('hFrame'),src='assets/profile/frame_'+(S.pf||'wood')+'.png';if(im&&!im.src.endsWith(src)){im.src=src;im.className='pfr'+pfTall(S.pf||'wood')}}
-function profileSheet(){pfCheck();const cur=S.pf||'wood',ri=rankIdx();
+function profileSheet(){S.pfSeen=1;pfCheck();const cur=S.pf||'wood',ri=rankIdx();
  $('sheet').innerHTML=`<div class="eyebrow">프로필</div><div class="pfhead"><div class="pfbig"><canvas id="pfCv"></canvas><img class="pfr${pfTall(cur)}" src="assets/profile/frame_${cur}.png" alt=""></div><div class="pfinfo"><b>카엘${S.badge&&bdHas(S.badge)?`<img class="pfbd" src="assets/profile/badge_${S.badge}.png" alt="">`:''}</b><small>${RANKS[ri].n} · 전투력 ${fmt(power())}</small><small>최고 영지 ${Math.min(S.best,MAXLAND)} · 은퇴 ${S.retires||0}번</small></div></div>
  <div class="sec">테두리 <small>${PFRAMES.filter(f=>pfHas(f.k)).length} / ${PFRAMES.length}</small></div>
  <div class="pfgrid">${PFRAMES.map(f=>{const has=pfHas(f.k);return`<button class="pfc${f.k===cur?' on':''}${has?'':' lock'}${f.rare?' rare':''}" data-pf="${f.k}"><span class="pv"><i></i><img class="pfr${pfTall(f.k)}" src="assets/profile/frame_${f.k}.png" alt=""></span><b>${f.n}</b><small>${f.k===cur?'사용 중':has?'바꾸기':'🔒 '+f.d}</small></button>`}).join('')}</div>
