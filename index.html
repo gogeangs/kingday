@@ -615,7 +615,7 @@ let banner=null,P={},mons=[],spawnT=.5,bgX=0,T=0,floats=[],proj=[],bossT=0,engag
 function say(who,txt){quip={who,txt,t:3.2}}
 function syncParty(){for(const id of members()){if(!P[id])P[id]={hp:stats(id).hp,cd:Math.random()*.5,swing:0,hit:0,down:false}}}
 /* 원정대 대형: [가로 위치, 깊이] (깊이 0 = 지평선 쪽, 1 = 화면 앞쪽) */
-const FORM={kael:[.47,.42],bron:[.52,.80],haral:[.30,.95],riel:[.20,.36],margo:[.25,.64]};
+const FORM={kael:[.45,.40],bron:[.55,.76],haral:[.33,.98],riel:[.18,.26],margo:[.14,.66]};
 function layout(){const ids=members(),s=Math.min(W/300,Ht/380),top=Ht*.46,bot=Math.max(top+60,Ht-118),pos={},py={},dsc={};
  const solo=ids.length===1;
  ids.forEach(id=>{const f=solo?[.42,.55]:FORM[id];pos[id]=W*f[0];py[id]=top+(bot-top)*f[1];dsc[id]=.9+.14*f[1]});
@@ -780,7 +780,7 @@ const DRAW={kael:drawKael,bron:drawBron,haral:drawHaral,riel:drawRiel,margo:draw
 /* ---------- 이미지 에셋 ----------
    assets/characters/<id>_<동작>.png : 256x256 프레임을 가로로 이은 시트, 발끝 y=250, 머리 중심 x=128.
    이미지가 없거나 아직 안 불러졌으면 위의 코드 그림(DRAW)을 그대로 씁니다. 전투 로직은 이미지와 무관합니다. */
-const SPRITES={kael:{idle:4,walk:6,attack:4,hit:2,h:70},bron:{idle:4,walk:6,attack:4,hit:2,h:74},haral:{idle:4,walk:6,attack:4,hit:2,h:72},riel:{idle:4,walk:6,attack:4,hit:2,h:76}};
+const SPRITES={kael:{idle:4,walk:6,attack:4,hit:2,h:70},bron:{idle:4,walk:6,attack:4,hit:2,h:74},haral:{idle:4,walk:6,attack:4,hit:2,h:72},riel:{idle:4,walk:6,attack:4,hit:2,h:76},margo:{idle:4,walk:6,attack:4,hit:2,h:72}};
 const SPR_FRAME=256,SPR_FOOT=250,SPR_FIG=171; // SPR_FIG: 프레임 안에서 카엘의 키(px) → 코드 그림 키 66과 맞춤
 const SPR={};
 function loadSprites(){for(const id in SPRITES){SPR[id]={};for(const a of['idle','walk','attack','hit']){const im=new Image();
@@ -790,7 +790,7 @@ function spriteFrame(id,p,walk){const d=SPRITES[id];
  if(!p)return['idle',0];
  if(p.down)return['hit',d.hit-1];
  if(p.hit>0)return['hit',0];
- if(p.swing>0)return['attack',Math.min(d.attack-1,Math.floor((1-p.swing/.22)*d.attack))];
+ if(p.swing>0)return['attack',Math.max(0,Math.min(d.attack-1,Math.floor((1-p.swing/.22)*d.attack)))];
  if(walk)return['walk',Math.floor(T*10)%d.walk];
  return['idle',Math.floor(T*5)%d.idle]}
 function drawSprite(id,x,y,s,anim,idx){const im=SPR[id][anim],k=66*s/SPR_FIG;ctx.imageSmoothingEnabled=true;ctx.imageSmoothingQuality='high';
