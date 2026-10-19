@@ -1066,8 +1066,8 @@ function spawn(){
  if(S.stage>=3&&gobT<=0){gobT=360+Math.random()*360;const gh=monHp(S.stage,false)*5;mons.unshift({x:W+30,lane:.3,hp:gh,max:gh,atk:0,boss:false,cd:1e9,hit:0,dead:0,gob:true,mv:1.4,life:12});
   banner={t:2,txt:'황금 고블린 출현!',sub:'12초 안에 잡으면 보물을 떨군다'};shakeT=.3}
 }
-/* 황금 고블린 희귀 전리품: 배지 1.5%, 테두리 0.7% (잡을 때마다, 이미 있으면 안 나옴) */
-const GOB_RARE={badge:.015,frame:.007};
+/* 황금 고블린 희귀 전리품: 배지 0.5%, 테두리 0.2% (잡을 때마다, 이미 있으면 안 나옴) */
+const GOB_RARE={badge:.005,frame:.002};
 function gobRare(){const got=[];S.bdUnl=S.bdUnl||{};S.pfUnl=S.pfUnl||{};
  if(!bdHas('goblin')&&Math.random()<GOB_RARE.badge){S.bdUnl.goblin=1;got.push(['badge','배지','고블린 사냥꾼'])}
  if(!pfHas('goblin')&&Math.random()<GOB_RARE.frame){S.pfUnl.goblin=1;got.push(['frame','프로필 테두리','황금 고블린'])}
