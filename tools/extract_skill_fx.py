@@ -40,3 +40,4 @@ row = (rm[..., 3] > 40).sum(1); mid = H // 3 + int(np.argmin(row[H // 3: 2 * H /
 build(rm[:mid], "fx_skill_riel", 384, 256)
 build(rm[mid:], "fx_skill_margo", 256, 288, bottom=True)
 build(load("art/source/fx/fx_skill_luka.png"), "fx_skill_luka", 256, 288, bottom=True)
+build(load("art/source/fx/fx_skill_nella.png"), "fx_skill_nella", 384, 256)
