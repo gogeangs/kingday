@@ -93,7 +93,7 @@ def own_mask(loose_lab, box):
     return keep
 
 
-def main(src, cid, monster=False, center=False):
+def main(src, cid, monster=False, center=False, wide=()):
     rows_def = MON_ROWS if monster else ROWS
     scale = MON_SCALE if monster else SCALE
     outdir = "assets/monsters" if monster else "assets/characters"
@@ -115,7 +115,8 @@ def main(src, cid, monster=False, center=False):
             row[i:i + 1] = [[x0, y0, m, y1, 1], [m, y0, x1, y1, 1]]  # 5번째 값 1 = 나눈 프레임
         if len(row) != n:
             raise SystemExit(f"{name}: 프레임 {len(row)}개 (필요 {n}개)")
-        sheet = Image.new("RGBA", (FRAME * n, FRAME), (0, 0, 0, 0))
+        FW = (int(wide[name]) if wide.get(name) else 384) if name in wide else FRAME  # --wide=attack: 무기가 길게 뻗는 동작은 칸을 넓게(384) 잘라 끝이 잘리지 않게
+        sheet = Image.new("RGBA", (FW * n, FRAME), (0, 0, 0, 0))
         for i, box in enumerate(row):
             x0, y0, x1, y1 = box[:4]
             was_split = len(box) > 4
@@ -131,17 +132,18 @@ def main(src, cid, monster=False, center=False):
             crop[..., 3] = np.where((a < ALPHA_CUT) | ~m, 0, a)
             pic = Image.fromarray(crop)
             pic = pic.resize((max(1, round(pic.width * scale)), max(1, round(pic.height * scale))), Image.LANCZOS)
-            ox = i * FRAME + round(FRAME / 2 - (hx - max(0, x0 - px)) * scale)
+            ox = i * FW + round(FW / 2 - (hx - max(0, x0 - px)) * scale)
             oy = FOOT_Y - round((y1 - max(0, y0 - 6)) * scale)
-            frame = Image.new("RGBA", (FRAME * n, FRAME), (0, 0, 0, 0))
+            frame = Image.new("RGBA", (FW * n, FRAME), (0, 0, 0, 0))
             frame.paste(pic, (ox, oy), pic)
             # 다른 프레임 칸으로 넘친 부분은 잘라 냄
-            cell = frame.crop((i * FRAME, 0, (i + 1) * FRAME, FRAME))
-            sheet.alpha_composite(cell, (i * FRAME, 0))
+            cell = frame.crop((i * FW, 0, (i + 1) * FW, FRAME))
+            sheet.alpha_composite(cell, (i * FW, 0))
         out = f"{outdir}/{cid}_{name}.png"
         sheet.save(out, optimize=True)
         print(out, sheet.size)
 
 
 if __name__ == "__main__":
-    main(sys.argv[1], sys.argv[2], "--monster" in sys.argv[3:], "--center" in sys.argv[3:])
+    wide = dict((w.split(":") + [""])[:2] for w in next((a.split("=", 1)[1].split(",") for a in sys.argv[3:] if a.startswith("--wide=")), []))  # --wide=attack:512,hit
+    main(sys.argv[1], sys.argv[2], "--monster" in sys.argv[3:], "--center" in sys.argv[3:], wide)

@@ -1210,8 +1210,8 @@ function spriteFrame(id,p,walk){const d=SPRITES[id];
  if(p.swing>0)return['attack',Math.max(0,Math.min(d.attack-1,Math.floor((1-p.swing/.22)*d.attack)))];
  if(walk)return['walk',Math.floor(T*10)%d.walk];
  return['idle',Math.floor(T*5)%d.idle]}
-function drawSprite(id,x,y,s,anim,idx){const im=SPR[id][anim],k=66*s/SPR_FIG;ctx.imageSmoothingEnabled=true;ctx.imageSmoothingQuality='high';
- ctx.drawImage(im,idx*SPR_FRAME,0,SPR_FRAME,SPR_FRAME,x-SPR_FRAME/2*k,y-SPR_FOOT*k,SPR_FRAME*k,SPR_FRAME*k)}
+function drawSprite(id,x,y,s,anim,idx){const im=SPR[id][anim],k=66*s/SPR_FIG,cw=im.width/(SPRITES[id][anim]||1);ctx.imageSmoothingEnabled=true;ctx.imageSmoothingQuality='high';/* 칸 너비는 시트마다 다를 수 있음(넓은 공격 칸 384) */
+ ctx.drawImage(im,idx*cw,0,cw,SPR_FRAME,x-cw/2*k,y-SPR_FOOT*k,cw*k,SPR_FRAME*k)}
 function drawMember(id,x,y,s,p,walk){
  ell(x,y,16*s,4.5*s,'rgba(0,0,0,.28)');
  if(p.down){ctx.globalAlpha=.35}
