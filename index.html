@@ -30,26 +30,27 @@ body{background:#0a0d16;color:var(--fg);font-family:var(--f-body);padding:0;
 .rank{font-family:var(--f-body);font-size:11px;font-weight:600;color:var(--gold-ink);background:var(--gold);border-radius:999px;padding:1px 7px}
 .pow{font-size:13px;color:var(--gold);font-variant-numeric:tabular-nums;display:flex;align-items:center;gap:4px}
 .pow::before{content:"⚔";font-size:12px}
-.goldpill{display:flex;align-items:center;gap:6px;background:#0b0f1a;border:1px solid #3a4568;border-radius:999px;padding:5px 12px 5px 6px;font-family:var(--f-display);font-weight:700;font-size:16px;font-variant-numeric:tabular-nums;flex:0 0 auto}
+.goldpill{display:flex;align-items:center;gap:6px;background:#0b0f1a;border:1px solid #3a4568;border-radius:999px;padding:5px 12px 5px 6px;font-family:var(--f-body);font-weight:700;font-size:16px;font-variant-numeric:tabular-nums;flex:0 0 auto}
 .coinimg{width:26px;height:26px;margin:-4px -2px -4px -4px}
 .coin{width:20px;height:20px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#fff3c4,var(--gold) 55%,#c98a10);box-shadow:inset 0 -2px 0 #a8700a}
 .stagewrap{position:relative;flex:1;min-height:0;overflow:hidden}
 canvas{display:block;width:100%;height:100%}
-.ovtop{position:absolute;top:8px;left:0;right:0;display:flex;justify-content:center;pointer-events:none;padding-inline:12px}
-.stagepill{background:linear-gradient(rgba(10,14,26,.88),rgba(20,26,41,.82));border:1px solid rgba(255,201,74,.55);border-radius:12px;padding:6px 14px 8px;display:flex;flex-direction:column;align-items:center;gap:5px;min-width:200px;box-shadow:0 4px 14px rgba(0,0,0,.35)}
-.stagepill b{font-family:var(--f-display);font-weight:700;font-size:16px;letter-spacing:.02em}
-.stagepill small{font-size:11px;color:var(--muted);margin-top:-4px}
+.ovtop{position:absolute;top:8px;left:0;right:0;display:flex;flex-direction:column;align-items:center;gap:6px;pointer-events:none;padding-inline:12px}
+.stagepill{background:linear-gradient(rgba(10,14,26,.88),rgba(20,26,41,.82));border:1px solid rgba(255,201,74,.55);border-radius:12px;padding:5px 12px 6px;display:flex;flex-direction:column;align-items:center;gap:4px;min-width:200px;box-shadow:0 4px 14px rgba(0,0,0,.35)}
+.stagepill .sth{display:flex;align-items:baseline;gap:6px;white-space:nowrap}
+.stagepill b{font-family:var(--f-display);font-weight:700;font-size:15px;letter-spacing:.02em}
+.stagepill small{font-size:11px;color:var(--muted)}
 .pips{display:flex;gap:3px;align-items:center}
 .pip{width:12px;height:5px;border-radius:3px;background:rgba(255,255,255,.18)}
 .pip.on{background:var(--gold)}
-.pip.boss{width:22px;height:22px;border-radius:50%;background:#3a1420;border:2px solid var(--bad);display:grid;place-items:center;font-size:10px;line-height:1;margin-left:3px}
-.pip.boss::after{content:"";width:22px;height:22px;background:url(assets/ui/ui_boss_mark.png) center/contain no-repeat}
+.pip.boss{width:18px;height:18px;border-radius:50%;background:#3a1420;border:2px solid var(--bad);display:grid;place-items:center;font-size:10px;line-height:1;margin-left:3px}
+.pip.boss::after{content:"";width:20px;height:20px;background:url(assets/ui/ui_boss_mark.png) center/contain no-repeat}
 .pip.boss{overflow:visible}
 .pip.boss.on{background:var(--bad);box-shadow:0 0 10px var(--bad)}
-.buffs{position:absolute;left:10px;top:128px;display:flex;flex-direction:column;gap:4px;pointer-events:none}
+.buffs{display:flex;flex-wrap:wrap;justify-content:center;gap:4px;pointer-events:none}.buffs:empty{display:none}
 .buff{font-size:11px;background:rgba(0,0,0,.55);border:1px solid rgba(255,201,74,.6);color:var(--gold);border-radius:999px;padding:2px 8px 2px 2px;font-variant-numeric:tabular-nums;display:flex;align-items:center;gap:4px}
 .buff img{width:26px;height:26px;margin:-4px 0}
-.bossbar{position:absolute;left:50%;transform:translateX(-50%);top:90px;width:min(300px,80%);background:rgba(10,14,26,.8);border:1px solid rgba(255,107,125,.6);border-radius:10px;padding:5px 9px;font-size:12px;display:flex;align-items:center;gap:8px}
+.bossbar{width:min(300px,90%);background:rgba(10,14,26,.8);border:1px solid rgba(255,107,125,.6);border-radius:10px;padding:5px 9px;font-size:12px;display:flex;align-items:center;gap:8px}
 .bossbar #bossName{max-width:46%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:600}
 .bossbar .track{flex:1;height:6px;background:rgba(255,255,255,.15);border-radius:3px;overflow:hidden}
 .bossbar .fill{height:100%;background:var(--bad);width:100%}
@@ -63,10 +64,10 @@ canvas{display:block;width:100%;height:100%}
 .pcard .hp i{display:block;height:100%;background:var(--good)}
 .pcard.empty .pic{border-color:#3a4568;border-style:dashed;background:rgba(0,0,0,.3)}
 .qbtns{display:flex;flex-direction:column;gap:6px;flex:0 0 auto}
-.qbtn{width:52px;height:52px;border-radius:50%;border:2px solid #c9952a;background:radial-gradient(circle at 50% 35%,#3a2a12,#16110a);color:var(--gold);font-family:var(--f-display);font-weight:700;font-size:15px;cursor:pointer;display:grid;place-items:center;box-shadow:0 0 0 3px rgba(0,0,0,.35)}
+.qbtn{width:44px;height:44px;border-radius:50%;border:2px solid #c9952a;background:radial-gradient(circle at 50% 35%,#3a2a12,#16110a);color:var(--gold);font-family:var(--f-body);font-weight:700;font-size:14px;cursor:pointer;display:grid;place-items:center;box-shadow:0 0 0 3px rgba(0,0,0,.35)}
 .qbtn.on{background:radial-gradient(circle at 50% 35%,#ffd66b,#c98a10);color:var(--gold-ink)}
-.qbtn img{width:40px;height:40px}
-.qbtn small{position:absolute;margin-top:46px;font-size:10px;color:var(--fg);font-family:var(--f-body);font-weight:600;white-space:nowrap;text-shadow:0 1px 2px #000}
+.qbtn img{width:34px;height:34px}
+.qbtn small{position:absolute;margin-top:40px;font-size:10px;color:var(--fg);font-family:var(--f-body);font-weight:600;white-space:nowrap;text-shadow:0 1px 2px #000}
 .qbtn:disabled{filter:grayscale(.8) brightness(.7)}
 .tabs{display:flex;gap:4px;padding-block:6px 8px;padding-left:max(8px,env(safe-area-inset-left,0px));padding-right:max(8px,env(safe-area-inset-right,0px));background:linear-gradient(#1a2135,#0d1220);border-top:2px solid #6b5420;z-index:6}
 .tab{flex:1;min-width:0;display:flex;flex-direction:column;align-items:center;gap:1px;font-family:var(--f-display);font-weight:700;font-size:12px;padding:4px 0 3px;border-radius:10px;border:1px solid transparent;background:transparent;color:var(--muted);cursor:pointer;position:relative}
@@ -74,11 +75,12 @@ canvas{display:block;width:100%;height:100%}
 .tab[aria-selected="true"]{background:linear-gradient(#5a4515,#2a2010);border-color:var(--gold);color:var(--gold)}
 .tab[aria-selected="true"] img{filter:none}
 .tab .dot{position:absolute;top:3px;right:10px;width:9px;height:9px;border-radius:50%;background:var(--bad);border:1px solid #fff}
-.page{position:absolute;inset:0;z-index:5;background:linear-gradient(#18203a,#141a29 30%);overflow-y:auto;display:flex;flex-direction:column;gap:12px;padding-block:0 16px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
-.phead{position:sticky;top:0;z-index:2;display:flex;align-items:center;justify-content:space-between;padding:12px 0 10px;background:linear-gradient(#18203a 75%,rgba(24,32,58,0));}
+.page>*{flex-shrink:0}
+.page{position:absolute;inset:0;z-index:5;background:linear-gradient(#18203a,#141a29 30%);overflow-y:auto;display:flex;flex-direction:column;gap:12px;padding-block:0 28px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.phead{position:sticky;top:0;z-index:3;display:flex;align-items:center;justify-content:space-between;padding:12px 16px 10px;margin-inline:-16px;background:#18203a;border-bottom:1px solid rgba(55,67,106,.7);box-shadow:0 6px 10px -6px rgba(0,0,0,.5)}
 .phead h2{margin:0;font-family:var(--f-display);font-weight:700;font-size:20px}
 .pclose{width:34px;height:34px;border-radius:50%;border:1px solid var(--line);background:var(--panel);color:var(--fg);font-size:16px;cursor:pointer}
-.eqstage{display:grid;grid-template-columns:1fr 1.3fr 1fr;gap:8px;align-items:center;background:radial-gradient(ellipse at 50% 60%,#3a2a1a,#1a1410 70%);border:1px solid #4a3a22;border-radius:14px;padding:12px}
+.eqstage{display:grid;grid-template-columns:1fr 1.6fr 1fr;gap:8px;align-items:center;background:radial-gradient(ellipse at 50% 60%,#3a2a1a,#1a1410 70%);border:1px solid #4a3a22;border-radius:14px;padding:12px}
 .eqcol{display:flex;flex-direction:column;gap:8px}
 .eqhero{height:190px}
 .slot{position:relative;aspect-ratio:1;width:100%;max-width:76px;justify-self:center;margin-inline:auto;background:none;border:0;padding:0;cursor:pointer;color:var(--fg);font:inherit}
@@ -87,6 +89,7 @@ canvas{display:block;width:100%;height:100%}
 .slot svg{position:absolute;inset:26%;width:48%;height:48%}
 .slot .lv{position:absolute;left:0;right:0;bottom:4%;text-align:center;font-family:var(--f-display);font-weight:700;font-size:11px;text-shadow:0 1px 2px #000}
 .slot.empty .ic{opacity:.35;filter:grayscale(1)}
+.slot .lv.em{font-family:var(--f-body);font-weight:600;font-size:9.5px;color:#c9cbd6;bottom:17%;left:18%;right:18%;background:rgba(0,0,0,.6);border-radius:999px;text-shadow:none;line-height:1.5}
 .eqstats{display:grid;grid-template-columns:repeat(2,1fr);gap:4px 12px;font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums}
 .eqstats b{color:var(--fg);float:right}
 .title{position:absolute;inset:0;z-index:40;display:flex;flex-direction:column;align-items:center;justify-content:space-between;padding:56px 24px calc(48px + env(safe-area-inset-bottom,0px));background:linear-gradient(rgba(10,14,26,.94),rgba(10,14,26,.2) 34%,rgba(10,14,26,.2) 52%,rgba(10,14,26,.98) 78%)}
@@ -113,17 +116,24 @@ canvas{display:block;width:100%;height:100%}
 .open{font-family:var(--f-display);font-weight:700;font-size:19px;border:0;border-radius:12px;padding:12px;background:var(--gold);color:var(--gold-ink);cursor:pointer;display:flex;justify-content:center;align-items:center;gap:8px;box-shadow:0 4px 0 #b9850f}
 .open:active{transform:translateY(2px);box-shadow:0 2px 0 #b9850f}
 .open:disabled{background:var(--panel2);color:var(--muted);box-shadow:none;cursor:default}
-.open small{font-size:14px;opacity:.75}
+.open small{font-size:14px;opacity:.75;font-family:var(--f-body);display:flex;align-items:center;gap:3px}
 .row{display:flex;align-items:center;gap:10px;background:var(--panel);border-radius:12px;padding:10px 12px}
 .row .info{flex:1;min-width:0}
 .row .info b{font-family:var(--f-display);font-weight:700;font-size:15px}
 .row .info div{font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums;line-height:1.5}
-.lvtag{font-size:12px;color:var(--gold);margin-left:4px;font-family:var(--f-body)}
-.row.locked{opacity:.6}
+.row .info .nx{color:#c9d2ea}
+.lockchip{flex:0 0 auto;font-size:12px;font-weight:600;color:var(--muted);border:1px dashed var(--line);border-radius:999px;padding:3px 10px}
+.lvtag{font-size:12px;color:var(--gold);margin-left:4px;font-family:var(--f-body);display:inline-block;white-space:nowrap}
+.row.locked>*{opacity:.6}
 .portrait{width:56px;height:68px;flex:0 0 auto;border-radius:10px;background:var(--panel2)}
 .role{display:inline-block;font-size:11px;border:1px solid var(--line);border-radius:999px;padding:0 6px;margin-left:4px;color:var(--muted);font-family:var(--f-body);vertical-align:2px}
-.buy{font-family:var(--f-display);font-weight:700;font-size:14px;border:0;border-radius:10px;padding:9px 10px;background:var(--gold);color:var(--gold-ink);cursor:pointer;min-width:84px;font-variant-numeric:tabular-nums;flex:0 0 auto}
+.buy{font-family:var(--f-body);font-weight:700;font-size:14px;border:0;border-radius:10px;padding:9px 10px;background:var(--gold);color:var(--gold-ink);cursor:pointer;min-width:84px;font-variant-numeric:tabular-nums;flex:0 0 auto}
 .buy:disabled{background:var(--panel2);color:var(--muted);cursor:default}
+.buy .bl{display:block;font-size:11px;font-family:var(--f-body);font-weight:600;opacity:.8;line-height:1.2}
+.buy .bc{display:flex;align-items:center;justify-content:center;gap:3px;font-family:var(--f-body);font-weight:700;font-size:15px;line-height:1.2}
+.buy .bc img{width:18px;height:18px;margin:-2px 0}
+.buy:disabled .bc{color:#ff8d9a}
+.buy:disabled .bc img{filter:grayscale(.6)}
 .buy.ghost{background:transparent;border:1px solid var(--line);color:var(--fg)}
 .buy.ghost:disabled{color:var(--muted)}
 .note{font-size:12px;color:var(--muted);line-height:1.6;margin:0}
@@ -200,9 +210,9 @@ button:focus-visible,input:focus-visible{outline:2px solid var(--gold);outline-o
 
   <div class="stagewrap" id="wrap">
     <canvas id="cv" aria-label="원정대 자동 전투 화면"></canvas>
-    <div class="ovtop"><div class="stagepill"><b id="stLabel">1-1 에르단 평원</b><small id="stRegion">개울 마을</small><div class="pips" id="pips"></div></div></div>
-    <div class="buffs" id="buffs"></div>
+    <div class="ovtop"><div class="stagepill"><div class="sth"><b id="stLabel">1-1 에르단 평원</b><small id="stRegion">개울 마을</small></div><div class="pips" id="pips"></div></div>
     <div class="bossbar" id="bossbar" hidden><img id="bossFace" class="bossface" alt="" hidden><span id="bossName">보스</span><div class="track"><div class="fill" id="bossfill"></div></div><span id="bosst">30초</span></div>
+    <div class="buffs" id="buffs"></div></div>
     <div class="ovbottom">
       <div class="prow" id="partyRow"></div>
       <div class="qbtns">
@@ -227,14 +237,14 @@ button:focus-visible,input:focus-visible{outline:2px solid var(--gold);outline-o
           <label class="tg"><input type="checkbox" id="autoSell"> 약한 장비 바로 판매</label>
           <label class="tg"><input type="checkbox" id="autoOpen"> 자동 열기</label>
         </div>
-        <button class="open" id="openBtn">상자 열기 <small id="openCost">20</small></button>
+        <button class="open" id="openBtn">상자 열기 <small><img src="assets/ui/ui_gold.png" alt="" style="width:20px;height:20px" onerror="this.remove()"><span id="openCost">20</span></small></button>
         <p class="note">행상인 피트의 성유물은 카엘만 착용해요.</p>
       </div>
     </section>
 
     <section class="page" id="p-pt" hidden>
       <div class="phead"><h2>원정대</h2><button class="pclose" data-close aria-label="전투로 돌아가기">✕</button></div>
-      <p class="note">브론이 있으면 마물의 공격을 대신 받아요. 레벨을 올리면 공격력과 체력이 함께 올라요.</p>
+      <p class="note" id="ptNote"></p>
       <div id="party" style="display:flex;flex-direction:column;gap:8px"></div>
     </section>
 
@@ -336,6 +346,7 @@ const CROPS=[
 ];
 const GOODS=[{k:'fish',n:'생선',c:'#7fb7e0',sell:8,b:'dock'},{k:'honey',n:'꿀',c:'#f2b630',sell:10,b:'apiary'},{k:'ore',n:'광석',c:'#a9a9b8',sell:14,b:'mine'}];
 const icoImg=k=>`<img src="assets/ui/item_${k==='wheat'?'wheat':k}.png" alt="" onerror="this.replaceWith(document.createElement('i'))">`;
+const costBtn=(lb,c)=>`<span class="bl">${lb}</span><span class="bc"><img src="assets/ui/ui_gold.png" alt="" onerror="this.remove()">${fmt(c)}</span>`;
 const uiImg=(n,c)=>`<img class="${c||'rowic'}" src="assets/ui/${n}.png" alt="" onerror="this.remove()">`;
 const bldImg=(k,l)=>VART.includes(k)?`<img class="rowic art" src="assets/village/${k}_${l?'built':'ruin'}.png" alt="" onerror="this.remove()">`:uiImg('bld_'+k);
 const RANKIMG=['rank_farmer','rank_guard','rank_knight','rank_lord','rank_count','rank_duke','rank_king'];
@@ -348,7 +359,7 @@ const RECIPES=[
 const BUFFN={atk:'공격력',spd:'공속',gold:'골드'};
 const BLD=[
  {k:'inn',n:'여관',who:'',max:10,base:150,eff:l=>'방치 보상 최대 '+(6+l)+'시간',open:()=>true,lock:''},
- {k:'farm',n:'밭',who:'마르타',max:6,base:120,eff:l=>'밭 '+(2+l)+'칸',open:()=>S.done.marta,lock:'개울 마을을 되찾으면 열려요'},
+ {k:'farm',n:'밭',who:'카엘',max:6,base:120,eff:l=>'밭 '+(2+l)+'칸',open:()=>S.done.marta,lock:'개울 마을을 되찾으면 열려요'},
  {k:'diner',n:'식당',who:'마고',max:10,base:220,eff:l=>'원정대 체력 +'+(l*5)+'%',open:()=>S.joined.margo,lock:'마고가 합류하면 열려요'},
  {k:'dock',n:'낚시터',who:'하랄',max:10,base:350,eff:l=>'생선 '+l+'마리/2분',open:()=>S.joined.haral,lock:'하랄이 합류하면 열려요'},
  {k:'apiary',n:'양봉장',who:'리엘',max:10,base:600,eff:l=>'동료 공격력 +'+(l*8)+'% · 꿀 '+l+'병/2분',open:()=>S.joined.riel,lock:'리엘이 합류하면 열려요'},
@@ -523,8 +534,8 @@ function renderBlds(){
  const sig=JSON.stringify(S.bld)+JSON.stringify(S.joined)+S.done.marta;
  if(sig!==bldSig){bldSig=sig;
   $('blds').innerHTML=BLD.map(b=>{const l=S.bld[b.k],op=b.open(),mx=l>=b.max;
-   if(!op)return`<div class="row locked">${bldImg(b.k,0)}<div class="info"><b>${b.n}</b><span class="lvtag">폐허</span><div>${b.lock}</div></div></div>`;
-   return`<div class="row${l?'':' ruin'}">${bldImg(b.k,l)}<div class="info"><b>${b.n}</b><span class="lvtag">${l?'Lv.'+l:'폐허'}</span><div>${b.who?b.who+'의 '+b.n+' · ':''}${l?b.eff(l):'아직 무너져 있어요'}${mx?'':' → '+b.eff(l+1)}</div></div><button class="buy" id="bd-${b.k}" ${mx?'disabled':''}>${mx?'최대':(l?'':'재건 ')+fmt(bldCost(b,l))}</button></div>`}).join('');
+   if(!op)return`<div class="row locked">${bldImg(b.k,0)}<div class="info"><b>${b.n}</b>${b.who?`<span class="role">${b.who}</span>`:''}<div>${b.lock}</div><div class="nx">재건하면: ${b.eff(1)}</div></div><span class="lockchip">잠김</span></div>`;
+   return`<div class="row${l?'':' ruin'}">${bldImg(b.k,l)}<div class="info"><b>${b.n}</b>${b.who?`<span class="role">${b.who}</span>`:''}<span class="lvtag">${l?'Lv.'+l:'폐허'}</span>${l?`<div>지금: ${b.eff(l)}</div>${mx?'<div class="nx">최대 레벨</div>':`<div class="nx">다음: ${b.eff(l+1)}</div>`}`:`<div>무너져 있어요</div><div class="nx">재건하면: ${b.eff(1)}</div>`}</div><button class="buy" id="bd-${b.k}" ${mx?'disabled':''}>${mx?'최대':costBtn(l?'확장':'재건',bldCost(b,l))}</button></div>`}).join('');
   BLD.forEach(b=>{const el=$('bd-'+b.k);if(el)el.onclick=()=>{const l=S.bld[b.k],c=bldCost(b,l);if(l>=b.max||S.gold<c)return;S.gold-=c;S.bld[b.k]++;if(!l)S.prod[b.k]=Date.now();toast(b.n+(l?' 확장':' 재건')+' 완료! '+b.eff(l+1));farmSig='';kitSig='';renderAll()}})}
  BLD.forEach(b=>{const el=$('bd-'+b.k);if(el&&S.bld[b.k]<b.max)el.disabled=S.gold<bldCost(b,S.bld[b.k])});
 }
@@ -534,11 +545,13 @@ let partySig='';
 function renderParty(){
  const sig=JSON.stringify(S.lv)+JSON.stringify(S.joined)+JSON.stringify(S.bld)+JSON.stringify(S.up)+JSON.stringify(S.eq)+buff('atk')+rankIdx()+S.memory;
  if(sig!==partySig){partySig=sig;
-  $('party').innerHTML=ORDER.map(id=>{const c=COMP[id],has=id==='kael'||S.joined[id];
+  const ord=[...ORDER].sort((a,b)=>(a==='kael'?-2:S.joined[a]?-1:0)-(b==='kael'?-2:S.joined[b]?-1:0));
+  $('ptNote').textContent=S.joined.bron?'브론이 마물의 공격을 대신 받아요. 레벨을 올리면 공격력과 체력이 함께 올라요.':'동료는 영지를 되찾으면 하나씩 합류해요. 레벨을 올리면 공격력과 체력이 함께 올라요.';
+  $('party').innerHTML=ord.map(id=>{const c=COMP[id],has=id==='kael'||S.joined[id];
    if(!has)return`<div class="row locked"><canvas class="portrait" id="pf-${id}"></canvas><div class="info"><b>???</b><span class="role">${c.role}</span><div>${c.join}</div></div></div>`;
    const t=stats(id),line=`공격 ${fmt(t.atk)} · 체력 ${fmt(t.hp)}`;
-   if(id==='kael')return`<div class="row"><canvas class="portrait" id="pf-${id}"></canvas><div class="info"><b>${c.n}</b><span class="role">${c.role}</span><div>${c.desc}</div><div>${line}</div></div><button class="buy ghost" id="goEq">장비</button></div>`;
-   return`<div class="row"><canvas class="portrait" id="pf-${id}"></canvas><div class="info"><b>${c.n}</b><span class="role">${c.role}</span><span class="lvtag">Lv.${S.lv[id]}</span><div>${c.desc}</div><div>${line}</div></div><button class="buy" id="lv-${id}">${fmt(compCost(S.lv[id]))}</button></div>`}).join('');
+   if(id==='kael')return`<div class="row"><canvas class="portrait" id="pf-${id}"></canvas><div class="info"><b>${c.n}</b><span class="role">${c.role}</span><span class="lvtag">${RANKS[rankIdx()].n}</span><div>${c.desc}</div><div>${line}</div></div><button class="buy ghost" id="goEq">장비</button></div>`;
+   return`<div class="row"><canvas class="portrait" id="pf-${id}"></canvas><div class="info"><b>${c.n}</b><span class="role">${c.role}</span><span class="lvtag">Lv.${S.lv[id]}</span><div>${c.desc}</div><div>${line}</div></div><button class="buy" id="lv-${id}">${costBtn('레벨업',compCost(S.lv[id]))}</button></div>`}).join('');
   ORDER.forEach(id=>{portrait(id);const b=$('lv-'+id);if(b)b.onclick=()=>{const c=compCost(S.lv[id]);if(S.gold<c)return;S.gold-=c;S.lv[id]++;if(P[id])P[id].hp+=COMP[id].per.hp;renderAll()}});
   const g=$('goEq');if(g)g.onclick=()=>setTab('eq')}
  ORDER.forEach(id=>{const b=$('lv-'+id);if(b)b.disabled=S.gold<compCost(S.lv[id])});
@@ -547,7 +560,7 @@ let retSig='';
 function renderRetire(){
  const t=retireTarget(),pct=Math.min(100,S.gold/t*100),pts=retirePts(),can=S.stage>=20;
  const sig=[fmt(S.gold),fmt(t),pts,can,S.memory].join();if(sig===retSig)return;retSig=sig;
- $('retireBox').innerHTML=`<div class="sec">카엘의 은퇴 계획 <small>은퇴의 추억 ${S.memory}개 · 모든 능력치와 골드 +${S.memory*5}%</small></div>
+ $('retireBox').innerHTML=`<div class="sec">카엘의 은퇴 계획</div><div class="kv" style="margin-top:-4px"><span>은퇴의 추억 ${S.memory}개</span><b>모든 능력치·골드 +${S.memory*5}%</b></div>
   <div class="meter"><div class="kv"><span>은퇴 자금</span><b>${fmt(S.gold)} / ${fmt(t)}</b></div><div class="xp"><div style="width:${pct.toFixed(1)}%"></div></div></div>
   <p class="note">영지를 되찾을수록 목표 금액이 올라가요. 카엘은 아직 이 사실을 몰라요.</p>
   <button class="buy" id="retireBtn" ${can?'':'disabled'}>${can?'은퇴하기 · 추억 +'+pts:'영지 19곳을 되찾으면 은퇴할 수 있어요'}</button>`;
@@ -575,7 +588,7 @@ let eqSig='',upSig='',boxSig='';
 const FRAMES=['normal','uncommon','rare','epic','legendary','mythic'];
 const SLOTIMG={weapon:'slot_weapon',helm:'slot_hat',armor:'slot_armor',gloves:'slot_gloves',boots:'slot_boots',ring:'slot_ring'};
 function slotHtml(sl){const it=S.eq[sl.k],g=it?it.g:0;
- return`<button class="slot${it?'':' empty'}" id="sl-${sl.k}" aria-label="${sl.n}"><img class="fr" src="assets/ui/frame_${FRAMES[g]}.png" alt="" onerror="this.remove()"><img class="ic" src="assets/ui/${SLOTIMG[sl.k]}.png" alt="" onerror="this.replaceWith(document.createRange().createContextualFragment(svg('${sl.k}')))">${it?`<span class="lv">Lv.${it.lv}</span>`:''}</button>`}
+ return`<button class="slot${it?'':' empty'}" id="sl-${sl.k}" aria-label="${sl.n}"><img class="fr" src="assets/ui/frame_${FRAMES[g]}.png" alt="" onerror="this.remove()"><img class="ic" src="assets/ui/${SLOTIMG[sl.k]}.png" alt="" onerror="this.replaceWith(document.createRange().createContextualFragment(svg('${sl.k}')))">${it?`<span class="lv">Lv.${it.lv}</span>`:`<span class="lv em">비어 있음</span>`}</button>`}
 function renderSlots(){
  const L=['weapon','armor','gloves'],R=['helm','boots','ring'];
  $('slotsL').innerHTML=L.map(k=>slotHtml(SLOTS.find(x=>x.k===k))).join('');
@@ -585,10 +598,10 @@ function renderSlots(){
  drawEqHero();
 }
 function drawEqHero(){const c=$('eqHero');if(!c)return;const r=c.getBoundingClientRect();if(!r.width)return;const d=Math.min(2,window.devicePixelRatio||1);c.width=r.width*d;c.height=r.height*d;const pc=c.getContext('2d');pc.setTransform(d,0,0,d,0,0);
- const prev=ctx;ctx=pc;ell(r.width/2,r.height-14,r.width*.32,8,'rgba(0,0,0,.35)');if(hasSprite('kael'))drawSprite('kael',r.width/2,r.height-12,2.05,'idle',Math.floor(T*5)%4);else DRAW.kael(r.width/2,r.height-12,2.2,pose(null,false));ctx=prev}
+ const prev=ctx;ctx=pc;ell(r.width*.45,r.height-14,r.width*.32,8,'rgba(0,0,0,.35)');if(hasSprite('kael'))drawSprite('kael',r.width*.42,r.height-12,Math.min(2.05,r.width/88),'idle',Math.floor(T*5)%4);else DRAW.kael(r.width/2,r.height-12,2.2,pose(null,false));ctx=prev}
 function flashSlot(k){const el=$('sl-'+k);if(el&&el.animate)el.animate([{transform:'scale(1.12)'},{transform:'scale(1)'}],{duration:260})}
 function renderUpg(){
- $('upgs').innerHTML=UPG.map(u=>{const l=S.up[u.k],mx=l>=u.max;return`<div class="row"><div class="info"><b>${u.n}</b><span class="lvtag">Lv.${l}</span><div>${u.val(l)}${mx?' · 최대':' → '+u.next(l)}</div></div><button class="buy" id="up-${u.k}" ${mx?'disabled':''}>${mx?'최대':fmt(u.cost(l))}</button></div>`}).join('');
+ $('upgs').innerHTML=UPG.map(u=>{const l=S.up[u.k],mx=l>=u.max;return`<div class="row"><div class="info"><b>${u.n}</b><span class="lvtag">Lv.${l}</span><div>${u.val(l)}${mx?' · 최대':' → '+u.next(l)}</div></div><button class="buy" id="up-${u.k}" ${mx?'disabled':''}>${mx?'최대':costBtn('강화',u.cost(l))}</button></div>`}).join('');
  UPG.forEach(u=>$('up-'+u.k).onclick=()=>{const l=S.up[u.k],c=u.cost(l);if(l>=u.max||S.gold<c)return;S.gold-=c;S.up[u.k]++;if(u.k==='hp'&&P.kael)P.kael.hp+=20;renderAll()});
 }
 function renderBox(){
@@ -664,7 +677,7 @@ function spawn(){
  const mx=monHp(S.stage,false)*(n>1?.75:1);mons=[];for(let i=0;i<n;i++)mons.push({x:W+60+i*40,lane:[.45,.82,.12][i],hp:mx,max:mx,atk:monAtk(S.stage,false)*(n>1?.8:1),boss:false,cd:.8+i*.35,hit:0,dead:0});
 }
 function addFloat(x,y,txt,col,size){floats.push({x,y,txt,col,size:size||15,t:0})}
-function hitMon(m,d,cr,s,gy){m.hp-=d;m.hit=.12;spawnFx(cr?'crit':'hit',m.x+(Math.random()-.5)*10*s,m.y-(m.boss?50:28)*s,(cr?60:42)*s*(m.boss?1.3:1),cr?.36:.24);addFloat(m.x+(Math.random()-.5)*12*s,m.y-(m.boss?95:60)*s,fmt(d),cr?'#ffc94a':'#ffffff',cr?21:14)}
+function hitMon(m,d,cr,s,gy){m.hp-=d;m.hit=.12;spawnFx(cr?'crit':'hit',m.x+(Math.random()-.5)*10*s,m.y-(m.boss?50:28)*s,(cr?60:42)*s*(m.boss?1.3:1),cr?.36:.24);addFloat(m.x+(Math.random()-.5)*12*s,(m.barY!=null?m.barY-8*s:m.y-(m.boss?95:60)*s),fmt(d),cr?'#ffc94a':'#ffffff',cr?21:14)}
 function resetFight(msg){for(const id of members()){P[id].hp=stats(id).hp;P[id].down=false}mons=[];spawnT=1;S.wave=0;$('bossbar').hidden=true;toast(msg);renderAll()}
 function step(dt){
  T+=dt;const L=layout(),{ids,pos,py,front,s}=L,gy=0;syncParty();for(const m of mons)m.y=depthAt(L,m.lane??.5);if(banner){banner.t-=dt;if(banner.t<=0)banner=null}
@@ -906,7 +919,7 @@ function drawMon(r,y,s,m){
  else{const fy=y-30*ss+Math.sin(T*3+ph)*4*ss;ctx.fillStyle=col;ctx.beginPath();ctx.arc(x,fy-6*ss,16*ss,Math.PI,0);ctx.lineTo(x+16*ss,fy+12*ss);for(let i=0;i<4;i++){const xx=x+16*ss-(i+.5)*8*ss;ctx.quadraticCurveTo(xx,fy+(i%2?18:6)*ss+Math.sin(T*6+i)*2*ss,xx-4*ss,fy+12*ss)}ctx.closePath();ctx.globalAlpha=fade*.88;ctx.fill();ctx.globalAlpha=fade;eyes(x-10*ss,fy-4*ss,ss,'#1a3a6a');top=fy-22*ss}
  if(!md){ctx.fillStyle='#3a1a24';ctx.beginPath();ctx.moveTo(x-9*ss,top+3*ss);ctx.lineTo(x-12*ss,top-7*ss);ctx.lineTo(x-4*ss,top+2*ss);ctx.moveTo(x+4*ss,top+2*ss);ctx.lineTo(x+12*ss,top-7*ss);ctx.lineTo(x+9*ss,top+3*ss);ctx.fill()}
  if(m.boss&&!(md&&md.lordArt)){ctx.fillStyle=m.lord?'#ff5d73':'#ffc94a';ctx.beginPath();const cy=top-4*ss;ctx.moveTo(x-8*ss,cy);ctx.lineTo(x-8*ss,cy-8*ss);ctx.lineTo(x-4*ss,cy-4*ss);ctx.lineTo(x,cy-10*ss);ctx.lineTo(x+4*ss,cy-4*ss);ctx.lineTo(x+8*ss,cy-8*ss);ctx.lineTo(x+8*ss,cy);ctx.fill()}
- bar(x,top-(m.boss?22:12)*s,(m.boss?60:32)*s,m.hp/m.max,'#ff6b7d');ctx.globalAlpha=1
+ m.barY=top-(m.boss?22:12)*s;bar(x,m.barY,(m.boss?60:32)*s,m.hp/m.max,'#ff6b7d');ctx.globalAlpha=1
 }
 function drawProj(p,s){const k=p.t/p.d,x=p.x+(p.tx-p.x)*k,y=p.y+(p.ty-p.y)*k-Math.sin(k*Math.PI)*(p.kind==='harpoon'?4:14)*s;
  if(p.kind==='harpoon'&&fxOk('harpoon')){fxFrame('harpoon',0,x,y,30*s,Math.atan2(p.ty-p.y,p.tx-p.x));return}
@@ -1016,7 +1029,7 @@ function drawMap(){
   if(k===cur){const pr=rad+5+Math.sin(T*4)*2;ctx.strokeStyle='#ffc94a';ctx.lineWidth=2.5;ctx.beginPath();ctx.arc(p.x,p.y,pr,0,Math.PI*2);ctx.stroke()}});
  const kx=MW/2,ky=MH-bottomPad/2,done=cur>=MAXLAND,cap=CAPIMG[done?'open':'locked'];if(cap){const z=bottomPad*1.05;ctx.drawImage(cap,kx-z-6,MH-z-2,z,z)}else{ctx.fillStyle=done?'#ffc94a':'#4a3a2a';ctx.beginPath();ctx.moveTo(kx-16,ky+8);ctx.lineTo(kx-16,ky-6);ctx.lineTo(kx-8,ky+1);ctx.lineTo(kx,ky-12);ctx.lineTo(kx+8,ky+1);ctx.lineTo(kx+16,ky-6);ctx.lineTo(kx+16,ky+8);ctx.fill();}
  ctx.fillStyle='#dfe5f2';ctx.font='700 12px Hahmlet, serif';ctx.textAlign='left';ctx.fillText('왕도 아스테리온',kx+24,ky+2);ctx.fillStyle='#97a2c3';ctx.font='500 10px "IBM Plex Sans KR",sans-serif';ctx.fillText(done?'진격로가 열렸어요':'다섯 군단을 몰아내면 열려요',kx+24,ky+16);
- if(cur<MAXLAND){const p=pts[cur];ctx.font='600 10px "IBM Plex Sans KR",sans-serif';const t=terrName(S.stage),tw=ctx.measureText(t).width+12;let bx=Math.max(4,Math.min(MW-tw-4,p.x-tw/2)),byy=p.y+R*(p.j===9?1.35:1)+6;ctx.fillStyle='rgba(255,201,74,.95)';rr(bx,byy,tw,16,6);ctx.fillStyle='#3a2a00';ctx.textAlign='center';ctx.fillText(t,bx+tw/2,byy+11.5)}
+ if(cur<MAXLAND){const p=pts[cur];ctx.font='600 9.5px "IBM Plex Sans KR",sans-serif';const t=terrName(S.stage),tw=ctx.measureText(t).width+10;let bx=Math.max(4,Math.min(MW-tw-4,p.x-tw/2)),byy=p.y+R*1.2+3;ctx.fillStyle='rgba(255,201,74,.95)';ctx.beginPath();ctx.moveTo(p.x-4,byy);ctx.lineTo(p.x,byy-4);ctx.lineTo(p.x+4,byy);ctx.fill();rr(bx,byy,tw,14,5);ctx.fillStyle='#3a2a00';ctx.textAlign='center';ctx.fillText(t,bx+tw/2,byy+10)}
  ctx=prev;
 }
 
