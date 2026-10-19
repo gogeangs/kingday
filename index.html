@@ -72,6 +72,7 @@ body{word-break:keep-all;overflow-wrap:break-word;line-break:strict;background:#
 .board{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin-bottom:8px}.seat{position:relative;display:flex;flex-direction:column;align-items:center;gap:1px;background:var(--panel2);border:1px solid var(--line);border-radius:12px;padding:6px 2px;color:var(--fg);font:inherit;cursor:pointer;min-width:0}.seat .cfr{width:50px;height:58px}.seat .cfr .portrait{width:42px;height:50px}.seat b{font-size:12px}.seat small{font-size:10.5px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}.seat .q{font-size:22px;color:var(--muted)}.seat.empty{opacity:.55}.seat .sw,.seat .rd{z-index:3}.seat .sw{position:absolute;top:4px;left:5px;font-style:normal;font-size:12px;color:var(--gold)}.seat .rd{position:absolute;top:4px;right:5px;width:9px;height:9px;border-radius:50%;background:var(--bad);border:1px solid #fff}
 .autof{width:100%;margin-bottom:6px}
 .seatpick{display:flex;gap:10px;align-items:center;width:100%;text-align:left;background:var(--panel2);border:2px solid transparent;border-radius:14px;padding:8px;margin:6px 0;color:var(--fg);font:inherit;cursor:pointer}.seatpick.on{border-color:var(--gold)}.seatpick .info{display:flex;flex-direction:column;align-items:flex-start;gap:2px;flex:1}.seatpick .gtag{margin-left:0}.seatpick small{font-size:12px;color:var(--muted)}.seatpick i{font-style:normal;font-weight:700;margin-left:4px}.seatpick i.up{color:#7be08f}.seatpick i.down{color:#ff8a7a}.seatpick i.cur{color:var(--gold)}
+.skl.vpas{border-color:rgba(255,194,58,.6);background:rgba(255,194,58,.08)}.skl.vpas b{color:#ffc23a}.skl .vpi{font-size:26px!important;line-height:1!important;width:34px;text-align:center;flex:0 0 auto;color:inherit!important}.vpline{font-size:12px;color:#ffc23a;margin-top:2px}
 .buy.glow{box-shadow:0 0 12px rgba(255,210,60,.8)}
 .cpk{display:flex;align-items:center;justify-content:center;height:64px;font-size:40px;color:#c9a4ff}.cpk b{font-size:16px;margin-left:2px}.gobloot .glc{width:36px;height:36px;border-radius:8px}
 .rtbox{border-radius:12px;padding:10px 12px;margin:8px 0;background:var(--panel2);font-size:13px}.rtbox .rth{font-weight:700;margin-bottom:6px}.rtbox ul{list-style:none;margin:0;padding:0}.rtbox li{display:flex;justify-content:space-between;gap:10px;padding:3px 0;border-top:1px solid rgba(255,255,255,.06)}.rtbox li:first-child{border-top:0}.rtbox li span{color:var(--muted);flex:0 0 auto}.rtbox li b{text-align:right;font-weight:600}.rtbox p{margin:0;line-height:1.5}
@@ -538,11 +539,16 @@ const JSLOT=['miner','kael','fisher','keeper','cook'],STORY={miner:'bron',fisher
 const RECRUITS={
  luka:{job:'cook',title:'제빵사 루카',lines:['m:루카|저, 저기… 카엘 씨 밭의 밀로 빵을 구워 보고 싶어서 따라왔어요.','k@surprised:내 밀로? …은퇴하면 빵집 옆에 밭 하나 더 일궈야겠네.','q@proud:흥, 또 식객이 늘었군. 뭐, 빵 냄새는 나쁘지 않다.','sys:원정대 탭의 요리사 자리에서 마고 대신 출전시킬 수 있어요.'],ok:'잘 부탁해, 루카'},
  daisy:{job:'keeper',title:'정원사 데이지',lines:['m:데이지|안녕! 리엘 언니 벌들이 우리 꽃밭에 놀러 오거든. 그래서 따라와 봤어!','m:리엘|이 아이 꽃밭 꿀이 제일 달아. 400년 동안 먹어 본 것 중에.','k@smile:꽃밭이라… 은퇴하면 우리 밭 옆에도 좀 심어 줄래?','sys:원정대 탭의 양봉가 자리에서 리엘 대신 출전시킬 수 있어요.'],ok:'환영해, 데이지'},
- brida:{job:'miner',title:'전설의 대장장이 여왕 브리다',lines:['협곡이 울렸다. 바위 문이 열리고, 은빛 수염을 땋은 늙은 드워프가 모루 망치를 끌며 걸어 나왔다.','m:브리다|브론! 이 할미를 두고 원정을 떠나? 망치질 삼백 년, 아직 손목은 멀쩡하다.','m:브론|…할머니. 갱도에 계시라고 했잖아요.','q@moved:브리다 여왕… 내가 첫 주인을 모시던 시절에 이미 전설이었지.','k@surprised:성검이 존댓말 쓰는 거 처음 봐.','sys:전설 등급 동료! 원정대 탭의 광부 자리에서 출전시킬 수 있어요.'],ok:'모시겠습니다, 여왕님'},
+ brida:{job:'miner',title:'전설의 대장장이 여왕 브리다',lines:['협곡이 울렸다. 바위 문이 열리고, 은빛 수염을 땋은 늙은 드워프가 모루 망치를 끌며 걸어 나왔다.','m:브리다|브론! 이 할미를 두고 원정을 떠나? 망치질 삼백 년, 아직 손목은 멀쩡하다.','m:브론|…할머니. 갱도에 계시라고 했잖아요.','q@moved:브리다 여왕… 내가 첫 주인을 모시던 시절에 이미 전설이었지.','k@surprised:성검이 존댓말 쓰는 거 처음 봐.','sys:전설 등급 동료! 원정대 탭의 광부 자리에서 출전시킬 수 있어요.','sys:마을 스킬 「여왕의 대장간」: 광산 광석 생산 +50%, 모든 건물 공사 시간 -12%, 대장간 광석 비용 -8%. 출전하지 않아도 늘 적용되고 별이 오를수록 강해져요.'],ok:'모시겠습니다, 여왕님'},
  nella:{job:'fisher',title:'그물 어부 넬라',lines:['m:넬라|하랄 할배! 또 혼자 허풍 떨면서 다니지? 이번엔 나도 같이 간다!','m:하랄@laugh|허허, 이 녀석 그물 솜씨는 나보다 낫지. 고래만 빼고.','k@flustered:…원정대가 점점 마을 잔치가 되어 가네.','sys:원정대 탭의 어부 자리에서 하랄 대신 출전시킬 수 있어요.'],ok:'잘 부탁해, 넬라'}},STAR_NEED=[30,20,40,80,150],STAR_MUL=[1,1,1.2,1.4,1.6,2];
 /* 동료 등급: 이야기 동료는 일반(★3까지), 모집 동료는 희귀 이상 */
 const GRADE={bron:'common',haral:'common',riel:'common',margo:'common',luka:'epic',nella:'epic',brida:'legend',daisy:'rare'};
 const GR={common:{n:'일반',c:'#b8c0cc',max:3,mul:1,w:55,need:[0,15,30],fr:'normal'},rare:{n:'희귀',c:'#5aa8ff',max:4,mul:1.1,w:30,need:[30,20,40,80],fr:'rare'},epic:{n:'영웅',c:'#b07bff',max:5,mul:1.2,w:12,need:[30,30,60,120,200],fr:'epic'},legend:{n:'전설',c:'#ffc23a',max:5,mul:1.35,w:3,need:[30,40,80,160,300],fr:'legendary'}};
+/* 전설 동료의 마을 스킬: 합류만 하면(출전하지 않아도) 늘 적용, 별이 오를수록 강해짐 */
+const VPAS={brida:{n:'여왕의 대장간',d:st=>'광산 광석 생산 +'+(40+st*10)+'% · 모든 건물 공사 시간 -'+(10+st*2)+'% · 대장간 광석 비용 -'+(5+st*3)+'%'}};
+const vpBox=id=>VPAS[id]?`<div class="skl vpas"><img src="assets/ui/bld_mine.png" alt="" onerror="this.remove()"><div><b>마을 스킬 · ${VPAS[id].n}</b><span>${VPAS[id].d(Math.max(1,recStar(id)))}${owned(id)?' · 출전하지 않아도 늘 적용':' · 합류하면 적용'}</span></div></div>`:'';
+const vpSt=id=>VPAS[id]&&owned(id)?recStar(id):0;
+const vpMine=()=>vpSt('brida')?1+(40+vpSt('brida')*10)/100:1,vpTime=()=>vpSt('brida')?1-(10+vpSt('brida')*2)/100:1,vpOre=()=>vpSt('brida')?1-(5+vpSt('brida')*3)/100:1;
 const gr=id=>GR[GRADE[id]||'common'],CARDIDS=()=>[...Object.values(STORY),...Object.keys(RECRUITS)];
 const isRec=id=>id in RECRUITS,recStar=id=>isRec(id)?((S.rec&&S.rec[id])||0):(S.joined[id]?Math.max(1,(S.rec&&S.rec[id])||0):0);
 const starNeed=id=>gr(id).need[recStar(id)],starMax=id=>gr(id).max;
@@ -605,13 +611,13 @@ const BLD=[
  {k:'diner',n:'식당',who:'마고',max:10,base:220,eff:l=>'원정대 체력 +'+(l*5)+'%',open:()=>S.joined.margo,lock:'마고가 합류하면 열려요'},
  {k:'dock',n:'낚시터',who:'하랄',max:10,base:350,eff:l=>'생선 '+l+'마리/2분',open:()=>S.joined.haral,lock:'하랄이 합류하면 열려요'},
  {k:'apiary',n:'양봉장',who:'리엘',max:10,base:600,eff:l=>'동료 공격력 +'+(l*8)+'% · 꿀 '+l+'병/2분',open:()=>S.joined.riel,lock:'리엘이 합류하면 열려요'},
- {k:'mine',n:'광산',who:'브론',max:10,base:2000,eff:l=>'카엘 장비 +'+(l*6)+'% · 광석 '+l+'개/2분',open:()=>S.joined.bron,lock:'브론이 합류하면 열려요'}
+ {k:'mine',n:'광산',who:'브론',max:10,base:2000,eff:l=>'카엘 장비 +'+(l*6)+'% · 광석 '+(vpMine()>1?+(l*vpMine()).toFixed(1):l)+'개/2분'+(vpMine()>1?' (여왕의 대장간)':''),open:()=>S.joined.bron,lock:'브론이 합류하면 열려요'}
 ];
 const bldCost=(b,l)=>Math.floor(b.base*Math.pow(2.2,l));
 /* 광산을 재건한 뒤부터, 광산 외 건물을 Lv.6 이상으로 올릴 때 광석도 필요 */
 const bldOre=(b,l)=>S.bld.mine&&b.k!=='mine'&&l>=5?Math.ceil(15*Math.pow(1.5,l-5)):0,oreOk=(b,l)=>(S.items.ore||0)>=bldOre(b,l);
 const bldK=k=>BLD.find(x=>x.k===k);
-const bldTime=(b,l)=>Math.min(12*3600,Math.round(60*Math.sqrt(b.base/120)*Math.pow(2,l)));/* 공사 시간(초): 비싼 건물일수록 길게(√(기본값/120)배), 레벨마다 2배, 최대 12시간 */
+const bldTime=(b,l)=>Math.min(12*3600,Math.round(60*Math.sqrt(b.base/120)*Math.pow(2,l)*vpTime()));/* 공사 시간(초): 비싼 건물일수록 길게(√(기본값/120)배), 레벨마다 2배, 최대 12시간 */
 const fmtT=sec=>{sec=Math.max(0,Math.ceil(sec));const h=Math.floor(sec/3600),m=Math.floor(sec%3600/60),x=sec%60;return h?h+'시간 '+(m?m+'분':''):m?m+'분'+(x&&m<10?' '+x+'초':''):x+'초'};
 const timeGem=sec=>Math.max(1,Math.ceil(sec/180));/* 남은 3분당 이삭 1 */
 const BQ_MAX=2;/* 공사 중 1 + 대기 2 */
@@ -766,13 +772,13 @@ const allMul=()=>(1+.04*rankIdx())*memMul();
 
 /* ---------- 능력치 ---------- */
 /* 브론의 대장간: 부위별 강화. 장비를 바꿔도 강화는 부위에 남음 */
-const EN_MAX=20,enLv=k=>(S.slotEn&&S.slotEn[k])||0,enMul=k=>1+.1*enLv(k),enCost=l=>Math.ceil(5*Math.pow(1.35,l));
+const EN_MAX=20,enLv=k=>(S.slotEn&&S.slotEn[k])||0,enMul=k=>1+.1*enLv(k),enCost=l=>Math.ceil(5*Math.pow(1.35,l)*vpOre());
 function kStats(){let ga=0,gh=0;for(const s of SLOTS){const it=S.eq[s.k];if(it){ga+=it.atk*enMul(s.k);gh+=it.hp*enMul(s.k)}}const fm=1+.06*S.bld.mine,m=allMul();
  return{atk:(10+S.up.atk*3+ga*fm)*(buff('atk')?1.2:1)*m,hp:(100+S.up.hp*20+gh*fm)*(1+.05*S.bld.diner)*m,aps:(1+S.up.spd*.05)*(buff('spd')?1.2:1),crit:(5+S.up.crit)/100+(buff('crit')?.1:0)}}
 const COMP_GROW=1.1,BLESS=.2;/* 동료 레벨당 능력치 ×1.1, 카엘 성유물 능력치의 20%를 동료도 받음(성검의 축복) */
 function gearSum(){let a=0,h=0;for(const s of SLOTS){const it=S.eq[s.k];if(it){a+=it.atk*enMul(s.k);h+=it.hp*enMul(s.k)}}const fm=1+.06*S.bld.mine;return{a:a*fm,h:h*fm}}
 /* 동료 전용 무기: 대장간에서 광석+골드로 강화, 단계마다 그 동료 공격·체력 +8% */
-const CW={bron:'곡괭이',haral:'작살',riel:'벌통',margo:'국자'},CW_MAX=20,cwLv=id=>(S.cwEn&&S.cwEn[STORY[JOB[id]]||id])||0,cwMul=id=>1+.08*cwLv(id),cwOre=l=>Math.ceil(8*Math.pow(1.35,l)),cwGold=l=>Math.ceil(reward(Math.max(1,S.best),false)*12*(l+1));
+const CW={bron:'곡괭이',haral:'작살',riel:'벌통',margo:'국자'},CW_MAX=20,cwLv=id=>(S.cwEn&&S.cwEn[STORY[JOB[id]]||id])||0,cwMul=id=>1+.08*cwLv(id),cwOre=l=>Math.ceil(8*Math.pow(1.35,l)*vpOre()),cwGold=l=>Math.ceil(reward(Math.max(1,S.best),false)*12*(l+1));
 function cStats(id){const c=COMP[id],l=S.lv[id]||1,m=allMul()*cwMul(id)*starMul(id),g=Math.pow(COMP_GROW,l-1),gs=gearSum();return{atk:(c.base.atk*g+gs.a*BLESS)*(1+.08*S.bld.apiary)*(buff('atk')?1.2:1)*m,hp:(c.base.hp*g+gs.h*BLESS)*(1+.05*S.bld.diner)*m,aps:c.base.aps*(buff('spd')?1.2:1)*(SKX.bake>0?1.3:1),crit:.05+(buff('crit')?.1:0)}}
 const stats=id=>id==='kael'?kStats():cStats(id);
 const members=()=>JSLOT.map(slotMember).filter(Boolean);
@@ -879,7 +885,7 @@ function ensurePlots(){const n=plotCount();while(S.plots.length<n)S.plots.push(n
 function plotState(p){if(!p)return{st:'empty'};const c=CROPS.find(x=>x.k===p.k),left=c.t-(Date.now()-p.at)/1000;return left<=0?{st:'ready',c}:{st:'grow',c,left,ratio:1-left/c.t}}
 function plant(i,k){if(S.seeds[k]<=0||S.plots[i])return;S.seeds[k]--;S.plots[i]={k,at:Date.now()};farmSig='';renderAll()}
 function harvest(i){const ps=plotState(S.plots[i]);if(ps.st!=='ready')return 0;const n=2+(Math.random()<.3?1:0);S.items[ps.c.k]+=n;S.plots[i]=null;dailyAdd('harv',n);stat('harv',n);if(ps.c.k==='pumpkin')stat('pump',n);return n}
-function produce(){checkBuild();const now=Date.now();for(const g of GOODS){const l=S.bld[g.b];if(!l){S.prod[g.b]=now;continue}const iv=120000/l;if(!S.prod[g.b])S.prod[g.b]=now;const n=Math.min(2000,Math.floor((now-S.prod[g.b])/iv));if(n>0){S.items[g.k]+=n;S.prod[g.b]+=n*iv}}}
+function produce(){checkBuild();const now=Date.now();for(const g of GOODS){const l=S.bld[g.b];if(!l){S.prod[g.b]=now;continue}const iv=120000/l/(g.b==='mine'?vpMine():1);if(!S.prod[g.b])S.prod[g.b]=now;const n=Math.min(2000,Math.floor((now-S.prod[g.b])/iv));if(n>0){S.items[g.k]+=n;S.prod[g.b]+=n*iv}}}
 function chooseSeed(i){const tg=plotTag(i);if(tg){const c=CROPS.find(x=>x.k===tg);if(S.seeds[tg]>0)plant(i,tg);else toast(c.n+' 전용 밭이에요. '+c.n+' 씨앗이 없어요');return}
  $('sheet').innerHTML=`<h2>무엇을 심을까요?</h2>${CROPS.map(c=>`<div class="row" style="background:var(--panel2)">${uiImg('seed_'+c.k)}<div class="info"><b>${c.n}</b><div>자라는 시간 ${mmss(c.t)} · 씨앗 ${S.seeds[c.k]}개</div></div><button class="buy" id="sd-${c.k}" ${S.seeds[c.k]?'':'disabled'}>심기</button></div>`).join('')}<label class="tagchk"><input type="checkbox" id="sdTag"> 이 칸을 고른 작물 전용 밭으로 지정<small>다음부터 '모두 심기'를 해도 이 칸엔 그 작물만 심어져요</small></label><div class="acts one"><button id="mX">닫기</button></div>`;
  $('modal').hidden=false;CROPS.forEach(c=>$('sd-'+c.k).onclick=()=>{if($('sdTag').checked){if(!S.plotTag)S.plotTag=[];S.plotTag[i]=c.k;toast(c.n+' 전용 밭으로 지정했어요')}plant(i,c.k);closeModal()});$('mX').onclick=closeModal;
@@ -931,7 +937,7 @@ const VNOTE={inn:'원정대가 쉬는 곳이에요. 레벨이 오를수록 게�
 function vlPanels(){$('farmBox').hidden=!(vlSel==='farm'&&S.bld.farm);$('kitchen').hidden=!(vlSel==='diner'&&S.bld.farm)||$('kitchen').innerHTML==='';const n=$('vNote'),t=VNOTE[vlSel];n.hidden=!t;if(t)n.textContent=t}
 let bldSig='';
 function renderBlds(){
- const bd=building(),sig=(S.bld.mine?S.items.ore:0)+'|'+JSON.stringify(S.bld)+JSON.stringify(S.joined)+S.done.marta+vlSel+S.stage+(bd?bd.k+Math.ceil(buildLeft()):'')+(S.gem||0)+bq().join();
+ const bd=building(),sig=vpSt('brida')+(S.bld.mine?S.items.ore:0)+'|'+JSON.stringify(S.bld)+JSON.stringify(S.joined)+S.done.marta+vlSel+S.stage+(bd?bd.k+Math.ceil(buildLeft()):'')+(S.gem||0)+bq().join();
  if(sig!==bldSig){bldSig=sig;
   $('blds').innerHTML=BLD.filter(b=>b.k===vlSel).map(b=>{const l=S.bld[b.k],op=b.open(),mx=l>=b.max;
    if(!op)return`<div class="row locked">${bldImg(b.k,0)}<div class="info"><b>${b.n}</b>${b.who?`<span class="role">${b.who}</span>`:''}<div>${b.lock}</div><div class="nx">재건하면: ${b.eff(1)}</div></div><span class="lockchip">잠김</span></div>`;
@@ -955,12 +961,12 @@ function renderParty(){
    if(!has)return`<div class="row locked"><canvas class="portrait" id="pf-${id}"></canvas><div class="info"><b>???</b><span class="role">${c.role}</span><div>${c.join}</div></div></div>`;
    const t=stats(id),line=`공격 ${fmt(t.atk)} · 체력 ${fmt(t.hp)}`,st=gradeTag(id)+starTxt(id);
    if(id==='kael')return`<div class="row"><canvas class="portrait" id="pf-${id}"></canvas><div class="info"><b>${c.n}</b><span class="role">${c.role}</span><span class="lvtag">${RANKS[rankIdx()].n}</span><div>${c.desc}</div><div>${line}</div></div><button class="buy ghost" id="goEq">장비</button><div class="skl"><img src="assets/skills/skill_${id}.png" alt="" onerror="this.remove()"><div><b>${SKILLS[id].n}</b><span>${SKILLS[id].d}</span></div></div></div>`;
-   return`<div class="row${bench?' bench':''}"><canvas class="portrait" id="pf-${id}"></canvas><div class="info"><b>${c.n}</b>${st}<span class="role">${c.role}</span><span class="lvtag">${bench?'대기':'Lv.'+(S.lv[id]||1)}</span><div>${c.desc}</div><div>${line}</div></div>${bench?`<button class="buy ghost" id="go-${id}">출전</button>`:`<button class="buy" id="lv-${id}">${costBtn('레벨업',compCost(S.lv[id]||1))}</button>`}<div class="skl"><img src="assets/skills/skill_${id}.png" alt="" onerror="this.remove()"><div><b>${SKILLS[id].n}</b><span>${SKILLS[id].d}</span></div></div></div>`};
+   return`<div class="row${bench?' bench':''}"><canvas class="portrait" id="pf-${id}"></canvas><div class="info"><b>${c.n}</b>${st}<span class="role">${c.role}</span><span class="lvtag">${bench?'대기':'Lv.'+(S.lv[id]||1)}</span><div>${c.desc}</div><div>${line}</div></div>${bench?`<button class="buy ghost" id="go-${id}">출전</button>`:`<button class="buy" id="lv-${id}">${costBtn('레벨업',compCost(S.lv[id]||1))}</button>`}<div class="skl"><img src="assets/skills/skill_${id}.png" alt="" onerror="this.remove()"><div><b>${SKILLS[id].n}</b><span>${SKILLS[id].d}</span></div></div>${vpBox(id)}</div>`};
   const rows=['kael',...JSLOT.filter(j=>j!=='kael'&&slotMember(j)),...JSLOT.filter(j=>j!=='kael'&&!slotMember(j))].map(j=>{if(j==='kael')return rowOf('kael');const act=slotMember(j),all=jobMembers(j);
    return(all.length>1?`<div class="jobsec">${JOBN[j]} 자리 <small>한 명만 출전해요</small></div>`:'')+rowOf(act||STORY[j])+all.filter(x=>x!==act).map(x=>rowOf(x,true)).join('')}).join('');
   const recs=CARDIDS().sort((a,b)=>((cardOpen(b)?2:0)+(owned(b)?1:0))-((cardOpen(a)?2:0)+(owned(a)?1:0))||gr(a).w-gr(b).w).map(id=>{const c=COMP[id],op=cardOpen(id),stv=recStar(id),n=(S.cards&&S.cards[id])||0,need=starNeed(id),mx=stv>=starMax(id);
    return`<div class="ccard${op?'':' locked'}${stv?' own':''}" style="--g:${gr(id).c}"><span class="cfr"><img src="assets/ui/frame_${gr(id).fr}.png" alt="" onerror="this.remove()"><canvas class="portrait" id="pcd-${id}"></canvas></span><div class="info"><b>${op?c.n:'???'}</b>${gradeTag(id)}<span class="role">${JOBN[JOB[id]]}</span>${stv?starTxt(id):''}
-    ${!op?`<div>${isRec(id)?COMP[STORY[RECRUITS[id].job]].n+'이(가) 합류하면 카드가 나오기 시작해요':c.join}</div>`:mx?'<div>별을 모두 모았어요</div>':`<div class="xp"><div style="width:${Math.min(100,n/need*100)}%"></div></div><div>카드 ${n} / ${need}</div>`}</div>
+    ${VPAS[id]?`<div class="vpline">마을 스킬 · ${VPAS[id].n}</div>`:''}${!op?`<div>${isRec(id)?COMP[STORY[RECRUITS[id].job]].n+'이(가) 합류하면 카드가 나오기 시작해요':c.join}</div>`:mx?'<div>별을 모두 모았어요</div>':`<div class="xp"><div style="width:${Math.min(100,n/need*100)}%"></div></div><div>카드 ${n} / ${need}</div>`}</div>
     ${op&&!mx?`<div class="cbtns"><button class="buy${n>=need?' glow':''}" id="rc-${id}" ${n>=need?'':'disabled'}>${stv?'★ 올리기':'맞이하기'}</button><button class="wish${S.wish===id?' on':''}" id="ws-${id}">${S.wish===id?'♥ 희망 중':'♡ 희망'}</button></div>`:''}</div>`}).join('');
   const board=`<div class="sec">편성 <small>자리를 눌러 동료를 바꿔요</small></div><div class="board">${JSLOT.map(j=>{const id=slotMember(j),multi=j!=='kael'&&jobMembers(j).length>1;return`<button class="seat${id?'':' empty'}" data-seat="${j}">${id?`<span class="cfr" style="--g:${id==='kael'?'#ffd34a':gr(id).c}"><img src="assets/ui/frame_${id==='kael'?'legendary':gr(id).fr}.png" alt="" onerror="this.remove()"><canvas class="portrait" id="st-${j}"></canvas></span>`:'<span class="cfr"><span class="q">?</span></span>'}<b>${j==='kael'?'카엘':JOBN[j]}</b><small>${id?(id==='kael'?'용사':COMP[id].n+' '+'★'.repeat(recStar(id))):'합류 전'}</small>${multi?'<i class="sw">⇄</i>':''}${j!=='kael'&&betterBench(j)?'<i class="rd"></i>':''}</button>`}).join('')}</div><button class="buy ghost autof" id="autoForm" ${JSLOT.some(j=>j!=='kael'&&jobMembers(j).length>1)?'':'disabled'}>추천 편성 · 가장 강한 동료로</button>`;
   $('party').innerHTML=board+rows+`<div class="sec" style="margin-top:14px">동료 카드 <small>카드를 모아 동료를 맞이하고 별을 올려요</small></div><p class="note">카드 등급: <b style="color:#b8c0cc">일반</b>(★3까지) · <b style="color:#5aa8ff">희귀</b>(★4) · <b style="color:#b07bff">영웅</b>(★5) · <b style="color:#ffc23a">전설</b>(★5). 높은 등급일수록 드물게 나오고 기본 능력치가 높아요. 마물·성주·군단장·황금 고블린·오늘의 할 일·피트의 상점에서 카드를 얻어요. ♡ 희망을 눌러 두면 그 동료 카드가 절반 확률로 나와요. 은퇴해도 카드와 별은 남아요.</p>${recs}`;
