@@ -628,7 +628,7 @@ function spawn(){
  const mx=monHp(S.stage,false)*(n>1?.75:1);mons=[];for(let i=0;i<n;i++)mons.push({x:W+60+i*40,lane:[.45,.82,.12][i],hp:mx,max:mx,atk:monAtk(S.stage,false)*(n>1?.8:1),boss:false,cd:.8+i*.35,hit:0,dead:0});
 }
 function addFloat(x,y,txt,col,size){floats.push({x,y,txt,col,size:size||15,t:0})}
-function hitMon(m,d,cr,s,gy){m.hp-=d;m.hit=.12;addFloat(m.x+(Math.random()-.5)*12*s,m.y-(m.boss?95:60)*s,fmt(d),cr?'#ffc94a':'#ffffff',cr?21:14)}
+function hitMon(m,d,cr,s,gy){m.hp-=d;m.hit=.12;spawnFx(cr?'crit':'hit',m.x+(Math.random()-.5)*10*s,m.y-(m.boss?50:28)*s,(cr?78:50)*s*(m.boss?1.4:1),cr?.4:.26);addFloat(m.x+(Math.random()-.5)*12*s,m.y-(m.boss?95:60)*s,fmt(d),cr?'#ffc94a':'#ffffff',cr?21:14)}
 function resetFight(msg){for(const id of members()){P[id].hp=stats(id).hp;P[id].down=false}mons=[];spawnT=1;S.wave=0;$('bossbar').hidden=true;toast(msg);renderAll()}
 function step(dt){
  T+=dt;const L=layout(),{ids,pos,py,front,s}=L,gy=0;syncParty();for(const m of mons)m.y=depthAt(L,m.lane??.5);if(banner){banner.t-=dt;if(banner.t<=0)banner=null}
@@ -649,7 +649,7 @@ function step(dt){
    for(const id of ids){const p=P[id];if(p.down)continue;const t=stats(id);p.cd-=dt;if(p.cd>0)continue;p.cd=1/t.aps;
     const tgt=alive.find(m=>m.hp>0);
     if(id==='margo'){let low=null,lr=.9;for(const j of ids){const q=P[j];if(q.down)continue;const rr=q.hp/stats(j).hp;if(rr<lr){lr=rr;low=j}}
-     if(low){const h=t.atk*3.2;P[low].hp=Math.min(stats(low).hp,P[low].hp+h);p.swing=.3;addFloat(pos[low],py[low]-(HEIGHT[low]+8)*s,'+'+fmt(h),'#7be08f',13);proj.push({x:pos.margo+10*s,y:py.margo-50*s,tx:pos[low],ty:py[low]-40*s,t:0,d:.3,kind:'soup'});continue}}
+     if(low){const h=t.atk*3.2;P[low].hp=Math.min(stats(low).hp,P[low].hp+h);p.swing=.3;spawnFx('heal',pos[low],py[low]-24*s,62*s,.55);addFloat(pos[low],py[low]-(HEIGHT[low]+8)*s,'+'+fmt(h),'#7be08f',13);proj.push({x:pos.margo+10*s,y:py.margo-50*s,tx:pos[low],ty:py[low]-40*s,t:0,d:.3,kind:'soup'});continue}}
     if(!tgt)continue;const cr=Math.random()<t.crit,d=t.atk*(cr?2:1)*(.9+Math.random()*.2);p.swing=.22;
     if(id==='riel'){for(const m of alive)if(m.hp>0)hitMon(m,d*.7,cr,s,gy);proj.push({x:pos.riel+10*s,y:py.riel-46*s,tx:tgt.x,ty:tgt.y-30*s,t:0,d:.35,kind:'bees'})}
     else if(id==='haral'){hitMon(tgt,d,cr,s,gy);proj.push({x:pos.haral+12*s,y:py.haral-40*s,tx:tgt.x,ty:tgt.y-28*s,t:0,d:.2,kind:'harpoon'})}
@@ -659,7 +659,7 @@ function step(dt){
     const tid=(S.joined.bron&&P.bron&&!P.bron.down)?'bron':ids.find(i=>!P[i].down);if(!tid)continue;
     const q=P[tid];q.hp-=m.atk;q.hit=.15;addFloat(pos[tid],py[tid]-(HEIGHT[tid]+8)*s,'-'+fmt(m.atk),'#ff6b7d',13);if(q.hp<=0){q.hp=0;q.down=true}}
   }
-  for(const m of mons){if(m.hp<=0&&!m.dead){m.dead=.35;const g=reward(S.stage,m.boss)*(buff('gold')?1.5:1)*memMul();S.gold+=g;addFloat(m.x,m.y-30*s,'+'+fmt(g),'#ffc94a',14);
+  for(const m of mons){if(m.hp<=0&&!m.dead){m.dead=.35;spawnFx('coin',m.x,m.y-26*s,34*s,.6,-60*s);const g=reward(S.stage,m.boss)*(buff('gold')?1.5:1)*memMul();S.gold+=g;addFloat(m.x,m.y-30*s,'+'+fmt(g),'#ffc94a',14);
    if(S.bld.farm)for(const c of[...CROPS].reverse())if(Math.random()<c.drop*(m.boss?5:1)){S.seeds[c.k]++;addFloat(m.x,m.y-50*s,c.n+' 씨앗','#9be38a',12);break}
    if(m.boss){const bn=bossName(S.stage),lord=isLord(S.stage),tn=terrName(S.stage);S.stage++;S.best=Math.max(S.best,S.stage);S.wave=0;$('bossbar').hidden=true;
     toast(bn+' 처치');banner={t:2,txt:tn+' 탈환!',sub:lord?'군단장을 쓰러뜨렸다':'영지를 되찾았다'};say('k',lord?'됐다… 이제 진짜 은퇴해도 되지?':'여기 흙, 다시 살아나겠네.');if((S.stage-1)%10===0)chapter();events()}
@@ -669,6 +669,7 @@ function step(dt){
  }
  floats.forEach(f=>{f.t+=dt;f.y-=dt*40});floats=floats.filter(f=>f.t<.9);
  proj.forEach(p=>p.t+=dt);proj=proj.filter(p=>p.t<p.d);
+ fxs.forEach(f=>f.t+=dt);fxs=fxs.filter(f=>f.t<f.d);
 }
 
 /* ---------- 그리기 ---------- */
@@ -806,6 +807,13 @@ const DRAW={kael:drawKael,bron:drawBron,haral:drawHaral,riel:drawRiel,margo:draw
 const SPRITES={kael:{idle:4,walk:6,attack:4,hit:2,h:70},bron:{idle:4,walk:6,attack:4,hit:2,h:74},haral:{idle:4,walk:6,attack:4,hit:2,h:72},riel:{idle:4,walk:6,attack:4,hit:2,h:76},margo:{idle:4,walk:6,attack:4,hit:2,h:72}};
 const SPR_FRAME=256,SPR_FOOT=250,SPR_FIG=171; // SPR_FIG: 프레임 안에서 카엘의 키(px) → 코드 그림 키 66과 맞춤
 const SPR={};
+/* 전투 효과: assets/fx/fx_<이름>.png, 256 칸(작살은 512x256)을 가로로 이은 시트. 없으면 코드 효과 */
+const FXDEF={hit:4,crit:5,bees:4,heal:5,coin:4,harpoon:1,soup:1},FXI={};let fxs=[];
+function loadFx(){for(const k in FXDEF){const im=new Image();im.onload=()=>{im.ok=true;im.cw=im.width/FXDEF[k]};im.src='assets/fx/fx_'+k+'.png';FXI[k]=im}}
+const fxOk=k=>FXI[k]&&FXI[k].ok;
+function spawnFx(k,x,y,size,d,vy){if(fxOk(k))fxs.push({k,x,y,size,d,t:0,vy:vy||0})}
+function fxFrame(k,i,x,y,size,rot){const im=FXI[k],cw=im.cw,h=im.height,w=size*cw/h;ctx.save();ctx.translate(x,y);if(rot)ctx.rotate(rot);ctx.drawImage(im,i*cw,0,cw,h,-w/2,-size/2,w,size);ctx.restore()}
+function drawFxs(){for(const f of fxs){const n=FXDEF[f.k],i=Math.min(n-1,Math.floor(f.t/f.d*n));ctx.globalAlpha=f.t>f.d*.7?Math.max(0,1-(f.t-f.d*.7)/(f.d*.3)):1;fxFrame(f.k,i,f.x,f.y+f.vy*f.t,f.size);ctx.globalAlpha=1}}
 /* 몬스터 스프라이트: 지역 번호 → 시트 이름. 시트는 assets/monsters/<이름>_<walk|attack|hit>.png, 왼쪽을 봄 */
 const MON_SPRITES={0:{id:'slime_plague',walk:4,attack:4,hit:2,fig:150,h:54}};
 const MSPR={};
@@ -850,6 +858,9 @@ function drawMon(r,y,s,m){
  bar(x,top-(m.boss?22:12)*s,(m.boss?60:32)*s,m.hp/m.max,'#ff6b7d');ctx.globalAlpha=1
 }
 function drawProj(p,s){const k=p.t/p.d,x=p.x+(p.tx-p.x)*k,y=p.y+(p.ty-p.y)*k-Math.sin(k*Math.PI)*(p.kind==='harpoon'?4:14)*s;
+ if(p.kind==='harpoon'&&fxOk('harpoon')){fxFrame('harpoon',0,x,y,30*s,Math.atan2(p.ty-p.y,p.tx-p.x));return}
+ if(p.kind==='bees'&&fxOk('bees')){fxFrame('bees',Math.floor(T*12)%4,x,y,40*s);return}
+ if(p.kind==='soup'&&fxOk('soup')){fxFrame('soup',0,x,y,26*s,Math.sin(k*Math.PI*2)*.4);return}
  if(p.kind==='harpoon'){const a=Math.atan2(p.ty-p.y,p.tx-p.x);ctx.save();ctx.translate(x,y);ctx.rotate(a);ctx.strokeStyle='#8a6a48';ctx.lineWidth=2*s;ctx.beginPath();ctx.moveTo(-18*s,0);ctx.lineTo(0,0);ctx.stroke();ctx.fillStyle='#cfd6e0';ctx.beginPath();ctx.moveTo(6*s,0);ctx.lineTo(0,-3*s);ctx.lineTo(0,3*s);ctx.fill();ctx.restore()}
  else if(p.kind==='bees'){for(let i=0;i<5;i++){const bx=x+Math.sin(T*20+i*1.7)*6*s,by=y+Math.cos(T*17+i*2.3)*5*s;ell(bx,by,2*s,1.5*s,'#f2c230')}}
  else{ell(x,y,4.5*s,3*s,'#e8e2d8');ell(x,y-1*s,3.5*s,1.6*s,'#e08a3a')}}
@@ -868,6 +879,7 @@ function draw(){
  for(const m of mons){const y=m.y??depthAt(L,m.lane??.5);ents.push({y,f:()=>drawMon(r,y,s*(.9+.14*(m.lane??.5)),m)})}
  ents.sort((a,b)=>a.y-b.y).forEach(e=>e.f());
  for(const p of proj)drawProj(p,s);
+ drawFxs();
  ctx.textAlign='center';floats.forEach(f=>{ctx.globalAlpha=1-f.t/.9;ctx.font=`700 ${f.size*Math.max(.9,s)}px Hahmlet, serif`;ctx.lineWidth=3.5;ctx.strokeStyle='rgba(0,0,0,.65)';ctx.strokeText(f.txt,f.x,f.y);ctx.fillStyle=f.col;ctx.fillText(f.txt,f.x,f.y)});ctx.globalAlpha=1;
  drawQuip(pos,s,py.kael??L.top);
  if(banner){const k=Math.min(1,(2-banner.t)*5,banner.t*2.5),cy=Ht*.36;ctx.globalAlpha=k;
@@ -952,7 +964,7 @@ function loop(ts){const dt=Math.min(.1,(ts-(last||ts))/1000);last=ts;step(dt*(S.
  draw();if(curTab==='vl')drawVillage();if(curTab==='mp')drawMap();
  requestAnimationFrame(loop)}
 function start(data){
- loadSprites();loadMonSprites();loadBgs();
+ loadSprites();loadMonSprites();loadBgs();loadFx();
  S=(data&&typeof data.gold==='number')?hydrate(data):(load()||hydrate({gold:60}));
  $('autoSell').checked=S.autoSell;$('autoOpen').checked=S.autoOpen;
  const isNew=!S.started;S.started=true;S.v=3;syncParty();resize();produce();renderSpeed();
