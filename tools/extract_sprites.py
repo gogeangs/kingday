@@ -102,6 +102,9 @@ def main(src, cid, monster=False):
     loose_lab, _ = ndimage.label(ndimage.binary_dilation(alpha >= ALPHA_CUT, iterations=2))
     rows = group_rows(blobs(alpha), len(rows_def))
     for (name, n), row in zip(rows_def, rows):
+        big = max((b[2] - b[0]) * (b[3] - b[1]) for b in row)
+        if len(row) <= n:  # 불씨 같은 작은 조각은 프레임으로 세지 않음 (붙은 프레임을 나누기 전에)
+            row = [b for b in row if (b[2] - b[0]) * (b[3] - b[1]) > big * 0.2]
         row = merge_to(row, n)
         while len(row) < n:  # 이펙트로 붙은 프레임: 가장 넓은 조각을 가장 얇은 세로줄에서 나눔
             i = max(range(len(row)), key=lambda k: row[k][2] - row[k][0])
@@ -118,6 +121,9 @@ def main(src, cid, monster=False):
             was_split = len(box) > 4
             hx = head_x(alpha, (x0, y0, x1, y1))
             mine = np.ones_like(alpha, bool) if was_split else own_mask(loose_lab, (x0, y0, x1, y1))
+            inside = alpha[y0:y1, x0:x1] > 200
+            if inside.sum() and (inside & mine[y0:y1, x0:x1]).sum() < inside.sum() * 0.5:
+                mine = np.ones_like(alpha, bool)  # 옆 프레임과 붙어 있어 자기 그림까지 지워지면 정리를 건너뜀
             px = 0 if was_split else 6
             crop = img[max(0, y0 - 6): y1 + 4, max(0, x0 - px): x1 + px].copy()
             a = crop[..., 3]

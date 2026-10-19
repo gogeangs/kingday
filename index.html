@@ -685,7 +685,7 @@ function mixc(a,b,t){const p=h=>[1,3,5].map(i=>parseInt(h.slice(i,i+2),16)),A=p(
 const DECO=['windmill','trees','spires','graves','volcano'];
 function rnd(i){const x=Math.sin(i*127.1+311.7)*43758.5453;return x-Math.floor(x)}
 /* 배경 이미지: assets/bg/<지역>_<sky|far|mid|ground>.png, 가로 반복. 없으면 아래 코드 배경 */
-const BG_IMG={0:'erdan',1:'dusk',2:'canyon',3:'frost'},BG_FULL={dusk:true,canyon:true,frost:true},BGI={};
+const BG_IMG={0:'erdan',1:'dusk',2:'canyon',3:'frost',4:'ash'},BG_FULL={dusk:true,canyon:true,frost:true,ash:true},BGI={};
 function loadBgs(){for(const k in BG_IMG){const n=BG_IMG[k];BGI[n]={};for(const l of['sky','far','mid','ground']){const im=new Image();im.onload=()=>{im.ok=true;if(l==='ground')im.base=baseColor(im)};im.src='assets/bg/'+n+'_'+l+'.png';BGI[n][l]=im}}}
 function baseColor(im){const c=document.createElement('canvas');c.width=c.height=1;const x=c.getContext('2d');x.drawImage(im,0,im.height*.75,im.width,im.height*.25,0,0,1,1);const d=x.getImageData(0,0,1,1).data;return[d[0],d[1],d[2]]}
 function bgReady(r){const n=BG_IMG[REGIONS.indexOf(r)];return n&&['sky','far','mid','ground'].every(l=>BGI[n][l].ok)?BGI[n]:null}
@@ -829,7 +829,8 @@ function drawFxs(){for(const f of fxs){const n=FXDEF[f.k],i=Math.min(n-1,Math.fl
 const MON_SPRITES={0:{id:'slime_plague',walk:4,attack:4,hit:2,fig:150,h:54},
  1:{id:'bat_shadow',walk:4,attack:4,hit:2,fig:180,h:44,lift:30,boss:{id:'boss_seril',walk:4,attack:4,hit:2,fig:195,h:72}},
  2:{id:'golem_steel',walk:4,attack:4,hit:2,fig:190,h:58,boss:{id:'boss_gromak',walk:4,attack:4,hit:2,fig:200,h:74}},
- 3:{id:'wraith_frost',walk:4,attack:4,hit:2,fig:185,h:50,lift:18,boss:{id:'boss_aldor',walk:4,attack:4,hit:2,fig:195,h:74}}};
+ 3:{id:'wraith_frost',walk:4,attack:4,hit:2,fig:185,h:50,lift:18,boss:{id:'boss_aldor',walk:4,attack:4,hit:2,fig:195,h:74}},
+ 4:{id:'slime_ash',walk:4,attack:4,hit:2,fig:150,h:52,boss:{id:'boss_ignis',walk:4,attack:4,hit:2,fig:200,h:78}}};
 const MSPR={};
 function loadMonSprites(){for(const k in MON_SPRITES){for(const d of[MON_SPRITES[k],MON_SPRITES[k].boss].filter(Boolean)){MSPR[d.id]={};for(const a of['walk','attack','hit']){const im=new Image();im.onload=()=>{im.ok=true};im.src='assets/monsters/'+d.id+'_'+a+'.png';MSPR[d.id][a]=im}}}}
 const sprOk=d=>{const m=d&&MSPR[d.id];return!!m&&['walk','attack','hit'].every(a=>m[a]&&m[a].ok)};
