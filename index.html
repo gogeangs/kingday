@@ -184,6 +184,7 @@ canvas{display:block;width:100%;height:100%}
 .forge{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
 .fg{display:flex;flex-direction:column;align-items:center;gap:2px;background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:6px 4px;color:var(--fg);font:inherit;cursor:pointer}
 .tagchk{display:block;margin:10px 2px 2px;font-size:14px;color:var(--fg)}.tagchk input{width:18px;height:18px;vertical-align:-3px;margin-right:6px;accent-color:#f6c445}.tagchk small{display:block;margin:3px 0 0 26px;font-size:12px;opacity:.7}
+.card .ent{font-size:11px;color:#ffb35a;margin-top:2px}
 .fg img{width:30px;height:30px}
 .fg b{font-size:12px;font-weight:700}
 .fg b i{font-style:normal;color:#ff9a3a}
@@ -728,7 +729,8 @@ function rollItem(fg){
  return{slot:sl.k,g,lv,atk:Math.round(3*m*lv*sl.a*v()),hp:Math.round(20*m*lv*sl.h*v()),price:Math.floor(boxCost()*.25*(1+g))}
 }
 const slotName=k=>SLOTS.find(s=>s.k===k).n;
-function statLine(it){const p=[];if(it.atk)p.push('공격 +'+fmt(it.atk));if(it.hp)p.push('체력 +'+fmt(it.hp));return p.join(' · ')}
+function statLine(it){const m=enMul(it.slot),p=[];if(it.atk)p.push('공격 +'+fmt(it.atk*m));if(it.hp)p.push('체력 +'+fmt(it.hp*m));return p.join(' · ')}
+const enTag=k=>enLv(k)?`<span class="ent">대장간 +${enLv(k)} 적용</span>`:'';
 function gainBoxXp(){if(S.boxLv>=10)return;S.boxXp++;if(S.boxXp>=xpNeed()){S.boxXp=0;S.boxLv++;
   if(S.boxLv===5)queue(()=>scene('성유물 상자 Lv.5','단골 대접',['m:피트|단골 대접이야. 이번 물건은 진짜 진품이라고. …이번엔 진짜.','k@flustered:지난번엔 가짜였어요?','m:피트|자, 자! 영웅 등급이 더 잘 나오게 해 놨어!'],'…믿어 볼게요'));
   else if(S.boxLv===10)queue(()=>scene('성유물 상자 Lv.10','왕국 최고의 상인',['m:피트|형씨 덕분에 내가 왕국 최고의 상인이 됐어. 이제 내 상자엔 신화 등급도 들어 있다고!','q@proud:…저 상인, 처음부터 주인의 재능을 알아본 거로군.','m:피트|아니, 난 돈 냄새를 맡았지.'],'그럴 줄 알았어요'));
@@ -747,11 +749,11 @@ const relicTier=g=>g<2?1:g<4?2:3,relicSrc=it=>it&&RELIC_T.includes(relicTier(it.
 function relicIcon(it){const src=relicSrc(it);return src?`<span class="relicic"><img class="fr" src="assets/ui/frame_${FRAMES[it.g]}.png" alt="" onerror="this.remove()"><img class="ri" src="${src}" alt="" onerror="this.replaceWith(document.createRange().createContextualFragment(svg('${it.slot}')))"></span>`:svg(it.slot)}
 function card(it,cap){
  if(!it)return`<div class="card"><span class="cap">${cap}</span><span class="relicic" style="opacity:.45"><img class="fr" src="assets/ui/frame_normal.png" alt="" onerror="this.remove()"></span><span class="t" style="color:var(--muted)">비어 있음</span><span class="s">빈 칸</span></div>`;
- const G=GRADES[it.g];return`<div class="card" style="--c:${G.c}"><span class="cap">${cap}</span>${relicIcon(it)}<span class="g">${G.n}</span><span class="t">${slotName(it.slot)} Lv.${it.lv}</span><span class="s">${statLine(it)}</span></div>`
+ const G=GRADES[it.g];return`<div class="card" style="--c:${G.c}"><span class="cap">${cap}</span>${relicIcon(it)}<span class="g">${G.n}</span><span class="t">${slotName(it.slot)} Lv.${it.lv}</span><span class="s">${statLine(it)}</span>${enTag(it.slot)}</div>`
 }
 const LUMQ=['흥, 내 격에는 한참 못 미친다.','그럭저럭… 봐줄 만하군.','오호, 제법이다!','이건 왕의 물건이다. 당장 걸쳐라!','300년 만에 보는 물건이군…!','신화… 주인, 이건 운명이다.'];
 function showItem(it,cur){
- const d=score(it)-score(cur);
+ const d=(score(it)-score(cur))*enMul(it.slot);
  $('sheet').innerHTML=`<h2>성유물을 얻었어요</h2><div class="cmp">${card(it,'새 장비')}${card(cur,'착용 중')}</div>
  <div class="diff ${d>0?'up':d<0?'down':''}">전투력 ${d>=0?'▲':'▼'} ${fmt(Math.abs(d))}</div>${para('q@'+(it.g<1?'angry':it.g>=4?'moved':'proud')+':'+LUMQ[it.g])}
  <div class="acts"><button id="mSell">판매 +${fmt(it.price)}</button><button class="pri" id="mEq">장착</button></div>`;
@@ -899,7 +901,7 @@ function renderSlots(){
  const L=['weapon','armor','gloves'],R=['helm','boots','ring'];
  $('slotsL').innerHTML=L.map(k=>slotHtml(SLOTS.find(x=>x.k===k))).join('');
  $('slotsR').innerHTML=R.map(k=>slotHtml(SLOTS.find(x=>x.k===k))).join('');
- SLOTS.forEach(s=>$('sl-'+s.k).onclick=()=>{const it=S.eq[s.k];toast(it?GRADES[it.g].n+' '+s.n+' · '+statLine(it):s.n+' 칸이 비어 있어요. 상자를 열어 보세요')});
+ SLOTS.forEach(s=>$('sl-'+s.k).onclick=()=>{const it=S.eq[s.k];toast(it?GRADES[it.g].n+' '+s.n+(enLv(s.k)?' +'+enLv(s.k):'')+' · '+statLine(it):s.n+' 칸이 비어 있어요. 상자를 열어 보세요')});
  const k=kStats();$('eqStats').innerHTML=`<span>공격력 <b>${fmt(k.atk)}</b></span><span>체력 <b>${fmt(k.hp)}</b></span><span>공격 속도 <b>${k.aps.toFixed(2)}</b></span><span>치명타 <b>${Math.round(k.crit*100)}%</b></span>`;
  drawEqHero();
 }
