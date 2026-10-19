@@ -539,16 +539,17 @@ const JSLOT=['miner','kael','fisher','keeper','cook'],STORY={miner:'bron',fisher
 const RECRUITS={
  luka:{job:'cook',title:'제빵사 루카',lines:['m:루카|저, 저기… 카엘 씨 밭의 밀로 빵을 구워 보고 싶어서 따라왔어요.','k@surprised:내 밀로? …은퇴하면 빵집 옆에 밭 하나 더 일궈야겠네.','q@proud:흥, 또 식객이 늘었군. 뭐, 빵 냄새는 나쁘지 않다.','sys:원정대 탭의 요리사 자리에서 마고 대신 출전시킬 수 있어요.'],ok:'잘 부탁해, 루카'},
  daisy:{job:'keeper',title:'정원사 데이지',lines:['m:데이지|안녕! 리엘 언니 벌들이 우리 꽃밭에 놀러 오거든. 그래서 따라와 봤어!','m:리엘|이 아이 꽃밭 꿀이 제일 달아. 400년 동안 먹어 본 것 중에.','k@smile:꽃밭이라… 은퇴하면 우리 밭 옆에도 좀 심어 줄래?','sys:원정대 탭의 양봉가 자리에서 리엘 대신 출전시킬 수 있어요.'],ok:'환영해, 데이지'},
- brida:{job:'miner',title:'전설의 대장장이 여왕 브리다',lines:['협곡이 울렸다. 바위 문이 열리고, 은빛 수염을 땋은 늙은 드워프가 모루 망치를 끌며 걸어 나왔다.','m:브리다|브론! 이 할미를 두고 원정을 떠나? 망치질 삼백 년, 아직 손목은 멀쩡하다.','m:브론|…할머니. 갱도에 계시라고 했잖아요.','q@moved:브리다 여왕… 내가 첫 주인을 모시던 시절에 이미 전설이었지.','k@surprised:성검이 존댓말 쓰는 거 처음 봐.','sys:전설 등급 동료! 원정대 탭의 광부 자리에서 출전시킬 수 있어요.','sys:마을 스킬 「여왕의 대장간」: 광산 광석 생산 +50%, 모든 건물 공사 시간 -12%, 대장간 광석 비용 -8%. 출전하지 않아도 늘 적용되고 별이 오를수록 강해져요.'],ok:'모시겠습니다, 여왕님'},
+ brida:{job:'miner',title:'전설의 대장장이 여왕 브리다',lines:['협곡이 울렸다. 바위 문이 열리고, 은빛 수염을 땋은 늙은 드워프가 모루 망치를 끌며 걸어 나왔다.','m:브리다|브론! 이 할미를 두고 원정을 떠나? 망치질 삼백 년, 아직 손목은 멀쩡하다.','m:브론|…할머니. 갱도에 계시라고 했잖아요.','q@moved:브리다 여왕… 내가 첫 주인을 모시던 시절에 이미 전설이었지.','k@surprised:성검이 존댓말 쓰는 거 처음 봐.','sys:전설 등급 동료! 원정대 탭의 광부 자리에서 출전시킬 수 있어요.','sys:마을 스킬 「여왕의 대장간」: 광산 광석 생산 +50%. 출전하지 않아도 늘 적용되고, 별이 오를수록 강해져요(★5에서 +100%).'],ok:'모시겠습니다, 여왕님'},
  nella:{job:'fisher',title:'그물 어부 넬라',lines:['m:넬라|하랄 할배! 또 혼자 허풍 떨면서 다니지? 이번엔 나도 같이 간다!','m:하랄@laugh|허허, 이 녀석 그물 솜씨는 나보다 낫지. 고래만 빼고.','k@flustered:…원정대가 점점 마을 잔치가 되어 가네.','sys:원정대 탭의 어부 자리에서 하랄 대신 출전시킬 수 있어요.'],ok:'잘 부탁해, 넬라'}},STAR_NEED=[30,20,40,80,150],STAR_MUL=[1,1,1.2,1.4,1.6,2];
 /* 동료 등급: 이야기 동료는 일반(★3까지), 모집 동료는 희귀 이상 */
 const GRADE={bron:'common',haral:'common',riel:'common',margo:'common',luka:'epic',nella:'epic',brida:'legend',daisy:'rare'};
 const GR={common:{n:'일반',c:'#b8c0cc',max:3,mul:1,w:55,need:[0,15,30],fr:'normal'},rare:{n:'희귀',c:'#5aa8ff',max:4,mul:1.1,w:30,need:[30,20,40,80],fr:'rare'},epic:{n:'영웅',c:'#b07bff',max:5,mul:1.2,w:12,need:[30,30,60,120,200],fr:'epic'},legend:{n:'전설',c:'#ffc23a',max:5,mul:1.35,w:3,need:[30,40,80,160,300],fr:'legendary'}};
 /* 전설 동료의 마을 스킬: 합류만 하면(출전하지 않아도) 늘 적용, 별이 오를수록 강해짐 */
-const VPAS={brida:{n:'여왕의 대장간',d:st=>'광산 광석 생산 +'+(40+st*10)+'% · 모든 건물 공사 시간 -'+(10+st*2)+'% · 대장간 광석 비용 -'+(5+st*3)+'%'}};
+const VPAS={brida:{n:'여왕의 대장간',d:st=>'광산 광석 생산 +'+vpPct(st)+'%'}};
+const vpPct=st=>Math.round(50+(st-1)*12.5);
 const vpBox=id=>VPAS[id]?`<div class="skl vpas"><img src="assets/ui/bld_mine.png" alt="" onerror="this.remove()"><div><b>마을 스킬 · ${VPAS[id].n}</b><span>${VPAS[id].d(Math.max(1,recStar(id)))}${owned(id)?' · 출전하지 않아도 늘 적용':' · 합류하면 적용'}</span></div></div>`:'';
 const vpSt=id=>VPAS[id]&&owned(id)?recStar(id):0;
-const vpMine=()=>vpSt('brida')?1+(40+vpSt('brida')*10)/100:1,vpTime=()=>vpSt('brida')?1-(10+vpSt('brida')*2)/100:1,vpOre=()=>vpSt('brida')?1-(5+vpSt('brida')*3)/100:1;
+const vpMine=()=>vpSt('brida')?1+vpPct(vpSt('brida'))/100:1,vpTime=()=>1,vpOre=()=>1;
 const gr=id=>GR[GRADE[id]||'common'],CARDIDS=()=>[...Object.values(STORY),...Object.keys(RECRUITS)];
 const isRec=id=>id in RECRUITS,recStar=id=>isRec(id)?((S.rec&&S.rec[id])||0):(S.joined[id]?Math.max(1,(S.rec&&S.rec[id])||0):0);
 const starNeed=id=>gr(id).need[recStar(id)],starMax=id=>gr(id).max;
