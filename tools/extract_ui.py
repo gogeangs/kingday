@@ -52,3 +52,30 @@ for i, (name, keep, size) in PLAN.items():
         out = sq.resize((size, size), Image.LANCZOS)
     out.save(f"assets/ui/{name}.png", optimize=True)
     print(name, out.size)
+
+
+# ---------- 전투 UI (ChatGPT가 잘라 준 개별 PNG를 규격 크기로 다듬기) ----------
+BATTLE = {"ui_gold": 256, "ui_boss_mark": 256, "buff_atk": 256, "buff_spd": 256, "buff_gold": 256, "banner_capture": (1024, 256)}
+
+
+def tidy(name, size):
+    img = np.array(Image.open(f"art/source/{name}.png").convert("RGBA"))
+    a = img[..., 3]
+    img[..., 3] = np.where(a < 24, 0, a)
+    lab, n = ndimage.label(ndimage.binary_dilation(img[..., 3] > 0, iterations=4))
+    if n > 1:  # 가장 큰 덩어리만 남김 (옆 그림에서 넘어온 조각 제거)
+        big = 1 + int(np.argmax(ndimage.sum(np.ones_like(lab), lab, range(1, n + 1))))
+        img[..., 3] = np.where(lab == big, img[..., 3], 0)
+    ys, xs = np.nonzero(img[..., 3])
+    pic = Image.fromarray(img[ys.min(): ys.max() + 1, xs.min(): xs.max() + 1])
+    W, H = (size, size) if isinstance(size, int) else size
+    k = min((W - 8) / pic.width, (H - 8) / pic.height)
+    pic = pic.resize((round(pic.width * k), round(pic.height * k)), Image.LANCZOS)
+    out = Image.new("RGBA", (W, H), (0, 0, 0, 0))
+    out.alpha_composite(pic, ((W - pic.width) // 2, (H - pic.height) // 2))
+    out.save(f"assets/ui/{name}.png", optimize=True)
+    print(name, out.size)
+
+
+for k, v in BATTLE.items():
+    tidy(k, v)

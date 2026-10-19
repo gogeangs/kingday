@@ -31,6 +31,7 @@ body{background:#0a0d16;color:var(--fg);font-family:var(--f-body);padding:0;
 .pow{font-size:13px;color:var(--gold);font-variant-numeric:tabular-nums;display:flex;align-items:center;gap:4px}
 .pow::before{content:"⚔";font-size:12px}
 .goldpill{display:flex;align-items:center;gap:6px;background:#0b0f1a;border:1px solid #3a4568;border-radius:999px;padding:5px 12px 5px 6px;font-family:var(--f-display);font-weight:700;font-size:16px;font-variant-numeric:tabular-nums;flex:0 0 auto}
+.coinimg{width:26px;height:26px;margin:-4px -2px -4px -4px}
 .coin{width:20px;height:20px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#fff3c4,var(--gold) 55%,#c98a10);box-shadow:inset 0 -2px 0 #a8700a}
 .stagewrap{position:relative;flex:1;min-height:0;overflow:hidden}
 canvas{display:block;width:100%;height:100%}
@@ -41,11 +42,13 @@ canvas{display:block;width:100%;height:100%}
 .pips{display:flex;gap:3px;align-items:center}
 .pip{width:12px;height:5px;border-radius:3px;background:rgba(255,255,255,.18)}
 .pip.on{background:var(--gold)}
-.pip.boss{width:18px;height:18px;border-radius:50%;background:#3a1420;border:2px solid var(--bad);display:grid;place-items:center;font-size:10px;line-height:1;margin-left:3px}
-.pip.boss::after{content:"👿";font-size:10px;filter:grayscale(.2)}
+.pip.boss{width:22px;height:22px;border-radius:50%;background:#3a1420;border:2px solid var(--bad);display:grid;place-items:center;font-size:10px;line-height:1;margin-left:3px}
+.pip.boss::after{content:"";width:22px;height:22px;background:url(assets/ui/ui_boss_mark.png) center/contain no-repeat}
+.pip.boss{overflow:visible}
 .pip.boss.on{background:var(--bad);box-shadow:0 0 10px var(--bad)}
 .buffs{position:absolute;left:10px;top:128px;display:flex;flex-direction:column;gap:4px;pointer-events:none}
-.buff{font-size:11px;background:rgba(0,0,0,.55);border:1px solid rgba(255,201,74,.6);color:var(--gold);border-radius:999px;padding:2px 8px;font-variant-numeric:tabular-nums}
+.buff{font-size:11px;background:rgba(0,0,0,.55);border:1px solid rgba(255,201,74,.6);color:var(--gold);border-radius:999px;padding:2px 8px 2px 2px;font-variant-numeric:tabular-nums;display:flex;align-items:center;gap:4px}
+.buff img{width:26px;height:26px;margin:-4px 0}
 .bossbar{position:absolute;left:50%;transform:translateX(-50%);top:90px;width:min(300px,80%);background:rgba(10,14,26,.8);border:1px solid rgba(255,107,125,.6);border-radius:10px;padding:5px 9px;font-size:12px;display:flex;align-items:center;gap:8px}
 .bossbar #bossName{max-width:46%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:600}
 .bossbar .track{flex:1;height:6px;background:rgba(255,255,255,.15);border-radius:3px;overflow:hidden}
@@ -174,7 +177,7 @@ button:focus-visible,input:focus-visible{outline:2px solid var(--gold);outline-o
   <header class="hud">
     <button class="face" id="faceBtn" aria-label="원정대 보기"><canvas id="faceCv"></canvas></button>
     <div class="who"><span class="nm">카엘 <span class="rank" id="hRank">농부</span></span><span class="pow" id="hPow">0</span></div>
-    <div class="goldpill"><i class="coin" aria-hidden="true"></i><span id="gold">0</span></div>
+    <div class="goldpill"><img class="coinimg" src="assets/ui/ui_gold.png" alt="" onerror="this.outerHTML='<i class=&quot;coin&quot;></i>'"><span id="gold">0</span></div>
   </header>
 
   <div class="stagewrap" id="wrap">
@@ -578,7 +581,7 @@ function renderAll(){
  renderParty();renderBlds();renderFarm();renderKitchen();renderRetire();renderMapInfo();
  const boss=mons.some(m=>m.boss);
  $('pips').innerHTML=Array.from({length:10},(_,i)=>`<i class="pip${i<S.wave?' on':''}"></i>`).join('')+`<i class="pip boss${boss?' on':''}" aria-label="보스"></i>`;
- const now=Date.now();$('buffs').innerHTML=Object.keys(BUFFN).filter(buff).map(b=>`<span class="buff">${BUFFN[b]} ${mmss((S.buffs[b]-now)/1000)}</span>`).join('');
+ const now=Date.now();$('buffs').innerHTML=Object.keys(BUFFN).filter(buff).map(b=>`<span class="buff"><img src="assets/ui/buff_${b}.png" alt="" onerror="this.remove()">${BUFFN[b]} ${mmss((S.buffs[b]-now)/1000)}</span>`).join('');
  const ready=S.bld.farm&&S.plots.some(p=>plotState(p).st==='ready');
  $('vlDot').hidden=!ready;
 }
@@ -808,6 +811,7 @@ const SPRITES={kael:{idle:4,walk:6,attack:4,hit:2,h:70},bron:{idle:4,walk:6,atta
 const SPR_FRAME=256,SPR_FOOT=250,SPR_FIG=171; // SPR_FIG: 프레임 안에서 카엘의 키(px) → 코드 그림 키 66과 맞춤
 const SPR={};
 /* 전투 효과: assets/fx/fx_<이름>.png, 256 칸(작살은 512x256)을 가로로 이은 시트. 없으면 코드 효과 */
+const BANNER=new Image();BANNER.onload=()=>{BANNER.ok=true};
 const FXDEF={hit:4,crit:5,bees:4,heal:5,coin:4,harpoon:1,soup:1},FXI={};let fxs=[];
 function loadFx(){for(const k in FXDEF){const im=new Image();im.onload=()=>{im.ok=true;im.cw=im.width/FXDEF[k]};im.src='assets/fx/fx_'+k+'.png';FXI[k]=im}}
 const fxOk=k=>FXI[k]&&FXI[k].ok;
@@ -883,10 +887,11 @@ function draw(){
  ctx.textAlign='center';floats.forEach(f=>{ctx.globalAlpha=1-f.t/.9;ctx.font=`700 ${f.size*Math.max(.9,s)}px Hahmlet, serif`;ctx.lineWidth=3.5;ctx.strokeStyle='rgba(0,0,0,.65)';ctx.strokeText(f.txt,f.x,f.y);ctx.fillStyle=f.col;ctx.fillText(f.txt,f.x,f.y)});ctx.globalAlpha=1;
  drawQuip(pos,s,py.kael??L.top);
  if(banner){const k=Math.min(1,(2-banner.t)*5,banner.t*2.5),cy=Ht*.36;ctx.globalAlpha=k;
-  const g=ctx.createLinearGradient(0,0,W,0);g.addColorStop(0,'rgba(20,14,4,0)');g.addColorStop(.2,'rgba(20,14,4,.85)');g.addColorStop(.8,'rgba(20,14,4,.85)');g.addColorStop(1,'rgba(20,14,4,0)');ctx.fillStyle=g;ctx.fillRect(0,cy-34,W,64);
-  ctx.fillStyle='#ffc94a';ctx.fillRect(W*.15,cy-34,W*.7,2);ctx.fillRect(W*.15,cy+28,W*.7,2);
-  ctx.textAlign='center';ctx.font=`700 ${26*Math.min(1.3,s)}px Hahmlet, serif`;ctx.lineWidth=5;ctx.strokeStyle='#3a2600';ctx.strokeText(banner.txt,W/2,cy+4);ctx.fillStyle='#ffe08a';ctx.fillText(banner.txt,W/2,cy+4);
-  ctx.font=`600 12px "IBM Plex Sans KR",sans-serif`;ctx.fillStyle='#f4ead0';ctx.fillText(banner.sub,W/2,cy+21);ctx.globalAlpha=1}
+  if(BANNER.ok){const bw=Math.min(W*.98,460),bh=bw/4,sc=.85+.15*Math.min(1,(2-banner.t)*6);ctx.save();ctx.translate(W/2,cy);ctx.scale(sc,sc);ctx.drawImage(BANNER,-bw/2,-bh*.55,bw,bh);ctx.restore()}
+  else{const g=ctx.createLinearGradient(0,0,W,0);g.addColorStop(0,'rgba(20,14,4,0)');g.addColorStop(.2,'rgba(20,14,4,.85)');g.addColorStop(.8,'rgba(20,14,4,.85)');g.addColorStop(1,'rgba(20,14,4,0)');ctx.fillStyle=g;ctx.fillRect(0,cy-34,W,64);
+  ctx.fillStyle='#ffc94a';ctx.fillRect(W*.15,cy-34,W*.7,2);ctx.fillRect(W*.15,cy+28,W*.7,2)}
+  const bf=BANNER.ok?Math.min(W*.98,460)*.052:26*Math.min(1.3,s),ty=BANNER.ok?cy+bf*.1:cy+4;ctx.textAlign='center';ctx.font=`700 ${bf}px Hahmlet, serif`;ctx.lineWidth=4;ctx.strokeStyle='#3a1200';ctx.strokeText(banner.txt,W/2,ty,W*.42);ctx.fillStyle='#ffe08a';ctx.fillText(banner.txt,W/2,ty,W*.42);
+  ctx.font=`600 12px "IBM Plex Sans KR",sans-serif`;ctx.lineWidth=3;ctx.strokeStyle='rgba(0,0,0,.7)';const sy=BANNER.ok?cy+Math.min(W*.98,460)/4*.62:cy+21;ctx.strokeText(banner.sub,W/2,sy);ctx.fillStyle='#f4ead0';ctx.fillText(banner.sub,W/2,sy);ctx.globalAlpha=1}
 }
 function portrait(id){
  const c=$('pf-'+id);if(!c)return;const d=Math.min(2,window.devicePixelRatio||1),w=56,h=68;c.width=w*d;c.height=h*d;const pc=c.getContext('2d');pc.setTransform(d,0,0,d,0,0);
@@ -964,7 +969,7 @@ function loop(ts){const dt=Math.min(.1,(ts-(last||ts))/1000);last=ts;step(dt*(S.
  draw();if(curTab==='vl')drawVillage();if(curTab==='mp')drawMap();
  requestAnimationFrame(loop)}
 function start(data){
- loadSprites();loadMonSprites();loadBgs();loadFx();
+ loadSprites();loadMonSprites();loadBgs();loadFx();BANNER.src='assets/ui/banner_capture.png';
  S=(data&&typeof data.gold==='number')?hydrate(data):(load()||hydrate({gold:60}));
  $('autoSell').checked=S.autoSell;$('autoOpen').checked=S.autoOpen;
  const isNew=!S.started;S.started=true;S.v=3;syncParty();resize();produce();renderSpeed();
