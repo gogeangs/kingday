@@ -69,6 +69,9 @@ body{word-break:keep-all;overflow-wrap:break-word;line-break:strict;background:#
 .ccard{display:flex;gap:10px;align-items:center;background:var(--panel2);border:1px solid rgba(201,164,255,.35);border-radius:14px;padding:10px;margin-top:8px}.ccard.locked{opacity:.6}.ccard:not(.own) .portrait{filter:grayscale(.85) brightness(.75)}.ccard .info{flex:1;min-width:0}.ccard .xp{margin:6px 0 2px}.cbtns{display:flex;flex-direction:column;gap:6px;align-items:stretch}.wish{background:none;border:1px solid var(--line);border-radius:10px;color:var(--muted);font:inherit;font-size:12px;padding:4px 8px;cursor:pointer}.wish.on{color:#ff8fb1;border-color:#ff8fb1}
 .buy.glow{box-shadow:0 0 12px rgba(255,210,60,.8)}
 .cpk{display:flex;align-items:center;justify-content:center;height:64px;font-size:40px;color:#c9a4ff}.cpk b{font-size:16px;margin-left:2px}.gobloot .glc{width:36px;height:36px;border-radius:8px}
+.rtbox{border-radius:12px;padding:10px 12px;margin:8px 0;background:var(--panel2);font-size:13px}.rtbox .rth{font-weight:700;margin-bottom:6px}.rtbox ul{list-style:none;margin:0;padding:0}.rtbox li{display:flex;justify-content:space-between;gap:10px;padding:3px 0;border-top:1px solid rgba(255,255,255,.06)}.rtbox li:first-child{border-top:0}.rtbox li span{color:var(--muted);flex:0 0 auto}.rtbox li b{text-align:right;font-weight:600}.rtbox p{margin:0;line-height:1.5}
+.rtbox.lose{border:1px solid rgba(255,138,122,.5)}.rtbox.lose .rth{color:#ff8a7a}.rtbox.keep .rth{color:#9be3c0}.rtbox.gain{border:1px solid rgba(255,210,60,.5)}.rtbox.gain .rth,.rtbox.gain b{color:#ffd34a}
+.acts .pri.danger{background:linear-gradient(#ff7a6a,#c94a3a);color:#fff}
 .rareloot{display:flex;justify-content:center;margin:6px 0 10px}.rareloot img{width:132px;height:132px;filter:drop-shadow(0 0 14px rgba(255,210,60,.8));animation:rarepop .6s ease-out}
 @keyframes rarepop{0%{transform:scale(.3) rotate(-20deg);opacity:0}70%{transform:scale(1.12)}100%{transform:scale(1)}}
 .pfc.rare:not(.lock){box-shadow:0 0 10px rgba(255,210,60,.55)}
@@ -944,8 +947,22 @@ function renderRetire(){
   <div class="meter"><div class="kv"><span>은퇴 자금</span><b>${fmt(S.gold)} / ${fmt(t)}</b></div><div class="xp"><div style="width:${pct.toFixed(1)}%"></div></div></div>
   <p class="note">영지를 되찾을수록 목표 금액이 올라가요. 카엘은 아직 이 사실을 몰라요.</p>
   <button class="buy" id="retireBtn" ${can?'':'disabled'}>${can?'은퇴하기 · 추억 +'+pts:'영지 19곳을 되찾으면 은퇴할 수 있어요'}</button>`;
- $('retireBtn').onclick=()=>{if(S.stage<20)return;const p=retirePts();queue(()=>scene('은퇴하기','드디어 은퇴?',['k@smile:좋아, 이 정도면 충분해. 난 밭으로 돌아간다.','q@angry:주인! 아직 왕좌가…!','sys:되찾은 영지, 골드, 장비, 단련, 동료 레벨이 처음으로 돌아가요. 마을 건물, 밭, 동료 합류, 상자 레벨은 유지돼요. 은퇴의 추억 '+p+'개를 얻어 모든 능력치와 골드 획득이 영구히 '+(p*5)+'% 늘어나요.'],'은퇴한다',{label:'아직은 아니야',go:()=>retire(p)}))};
+ $('retireBtn').onclick=()=>{if(S.stage<20)return;const p=retirePts();queue(()=>scene('은퇴하기','드디어 은퇴?',['k@smile:좋아, 이 정도면 충분해. 난 밭으로 돌아간다.','q@angry:주인! 아직 왕좌가…!'],'은퇴 준비하기',{label:'아직은 아니야',go:()=>retireConfirm(p)}))};
 }
+function retireConfirm(p){const eqN=Object.values(S.eq).filter(Boolean).length,up=Object.values(S.up).reduce((a,b)=>a+b,0),cl=Object.entries(S.lv).filter(([id,l])=>owned(id)&&l>1).map(([id,l])=>COMP[id].n+' Lv.'+l);
+ const li=(a,b)=>`<li><span>${a}</span><b>${b}</b></li>`;
+ $('sheet').innerHTML=`<div class="eyebrow" style="color:#ff8a7a">은퇴 확인</div><h2>정말 은퇴할까요?</h2>
+ <div class="rtbox lose"><div class="rth">처음으로 돌아가요</div><ul>
+  ${li('되찾은 영지',(Math.min(S.stage,MAXLAND+1)-1)+'곳 → 0곳 (1-1부터)')}
+  ${li('골드',fmt(S.gold)+' → 60')}
+  ${li('착용한 성유물',eqN+'개 → 모두 사라짐')}
+  ${li('단련 능력치',up?'+'+up+'단계 → 0':'없음')}
+  ${li('동료 레벨',cl.length?cl.join(', ')+' → Lv.1':'모두 Lv.1')}
+  ${li('칭호',RANKS[rankIdx()].n+' → 농부')}</ul></div>
+ <div class="rtbox keep"><div class="rth">그대로 남아요</div><p>마을 건물·밭·재료, 동료 합류와 모집 동료의 카드·별, 대장간 강화, 성유물 상자 레벨, 황금 이삭, 프로필 테두리·배지</p></div>
+ <div class="rtbox gain"><div class="rth">얻는 것</div><p>은퇴의 추억 <b>+${p}개</b> → 모든 능력치·골드 획득 <b>+${(S.memory+p)*5}%</b> (지금 +${S.memory*5}%), 영구 적용</p></div>
+ <div class="acts"><button id="mAlt">취소</button><button class="pri danger" id="mGo">은퇴 확정</button></div>`;
+ $('modal').hidden=false;$('mAlt').onclick=closeModal;$('mAlt').focus();$('mGo').onclick=()=>{closeModal();retire(p)}}
 function retire(p){
  S.memory+=p;S.retires++;S.gold=60;S.stage=1;S.wave=0;S.eq={};S.up={atk:0,hp:0,spd:0,crit:0};for(const k in S.lv)S.lv[k]=1;S.rankSeen=0;
  for(const id in P)delete P[id];mons=[];$('bossbar').hidden=true;syncParty();
