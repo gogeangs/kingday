@@ -14,8 +14,14 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="왕이 되는 그날">
 <meta name="claude:viewport-fit-sides" content="cover">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Hahmlet:wght@500;700&family=IBM+Plex+Sans+KR:wght@400;600&display=swap">
+<link rel="preload" href="assets/fonts/plexkr-400.woff2" as="font" type="font/woff2" crossorigin>
+<style>
+/* 글꼴은 게임 안에 들어 있음 (오프라인용, 게임에 쓰는 한글 2,350자로 줄임) */
+@font-face{font-family:"Hahmlet";font-weight:500;font-display:swap;src:url(assets/fonts/hahmlet-500.woff2) format("woff2")}
+@font-face{font-family:"Hahmlet";font-weight:700;font-display:swap;src:url(assets/fonts/hahmlet-700.woff2) format("woff2")}
+@font-face{font-family:"IBM Plex Sans KR";font-weight:400;font-display:swap;src:url(assets/fonts/plexkr-400.woff2) format("woff2")}
+@font-face{font-family:"IBM Plex Sans KR";font-weight:600;font-display:swap;src:url(assets/fonts/plexkr-600.woff2) format("woff2")}
+</style>
 <style>
 /* Layout: 한 화면 세로형 — 위 원정대 전투 캔버스, 가운데 요약, 아래 장비/원정대/단련/마을/지도 탭. 밤하늘 남색 위에 성검 금색 하나만 강조 */
 :root{
@@ -1552,7 +1558,9 @@ function loop(ts){const dt=Math.min(.1,(ts-(last||ts))/1000);last=ts;step(dt*(S.
  draw();if(curTab==='vl')drawVillage();if(curTab==='mp')drawMap();
  requestAnimationFrame(loop)}
 function start(data){
- loadSprites();loadMonSprites();loadBgs();loadFx();BANNER.src='assets/ui/banner_capture.png';
+ loadSprites();loadMonSprites();loadBgs();loadFx();
+ /* 오프라인 실행: GitHub Pages·로컬에서만 서비스 워커 등록 */
+ if('serviceWorker'in navigator&&/github\.io$|^localhost$|^127\./.test(location.hostname)){try{navigator.serviceWorker.register('sw.js').then(reg=>{reg.addEventListener('updatefound',()=>{const w=reg.installing;if(w&&navigator.serviceWorker.controller)w.addEventListener('statechange',()=>{if(w.state==='activated')toast('새 버전을 받았어요. 게임을 다시 열면 적용돼요')})})}).catch(()=>{})}catch(e){}}BANNER.src='assets/ui/banner_capture.png';
  S=(data&&typeof data.gold==='number')?hydrate(data):(load()||hydrate({gold:60}));
  $('autoSell').checked=S.autoSell;$('autoOpen').checked=S.autoOpen;
  const isNew=!S.started;S.started=true;S.v=3;syncParty();resize();produce();renderSpeed();
