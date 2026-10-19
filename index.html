@@ -618,7 +618,7 @@ function syncParty(){for(const id of members()){if(!P[id])P[id]={hp:stats(id).hp
 const FORM={kael:[.47,.42],bron:[.52,.80],haral:[.30,.95],riel:[.20,.36],margo:[.25,.64]};
 function layout(){const ids=members(),s=Math.min(W/300,Ht/380),top=Ht*.46,bot=Math.max(top+60,Ht-118),pos={},py={},dsc={};
  const solo=ids.length===1;
- ids.forEach(id=>{const f=solo?[.42,.55]:FORM[id];pos[id]=W*f[0];py[id]=top+(bot-top)*f[1];dsc[id]=.88+.24*f[1]});
+ ids.forEach(id=>{const f=solo?[.42,.55]:FORM[id];pos[id]=W*f[0];py[id]=top+(bot-top)*f[1];dsc[id]=.9+.14*f[1]});
  const front=Math.max(...ids.map(id=>pos[id]));return{ids,pos,py,dsc,front,s,top,bot}}
 const depthAt=(L,lane)=>L.top+(L.bot-L.top)*lane;
 function spawn(){
@@ -780,7 +780,7 @@ const DRAW={kael:drawKael,bron:drawBron,haral:drawHaral,riel:drawRiel,margo:draw
 /* ---------- 이미지 에셋 ----------
    assets/characters/<id>_<동작>.png : 256x256 프레임을 가로로 이은 시트, 발끝 y=250, 머리 중심 x=128.
    이미지가 없거나 아직 안 불러졌으면 위의 코드 그림(DRAW)을 그대로 씁니다. 전투 로직은 이미지와 무관합니다. */
-const SPRITES={kael:{idle:4,walk:6,attack:4,hit:2,h:70},bron:{idle:4,walk:6,attack:4,hit:2,h:74}};
+const SPRITES={kael:{idle:4,walk:6,attack:4,hit:2,h:70},bron:{idle:4,walk:6,attack:4,hit:2,h:74},haral:{idle:4,walk:6,attack:4,hit:2,h:72}};
 const SPR_FRAME=256,SPR_FOOT=250,SPR_FIG=171; // SPR_FIG: 프레임 안에서 카엘의 키(px) → 코드 그림 키 66과 맞춤
 const SPR={};
 function loadSprites(){for(const id in SPRITES){SPR[id]={};for(const a of['idle','walk','attack','hit']){const im=new Image();
@@ -831,7 +831,7 @@ function draw(){
  if(!W)return;ctx=mainCtx;const r=region(S.stage),L=layout(),{ids,pos,py,dsc,s}=L;
  drawBg(r,L);
  const ents=ids.map(id=>({y:py[id],f:()=>drawMember(id,pos[id],py[id],s*dsc[id],P[id],!engaged)}));
- for(const m of mons){const y=m.y??depthAt(L,m.lane??.5);ents.push({y,f:()=>drawMon(r,y,s*(.88+.24*(m.lane??.5)),m)})}
+ for(const m of mons){const y=m.y??depthAt(L,m.lane??.5);ents.push({y,f:()=>drawMon(r,y,s*(.9+.14*(m.lane??.5)),m)})}
  ents.sort((a,b)=>a.y-b.y).forEach(e=>e.f());
  for(const p of proj)drawProj(p,s);
  ctx.textAlign='center';floats.forEach(f=>{ctx.globalAlpha=1-f.t/.9;ctx.font=`700 ${f.size*Math.max(.9,s)}px Hahmlet, serif`;ctx.lineWidth=3.5;ctx.strokeStyle='rgba(0,0,0,.65)';ctx.strokeText(f.txt,f.x,f.y);ctx.fillStyle=f.col;ctx.fillText(f.txt,f.x,f.y)});ctx.globalAlpha=1;

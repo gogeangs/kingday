@@ -75,9 +75,24 @@ def head_x(alpha, box):
     return x0 + (xs.mean() if len(xs) else (x1 - x0) / 2)
 
 
+def own_mask(loose_lab, box):
+    """이 프레임 상자 안에 중심이 있는 조각만 남기는 마스크 (옆 프레임에서 넘어온 작살 끝 등을 지움)."""
+    x0, y0, x1, y1 = box
+    keep = np.zeros(loose_lab.shape, bool)
+    for lab_id, sl in enumerate(ndimage.find_objects(loose_lab), start=1):
+        if sl is None:
+            continue
+        cy = (sl[0].start + sl[0].stop) / 2
+        cx = (sl[1].start + sl[1].stop) / 2
+        if x0 <= cx <= x1 and y0 <= cy <= y1:
+            keep[sl] |= loose_lab[sl] == lab_id
+    return keep
+
+
 def main(src, cid):
     img = np.array(Image.open(src).convert("RGBA"))
     alpha = img[..., 3]
+    loose_lab, _ = ndimage.label(ndimage.binary_dilation(alpha >= ALPHA_CUT, iterations=2))
     rows = group_rows(blobs(alpha), len(ROWS))
     for (name, n), row in zip(ROWS, rows):
         row = merge_to(row, n)
@@ -86,9 +101,11 @@ def main(src, cid):
         sheet = Image.new("RGBA", (FRAME * n, FRAME), (0, 0, 0, 0))
         for i, (x0, y0, x1, y1) in enumerate(row):
             hx = head_x(alpha, (x0, y0, x1, y1))
+            mine = own_mask(loose_lab, (x0, y0, x1, y1))
             crop = img[max(0, y0 - 6): y1 + 4, max(0, x0 - 6): x1 + 6].copy()
             a = crop[..., 3]
-            crop[..., 3] = np.where(a < ALPHA_CUT, 0, a)
+            m = mine[max(0, y0 - 6): y1 + 4, max(0, x0 - 6): x1 + 6]
+            crop[..., 3] = np.where((a < ALPHA_CUT) | ~m, 0, a)
             pic = Image.fromarray(crop)
             pic = pic.resize((max(1, round(pic.width * SCALE)), max(1, round(pic.height * SCALE))), Image.LANCZOS)
             ox = i * FRAME + round(FRAME / 2 - (hx - max(0, x0 - 6)) * SCALE)
