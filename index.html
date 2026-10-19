@@ -950,7 +950,7 @@ function portrait(id){
 const vc=$('vc'),vctx=vc.getContext('2d');let VW=0,VH=0;
 function resizeV(){const r=vc.getBoundingClientRect(),d=Math.min(2,window.devicePixelRatio||1);if(!r.width)return;VW=r.width;VH=r.height;vc.width=VW*d;vc.height=VH*d;vctx.setTransform(d,0,0,d,0,0)}
 new ResizeObserver(resizeV).observe(vc);
-const VART=['inn','farm','diner'];/* 원본이 들어온 건물. 나머지는 bld_ 아이콘을 흑백으로 */
+const VART=['inn','farm','diner','dock','apiary','mine'];/* 원본이 들어온 건물. 목록에 없으면 bld_ 아이콘을 흑백으로 */
 const VIMG={bg:null,b:{}};(()=>{const bg=new Image();bg.onload=()=>VIMG.bg=bg;bg.src='assets/village/village_bg.jpg';
  for(const b of BLD){const o=VIMG.b[b.k]={};const L=(n,src)=>{const im=new Image();im.onload=()=>o[n]=im;im.src=src};
   if(VART.includes(b.k)){L('ruin','assets/village/'+b.k+'_ruin.png');L('built','assets/village/'+b.k+'_built.png')}else L('icon','assets/ui/bld_'+b.k+'.png')}})();
