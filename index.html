@@ -60,6 +60,7 @@ body{word-break:keep-all;overflow-wrap:break-word;line-break:strict;background:#
 .pfc b{font-size:12px;line-height:1.2;text-align:center;word-break:keep-all}.pfc small{font-size:10.5px;color:var(--muted);line-height:1.2;text-align:center;word-break:keep-all}
 .pfc.on small{color:var(--gold)}
 .pfc.lock .pfr{filter:grayscale(1) brightness(.6)}
+.pfr.tall{top:-15.625%!important;height:115.625%!important}
 .rareloot{display:flex;justify-content:center;margin:6px 0 10px}.rareloot img{width:132px;height:132px;filter:drop-shadow(0 0 14px rgba(255,210,60,.8));animation:rarepop .6s ease-out}
 @keyframes rarepop{0%{transform:scale(.3) rotate(-20deg);opacity:0}70%{transform:scale(1.12)}100%{transform:scale(1)}}
 .pfc.rare:not(.lock){box-shadow:0 0 10px rgba(255,210,60,.55)}
@@ -1496,7 +1497,8 @@ const PFRAMES=[
  {k:'amethyst',n:'자수정 장식',d:'전설 성유물 착용',ok:()=>Object.values(S.eq).some(it=>it&&it.g>=4)},
  {k:'holy',n:'성검의 가호',d:'첫 은퇴',ok:()=>(S.retires||0)>=1},
  {k:'royal',n:'붉은 왕관',d:'칭호 공작',ok:()=>rankIdx()>=5},
- {k:'goblin',n:'황금 고블린',d:'황금 고블린 희귀 전리품',ok:()=>false,rare:1}];
+ {k:'goblin',n:'황금 고블린',d:'황금 고블린 희귀 전리품',ok:()=>false,rare:1,tall:1}];
+const pfTall=k=>(PFRAMES.find(f=>f.k===k)||{}).tall?' tall':'';
 const stat=(k,n)=>{if(!S.stat)S.stat={};S.stat[k]=(S.stat[k]||0)+n},st=k=>(S.stat&&S.stat[k])||0;
 const BADGES=[
  {k:'pumpkin',n:'첫 달빛 호박',d:'달빛 호박 수확',ok:()=>st('pump')>=1},
@@ -1513,11 +1515,11 @@ const pfHas=k=>k==='wood'||!!(S.pfUnl&&S.pfUnl[k]);
 function pfCheck(){if(!S.pfUnl)S.pfUnl={};for(const f of PFRAMES){if(!S.pfUnl[f.k]&&f.ok()){S.pfUnl[f.k]=1;if(f.k!=='wood'&&S.started)toast('새 프로필 테두리 「'+f.n+'」을 얻었어요')}}
  if(!S.bdUnl)S.bdUnl={};for(const b of BADGES){if(!S.bdUnl[b.k]&&b.ok()){S.bdUnl[b.k]=1;if(S.started)toast('새 배지 「'+b.n+'」을 얻었어요')}}
  const hb=$('hBadge');if(hb){const bs=S.badge&&bdHas(S.badge)?'assets/profile/badge_'+S.badge+'.png':'';if(!bs)hb.hidden=true;else{hb.hidden=false;if(!hb.src.endsWith(bs))hb.src=bs}}
- const im=$('hFrame'),src='assets/profile/frame_'+(S.pf||'wood')+'.png';if(im&&!im.src.endsWith(src))im.src=src}
+ const im=$('hFrame'),src='assets/profile/frame_'+(S.pf||'wood')+'.png';if(im&&!im.src.endsWith(src)){im.src=src;im.className='pfr'+pfTall(S.pf||'wood')}}
 function profileSheet(){pfCheck();const cur=S.pf||'wood',ri=rankIdx();
- $('sheet').innerHTML=`<div class="eyebrow">프로필</div><div class="pfhead"><div class="pfbig"><canvas id="pfCv"></canvas><img class="pfr" src="assets/profile/frame_${cur}.png" alt=""></div><div class="pfinfo"><b>카엘${S.badge&&bdHas(S.badge)?`<img class="pfbd" src="assets/profile/badge_${S.badge}.png" alt="">`:''}</b><small>${RANKS[ri].n} · 전투력 ${fmt(power())}</small><small>최고 영지 ${Math.min(S.best,MAXLAND)} · 은퇴 ${S.retires||0}번</small></div></div>
+ $('sheet').innerHTML=`<div class="eyebrow">프로필</div><div class="pfhead"><div class="pfbig"><canvas id="pfCv"></canvas><img class="pfr${pfTall(cur)}" src="assets/profile/frame_${cur}.png" alt=""></div><div class="pfinfo"><b>카엘${S.badge&&bdHas(S.badge)?`<img class="pfbd" src="assets/profile/badge_${S.badge}.png" alt="">`:''}</b><small>${RANKS[ri].n} · 전투력 ${fmt(power())}</small><small>최고 영지 ${Math.min(S.best,MAXLAND)} · 은퇴 ${S.retires||0}번</small></div></div>
  <div class="sec">테두리 <small>${PFRAMES.filter(f=>pfHas(f.k)).length} / ${PFRAMES.length}</small></div>
- <div class="pfgrid">${PFRAMES.map(f=>{const has=pfHas(f.k);return`<button class="pfc${f.k===cur?' on':''}${has?'':' lock'}${f.rare?' rare':''}" data-pf="${f.k}"><span class="pv"><i></i><img class="pfr" src="assets/profile/frame_${f.k}.png" alt=""></span><b>${f.n}</b><small>${f.k===cur?'사용 중':has?'바꾸기':'🔒 '+f.d}</small></button>`}).join('')}</div>
+ <div class="pfgrid">${PFRAMES.map(f=>{const has=pfHas(f.k);return`<button class="pfc${f.k===cur?' on':''}${has?'':' lock'}${f.rare?' rare':''}" data-pf="${f.k}"><span class="pv"><i></i><img class="pfr${pfTall(f.k)}" src="assets/profile/frame_${f.k}.png" alt=""></span><b>${f.n}</b><small>${f.k===cur?'사용 중':has?'바꾸기':'🔒 '+f.d}</small></button>`}).join('')}</div>
  <div class="sec">대표 배지 <small>${BADGES.filter(b=>bdHas(b.k)).length} / ${BADGES.length}</small></div>
  <div class="pfgrid">${BADGES.map(b=>{const has=bdHas(b.k),on=S.badge===b.k;return`<button class="pfc bd${on?' on':''}${has?'':' lock'}${b.rare?' rare':''}" data-bd="${b.k}"><span class="pv"><img class="pfr" src="assets/profile/badge_${b.k}.png" alt=""></span><b>${b.n}</b><small>${on?'다는 중':has?'달기':'🔒 '+b.d}</small></button>`}).join('')}</div>
  <div class="acts"><button id="pfSet">⚙ 설정</button><button class="pri" id="mGo">닫기</button></div>`;
