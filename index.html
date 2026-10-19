@@ -994,7 +994,7 @@ $('autoOpen').onchange=e=>{S.autoOpen=e.target.checked};
 const cv=$('cv'),mainCtx=cv.getContext('2d');let ctx=mainCtx,W=0,Ht=0;
 function resize(){const r=$('wrap').getBoundingClientRect(),d=Math.min(2,window.devicePixelRatio||1);W=r.width;Ht=r.height;cv.width=W*d;cv.height=Ht*d;mainCtx.setTransform(d,0,0,d,0,0)}
 new ResizeObserver(resize).observe($('wrap'));
-let warn=null,shakeT=0,banner=null,P={},mons=[],spawnT=.5,bgX=0,T=0,floats=[],proj=[],bossT=0,engaged=false,quip=null,quipT=6;
+let gobT=150+Math.random()*120,warn=null,shakeT=0,banner=null,P={},mons=[],spawnT=.5,bgX=0,T=0,floats=[],proj=[],bossT=0,engaged=false,quip=null,quipT=6;
 function say(who,txt){quip={who,txt,t:3.2}}
 /* ---------- 특수 스킬 ---------- */
 const SKILLS={
@@ -1054,7 +1054,14 @@ function spawn(){
  const ri=Math.floor((S.stage-1)/10)%5,alt=MON_ALT[ri]&&sprOk(MON_ALT[ri])&&Math.random()<.4?MON_ALT[ri]:null,tr=alt?TRAITS[alt.trait]:null;
  if(tr&&alt.trait==='swarm'&&left>n)n++;
  const mx=monHp(S.stage,false)*(n>1?.75:1)*(tr?tr.hp:1);mons=[];for(let i=0;i<n;i++)mons.push({x:W+60+i*40,lane:[.45,.82,.12,.65][i],hp:mx,max:mx,atk:monAtk(S.stage,false)*(n>1?.8:1)*(tr?tr.atk:1),boss:false,cd:.8+i*.35,hit:0,dead:0,alt:!!alt,mv:tr?tr.mv:1,cdm:tr?tr.cd:1});
+ if(S.stage>=3&&gobT<=0){gobT=360+Math.random()*360;const gh=monHp(S.stage,false)*5;mons.unshift({x:W+30,lane:.3,hp:gh,max:gh,atk:0,boss:false,cd:1e9,hit:0,dead:0,gob:true,mv:1.4,life:12});
+  banner={t:2,txt:'황금 고블린 출현!',sub:'12초 안에 잡으면 보물을 떨군다'};shakeT=.3}
 }
+function gobDrop(m,s){const g=Math.floor(reward(S.stage,false)*30*(buff('gold')?1.5:1)*memMul()),gem=5+Math.floor(Math.random()*6);S.gold+=g;stat('gob',1);
+ spawnFx('coin',m.x,m.y-30*s,70*s,.8,-70*s);addFloat(m.x,m.y-40*s,'+'+fmt(g),'#ffc94a',20);addFloat(m.x,m.y-66*s,'황금 이삭 +'+gem,'#ffe27a',14);
+ const it=rollItem(Math.max(2,rollItem().g));
+ toast('황금 고블린을 잡았어요! 골드 +'+fmt(g));setTimeout(()=>gainGem(gem,'황금 고블린'),900);
+ queue(()=>{if(pending)return;pending=it;showItem(it,S.eq[it.slot]);$('sheet').querySelector('h2').textContent='황금 고블린의 보물'})}
 function addFloat(x,y,txt,col,size){floats.push({x,y,txt,col,size:size||15,t:0})}
 function hitMon(m,d,cr,s,gy){m.hp-=d;m.hit=.12;spawnFx(cr?'crit':'hit',m.x+(Math.random()-.5)*10*s,m.y-(m.boss?50:28)*s,(cr?60:42)*s*(m.boss?1.3:1),cr?.36:.24);addFloat(m.x+(Math.random()-.5)*12*s,(m.barY!=null?m.barY-8*s:m.y-(m.boss?95:60)*s),fmt(d),cr?'#ffc94a':'#ffffff',cr?21:14)}
 function resetFight(msg){SKX.shield=SKX.honey=SKX.feast=0;for(const id of members()){P[id].hp=stats(id).hp;P[id].down=false}mons=[];spawnT=1;S.wave=0;$('bossbar').hidden=true;toast(msg);renderAll()}
@@ -1064,14 +1071,14 @@ function step(dt){
  const L=layout(),{ids,pos,py,front,s}=L,gy=0;syncParty();for(const m of mons)m.y=depthAt(L,m.lane??.5);if(banner){banner.t-=dt;if(banner.t<=0)banner=null}
  if(quip){quip.t-=dt;if(quip.t<=0)quip=null}else{quipT-=dt;if(quipT<=0){quipT=12+Math.random()*10;const q=QUIPS[Math.floor(Math.random()*QUIPS.length)];say(q[0],q[1])}}
  for(const id of ids){const p=P[id];p.swing=Math.max(0,p.swing-dt);p.hit=Math.max(0,p.hit-dt)}
- for(const m of mons){m.hit=Math.max(0,m.hit-dt);m.sw=Math.max(0,(m.sw||0)-dt);if(m.dead>0){m.dead-=dt;if(m.dead<=0)m.gone=true}}
+ gobT-=dt;for(const m of mons){if(m.flee){m.x+=dt*300;if(m.x>W+80)m.gone=true}m.hit=Math.max(0,m.hit-dt);m.sw=Math.max(0,(m.sw||0)-dt);if(m.dead>0){m.dead-=dt;if(m.dead<=0)m.gone=true}}
  mons=mons.filter(m=>!m.gone);
  if(!mons.length){engaged=false;bgX+=dt*90;
   for(const id of ids){const p=P[id],mx=stats(id).hp;if(p.down){p.down=false;p.hp=mx*.3}p.hp=Math.min(mx,p.hp+mx*.04*dt)}
   spawnT-=dt;if(spawnT<=0){spawn();spawnT=.6}}
  else{
-  const alive=mons.filter(m=>m.hp>0&&!m.dead);
-  alive.forEach((m,i)=>{m.tx=m.boss?Math.max(front+60*s,W*.66):Math.max(front+46*s,W*(.66+.1*(i%2))+i*4);if(m.x>m.tx)m.x=Math.max(m.tx,m.x-dt*170*(m.mv||1))});
+  const alive=mons.filter(m=>m.hp>0&&!m.dead&&!m.flee);
+  alive.forEach((m,i)=>{m.tx=m.boss?Math.max(front+60*s,W*.66):Math.max(front+46*s,W*(.66+.1*(i%2))+i*4);if(m.x>m.tx)m.x=Math.max(m.tx,m.x-dt*170*(m.mv||1));else if(m.gob){m.life-=dt;if(m.life<=0){m.flee=true;toast('황금 고블린이 보물을 챙겨 도망쳤어요');say('q','쳇, 놓쳤군… 다음엔 더 빨리 베어라.')}}});
   engaged=alive.length>0&&alive[0].x<=alive[0].tx+1;
   if(!engaged&&alive.length)bgX+=dt*90;
   for(const id of ids){const p=P[id];if(!p.down)p.hp=Math.min(stats(id).hp,p.hp+stats(id).hp*.01*dt)}
@@ -1086,11 +1093,11 @@ function step(dt){
     else if(id==='margo'){hitMon(tgt,d,cr,s,gy);proj.push({x:pos.margo+10*s,y:py.margo-50*s,tx:tgt.x,ty:tgt.y-30*s,t:0,d:.3,kind:'soup'})}
     else hitMon(tgt,d,cr,s,gy)}
    stepSkills(dt,L,alive);
-   for(const m of alive){if(m.hp<=0)continue;m.cd-=dt*(SKX.honey>0?.5:1);if(m.cd>0)continue;m.cd=1.2*(m.cdm||1);m.sw=.4;
+   for(const m of alive){if(m.hp<=0||m.gob)continue;m.cd-=dt*(SKX.honey>0?.5:1);if(m.cd>0)continue;m.cd=1.2*(m.cdm||1);m.sw=.4;
     const tid=(S.joined.bron&&P.bron&&!P.bron.down)?'bron':ids.find(i=>!P[i].down);if(!tid)continue;
     const q=P[tid],dm=m.atk*(SKX.shield>0?.5:1);q.hp-=dm;q.hit=.15;addFloat(pos[tid],py[tid]-(HEIGHT[tid]+8)*s,'-'+fmt(dm),'#ff6b7d',13);if(q.hp<=0){q.hp=0;q.down=true}}
   }
-  for(const m of mons){if(m.hp<=0&&!m.dead){m.dead=.35;spawnFx('coin',m.x,m.y-26*s,34*s,.6,-60*s);const g=reward(S.stage,m.boss)*(buff('gold')?1.5:1)*memMul();S.gold+=g;dailyAdd('kill',1);addFloat(m.x,m.y-30*s,'+'+fmt(g),'#ffc94a',14);
+  for(const m of mons){if(m.hp<=0&&!m.dead&&m.gob&&!m.flee){m.dead=.5;gobDrop(m,s);renderAll();continue}if(m.hp<=0&&!m.dead&&!m.gob){m.dead=.35;spawnFx('coin',m.x,m.y-26*s,34*s,.6,-60*s);const g=reward(S.stage,m.boss)*(buff('gold')?1.5:1)*memMul();S.gold+=g;dailyAdd('kill',1);addFloat(m.x,m.y-30*s,'+'+fmt(g),'#ffc94a',14);
    if(S.bld.farm)for(const c of[...CROPS].reverse())if(Math.random()<c.drop*(m.boss?5:1)){S.seeds[c.k]++;addFloat(m.x,m.y-50*s,c.n+' 씨앗','#9be38a',12);break}
    if(m.boss){const bn=bossName(S.stage),lord=isLord(S.stage),tn=terrName(S.stage);if(lord&&!S.gemLord[S.stage]){S.gemLord[S.stage]=1;setTimeout(()=>gainGem(LORD_GEM,'군단장 첫 처치'),2300)}S.stage++;S.best=Math.max(S.best,S.stage);S.wave=0;$('bossbar').hidden=true;
     toast(bn+' 처치');banner={t:2,txt:tn+' 탈환!',sub:lord?'군단장을 쓰러뜨렸다':'영지를 되찾았다'};say('k',lord?'됐다… 이제 진짜 은퇴해도 되지?':'여기 흙, 다시 살아나겠네.');if((S.stage-1)%10===0)chapter();events()}
@@ -1267,8 +1274,15 @@ const TRAITS={tank:{hp:1.6,atk:.9,mv:.6,cd:1.15,n:'단단함'},swift:{hp:.7,atk:
 const MON_ALT={0:{id:'scarecrow_cursed',walk:4,attack:4,hit:2,fig:150,h:46,trait:'tank'},1:{id:'wolf_shadow',walk:4,attack:4,hit:2,fig:150,h:40,trait:'swift'},2:{id:'goblin_pick',walk:4,attack:4,hit:2,fig:150,h:40,trait:'swarm'},3:{id:'skeleton_frost',walk:4,attack:4,hit:2,fig:150,h:46,trait:'guard'},4:{id:'imp_flame',walk:4,attack:4,hit:2,fig:150,h:40,lift:26,trait:'flier'}};
 const MSPR={};
 function loadMonSprites(){for(const k in MON_SPRITES){for(const d of[MON_SPRITES[k],MON_SPRITES[k].boss,MON_ALT[k]].filter(Boolean)){MSPR[d.id]={};for(const a of['walk','attack','hit']){const im=new Image();im.onload=()=>{im.ok=true};im.src='assets/monsters/'+d.id+'_'+a+'.png';MSPR[d.id][a]=im}}}}
+/* 황금 고블린: 곡괭이 고블린 그림을 금빛으로 물들여 씀 (전용 그림이 오면 goblin_gold_*.png로 교체) */
+const GOB={id:'goblin_gold',walk:4,attack:4,hit:2,fig:150,h:46};
+function gobSprite(){if(sprOk(GOB))return GOB;const src=MSPR.goblin_pick;if(!src||!['walk','attack','hit'].every(a=>src[a]&&src[a].ok))return null;
+ MSPR.goblin_gold={};for(const a of['walk','attack','hit']){const im=src[a],c=document.createElement('canvas');c.width=im.width;c.height=im.height;const x=c.getContext('2d');
+  x.drawImage(im,0,0);x.globalCompositeOperation='color';x.fillStyle='#ffc21a';x.fillRect(0,0,c.width,c.height);x.globalCompositeOperation='destination-in';x.drawImage(im,0,0);
+  x.globalCompositeOperation='overlay';x.globalAlpha=.35;x.fillStyle='#fff3b0';x.fillRect(0,0,c.width,c.height);x.globalCompositeOperation='destination-in';x.globalAlpha=1;x.drawImage(im,0,0);c.ok=true;MSPR.goblin_gold[a]=c}
+ return GOB}
 const sprOk=d=>{const m=d&&MSPR[d.id];return!!m&&['walk','attack','hit'].every(a=>m[a]&&m[a].ok)};
-function monSprite(r,mon){const ri=REGIONS.indexOf(r),d=MON_SPRITES[ri];if(!d)return null;if(mon&&mon.alt){const a=MON_ALT[ri];return a&&sprOk(a)?a:null}
+function monSprite(r,mon){if(mon&&mon.gob)return gobSprite();const ri=REGIONS.indexOf(r),d=MON_SPRITES[ri];if(!d)return null;if(mon&&mon.alt){const a=MON_ALT[ri];return a&&sprOk(a)?a:null}
  if(mon&&mon.lord&&d.boss){return sprOk(d.boss)?Object.assign({lordArt:true},d.boss):null} // 군단장은 전용 그림 (없으면 코드 그림)
  return sprOk(d)?d:null}
 function loadSprites(){for(const id in SPRITES){SPR[id]={};for(const a of['idle','walk','attack','hit']){const im=new Image();
@@ -1302,12 +1316,12 @@ function drawAura(x,y,ss,cmd){const pulse=.75+.25*Math.sin(T*3),w=(cmd?46:38)*ss
  if(cmd){ctx.setLineDash([]);for(let i=0;i<6;i++){const a=i/6*Math.PI*2;ctx.fillStyle=c2+(.9*pulse)+')';ctx.beginPath();ctx.arc(Math.cos(a)*w*.82,Math.sin(a)*w*.82,3*ss/(h/w)*.35,0,Math.PI*2);ctx.fill()}}
  ctx.restore()}
 function drawMon(r,y,s,m){
- const k=m.boss?(m.lord?1.8:1.5):1,x=m.x,ss=s*k,fade=m.dead>0?m.dead/.35:1;ctx.globalAlpha=fade;
+ const k=m.boss?(m.lord?1.8:1.5):m.gob?1.3:1,x=m.x,ss=s*k,fade=m.dead>0?m.dead/.35:1;ctx.globalAlpha=fade;
  const col=m.hit>0?'#ffffff':r.col;if(m.boss)drawAura(x,y,ss,m.lord);ell(x,y,18*ss,5*ss,'rgba(0,0,0,.25)');let top;const ph=x*.05;
  const md=monSprite(r,m),sk=md&&md.lordArt?ss*.8:ss,ly=md&&md.lift?y-md.lift*ss*(1+.08*Math.sin(T*5+ph)):y;
  if(md){const k=md.h*sk/md.fig,moving=m.tx!=null&&m.x>m.tx+1;let a='walk',i=Math.floor(T*8+ph)%md.walk;
   if(m.hit>0||m.dead>0){a='hit';i=m.dead>0?1:0}else if(m.sw>0){a='attack';i=Math.max(0,Math.min(md.attack-1,Math.floor((1-m.sw/.4)*md.attack)))}else if(!moving){i=Math.floor(T*4+ph)%md.walk}
-  if(m.boss&&!m.dead){ctx.save();ctx.shadowColor=m.lord?'rgba(180,110,255,.9)':'rgba(255,60,80,.85)';ctx.shadowBlur=(14+6*Math.sin(T*4))*s;ctx.drawImage(MSPR[md.id][a],i*SPR_FRAME,0,SPR_FRAME,SPR_FRAME,x-SPR_FRAME/2*k,ly-SPR_FOOT*k,SPR_FRAME*k,SPR_FRAME*k);ctx.restore()}
+  if((m.boss||m.gob)&&!m.dead){ctx.save();ctx.shadowColor=m.gob?'rgba(255,210,60,.95)':m.lord?'rgba(180,110,255,.9)':'rgba(255,60,80,.85)';ctx.shadowBlur=(14+6*Math.sin(T*4))*s;ctx.drawImage(MSPR[md.id][a],i*SPR_FRAME,0,SPR_FRAME,SPR_FRAME,x-SPR_FRAME/2*k,ly-SPR_FOOT*k,SPR_FRAME*k,SPR_FRAME*k);ctx.restore()}
   else ctx.drawImage(MSPR[md.id][a],i*SPR_FRAME,0,SPR_FRAME,SPR_FRAME,x-SPR_FRAME/2*k,ly-SPR_FOOT*k,SPR_FRAME*k,SPR_FRAME*k);
   if(m.hit>0){ctx.globalCompositeOperation='lighter';ctx.globalAlpha=fade*.35;ctx.drawImage(MSPR[md.id][a],i*SPR_FRAME,0,SPR_FRAME,SPR_FRAME,x-SPR_FRAME/2*k,ly-SPR_FOOT*k,SPR_FRAME*k,SPR_FRAME*k);ctx.globalCompositeOperation='source-over';ctx.globalAlpha=fade}
   top=ly-md.fig*k}
@@ -1320,6 +1334,7 @@ function drawMon(r,y,s,m){
  else{const fy=y-30*ss+Math.sin(T*3+ph)*4*ss;ctx.fillStyle=col;ctx.beginPath();ctx.arc(x,fy-6*ss,16*ss,Math.PI,0);ctx.lineTo(x+16*ss,fy+12*ss);for(let i=0;i<4;i++){const xx=x+16*ss-(i+.5)*8*ss;ctx.quadraticCurveTo(xx,fy+(i%2?18:6)*ss+Math.sin(T*6+i)*2*ss,xx-4*ss,fy+12*ss)}ctx.closePath();ctx.globalAlpha=fade*.88;ctx.fill();ctx.globalAlpha=fade;eyes(x-10*ss,fy-4*ss,ss,'#1a3a6a');top=fy-22*ss}
  if(!md){ctx.fillStyle='#3a1a24';ctx.beginPath();ctx.moveTo(x-9*ss,top+3*ss);ctx.lineTo(x-12*ss,top-7*ss);ctx.lineTo(x-4*ss,top+2*ss);ctx.moveTo(x+4*ss,top+2*ss);ctx.lineTo(x+12*ss,top-7*ss);ctx.lineTo(x+9*ss,top+3*ss);ctx.fill()}
  if(m.boss){const mk=BOSSIMG[m.lord?'markCmd':'markLord'];if(mk){const z=(m.lord?44:36)*s,bob=Math.sin(T*3)*3*s;ctx.drawImage(mk,x-z/2,top-z-4*s+bob,z,z)}m.barY=top-(mk?(m.lord?46:38)*s:10*s)}
+ else if(m.gob){m.barY=top-12*s;bar(x,m.barY,44*s,m.hp/m.max,'#ffd34a');if(!m.dead&&!m.flee){ctx.save();ctx.font=`800 ${12*s}px sans-serif`;ctx.textAlign='center';ctx.lineWidth=3*s;ctx.strokeStyle='#3a2600';const tx=Math.ceil(Math.max(0,m.life))+'초';ctx.strokeText(tx,x,m.barY-5*s);ctx.fillStyle='#ffe27a';ctx.fillText(tx,x,m.barY-5*s);ctx.restore();if(Math.random()<.3)spawnFx('crit',x+(Math.random()-.5)*30*s,top+Math.random()*40*s,14*s,.3)}}
  else{m.barY=top-12*s;bar(x,m.barY,32*s,m.hp/m.max,'#ff6b7d')}ctx.globalAlpha=1
 }
 function drawProj(p,s){const k=p.t/p.d,x=p.x+(p.tx-p.x)*k,y=p.y+(p.ty-p.y)*k-Math.sin(k*Math.PI)*(p.kind==='harpoon'?4:14)*s;
