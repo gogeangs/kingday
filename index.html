@@ -87,7 +87,7 @@ canvas{display:block;width:100%;height:100%}
 .slot .fr{position:absolute;inset:0;width:100%;height:100%}
 .slot .ic{position:absolute;inset:16%;width:68%;height:68%;object-fit:contain}
 .slot svg{position:absolute;inset:26%;width:48%;height:48%}
-.slot .lv{position:absolute;left:0;right:0;bottom:4%;text-align:center;font-family:var(--f-display);font-weight:700;font-size:11px;text-shadow:0 1px 2px #000}
+.slot .lv{position:absolute;left:24%;right:24%;bottom:17%;text-align:center;font-family:var(--f-body);font-weight:700;font-size:10px;line-height:1.5;background:rgba(0,0,0,.65);border-radius:999px;color:#fff}
 .slot.empty .ic{opacity:.35;filter:grayscale(1)}
 .slot .lv.em{font-family:var(--f-body);font-weight:600;font-size:9.5px;color:#c9cbd6;bottom:17%;left:18%;right:18%;background:rgba(0,0,0,.6);border-radius:999px;text-shadow:none;line-height:1.5}
 .eqstats{display:grid;grid-template-columns:repeat(2,1fr);gap:4px 12px;font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums}
@@ -204,7 +204,7 @@ button:focus-visible,input:focus-visible{outline:2px solid var(--gold);outline-o
 .acts button{font-family:var(--f-display);font-weight:700;font-size:16px;border-radius:12px;padding:11px;cursor:pointer;border:1px solid var(--line);background:var(--panel2);color:var(--fg)}
 .acts button:disabled{opacity:.45;cursor:default}
 .acts .pri{background:var(--gold);color:var(--gold-ink);border-color:var(--gold)}
-.toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--panel2);border:1px solid var(--line);padding:8px 14px;border-radius:999px;font-size:13px;z-index:30;max-width:calc(100% - 32px);text-align:center;transition:opacity .3s;pointer-events:none}
+.toast{position:fixed;left:50%;top:calc(210px + env(safe-area-inset-top,0px));text-wrap:balance;transform:translateX(-50%);width:max-content;max-width:min(340px,calc(100vw - 32px));background:rgba(20,26,41,.94);border:1px solid rgba(255,201,74,.55);padding:8px 16px;border-radius:14px;font-size:13px;z-index:30;text-align:center;transition:opacity .3s;pointer-events:none;box-shadow:0 6px 16px rgba(0,0,0,.4)}
 @media (prefers-reduced-motion:reduce){.open:active{transform:none}}
 </style>
 </head>
@@ -490,7 +490,7 @@ const RELIC_T=[1,2,3];/* 그림이 들어온 단계. 1 기본(일반·고급) 2 
 const relicTier=g=>g<2?1:g<4?2:3,relicSrc=it=>it&&RELIC_T.includes(relicTier(it.g))?`assets/relic/relic_${it.slot}_${relicTier(it.g)}.png`:null;
 function relicIcon(it){const src=relicSrc(it);return src?`<span class="relicic"><img class="fr" src="assets/ui/frame_${FRAMES[it.g]}.png" alt="" onerror="this.remove()"><img class="ri" src="${src}" alt="" onerror="this.replaceWith(document.createRange().createContextualFragment(svg('${it.slot}')))"></span>`:svg(it.slot)}
 function card(it,cap){
- if(!it)return`<div class="card"><span class="cap">${cap}</span><div class="t" style="color:var(--muted);padding:22px 0">비어 있음</div></div>`;
+ if(!it)return`<div class="card"><span class="cap">${cap}</span><span class="relicic" style="opacity:.45"><img class="fr" src="assets/ui/frame_normal.png" alt="" onerror="this.remove()"></span><span class="t" style="color:var(--muted)">비어 있음</span><span class="s">빈 칸</span></div>`;
  const G=GRADES[it.g];return`<div class="card" style="--c:${G.c}"><span class="cap">${cap}</span>${relicIcon(it)}<span class="g">${G.n}</span><span class="t">${slotName(it.slot)} Lv.${it.lv}</span><span class="s">${statLine(it)}</span></div>`
 }
 const LUMQ=['흥, 내 격에는 한참 못 미친다.','그럭저럭… 봐줄 만하군.','오호, 제법이다!','이건 왕의 물건이다. 당장 걸쳐라!','300년 만에 보는 물건이군…!','신화… 주인, 이건 운명이다.'];
@@ -685,8 +685,8 @@ let banner=null,P={},mons=[],spawnT=.5,bgX=0,T=0,floats=[],proj=[],bossT=0,engag
 function say(who,txt){quip={who,txt,t:3.2}}
 function syncParty(){for(const id of members()){if(!P[id])P[id]={hp:stats(id).hp,cd:Math.random()*.5,swing:0,hit:0,down:false}}}
 /* 원정대 대형: [가로 위치, 깊이] (깊이 0 = 지평선 쪽, 1 = 화면 앞쪽) */
-const FORM={kael:[.45,.40],bron:[.55,.76],haral:[.33,.98],riel:[.18,.26],margo:[.14,.66]};
-function layout(){const ids=members(),s=Math.min(W/300,Ht/380),top=Ht*.46,bot=Math.max(top+60,Ht-118),pos={},py={},dsc={};
+const FORM={kael:[.46,.34],bron:[.58,.72],haral:[.31,1],riel:[.17,.16],margo:[.10,.58]};
+function layout(){const ids=members(),s=Math.min(W/300,Ht/380),top=Ht*.43,bot=Math.max(top+60,Ht-118),pos={},py={},dsc={};
  const solo=ids.length===1;
  ids.forEach(id=>{const f=solo?[.42,.55]:FORM[id];pos[id]=W*f[0];py[id]=top+(bot-top)*f[1];dsc[id]=.9+.14*f[1]});
  const front=Math.max(...ids.map(id=>pos[id]));return{ids,pos,py,dsc,front,s,top,bot}}
