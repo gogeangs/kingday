@@ -67,6 +67,8 @@ body{word-break:keep-all;overflow-wrap:break-word;line-break:strict;background:#
 .gobloot{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin:2px 0 8px}.gobloot .gl{flex:1 1 0;min-width:68px;max-width:96px;display:flex;flex-direction:column;align-items:center;gap:2px;background:var(--panel2);border:1px solid rgba(255,210,60,.35);border-radius:12px;padding:8px 4px}.gobloot .gl img,.gobloot .gl .relicic,.gobloot .gl svg{width:36px;height:36px}.gobloot .gl b{font-size:14px;color:var(--c,#ffd34a)}.gobloot .gl small{font-size:11px;color:var(--muted)}.gobloot .gl.rare{border-color:#ffd34a;box-shadow:0 0 10px rgba(255,210,60,.5)}
 .stars{color:#ffd34a;font-size:12px;letter-spacing:1px;margin-left:4px}.jobsec{margin:12px 2px 4px;font-weight:700;font-size:14px;color:var(--gold)}.jobsec small{color:var(--muted);font-weight:400;margin-left:6px;font-size:12px}.row.bench{opacity:.8}
 .ccard{display:flex;gap:10px;align-items:center;background:var(--panel2);border:1px solid rgba(201,164,255,.35);border-radius:14px;padding:10px;margin-top:8px}.ccard.locked{opacity:.6}.ccard:not(.own) .portrait{filter:grayscale(.85) brightness(.75)}.ccard .info{flex:1;min-width:0}.ccard .xp{margin:6px 0 2px}.cbtns{display:flex;flex-direction:column;gap:6px;align-items:stretch}.wish{background:none;border:1px solid var(--line);border-radius:10px;color:var(--muted);font:inherit;font-size:12px;padding:4px 8px;cursor:pointer}.wish.on{color:#ff8fb1;border-color:#ff8fb1}
+.gtag{display:inline-block;font-size:11px;font-weight:700;color:var(--g);border:1px solid var(--g);border-radius:6px;padding:0 5px;margin-left:5px;line-height:16px;vertical-align:1px}
+.ccard{border-color:color-mix(in srgb,var(--g) 55%,transparent)!important}.cfr{position:relative;flex:0 0 auto;width:62px;height:74px;display:flex;align-items:center;justify-content:center}.cfr img{position:absolute;inset:-4px;width:calc(100% + 8px);height:calc(100% + 8px);pointer-events:none;z-index:1}.cfr .portrait{width:52px;height:62px}
 .buy.glow{box-shadow:0 0 12px rgba(255,210,60,.8)}
 .cpk{display:flex;align-items:center;justify-content:center;height:64px;font-size:40px;color:#c9a4ff}.cpk b{font-size:16px;margin-left:2px}.gobloot .glc{width:36px;height:36px;border-radius:8px}
 .rtbox{border-radius:12px;padding:10px 12px;margin:8px 0;background:var(--panel2);font-size:13px}.rtbox .rth{font-weight:700;margin-bottom:6px}.rtbox ul{list-style:none;margin:0;padding:0}.rtbox li{display:flex;justify-content:space-between;gap:10px;padding:3px 0;border-top:1px solid rgba(255,255,255,.06)}.rtbox li:first-child{border-top:0}.rtbox li span{color:var(--muted);flex:0 0 auto}.rtbox li b{text-align:right;font-weight:600}.rtbox p{margin:0;line-height:1.5}
@@ -531,16 +533,24 @@ const JSLOT=['miner','kael','fisher','keeper','cook'],STORY={miner:'bron',fisher
 const RECRUITS={
  luka:{job:'cook',title:'제빵사 루카',lines:['m:루카|저, 저기… 카엘 씨 밭의 밀로 빵을 구워 보고 싶어서 따라왔어요.','k@surprised:내 밀로? …은퇴하면 빵집 옆에 밭 하나 더 일궈야겠네.','q@proud:흥, 또 식객이 늘었군. 뭐, 빵 냄새는 나쁘지 않다.','sys:원정대 탭의 요리사 자리에서 마고 대신 출전시킬 수 있어요.'],ok:'잘 부탁해, 루카'},
  nella:{job:'fisher',title:'그물 어부 넬라',lines:['m:넬라|하랄 할배! 또 혼자 허풍 떨면서 다니지? 이번엔 나도 같이 간다!','m:하랄@laugh|허허, 이 녀석 그물 솜씨는 나보다 낫지. 고래만 빼고.','k@flustered:…원정대가 점점 마을 잔치가 되어 가네.','sys:원정대 탭의 어부 자리에서 하랄 대신 출전시킬 수 있어요.'],ok:'잘 부탁해, 넬라'}},STAR_NEED=[30,20,40,80,150],STAR_MUL=[1,1,1.2,1.4,1.6,2];
-const recStar=id=>(S.rec&&S.rec[id])||0,isRec=id=>id in RECRUITS;
+/* 동료 등급: 이야기 동료는 일반(★3까지), 모집 동료는 희귀 이상 */
+const GRADE={bron:'common',haral:'common',riel:'common',margo:'common',luka:'rare',nella:'rare'};
+const GR={common:{n:'일반',c:'#b8c0cc',max:3,mul:1,w:55,need:[0,15,30],fr:'normal'},rare:{n:'희귀',c:'#5aa8ff',max:4,mul:1.1,w:30,need:[30,20,40,80],fr:'rare'},epic:{n:'영웅',c:'#b07bff',max:5,mul:1.2,w:12,need:[30,30,60,120,200],fr:'epic'},legend:{n:'전설',c:'#ffc23a',max:5,mul:1.35,w:3,need:[30,40,80,160,300],fr:'legendary'}};
+const gr=id=>GR[GRADE[id]||'common'],CARDIDS=()=>[...Object.values(STORY),...Object.keys(RECRUITS)];
+const isRec=id=>id in RECRUITS,recStar=id=>isRec(id)?((S.rec&&S.rec[id])||0):(S.joined[id]?Math.max(1,(S.rec&&S.rec[id])||0):0);
+const starNeed=id=>gr(id).need[recStar(id)],starMax=id=>gr(id).max;
 const owned=id=>id==='kael'||(isRec(id)?recStar(id)>0:!!S.joined[id]);
-const cardOpen=id=>!!S.joined[STORY[RECRUITS[id].job]];
-const starMul=id=>isRec(id)?STAR_MUL[recStar(id)]:1,skPow=id=>isRec(id)?(recStar(id)>=5?1.6:recStar(id)>=3?1.3:1):1;
+const cardOpen=id=>isRec(id)?!!S.joined[STORY[RECRUITS[id].job]]:!!S.joined[id];
+const gradeTag=id=>`<span class="gtag" style="--g:${gr(id).c}">${gr(id).n}</span>`,starTxt=id=>`<span class="stars">${'★'.repeat(recStar(id))}${'☆'.repeat(starMax(id)-recStar(id))}</span>`;
+const starMul=id=>id==='kael'?1:gr(id).mul*STAR_MUL[recStar(id)],skPow=id=>isRec(id)?(recStar(id)>=5?1.6:recStar(id)>=3?1.3:1):1;
 function slotMember(j){if(j==='kael')return'kael';const pk=S.party&&S.party[j];if(pk&&owned(pk))return pk;return S.joined[STORY[j]]?STORY[j]:null}
 const jobMembers=j=>[STORY[j],...Object.keys(RECRUITS).filter(id=>RECRUITS[id].job===j)].filter(owned);
-function recruitUp(id){const stv=recStar(id),need=STAR_NEED[stv],n=(S.cards&&S.cards[id])||0;if(stv>=5||n<need)return;S.cards[id]-=need;if(!S.rec)S.rec={};S.rec[id]=stv+1;if(!S.lv[id])S.lv[id]=1;partySig='';
+function recruitUp(id){const stv=recStar(id),need=starNeed(id),n=(S.cards&&S.cards[id])||0;if(stv>=starMax(id)||n<need)return;S.cards[id]-=need;if(!S.rec)S.rec={};S.rec[id]=stv+1;if(!S.lv[id])S.lv[id]=1;partySig='';
  if(stv===0){const R=RECRUITS[id];queue(()=>scene('동료 합류',R.title,R.lines,R.ok))}
- else toast(COMP[id].n+' ★'+(stv+1)+'! 능력치 +'+Math.round((STAR_MUL[stv+1]-1)*100)+'%'+(stv+1===3||stv+1===5?' · 스킬 강화':''));renderAll()}
-function gainCard(n,src){const ids=Object.keys(RECRUITS).filter(id=>cardOpen(id)&&recStar(id)<5);if(!ids.length)return null;if(!S.cards)S.cards={};const w=S.wish&&ids.includes(S.wish)?S.wish:null,id=w&&Math.random()<.5?w:ids[Math.floor(Math.random()*ids.length)];S.cards[id]=(S.cards[id]||0)+n;stat('card',n);partySig='';return id}
+ else toast(COMP[id].n+' ★'+(stv+1)+'! 능력치 +'+Math.round((STAR_MUL[stv+1]-1)*100)+'%'+(isRec(id)&&(stv+1===3||stv+1===5)?' · 스킬 강화':''));renderAll()}
+function gainCard(n,minGrade){const ids=CARDIDS().filter(id=>cardOpen(id)&&recStar(id)<starMax(id)&&(!minGrade||gr(id).w<=GR[minGrade].w));if(!ids.length)return null;if(!S.cards)S.cards={};
+ let id;if(S.wish&&ids.includes(S.wish)&&Math.random()<.5)id=S.wish;else{const gs=[...new Set(ids.map(x=>GRADE[x]))],tot=gs.reduce((a,g)=>a+GR[g].w,0);let r=Math.random()*tot,g=gs[0];for(const q of gs){r-=GR[q].w;if(r<0){g=q;break}}const pool=ids.filter(x=>GRADE[x]===g);id=pool[Math.floor(Math.random()*pool.length)]}
+ S.cards[id]=(S.cards[id]||0)+n;stat('card',n);partySig='';return id}
 const ORDER=['bron','kael','haral','riel','margo'];
 const HEIGHT={kael:66,bron:54,haral:66,riel:66,margo:64,luka:66,nella:62};
 const compCost=l=>Math.floor(25*Math.pow(1.16,l-1));
@@ -637,7 +647,7 @@ function playAd(done){const o=$('adOv');let n=3;o.hidden=false;$('adTxt').textCo
 function watchAd(k,give){if(adLeft(k)<=0)return toast('오늘은 다 봤어요. 내일 다시 받을 수 있어요');playAd(()=>{daily().ad[k]=(daily().ad[k]||0)+1;give();shopSig='';farmSig='';save();renderAll()})}
 function adBox(){watchAd('box',()=>{S.gold+=boxCost();openBox(false)})}
 function adCard(){watchAd('card',()=>{const cid=gainCard(3);toast(cid?'피트의 선물! '+COMP[cid].n+' 카드 +3':'아직 모을 수 있는 동료 카드가 없어요')})}
-const adKeys=()=>['box','gem',...(Object.keys(RECRUITS).some(cardOpen)?['card']:[])];
+const adKeys=()=>['box','gem',...(CARDIDS().some(cardOpen)?['card']:[])];
 function adGem(){watchAd('gem',()=>{S.gem=(S.gem||0)+5;toast('피트의 선물! 황금 이삭 +5')})}
 function adFarm(){if(!S.plots.some(p=>plotState(p).st==='grow'))return;watchAd('farm',()=>{S.plots.forEach(p=>{if(plotState(p).st==='grow')p.at=0});toast('리엘의 벌들이 밭을 도왔어요. 모두 다 자랐어요')})}
 function dailyAdd(k,n){const d=daily();d[k]=(d[k]||0)+n}
@@ -687,7 +697,7 @@ function renderShop(){
  ${adKeys().map(k=>`<div class="mis"><div class="info"><b>${ADS[k].t}</b><div style="font-size:11px;color:var(--muted)">오늘 ${adLeft(k)} / ${ADS[k].n}회 남음</div></div><button class="buy ad" data-ad="${k}" ${adLeft(k)?'':'disabled'}>▶ 받기</button></div>`).join('')}`}
  <div class="sec">골드 바꾸기 <small>지금 영지 기준 · 영지가 오를수록 더 많이</small></div>
  <div class="packs">${GOLDX.map((x,i)=>`<button class="pack gx" data-gx="${x.k}">${i?`<span class="tag">${x.h}시간치</span>`:''}<img src="assets/ui/ui_gold.png" alt="" style="transform:scale(${[.8,1,1.15][i]})" onerror="this.remove()"><b>${fmt(goldX(x))}</b><small>${x.n}</small><span class="price">${gemI}${x.gem}</span></button>`).join('')}</div>
- ${Object.keys(RECRUITS).some(cardOpen)?`<div class="sec">동료 카드 <small>모집 동료의 카드를 받아요</small></div>
+ ${CARDIDS().some(cardOpen)?`<div class="sec">동료 카드 <small>동료 카드를 받아요 · 30장은 희귀 이상 확정</small></div>
  <div class="packs">${CARDPK.map((c,i)=>`<button class="pack gx" data-cp="${i}">${i?'<span class="tag">10% 이득</span>':''}<span class="cpk">🂠<b>×${c.n}</b></span><b>카드 ${c.n}장</b><small>${c.n>=30?'동료 1명 합류분':'맛보기'}</small><span class="price">${gemI}${c.gem}</span></button>`).join('')}</div>`:''}
  <div class="sec">특별 상품</div>
  ${S.buys.starter?'':`<div class="shoprow hot"><span class="tag">한 번만</span><img class="pk" src="assets/relic/relic_weapon_3.png" alt="" onerror="this.remove()"><div class="info"><b>${STARTER.n}</b><div>전설 등급 성유물 1개 확정<br>+ ${gemI}${STARTER.gem}</div></div><button class="buy" id="starterBuy">${won(STARTER.won)}</button></div>`}
@@ -699,7 +709,7 @@ function renderShop(){
  sh.querySelectorAll('[data-m]').forEach(b=>b.onclick=()=>{const k=b.dataset.m,m=MISSIONS.find(x=>x.k===k);if(!misCan(m||null))return;daily().claim[k]=true;if(k==='all'){const cid=gainCard(5);if(cid)setTimeout(()=>toast(COMP[cid].n+' 카드 +5'),1200)}gainGem(m?m.r:MIS_ALL,m?m.n:'오늘의 할 일 완료');shopSig='';renderAll()});
  {const mo=$('misOpen');if(mo)mo.onclick=()=>{misOpen=true;shopSig='';renderShop()};const ao=$('adOpen');if(ao)ao.onclick=()=>{adOpen=true;shopSig='';renderShop()}}
  sh.querySelectorAll('[data-ad]').forEach(b=>b.onclick=()=>({box:adBox,gem:adGem,card:adCard})[b.dataset.ad]());
- sh.querySelectorAll('[data-cp]').forEach(b=>b.onclick=()=>{const c=CARDPK[+b.dataset.cp];if(!spendGem(c.gem))return;const cid=gainCard(c.n);toast(COMP[cid].n+' 카드 +'+c.n+'! 원정대 탭에서 확인해요');shopSig='';renderAll()});
+ sh.querySelectorAll('[data-cp]').forEach(b=>b.onclick=()=>{const c=CARDPK[+b.dataset.cp];if(!CARDIDS().some(x=>cardOpen(x)&&recStar(x)<starMax(x)))return toast('모을 수 있는 동료 카드가 없어요');if(!spendGem(c.gem))return;const cid=gainCard(c.n,c.n>=30&&CARDIDS().some(x=>cardOpen(x)&&GRADE[x]!=='common'&&recStar(x)<starMax(x))?'rare':null);toast(gr(cid).n+' '+COMP[cid].n+' 카드 +'+c.n+'! 원정대 탭에서 확인해요');shopSig='';renderAll()});
  sh.querySelectorAll('[data-gx]').forEach(b=>b.onclick=()=>buyGoldX(b.dataset.gx));
  sh.querySelectorAll('[data-p]').forEach(b=>b.onclick=()=>buyPack(PACKS.find(p=>p.k===b.dataset.p)));
  const sb=$('starterBuy');if(sb)sb.onclick=buyStarter;const ub=$('subBuy');if(ub)ub.onclick=buySub;const uc=$('subClaim');if(uc)uc.onclick=claimSub;
@@ -923,16 +933,16 @@ function renderParty(){
  if(sig!==partySig){partySig=sig;
   const rowOf=(id,bench)=>{const c=COMP[id],has=owned(id);
    if(!has)return`<div class="row locked"><canvas class="portrait" id="pf-${id}"></canvas><div class="info"><b>???</b><span class="role">${c.role}</span><div>${c.join}</div></div></div>`;
-   const t=stats(id),line=`공격 ${fmt(t.atk)} · 체력 ${fmt(t.hp)}`,st=isRec(id)?`<span class="stars">${'★'.repeat(recStar(id))}${'☆'.repeat(5-recStar(id))}</span>`:'';
+   const t=stats(id),line=`공격 ${fmt(t.atk)} · 체력 ${fmt(t.hp)}`,st=gradeTag(id)+starTxt(id);
    if(id==='kael')return`<div class="row"><canvas class="portrait" id="pf-${id}"></canvas><div class="info"><b>${c.n}</b><span class="role">${c.role}</span><span class="lvtag">${RANKS[rankIdx()].n}</span><div>${c.desc}</div><div>${line}</div></div><button class="buy ghost" id="goEq">장비</button><div class="skl"><img src="assets/skills/skill_${id}.png" alt="" onerror="this.remove()"><div><b>${SKILLS[id].n}</b><span>${SKILLS[id].d}</span></div></div></div>`;
    return`<div class="row${bench?' bench':''}"><canvas class="portrait" id="pf-${id}"></canvas><div class="info"><b>${c.n}</b>${st}<span class="role">${c.role}</span><span class="lvtag">${bench?'대기':'Lv.'+(S.lv[id]||1)}</span><div>${c.desc}</div><div>${line}</div></div>${bench?`<button class="buy ghost" id="go-${id}">출전</button>`:`<button class="buy" id="lv-${id}">${costBtn('레벨업',compCost(S.lv[id]||1))}</button>`}<div class="skl"><img src="assets/skills/skill_${id}.png" alt="" onerror="this.remove()"><div><b>${SKILLS[id].n}</b><span>${SKILLS[id].d}</span></div></div></div>`};
   const rows=['kael',...JSLOT.filter(j=>j!=='kael'&&slotMember(j)),...JSLOT.filter(j=>j!=='kael'&&!slotMember(j))].map(j=>{if(j==='kael')return rowOf('kael');const act=slotMember(j),all=jobMembers(j);
    return(all.length>1?`<div class="jobsec">${JOBN[j]} 자리 <small>한 명만 출전해요</small></div>`:'')+rowOf(act||STORY[j])+all.filter(x=>x!==act).map(x=>rowOf(x,true)).join('')}).join('');
-  const recs=Object.keys(RECRUITS).map(id=>{const c=COMP[id],op=cardOpen(id),stv=recStar(id),n=(S.cards&&S.cards[id])||0,need=STAR_NEED[stv],mx=stv>=5;
-   return`<div class="ccard${op?'':' locked'}${stv?' own':''}"><canvas class="portrait" id="pcd-${id}"></canvas><div class="info"><b>${op?c.n:'???'}</b><span class="role">${JOBN[RECRUITS[id].job]}</span>${stv?`<span class="stars">${'★'.repeat(stv)}${'☆'.repeat(5-stv)}</span>`:''}
-    ${!op?`<div>${COMP[STORY[RECRUITS[id].job]].n}이(가) 합류하면 카드가 나오기 시작해요</div>`:mx?'<div>별을 모두 모았어요</div>':`<div class="xp"><div style="width:${Math.min(100,n/need*100)}%"></div></div><div>카드 ${n} / ${need}</div>`}</div>
+  const recs=CARDIDS().sort((a,b)=>((cardOpen(b)?2:0)+(owned(b)?1:0))-((cardOpen(a)?2:0)+(owned(a)?1:0))||gr(a).w-gr(b).w).map(id=>{const c=COMP[id],op=cardOpen(id),stv=recStar(id),n=(S.cards&&S.cards[id])||0,need=starNeed(id),mx=stv>=starMax(id);
+   return`<div class="ccard${op?'':' locked'}${stv?' own':''}" style="--g:${gr(id).c}"><span class="cfr"><img src="assets/ui/frame_${gr(id).fr}.png" alt="" onerror="this.remove()"><canvas class="portrait" id="pcd-${id}"></canvas></span><div class="info"><b>${op?c.n:'???'}</b>${gradeTag(id)}<span class="role">${JOBN[JOB[id]]}</span>${stv?starTxt(id):''}
+    ${!op?`<div>${isRec(id)?COMP[STORY[RECRUITS[id].job]].n+'이(가) 합류하면 카드가 나오기 시작해요':c.join}</div>`:mx?'<div>별을 모두 모았어요</div>':`<div class="xp"><div style="width:${Math.min(100,n/need*100)}%"></div></div><div>카드 ${n} / ${need}</div>`}</div>
     ${op&&!mx?`<div class="cbtns"><button class="buy${n>=need?' glow':''}" id="rc-${id}" ${n>=need?'':'disabled'}>${stv?'★ 올리기':'맞이하기'}</button><button class="wish${S.wish===id?' on':''}" id="ws-${id}">${S.wish===id?'♥ 희망 중':'♡ 희망'}</button></div>`:''}</div>`}).join('');
-  $('party').innerHTML=rows+`<div class="sec" style="margin-top:14px">동료 카드 <small>카드를 모아 새 동료를 맞이해요</small></div><p class="note">마물·성주·군단장·황금 고블린·오늘의 할 일·피트의 상점에서 카드를 얻어요. ♡ 희망을 눌러 두면 그 동료 카드가 절반 확률로 나와요. 은퇴해도 카드와 별은 남아요.</p>${recs}`;
+  $('party').innerHTML=rows+`<div class="sec" style="margin-top:14px">동료 카드 <small>카드를 모아 동료를 맞이하고 별을 올려요</small></div><p class="note">카드 등급: <b style="color:#b8c0cc">일반</b>(★3까지) · <b style="color:#5aa8ff">희귀</b>(★4) · <b style="color:#b07bff">영웅</b>(★5) · <b style="color:#ffc23a">전설</b>(★5). 높은 등급일수록 드물게 나오고 기본 능력치가 높아요. 마물·성주·군단장·황금 고블린·오늘의 할 일·피트의 상점에서 카드를 얻어요. ♡ 희망을 눌러 두면 그 동료 카드가 절반 확률로 나와요. 은퇴해도 카드와 별은 남아요.</p>${recs}`;
   [...ORDER,...Object.keys(RECRUITS)].forEach(id=>{portrait(id);const b=$('lv-'+id);if(b)b.onclick=()=>{const c=compCost(S.lv[id]||1);if(S.gold<c)return;const h0=stats(id).hp;S.gold-=c;S.lv[id]=(S.lv[id]||1)+1;if(P[id])P[id].hp+=stats(id).hp-h0;renderAll()};
    const go=$('go-'+id);if(go)go.onclick=()=>{if(!S.party)S.party={};S.party[JOB[id]]=id;partySig='';prowSig='';toast(COMP[id].n+'이(가) '+JOBN[JOB[id]]+' 자리로 출전해요');renderAll()};
    const rc=$('rc-'+id);if(rc)rc.onclick=()=>recruitUp(id);const ws=$('ws-'+id);if(ws)ws.onclick=()=>{S.wish=S.wish===id?null:id;partySig='';toast(S.wish?COMP[id].n+' 카드가 더 잘 나와요 (절반)':'희망 동료를 해제했어요');renderAll()};const cd=$('pcd-'+id);if(cd&&cardOpen(id))faceTo(cd,id)});
