@@ -25,6 +25,14 @@ body{background:#0a0d16;color:var(--fg);font-family:var(--f-body);padding:0;marg
 .hud{display:flex;align-items:center;gap:10px;padding-top:max(8px,env(safe-area-inset-top,0px));padding-bottom:8px;flex:0 0 auto;padding-left:max(12px,env(safe-area-inset-left,0px));padding-right:max(12px,env(safe-area-inset-right,0px));background:linear-gradient(#0d1220,#141a29);border-bottom:1px solid #2a3350;z-index:6}
 .face{position:relative;width:48px;height:48px;border-radius:50%;border:2px solid var(--gold);background:radial-gradient(circle at 50% 35%,#3b5a8a,#1a2440);overflow:hidden;flex:0 0 auto;padding:0;cursor:pointer}
 .face canvas{width:100%;height:100%}
+.face::after{content:"⚙";position:absolute;right:-1px;bottom:-1px;width:17px;height:17px;border-radius:50%;background:#0d1220;border:1px solid var(--gold);color:var(--gold);font-size:11px;line-height:15px;text-align:center}
+.face{overflow:visible}
+.face canvas{border-radius:50%}
+.setrow{display:flex;justify-content:space-between;align-items:center;gap:10px;background:var(--panel2);border-radius:12px;padding:10px 12px;font-size:13px}
+.setrow b{font-weight:600}
+.setrow small{display:block;color:var(--muted);font-size:11px;margin-top:2px}
+.setcode{width:100%;min-height:72px;border-radius:10px;border:1px solid var(--line);background:#0b0f1a;color:var(--fg);font:12px/1.4 ui-monospace,monospace;padding:8px;resize:vertical;user-select:text;-webkit-user-select:text;box-sizing:border-box}
+.buy.danger{background:#5a1a24;color:#ffd6dc;border:1px solid var(--bad)}
 .who{min-width:0;flex:1;display:flex;flex-direction:column;gap:2px}
 .who .nm{font-family:var(--f-display);font-weight:700;font-size:16px;display:flex;align-items:center;gap:6px;white-space:nowrap}
 .rank{font-family:var(--f-body);font-size:11px;font-weight:600;color:var(--gold-ink);background:var(--gold);border-radius:999px;padding:1px 7px}
@@ -235,7 +243,7 @@ button:focus-visible,input:focus-visible{outline:2px solid var(--gold);outline-o
 
 <div class="app">
   <header class="hud">
-    <button class="face" id="faceBtn" aria-label="원정대 보기"><canvas id="faceCv"></canvas></button>
+    <button class="face" id="faceBtn" aria-label="설정 열기"><canvas id="faceCv"></canvas></button>
     <div class="who"><span class="nm">카엘 <img class="rankimg" id="hRankImg" src="assets/ui/rank_farmer.png" alt="" onerror="this.remove()"><span class="rank" id="hRank">농부</span></span><span class="pow" id="hPow">0</span></div>
     <button class="gempill" id="gemBtn" aria-label="황금 이삭과 오늘의 할 일"><img class="gemimg" src="assets/gem/ui_gem.png" alt="" onerror="this.remove()"><span id="gem">0</span><i class="dot" id="gemDot" hidden></i></button>
     <div class="goldpill"><img class="coinimg" src="assets/ui/ui_gold.png" alt="" onerror="this.outerHTML='<i class=&quot;coin&quot;></i>'"><span id="gold">0</span></div>
@@ -743,7 +751,7 @@ let curTab=null; // null = 전투 화면
 function setTab(t){if(t===curTab)t=null;curTab=t;document.querySelectorAll('.tab').forEach(b=>b.setAttribute('aria-selected',b.dataset.t===t));['eq','pt','up','vl','mp','sh'].forEach(x=>$('p-'+x).hidden=x!==t);if(t==='vl'){resizeV();farmSig='';kitSig='';bldSig='';requestAnimationFrame(()=>{resizeV();vlScrollTo(vlSel)})}if(t==='mp')resizeM();if(t==='pt')partySig='';if(t==='sh')shopSig='';if(t==='eq'){eqSig=''}renderAll()}
 document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>setTab(b.dataset.t));
 document.querySelectorAll('[data-close]').forEach(b=>b.onclick=()=>setTab(null));
-$('faceBtn').onclick=()=>setTab('pt');$('gemBtn').onclick=()=>setTab('sh');
+$('faceBtn').onclick=()=>{if($('modal').hidden)settingsSheet()};$('gemBtn').onclick=()=>setTab('sh');
 $('quickBox').onclick=()=>openBox(false);
 $('speedBtn').onclick=()=>{S.speed=S.speed===2?1:2;renderSpeed()};
 function renderSpeed(){const b=$('speedBtn');b.textContent='x'+(S.speed||1);b.classList.toggle('on',S.speed===2)}
@@ -1152,7 +1160,29 @@ function drawMap(){
 }
 
 /* ---------- 저장 · 방치 보상 ---------- */
-function save(){S.last=Date.now();try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
+let noSave=false;
+function save(){if(noSave)return;S.last=Date.now();try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
+function settingsSheet(step){
+ $('sheet').innerHTML=`<div class="eyebrow">설정</div><h2>카엘의 수첩</h2>
+ <div class="setrow"><div><b>전투 속도</b><small>x2는 마물도 빨라져요</small></div><button class="buy ghost" id="setSpd">x${S.speed||1}</button></div>
+ <div class="setrow"><div><b>약한 장비 바로 판매</b><small>상자에서 나온 약한 장비를 자동으로 팔아요</small></div><button class="buy ghost" id="setSell">${S.autoSell?'켜짐':'꺼짐'}</button></div>
+ <div class="setrow"><div><b>플레이 기록</b><small>최고 영지 ${Math.min(S.best,MAXLAND)} · 은퇴 ${S.retires}번 · 은퇴의 추억 ${S.memory}개</small></div></div>
+ <div class="sec">저장 데이터 옮기기 <small>다른 기기·브라우저로</small></div>
+ <p class="note">저장은 이 브라우저에만 돼요. 아래 코드를 복사해 두면 다른 곳에서 불러올 수 있어요.</p>
+ <textarea class="setcode" id="setCode" spellcheck="false" placeholder="여기에 저장 코드를 붙여 넣고 불러오기를 누르세요"></textarea>
+ <div class="btns"><button class="buy ghost" id="setExp">코드 만들기·복사</button><button class="buy ghost" id="setImp">불러오기</button></div>
+ <div class="sec">처음부터 다시 하기</div>
+ ${step==='reset'?`<p class="note" style="color:#ffb3bd">정말 지울까요? 영지, 장비, 동료, 마을, 황금 이삭, 구매 기록이 모두 사라지고 되돌릴 수 없어요.</p><div class="btns"><button class="buy ghost" id="setNo">취소</button><button class="buy danger" id="setYes">모두 지우기</button></div>`
+ :`<div class="btns"><button class="buy danger" id="setReset">게임 초기화</button></div>`}
+ <div class="acts one"><button class="pri" id="mGo">닫기</button></div>`;
+ $('modal').hidden=false;$('mGo').onclick=closeModal;
+ $('setSpd').onclick=()=>{S.speed=S.speed===2?1:2;renderSpeed();settingsSheet()};
+ $('setSell').onclick=()=>{S.autoSell=!S.autoSell;const a=$('autoSell');if(a)a.checked=S.autoSell;settingsSheet()};
+ $('setExp').onclick=()=>{save();const c=btoa(unescape(encodeURIComponent(JSON.stringify(S))));const t=$('setCode');t.value=c;t.select();try{navigator.clipboard.writeText(c).then(()=>toast('저장 코드를 복사했어요'),()=>toast('코드를 길게 눌러 복사하세요'))}catch(e){toast('코드를 길게 눌러 복사하세요')}};
+ $('setImp').onclick=()=>{try{const d=JSON.parse(decodeURIComponent(escape(atob($('setCode').value.trim()))));if(!d||typeof d.gold!=='number')throw 0;noSave=true;localStorage.setItem(KEY,JSON.stringify(d));location.reload()}catch(e){toast('저장 코드가 올바르지 않아요')}};
+ if(step==='reset'){$('setNo').onclick=()=>settingsSheet();$('setYes').onclick=()=>{noSave=true;try{localStorage.removeItem(KEY)}catch(e){}location.reload()}}
+ else $('setReset').onclick=()=>settingsSheet('reset');
+}
 function load(){try{const d=JSON.parse(localStorage.getItem(KEY));if(d&&typeof d.gold==='number')return hydrate(d)}catch(e){}return null}
 function offline(){
  const cap=(6+S.bld.inn)*3600,sec=Math.min(cap,(Date.now()-S.last)/1000);if(sec<60)return;
