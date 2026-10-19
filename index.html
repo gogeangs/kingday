@@ -220,6 +220,8 @@ canvas{display:block;width:100%;height:100%}
 .fg{display:flex;flex-direction:column;align-items:center;gap:2px;background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:6px 4px;color:var(--fg);font:inherit;cursor:pointer}
 .tagchk{display:block;margin:10px 2px 2px;font-size:14px;color:var(--fg)}.tagchk input{width:18px;height:18px;vertical-align:-3px;margin-right:6px;accent-color:#f6c445}.tagchk small{display:block;margin:3px 0 0 26px;font-size:12px;opacity:.7}
 .card .ent{font-size:11px;color:#ffb35a;margin-top:2px}
+.forge.cw{grid-template-columns:repeat(2,1fr)}.fg .lockq{display:flex;align-items:center;justify-content:center;width:40px;height:40px;font-size:22px}.fg .cwp{width:40px!important;height:40px!important;border-radius:10px}.fg span{display:inline-flex;align-items:center;gap:2px}
+.buy .bc.ore{margin-left:6px}.buy .bc.lack{color:#ff8a7a}
 .fg img{width:30px;height:30px}
 .fg b{font-size:12px;font-weight:700}
 .fg b i{font-style:normal;color:#ff9a3a}
@@ -530,7 +532,7 @@ const CROPS=[
 ];
 const GOODS=[{k:'fish',n:'생선',c:'#7fb7e0',sell:8,b:'dock'},{k:'honey',n:'꿀',c:'#f2b630',sell:10,b:'apiary'},{k:'ore',n:'광석',c:'#a9a9b8',sell:14,b:'mine'}];
 const icoImg=k=>`<img src="assets/ui/item_${k==='wheat'?'wheat':k}.png" alt="" onerror="this.replaceWith(document.createElement('i'))">`;
-const costBtn=(lb,c)=>`<span class="bl">${lb}</span><span class="bc"><img src="assets/ui/ui_gold.png" alt="" onerror="this.remove()">${fmt(c)}</span>`;
+const costBtn=(lb,c,o)=>`<span class="bl">${lb}</span><span class="bc"><img src="assets/ui/ui_gold.png" alt="" onerror="this.remove()">${fmt(c)}</span>${o?`<span class="bc ore${(S.items.ore||0)<o?' lack':''}"><img src="assets/ui/item_ore.png" alt="" onerror="this.remove()">${o}</span>`:''}`;
 const uiImg=(n,c)=>`<img class="${c||'rowic'}" src="assets/ui/${n}.png" alt="" onerror="this.remove()">`;
 const bldImg=(k,l)=>VART.includes(k)?`<img class="rowic art" src="assets/village/${k}_${l?'built':'ruin'}.png" alt="" onerror="this.remove()">`:uiImg('bld_'+k);
 const RANKIMG=['rank_farmer','rank_guard','rank_knight','rank_lord','rank_count','rank_duke','rank_king'];
@@ -551,6 +553,8 @@ const BLD=[
  {k:'mine',n:'광산',who:'브론',max:10,base:2000,eff:l=>'카엘 장비 +'+(l*6)+'% · 광석 '+l+'개/2분',open:()=>S.joined.bron,lock:'브론이 합류하면 열려요'}
 ];
 const bldCost=(b,l)=>Math.floor(b.base*Math.pow(2.2,l));
+/* 광산을 재건한 뒤부터, 광산 외 건물을 Lv.6 이상으로 올릴 때 광석도 필요 */
+const bldOre=(b,l)=>S.bld.mine&&b.k!=='mine'&&l>=5?Math.ceil(15*Math.pow(1.5,l-5)):0,oreOk=(b,l)=>(S.items.ore||0)>=bldOre(b,l);
 const bldK=k=>BLD.find(x=>x.k===k);
 const bldTime=(b,l)=>Math.min(12*3600,Math.round(60*Math.sqrt(b.base/120)*Math.pow(2,l)));/* 공사 시간(초): 비싼 건물일수록 길게(√(기본값/120)배), 레벨마다 2배, 최대 12시간 */
 const fmtT=sec=>{sec=Math.max(0,Math.ceil(sec));const h=Math.floor(sec/3600),m=Math.floor(sec%3600/60),x=sec%60;return h?h+'시간 '+(m?m+'분':''):m?m+'분'+(x&&m<10?' '+x+'초':''):x+'초'};
@@ -562,11 +566,11 @@ const bq=()=>S.bq||(S.bq=[]);
 const inBuild=k=>(building()&&S.build.k===k)||bq().includes(k);
 function startNext(at){const k=bq().shift();if(!k)return;const b=bldK(k),l=S.bld[k];if(l>=b.max)return startNext(at);S.build={k,end:at+bldTime(b,l)*1000,dur:bldTime(b,l)}}
 function finishBuild(quiet){const bd=building();if(!bd)return;const b=bldK(bd.k),l=S.bld[bd.k],end=bd.end;S.build=null;S.bld[bd.k]=l+1;if(!l)S.prod[bd.k]=Date.now();if(!quiet)toast(b.n+(l?' 확장':' 재건')+' 완료! '+b.eff(l+1));bldSig='';farmSig='';kitSig='';startNext(Math.min(Date.now(),Math.max(end,0))||Date.now())}
-function orderBuild(b){const l=S.bld[b.k],c=bldCost(b,l);if(l>=b.max||S.gold<c||inBuild(b.k))return;
- if(building()){if(bq().length>=BQ_MAX)return;S.gold-=c;bq().push(b.k);toast(b.n+' 공사를 예약했어요 · 앞 공사가 끝나면 시작해요');bldSig='';renderAll();return}
- S.gold-=c;S.build={k:b.k,end:Date.now()+bldTime(b,l)*1000,dur:bldTime(b,l)};bldSig='';renderAll();
+function orderBuild(b){const l=S.bld[b.k],c=bldCost(b,l),o=bldOre(b,l);if(l>=b.max||S.gold<c||inBuild(b.k))return;if(!oreOk(b,l))return toast('광석이 '+o+'개 필요해요. 광산에서 브론이 캐 와요');
+ if(building()){if(bq().length>=BQ_MAX)return;S.gold-=c;S.items.ore-=o;bq().push(b.k);toast(b.n+' 공사를 예약했어요 · 앞 공사가 끝나면 시작해요');bldSig='';renderAll();return}
+ S.gold-=c;S.items.ore-=o;S.build={k:b.k,end:Date.now()+bldTime(b,l)*1000,dur:bldTime(b,l)};bldSig='';renderAll();
  if(!S.done.tutBuild)buildTutorial(b,l);else toast(b.n+(l?' 확장':' 재건')+' 공사를 시작했어요 · '+fmtT(bldTime(b,l)))}
-function cancelQueued(k){const i=bq().indexOf(k);if(i<0)return;bq().splice(i,1);const b=bldK(k);S.gold+=bldCost(b,S.bld[k]);toast(b.n+' 예약을 취소했어요. 골드를 돌려받았어요');bldSig='';renderAll()}
+function cancelQueued(k){const i=bq().indexOf(k);if(i<0)return;bq().splice(i,1);const b=bldK(k);S.gold+=bldCost(b,S.bld[k]);S.items.ore+=bldOre(b,S.bld[k]);toast(b.n+' 예약을 취소했어요. 골드'+(bldOre(b,S.bld[k])?'와 광석을':'를')+' 돌려받았어요');bldSig='';renderAll()}
 const TUT_GEM=10;
 function buildTutorial(b,l){S.done.tutBuild=true;S.gem=(S.gem||0)+TUT_GEM;
  queue(()=>scene('황금 이삭 사용법','공사는 시간이 걸려요',[
@@ -707,7 +711,9 @@ function kStats(){let ga=0,gh=0;for(const s of SLOTS){const it=S.eq[s.k];if(it){
  return{atk:(10+S.up.atk*3+ga*fm)*(buff('atk')?1.2:1)*m,hp:(100+S.up.hp*20+gh*fm)*(1+.05*S.bld.diner)*m,aps:(1+S.up.spd*.05)*(buff('spd')?1.2:1),crit:(5+S.up.crit)/100+(buff('crit')?.1:0)}}
 const COMP_GROW=1.1,BLESS=.2;/* 동료 레벨당 능력치 ×1.1, 카엘 성유물 능력치의 20%를 동료도 받음(성검의 축복) */
 function gearSum(){let a=0,h=0;for(const s of SLOTS){const it=S.eq[s.k];if(it){a+=it.atk*enMul(s.k);h+=it.hp*enMul(s.k)}}const fm=1+.06*S.bld.mine;return{a:a*fm,h:h*fm}}
-function cStats(id){const c=COMP[id],l=S.lv[id],m=allMul(),g=Math.pow(COMP_GROW,l-1),gs=gearSum();return{atk:(c.base.atk*g+gs.a*BLESS)*(1+.08*S.bld.apiary)*(buff('atk')?1.2:1)*m,hp:(c.base.hp*g+gs.h*BLESS)*(1+.05*S.bld.diner)*m,aps:c.base.aps*(buff('spd')?1.2:1),crit:.05+(buff('crit')?.1:0)}}
+/* 동료 전용 무기: 대장간에서 광석+골드로 강화, 단계마다 그 동료 공격·체력 +8% */
+const CW={bron:'곡괭이',haral:'작살',riel:'벌통',margo:'국자'},CW_MAX=20,cwLv=id=>(S.cwEn&&S.cwEn[id])||0,cwMul=id=>1+.08*cwLv(id),cwOre=l=>Math.ceil(8*Math.pow(1.35,l)),cwGold=l=>Math.ceil(reward(Math.max(1,S.best),false)*12*(l+1));
+function cStats(id){const c=COMP[id],l=S.lv[id],m=allMul()*cwMul(id),g=Math.pow(COMP_GROW,l-1),gs=gearSum();return{atk:(c.base.atk*g+gs.a*BLESS)*(1+.08*S.bld.apiary)*(buff('atk')?1.2:1)*m,hp:(c.base.hp*g+gs.h*BLESS)*(1+.05*S.bld.diner)*m,aps:c.base.aps*(buff('spd')?1.2:1),crit:.05+(buff('crit')?.1:0)}}
 const stats=id=>id==='kael'?kStats():cStats(id);
 const members=()=>ORDER.filter(id=>id==='kael'||S.joined[id]);
 function power(){return Math.round(members().reduce((a,id)=>{const t=stats(id);return a+(t.atk*6+t.hp)*(1+t.crit)*t.aps*(id==='riel'?1.4:1)},0))}
@@ -865,19 +871,19 @@ const VNOTE={inn:'원정대가 쉬는 곳이에요. 레벨이 오를수록 게�
 function vlPanels(){$('farmBox').hidden=!(vlSel==='farm'&&S.bld.farm);$('kitchen').hidden=!(vlSel==='diner'&&S.bld.farm)||$('kitchen').innerHTML==='';const n=$('vNote'),t=VNOTE[vlSel];n.hidden=!t;if(t)n.textContent=t}
 let bldSig='';
 function renderBlds(){
- const bd=building(),sig=JSON.stringify(S.bld)+JSON.stringify(S.joined)+S.done.marta+vlSel+S.stage+(bd?bd.k+Math.ceil(buildLeft()):'')+(S.gem||0)+bq().join();
+ const bd=building(),sig=(S.bld.mine?S.items.ore:0)+'|'+JSON.stringify(S.bld)+JSON.stringify(S.joined)+S.done.marta+vlSel+S.stage+(bd?bd.k+Math.ceil(buildLeft()):'')+(S.gem||0)+bq().join();
  if(sig!==bldSig){bldSig=sig;
   $('blds').innerHTML=BLD.filter(b=>b.k===vlSel).map(b=>{const l=S.bld[b.k],op=b.open(),mx=l>=b.max;
    if(!op)return`<div class="row locked">${bldImg(b.k,0)}<div class="info"><b>${b.n}</b>${b.who?`<span class="role">${b.who}</span>`:''}<div>${b.lock}</div><div class="nx">재건하면: ${b.eff(1)}</div></div><span class="lockchip">잠김</span></div>`;
    return`<div class="row${l?'':' ruin'}">${bldImg(b.k,l)}<div class="info"><b>${b.n}</b>${b.who?`<span class="role">${b.who}</span>`:''}<span class="lvtag">${l?'Lv.'+l:'폐허'}</span>${l?`<div>지금: ${b.eff(l)}</div>${mx?'<div class="nx">최대 레벨</div>':`<div class="nx">다음: ${b.eff(l+1)}</div>`}`:`<div>무너져 있어요</div><div class="nx">재건하면: ${b.eff(1)}</div>`}${bd&&bd.k===b.k?`<div class="bprog"><div class="xp"><div style="width:${(1-buildLeft()/(bd.dur||bldTime(b,l)))*100}%"></div></div><span>${l?'확장':'재건'} 공사 중 · ${fmtT(buildLeft())} 남음</span></div>`:bq().includes(b.k)?`<div class="bprog"><span>공사 예약 ${bq().indexOf(b.k)+1}번째 · 앞 공사가 끝나면 ${fmtT(bldTime(b,l))} 동안 지어요</span></div>`:mx?'':`<div class="nx" style="color:var(--muted)">공사 시간 ${fmtT(bldTime(b,l))}</div>`}</div>
    <div class="buys">${bd&&bd.k===b.k?`<button class="buy gem" id="bf-${b.k}">${GEMIMG}${timeGem(buildLeft())}로<br>바로 완료</button>`
    :bq().includes(b.k)?`<button class="buy ghost" id="bc-${b.k}">예약 취소</button>`
-   :`<button class="buy" id="bd-${b.k}" ${mx||(bd&&bq().length>=BQ_MAX)?'disabled':''}>${mx?'최대':bd&&bq().length>=BQ_MAX?'<span class="bl">예약이 가득 찼어요</span>':costBtn(bd?'예약':l?'확장':'재건',bldCost(b,l))}</button>${mx?'':`<button class="buy gem" id="bg-${b.k}">${GEMIMG}${bldGem(bldCost(b,l))+timeGem(bldTime(b,l))}로 바로</button>`}`}</div></div>`}).join('');
+   :`<button class="buy" id="bd-${b.k}" ${mx||(bd&&bq().length>=BQ_MAX)?'disabled':''}>${mx?'최대':bd&&bq().length>=BQ_MAX?'<span class="bl">예약이 가득 찼어요</span>':costBtn(bd?'예약':l?'확장':'재건',bldCost(b,l),bldOre(b,l))}</button>${mx?'':`<button class="buy gem" id="bg-${b.k}">${GEMIMG}${bldGem(bldCost(b,l))+timeGem(bldTime(b,l))}로 바로</button>`}`}</div></div>`}).join('');
   BLD.forEach(b=>{const el=$('bd-'+b.k);if(el)el.onclick=()=>orderBuild(b);
    const bc=$('bc-'+b.k);if(bc)bc.onclick=()=>cancelQueued(b.k);
-   const eg=$('bg-'+b.k);if(eg)eg.onclick=()=>{const l=S.bld[b.k];if(l>=b.max||inBuild(b.k)||!spendGem(bldGem(bldCost(b,l))+timeGem(bldTime(b,l))))return;S.bld[b.k]=l+1;if(!l)S.prod[b.k]=Date.now();toast(b.n+(l?' 확장':' 재건')+' 완료! '+b.eff(l+1));bldSig='';farmSig='';kitSig='';renderAll()};
+   const eg=$('bg-'+b.k);if(eg)eg.onclick=()=>{const l=S.bld[b.k];if(l>=b.max||inBuild(b.k))return;if(!oreOk(b,l))return toast('광석이 '+bldOre(b,l)+'개 필요해요. 광산에서 브론이 캐 와요');if(!spendGem(bldGem(bldCost(b,l))+timeGem(bldTime(b,l))))return;S.items.ore-=bldOre(b,l);S.bld[b.k]=l+1;if(!l)S.prod[b.k]=Date.now();toast(b.n+(l?' 확장':' 재건')+' 완료! '+b.eff(l+1));bldSig='';farmSig='';kitSig='';renderAll()};
    const ef=$('bf-'+b.k);if(ef)ef.onclick=()=>{if(!building()||!spendGem(timeGem(buildLeft())))return;finishBuild();renderAll()}})}
- BLD.forEach(b=>{const el=$('bd-'+b.k);if(el&&S.bld[b.k]<b.max)el.disabled=(building()&&bq().length>=BQ_MAX)||S.gold<bldCost(b,S.bld[b.k])});
+ BLD.forEach(b=>{const el=$('bd-'+b.k);if(el&&S.bld[b.k]<b.max)el.disabled=(building()&&bq().length>=BQ_MAX)||S.gold<bldCost(b,S.bld[b.k])||!oreOk(b,S.bld[b.k])});
 }
 
 /* ---------- 원정대 · 단련 · 지도 ---------- */
@@ -929,11 +935,14 @@ const FRAMES=['normal','uncommon','rare','epic','legendary','mythic'];
 const SLOTIMG={weapon:'slot_weapon',helm:'slot_hat',armor:'slot_armor',gloves:'slot_gloves',boots:'slot_boots',ring:'slot_ring'};
 let forgeSig='';
 function renderForge(){const f=$('forge');if(!f)return;const ore=S.items.ore||0;
- const sig=[ore,S.bld.mine,JSON.stringify(S.slotEn||{}),S.joined.bron].join();if(sig===forgeSig)return;forgeSig=sig;
+ const cwIds=Object.keys(CW),sig=[ore,S.bld.mine,JSON.stringify(S.slotEn||{}),JSON.stringify(S.cwEn||{}),JSON.stringify(S.joined),cwIds.map(id=>S.gold>=cwGold(cwLv(id))).join(),S.best].join();if(sig===forgeSig)return;forgeSig=sig;
  if(!S.bld.mine){f.innerHTML=`<div class="sec">브론의 대장간 <small>잠김</small></div><p class="note">마을에 광산을 재건하면 브론이 캐낸 광석으로 성유물을 강화할 수 있어요.</p>`;return}
  f.innerHTML=`<div class="sec">브론의 대장간 <small>${uiImg('item_ore','chipic')} 광석 ${fmt(ore)}</small></div>
  <p class="note">부위마다 강화할 때마다 그 부위 성유물 능력치가 10%씩 올라요. 장비를 바꿔도 강화는 부위에 남아요.</p>
- <div class="forge">${SLOTS.map(sl=>{const l=enLv(sl.k),mx=l>=EN_MAX,c=enCost(l);return`<button class="fg" data-en="${sl.k}" ${mx||ore<c?'disabled':''}><img src="assets/ui/${SLOTIMG[sl.k]}.png" alt="" onerror="this.remove()"><b>${sl.n} <i>+${l}</i></b><span>${mx?'최대':`${uiImg('item_ore','chipic')}${c}`}</span></button>`}).join('')}</div>`;
+ <div class="forge">${SLOTS.map(sl=>{const l=enLv(sl.k),mx=l>=EN_MAX,c=enCost(l);return`<button class="fg" data-en="${sl.k}" ${mx||ore<c?'disabled':''}><img src="assets/ui/${SLOTIMG[sl.k]}.png" alt="" onerror="this.remove()"><b>${sl.n} <i>+${l}</i></b><span>${mx?'최대':`${uiImg('item_ore','chipic')}${c}`}</span></button>`}).join('')}</div>
+ <div class="sec" style="margin-top:12px">동료 전용 무기 <small>단계마다 그 동료 공격·체력 +8%</small></div>
+ <div class="forge cw">${cwIds.map(id=>{const j=S.joined[id],l=cwLv(id),mx=l>=CW_MAX,o=cwOre(l),g=cwGold(l);return`<button class="fg" data-cw="${id}" ${!j||mx||ore<o||S.gold<g?'disabled':''}>${j?`<img class="cwp" src="assets/portraits/portrait_${id}_idle.png" alt="" onerror="this.remove()">`:'<span class="cwp lockq">🔒</span>'}<b>${j?`${COMP[id].n}의 ${CW[id]}`:'???'} <i>+${l}</i></b><span>${!j?'합류 전':mx?'최대':`${uiImg('item_ore','chipic')}${o} · ${uiImg('ui_gold','chipic')}${fmt(g)}`}</span></button>`}).join('')}</div>`;
+ f.querySelectorAll('[data-cw]').forEach(b=>b.onclick=()=>{const id=b.dataset.cw,l=cwLv(id),o=cwOre(l),g=cwGold(l);if(!S.joined[id]||l>=CW_MAX||(S.items.ore||0)<o||S.gold<g)return;S.items.ore-=o;S.gold-=g;if(!S.cwEn)S.cwEn={};S.cwEn[id]=l+1;toast(COMP[id].n+'의 '+CW[id]+' +'+(l+1)+' 강화! 공격·체력 +'+((l+1)*8)+'%');partySig='';renderAll()});
  f.querySelectorAll('[data-en]').forEach(b=>b.onclick=()=>{const k=b.dataset.en,l=enLv(k),c=enCost(l);if(l>=EN_MAX||(S.items.ore||0)<c)return;S.items.ore-=c;if(!S.slotEn)S.slotEn={};S.slotEn[k]=l+1;flashSlot(k);toast(SLOTS.find(x=>x.k===k).n+' +'+(l+1)+' 강화! 능력치 +'+((l+1)*10)+'%');kitSig='';renderAll()})}
 function slotHtml(sl){const it=S.eq[sl.k],g=it?it.g:0;
  return`<button class="slot${it?'':' empty'}" id="sl-${sl.k}" aria-label="${sl.n}"><img class="fr" src="assets/ui/frame_${FRAMES[g]}.png" alt="" onerror="this.remove()"><img class="ic${relicSrc(it)?' relic':''}" src="${relicSrc(it)||'assets/ui/'+SLOTIMG[sl.k]+'.png'}" alt="" onerror="this.replaceWith(document.createRange().createContextualFragment(svg('${sl.k}')))">${enLv(sl.k)?`<span class="enb">+${enLv(sl.k)}</span>`:''}${it?`<span class="lv">Lv.${it.lv}</span>`:`<span class="lv em">비어 있음</span>`}</button>`}
@@ -1418,7 +1427,7 @@ const VIMG={bg:null,b:{}};(()=>{const bg=new Image();bg.onload=()=>VIMG.bg=bg;bg
  for(const b of BLD){const o=VIMG.b[b.k]={};const L=(n,src)=>{const im=new Image();im.onload=()=>o[n]=im;im.src=src};
   if(VART.includes(b.k)){L('ruin','assets/village/'+b.k+'_ruin.png');L('built','assets/village/'+b.k+'_built.png')}else L('icon','assets/ui/bld_'+b.k+'.png')}})();
 const VSLOT=[['farm',.098],['inn',.257],['diner',.413],['dock',.573],['apiary',.739],['mine',.902]];
-function vBadge(k,b,lv,open){if(!open)return null;if(building()&&S.build.k===k)return['공사 중 '+fmtT(buildLeft()),'#9cc3ff'];if(bq().includes(k))return['예약 '+(bq().indexOf(k)+1),'#c9d6f2'];if(k==='farm'&&lv&&S.plots&&S.plots.some(p=>plotState(p).st==='ready'))return['수확!','#7be08f'];if(k==='farm'&&lv&&S.plots&&S.plots.some(p=>!p)&&CROPS.some(c=>S.seeds[c.k]>0))return['심기','#9be3c0'];if(!inBuild(k)&&!(building()&&bq().length>=BQ_MAX)&&lv<b.max&&S.gold>=bldCost(b,lv))return[lv?'▲ 확장':'재건 가능','#ffc94a'];return null}
+function vBadge(k,b,lv,open){if(!open)return null;if(building()&&S.build.k===k)return['공사 중 '+fmtT(buildLeft()),'#9cc3ff'];if(bq().includes(k))return['예약 '+(bq().indexOf(k)+1),'#c9d6f2'];if(k==='farm'&&lv&&S.plots&&S.plots.some(p=>plotState(p).st==='ready'))return['수확!','#7be08f'];if(k==='farm'&&lv&&S.plots&&S.plots.some(p=>!p)&&CROPS.some(c=>S.seeds[c.k]>0))return['심기','#9be3c0'];if(!inBuild(k)&&!(building()&&bq().length>=BQ_MAX)&&lv<b.max&&S.gold>=bldCost(b,lv)&&oreOk(b,lv))return[lv?'▲ 확장':'재건 가능','#ffc94a'];return null}
 function drawVillage(){
  if(!VW)return;if(!VIMG.bg)return drawVillageCode();const prev=ctx;ctx=vctx;const hr=new Date().getHours(),night=hr>=19||hr<6;
  ctx.drawImage(VIMG.bg,0,0,VW,VH);if(night){ctx.fillStyle='rgba(10,16,48,.38)';ctx.fillRect(0,0,VW,VH)}
