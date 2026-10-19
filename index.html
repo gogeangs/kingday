@@ -631,7 +631,7 @@ function spawn(){
  const mx=monHp(S.stage,false)*(n>1?.75:1);mons=[];for(let i=0;i<n;i++)mons.push({x:W+60+i*40,lane:[.45,.82,.12][i],hp:mx,max:mx,atk:monAtk(S.stage,false)*(n>1?.8:1),boss:false,cd:.8+i*.35,hit:0,dead:0});
 }
 function addFloat(x,y,txt,col,size){floats.push({x,y,txt,col,size:size||15,t:0})}
-function hitMon(m,d,cr,s,gy){m.hp-=d;m.hit=.12;spawnFx(cr?'crit':'hit',m.x+(Math.random()-.5)*10*s,m.y-(m.boss?50:28)*s,(cr?78:50)*s*(m.boss?1.4:1),cr?.4:.26);addFloat(m.x+(Math.random()-.5)*12*s,m.y-(m.boss?95:60)*s,fmt(d),cr?'#ffc94a':'#ffffff',cr?21:14)}
+function hitMon(m,d,cr,s,gy){m.hp-=d;m.hit=.12;spawnFx(cr?'crit':'hit',m.x+(Math.random()-.5)*10*s,m.y-(m.boss?50:28)*s,(cr?60:42)*s*(m.boss?1.3:1),cr?.36:.24);addFloat(m.x+(Math.random()-.5)*12*s,m.y-(m.boss?95:60)*s,fmt(d),cr?'#ffc94a':'#ffffff',cr?21:14)}
 function resetFight(msg){for(const id of members()){P[id].hp=stats(id).hp;P[id].down=false}mons=[];spawnT=1;S.wave=0;$('bossbar').hidden=true;toast(msg);renderAll()}
 function step(dt){
  T+=dt;const L=layout(),{ids,pos,py,front,s}=L,gy=0;syncParty();for(const m of mons)m.y=depthAt(L,m.lane??.5);if(banner){banner.t-=dt;if(banner.t<=0)banner=null}
@@ -827,7 +827,8 @@ function fxFrame(k,i,x,y,size,rot){const im=FXI[k],cw=im.cw,h=im.height,w=size*c
 function drawFxs(){for(const f of fxs){const n=FXDEF[f.k],i=Math.min(n-1,Math.floor(f.t/f.d*n));ctx.globalAlpha=f.t>f.d*.7?Math.max(0,1-(f.t-f.d*.7)/(f.d*.3)):1;fxFrame(f.k,i,f.x,f.y+f.vy*f.t,f.size);ctx.globalAlpha=1}}
 /* 몬스터 스프라이트: 지역 번호 → 시트 이름. 시트는 assets/monsters/<이름>_<walk|attack|hit>.png, 왼쪽을 봄 */
 const MON_SPRITES={0:{id:'slime_plague',walk:4,attack:4,hit:2,fig:150,h:54},
- 1:{id:'bat_shadow',walk:4,attack:4,hit:2,fig:180,h:44,lift:30,boss:{id:'boss_seril',walk:4,attack:4,hit:2,fig:195,h:72}}};
+ 1:{id:'bat_shadow',walk:4,attack:4,hit:2,fig:180,h:44,lift:30,boss:{id:'boss_seril',walk:4,attack:4,hit:2,fig:195,h:72}},
+ 2:{id:'golem_steel',walk:4,attack:4,hit:2,fig:190,h:58}};
 const MSPR={};
 function loadMonSprites(){for(const k in MON_SPRITES){for(const d of[MON_SPRITES[k],MON_SPRITES[k].boss].filter(Boolean)){MSPR[d.id]={};for(const a of['walk','attack','hit']){const im=new Image();im.onload=()=>{im.ok=true};im.src='assets/monsters/'+d.id+'_'+a+'.png';MSPR[d.id][a]=im}}}}
 const sprOk=d=>{const m=d&&MSPR[d.id];return!!m&&['walk','attack','hit'].every(a=>m[a]&&m[a].ok)};
