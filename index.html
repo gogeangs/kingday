@@ -1823,7 +1823,7 @@ const PFRAMES=[
  {k:'holy',n:'성검의 가호',d:'첫 은퇴',ok:()=>(S.retires||0)>=1},
  {k:'royal',n:'붉은 왕관',d:'칭호 공작',ok:()=>rankIdx()>=5},
  {k:'goblin',n:'황금 고블린',d:'황금 고블린 희귀 전리품',ok:()=>false,rare:1,tall:1},
- {k:'season',n:'시즌 왕관',d:'시즌 랭킹 1위 보상',ok:()=>false,rk:1},
+ {k:'season',n:'시즌 왕관',d:'시즌 랭킹 1위 보상',ok:()=>false,rk:1,tall:1},
  {k:'conquer',n:'정복자',d:'영지 50곳 탈환 · 명예의 전당 보상',ok:()=>false,rk:1}];
 const pfTall=k=>(PFRAMES.find(f=>f.k===k)||{}).tall?' tall':'';
 const stat=(k,n)=>{if(!S.stat)S.stat={};S.stat[k]=(S.stat[k]||0)+n},st=k=>(S.stat&&S.stat[k])||0;
@@ -1850,7 +1850,7 @@ function pfCheck(){if(!S.pfUnl)S.pfUnl={};for(const f of PFRAMES){if(!S.pfUnl[f.
  {const fb=$('faceBtn');if(fb){fb.classList.toggle('newpf',!S.pfSeen);fb.classList.toggle('pfdot',!!S.pfSeen&&!!S.pfNew&&Object.keys(S.pfNew).length>0)}}
  const im=$('hFrame'),src='assets/profile/frame_'+(S.pf||'wood')+'.png';if(im&&!im.src.endsWith(src)){im.src=src;im.className='pfr'+pfTall(S.pf||'wood')}}
 function profileSheet(){S.pfSeen=1;const nw=S.pfNew||{};S.pfNew={};pfCheck();const cur=S.pf||'wood',ri=rankIdx();
- $('sheet').innerHTML=`<div class="hdban" style="--hb:url(assets/ui/hd_profile.png)"><span>프로필</span></div><div class="pfhead"><div class="pfbig"><canvas id="pfCv"></canvas><img class="pfr${pfTall(cur)}" src="assets/profile/frame_${cur}.png" alt=""></div><div class="pfinfo"><b>카엘${S.badge&&bdHas(S.badge)?`<img class="pfbd" src="assets/profile/badge_${S.badge}.png" alt="">`:''}</b><small class="pfnick">닉네임 <b>${esc(S.nick||'준비 중')}</b>${S.nickTemp?' <i>임시</i>':''}${sbOn()?'<button class="buy" id="pfNick">'+(S.nickTemp?'정하기':'바꾸기')+'</button>':''}</small><small>${RANKS[ri].n} · 전투력 ${fmt(power())}</small><small>최고 영지 ${Math.min(S.best,MAXLAND)} · 은퇴 ${S.retires||0}번 · 은퇴의 추억 ${S.memory||0}개</small></div></div>
+ $('sheet').innerHTML=`<div class="hdban" style="--hb:url(assets/ui/hd_profile.png)"><span>프로필</span></div><div class="pfhead"><div class="pfbig"><canvas id="pfCv"></canvas><img class="pfr${pfTall(cur)}" src="assets/profile/frame_${cur}.png" alt=""></div><div class="pfinfo"><b>카엘${S.badge&&bdHas(S.badge)?`<img class="pfbd" src="assets/profile/badge_${S.badge}.png" alt="">`:''}</b><small class="pfnick">닉네임 <b>${esc(S.nick||'준비 중')}</b>${S.nickTemp?' <i>임시</i>':''}${sbOn()?'<button class="buy" id="pfNick">'+(S.nickTemp||!S.nick?'정하기':'바꾸기')+'</button>':''}</small><small>${RANKS[ri].n} · 전투력 ${fmt(power())}</small><small>최고 영지 ${Math.min(S.best,MAXLAND)} · 은퇴 ${S.retires||0}번 · 은퇴의 추억 ${S.memory||0}개</small></div></div>
  <div class="sec">테두리 <small>${PFRAMES.filter(f=>pfHas(f.k)).length} / ${PFRAMES.length}</small></div>
  <div class="pfgrid">${PFRAMES.map(f=>{const has=pfHas(f.k);return`<button class="pfc${f.k===cur?' on':''}${has?'':' lock'}${f.rare||f.rk?' rare':''}" data-pf="${f.k}"><span class="pv"><i></i><img class="pfr${pfTall(f.k)}" src="assets/profile/frame_${f.k}.png" alt=""></span><b>${f.n}</b>${nw['f_'+f.k]?'<i class="nwb">NEW</i>':''}<small>${f.k===cur?'사용 중':has?'바꾸기':'🔒 '+f.d}</small></button>`}).join('')}</div>
  <div class="sec">대표 배지 <small>${BADGES.filter(b=>bdHas(b.k)).length} / ${BADGES.length}</small></div>
