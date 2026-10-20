@@ -126,10 +126,11 @@ void main() {
     await tester.pump(const Duration(milliseconds: 100));
     await tester.tap(find.text('게임 시작'));
     // 전투 화면(Flame)이 그림을 불러 준비를 마치도록 진짜 시간으로 잠깐 기다림
-    for (var k = 0; k < 5; k++) {
-      await tester.runAsync(() => Future<void>.delayed(const Duration(milliseconds: 400)));
+    for (var k = 0; k < 60 && !g.game.isLoaded; k++) {
+      await tester.runAsync(() => Future<void>.delayed(const Duration(milliseconds: 500)));
       await tester.pump(const Duration(milliseconds: 100));
     }
+    expect(g.game.isLoaded, isTrue, reason: '전투 화면 그림 불러오기가 30초 안에 끝나야 함');
     final tabs = [null, GameTab.eq, GameTab.pt, GameTab.up, GameTab.vl, GameTab.mp, null];
     for (var i = 0; i < 6000; i++) {
       await tester.pump(const Duration(milliseconds: 100));
