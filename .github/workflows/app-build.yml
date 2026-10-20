@@ -170,7 +170,16 @@ jobs:
           git -c http.https://github.com/.extraheader="$H" push -q -f "https://github.com/${{ github.repository }}" qa-shots
 
       - name: APK 빌드
-        run: flutter build apk --release
+        run: |
+          set +e
+          flutter build apk --release > apk.log 2>&1
+          code=$?
+          tail -60 apk.log
+          if [ $code -ne 0 ]; then
+            msg=$( { grep -E "error|Error|FAILURE|What went wrong|failed|requires|minSdk|Execution failed|Could not" apk.log | grep -v "^\s*at " | awk '!seen[$0]++' | head -40; } | sed -e 's/%/%25/g' | awk '{printf "%s%%0A", $0}')
+            echo "::error title=apk-fail::$msg"
+            exit $code
+          fi
 
       - uses: actions/upload-artifact@v5
         with:

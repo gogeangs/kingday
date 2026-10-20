@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -5,6 +7,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'core/save_store.dart';
 import 'core/server.dart';
 import 'core/state.dart';
+import 'game/ads.dart';
 import 'game/controller.dart';
 import 'game/feel.dart';
 import 'screens/shell.dart';
@@ -15,6 +18,9 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   // 실제 폰: 효과음·진동 켬 (시험에서는 꺼져 있음)
   Feel.live = true;
+  // 보상형 광고 (시험용 광고 ID)
+  Ads.live = true;
+  unawaited(Ads.init());
   await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
   final store = await SaveStore.open();
   final g = GameController(store: store, state: store.load(DateTime.now().millisecondsSinceEpoch), server: Server(store.prefs));

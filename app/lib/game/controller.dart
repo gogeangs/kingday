@@ -24,6 +24,7 @@ import '../screens/social_sheets.dart';
 import '../ui/game_widgets.dart';
 import '../ui/theme.dart';
 import '../ui/widgets.dart';
+import 'ads.dart';
 import 'feel.dart';
 import 'online.dart';
 
@@ -520,9 +521,7 @@ class GameController extends ChangeNotifier {
     refresh();
   }
 
-  // ── 광고 보상 자리 (웹 AD_TEST: 3초 가짜 광고. 9단계에서 AdMob 보상형 광고로 바꿈) ──
-  static const adTest = true;
-
+  // ── 광고 보상 (AdMob 보상형 광고 · 시험용 ID. 광고가 없으면 3초 가짜 광고로 대신) ──
   /// watchAd(k, give): 오늘 남은 횟수가 있으면 광고를 보고 보상
   Future<void> watchAd(String k, void Function() give) async {
     if (calc.adLeft(k) <= 0) {
@@ -533,16 +532,27 @@ class GameController extends ChangeNotifier {
     if (ctx == null || modalOpen) return;
     modalOpen = true;
     notifyListeners();
+    bool? watched;
     try {
-      await showGeneralDialog<void>(
-        context: ctx,
-        barrierDismissible: false,
-        barrierColor: const Color(0xE0000000),
-        pageBuilder: (c, _, __) => _AdCountdown(onDone: () => Navigator.of(c).pop()),
-      );
+      watched = await Ads.show();
+      // 보여 줄 광고가 없으면 (인터넷 없음·시험 환경) 웹처럼 3초 가짜 광고
+      if (watched == null && ctx.mounted) {
+        await showGeneralDialog<void>(
+          context: ctx,
+          barrierDismissible: false,
+          barrierColor: const Color(0xE0000000),
+          pageBuilder: (c, _, __) => _AdCountdown(onDone: () => Navigator.of(c).pop()),
+        );
+        watched = true;
+      }
     } finally {
       modalOpen = false;
       notifyListeners();
+    }
+    if (watched != true) {
+      toast('광고를 끝까지 보면 받을 수 있어요');
+      pump();
+      return;
     }
     final ad = asMap(calc.daily()['ad'])!;
     ad[k] = orNum(ad[k], 0) + 1;

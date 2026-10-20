@@ -6,6 +6,10 @@
         android:label="왕이 되는 그날까지"
         android:name="${applicationName}"
         android:icon="@mipmap/launcher_icon">
+        <!-- AdMob 앱 ID: 지금은 구글 공식 시험용. 출시 전 AdMob 에서 받은 앱 ID 로 바꿈 (docs/RELEASE_NATIVE.md) -->
+        <meta-data
+            android:name="com.google.android.gms.ads.APPLICATION_ID"
+            android:value="ca-app-pub-3940256099942544~3347511713"/>
         <activity
             android:name=".MainActivity"
             android:screenOrientation="portrait"
