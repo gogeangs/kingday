@@ -160,6 +160,10 @@ for (const name of Object.keys(SAVES)) {
     w.ctx.renderAll = ra;
   }
   sc.retired = run('S');
+  // 프로필 테두리·배지 (pfCheck)
+  setSave(name);
+  F('pfCheck')();
+  sc.pf = run('({pfUnl:S.pfUnl,bdUnl:S.bdUnl,pfNew:S.pfNew??null})');
   // 오늘의 할 일 날짜 바뀜
   setSave(name);
   w.setNow(NOW + 24 * HOUR);
@@ -176,6 +180,10 @@ for (const name of ['mid', 'late', 'old']) {
 }
 
 out.misc.cardIds = IDS;
+// 랭킹: 영지 이름·시즌 끝·주차·서버에 보내는 꾸미기 정보
+out.misc.stgName = [1, 2, 10, 11, 37, 50, 51, 99].map((n) => [n, F('stgName')(n)]);
+out.misc.seasonEnd = F('seasonEnd')();
+out.misc.curWeek = F('curWeek')();
 out.misc.compIds = COMPS;
 
 const file = path.join(__dirname, '..', '..', 'app', 'test', 'fixtures', 'web_parity.json');

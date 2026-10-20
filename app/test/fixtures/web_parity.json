@@ -2207,6 +2207,13 @@
     },
     "v": 3
    },
+   "pf": {
+    "pfUnl": {
+     "wood": 1
+    },
+    "bdUnl": {},
+    "pfNew": null
+   },
    "dailyNext": {
     "d": "2026-10-21",
     "kill": 0,
@@ -4214,6 +4221,27 @@
      "wood": 1
     }
    },
+   "pf": {
+    "pfUnl": {
+     "wood": 1,
+     "straw": 1,
+     "silver": 1,
+     "gold": 1,
+     "amethyst": 1,
+     "holy": 1
+    },
+    "bdUnl": {
+     "rebuild": 1
+    },
+    "pfNew": {
+     "f_straw": 1,
+     "f_silver": 1,
+     "f_gold": 1,
+     "f_amethyst": 1,
+     "f_holy": 1,
+     "b_rebuild": 1
+    }
+   },
    "dailyNext": {
     "d": "2026-10-21",
     "kill": 0,
@@ -6165,6 +6193,35 @@
      "cook": "luka"
     }
    },
+   "pf": {
+    "pfUnl": {
+     "wood": 1,
+     "straw": 1,
+     "harvest": 1,
+     "silver": 1,
+     "gold": 1,
+     "amethyst": 1,
+     "holy": 1,
+     "royal": 1
+    },
+    "bdUnl": {
+     "rebuild": 1,
+     "chest": 1,
+     "retire": 1
+    },
+    "pfNew": {
+     "f_straw": 1,
+     "f_harvest": 1,
+     "f_silver": 1,
+     "f_gold": 1,
+     "f_amethyst": 1,
+     "f_holy": 1,
+     "f_royal": 1,
+     "b_rebuild": 1,
+     "b_chest": 1,
+     "b_retire": 1
+    }
+   },
    "dailyNext": {
     "d": "2026-10-21",
     "kill": 0,
@@ -7928,6 +7985,14 @@
      "claim": {}
     },
     "v": 3
+   },
+   "pf": {
+    "pfUnl": {
+     "wood": 1,
+     "straw": 1
+    },
+    "bdUnl": {},
+    "pfNew": null
    },
    "dailyNext": {
     "d": "2026-10-21",
@@ -9707,6 +9772,14 @@
     },
     "v": 3
    },
+   "pf": {
+    "pfUnl": {
+     "wood": 1,
+     "straw": 1
+    },
+    "bdUnl": {},
+    "pfNew": null
+   },
    "dailyNext": {
     "d": "2026-10-21",
     "kill": 0,
@@ -11481,6 +11554,15 @@
     "stat": {
      "harv": 4
     }
+   },
+   "pf": {
+    "pfUnl": {
+     "wood": 1,
+     "straw": 1,
+     "silver": 1
+    },
+    "bdUnl": {},
+    "pfNew": null
    },
    "dailyNext": {
     "d": "2026-10-21",
@@ -13261,6 +13343,16 @@
      "harv": 4
     }
    },
+   "pf": {
+    "pfUnl": {
+     "wood": 1,
+     "straw": 1,
+     "silver": 1,
+     "gold": 1
+    },
+    "bdUnl": {},
+    "pfNew": null
+   },
    "dailyNext": {
     "d": "2026-10-21",
     "kill": 0,
@@ -15026,6 +15118,15 @@
     },
     "v": 3
    },
+   "pf": {
+    "pfUnl": {
+     "wood": 1,
+     "straw": 1,
+     "silver": 1
+    },
+    "bdUnl": {},
+    "pfNew": null
+   },
    "dailyNext": {
     "d": "2026-10-21",
     "kill": 0,
@@ -16018,6 +16119,42 @@
    "brida",
    "nella"
   ],
+  "stgName": [
+   [
+    1,
+    "1-1"
+   ],
+   [
+    2,
+    "1-2"
+   ],
+   [
+    10,
+    "1-10"
+   ],
+   [
+    11,
+    "2-1"
+   ],
+   [
+    37,
+    "4-7"
+   ],
+   [
+    50,
+    "5-10"
+   ],
+   [
+    51,
+    "왕도"
+   ],
+   [
+    99,
+    "왕도"
+   ]
+  ],
+  "seasonEnd": 1793545200000,
+  "curWeek": 1,
   "compIds": [
    "kael",
    "bron",

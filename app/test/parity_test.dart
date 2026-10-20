@@ -9,10 +9,12 @@ import 'dart:io';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:kingday/core/calc.dart';
 import 'package:kingday/core/data.dart';
+import 'package:kingday/core/profile_data.dart';
 import 'package:kingday/core/fmt.dart';
 import 'package:kingday/core/rng.dart';
 import 'package:kingday/core/save_code.dart';
 import 'package:kingday/core/state.dart';
+import 'package:kingday/game/online.dart';
 
 late Map<String, dynamic> fx;
 late int now;
@@ -106,6 +108,14 @@ void main() {
     expect(importSaveCode(base64Encode(utf8.encode('{"stage":3}'))), isNull);
   });
 
+  test('랭킹: 영지 이름·시즌 끝·주차', () {
+    for (final e in fx['misc']['stgName'] as List) {
+      expect(stgName(e[0] as num), e[1], reason: '${e[0]}');
+    }
+    expect(seasonEndAt(now), fx['misc']['seasonEnd']);
+    expect(((now - seasonZero) / 6048e5).floor() + 1, fx['misc']['curWeek']);
+  });
+
   test('카드 동료·전체 동료 목록 순서', () {
     same(GameCalc.cardIds(), fx['misc']['cardIds'], 'CARDIDS');
     same(comps.keys.toList(), fx['misc']['compIds'], 'COMP');
@@ -115,6 +125,12 @@ void main() {
     group('저장 데이터 「$name」', () {
       late Map<String, dynamic> sc;
       setUp(() => sc = (fx['scenarios'] as Map)[name] as Map<String, dynamic>);
+
+      test('프로필 테두리·배지 열림 (pfCheck)', () {
+        final c = calcFor(name);
+        c.pfCheck();
+        same(jsonDecode(jsonEncode({'pfUnl': c.s.raw['pfUnl'], 'bdUnl': c.s.raw['bdUnl'], 'pfNew': c.s.raw['pfNew']})), sc['pf'], 'pf');
+      });
 
       test('불러오기(hydrate) 결과가 웹과 같은 JSON', () {
         final c = calcFor(name);

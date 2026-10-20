@@ -16,11 +16,15 @@ import '../core/calc.dart';
 import '../core/data.dart';
 import '../core/fmt.dart';
 import '../core/js.dart';
+import '../core/profile_data.dart';
 import '../core/save_store.dart';
+import '../core/server.dart';
 import '../core/state.dart';
+import '../screens/social_sheets.dart';
 import '../ui/game_widgets.dart';
 import '../ui/theme.dart';
 import '../ui/widgets.dart';
+import 'online.dart';
 
 /// 화면 어디서나 ref.watch(gameProvider) 로 꺼내 씀 (main.dart 에서 실제 값으로 바꿔 끼움)
 final gameProvider = Provider<GameController>((ref) => throw UnimplementedError('ProviderScope 에서 넣어 주세요'));
@@ -46,7 +50,7 @@ enum GameTab {
 }
 
 class GameController extends ChangeNotifier {
-  GameController({required this.store, required this.state}) {
+  GameController({required this.store, required this.state, Server? server}) {
     calc = GameCalc(state);
     sim = BattleSim(calc);
     game = BattleGame(sim, insets: const BattleInsets(top: 84, bottom: 118))..onTick = _onFrame;
@@ -67,9 +71,15 @@ class GameController extends ChangeNotifier {
     } else {
       offline();
     }
+    calc.pfCheck();
     // 웹 loop(): 5초마다 저장
     _saveTimer = Timer.periodic(const Duration(seconds: 5), (_) => save());
+    // 8단계: 계정·랭킹·우편·클라우드 (서버가 없으면 꺼짐)
+    online = Online(this, server)..start();
   }
+
+  /// 계정·랭킹·우편함·클라우드 저장
+  late final Online online;
 
   final SaveStore store;
   final GameState state;
@@ -133,6 +143,8 @@ class GameController extends ChangeNotifier {
   void onPause() {
     if (backgrounded) return;
     save();
+    // 웹 cloudBeacon(): 벗어날 때 클라우드에도 한 번
+    online.cloudPut(false);
     backgrounded = true;
   }
 
@@ -143,6 +155,8 @@ class GameController extends ChangeNotifier {
     calc.produce();
     offline();
     refresh();
+    // 웹 'online' 이벤트처럼: 돌아오면 계정·우편 다시 확인
+    if (online.on) online.ensure();
   }
 
   /// 기록을 통째로 바꿔 끼움 (저장 코드 불러오기·초기화). main.dart 의 앱 뿌리가 새 진행 담당을 만든다
@@ -244,6 +258,7 @@ class GameController extends ChangeNotifier {
     _saveTimer?.cancel();
     _toastTimer?.cancel();
     save();
+    online.dispose();
     game.pauseEngine();
     super.dispose();
   }
@@ -295,6 +310,12 @@ class GameController extends ChangeNotifier {
       modalOpen = false;
       notifyListeners();
       refresh();
+      final n = _next;
+      _next = null;
+      if (n != null) {
+        Future.microtask(n);
+        return;
+      }
       // 다음 창은 한 박자 쉬고
       Future.delayed(const Duration(milliseconds: 120), pump);
     });
@@ -312,9 +333,23 @@ class GameController extends ChangeNotifier {
       modalOpen = false;
       notifyListeners();
       refresh();
-      pump();
+      final n = _next;
+      _next = null;
+      if (n != null) {
+        Future.microtask(n);
+      } else {
+        pump();
+      }
     }
   }
+
+  /// 지금 창을 닫고, 닫힌 다음 바로 다른 창을 엶 (웹은 같은 창의 내용을 바꿔 끼우던 자리)
+  void chainSheet(BuildContext sheetCtx, FutureOr<void> Function() next) {
+    _next = next;
+    Navigator.of(sheetCtx).pop();
+  }
+
+  FutureOr<void> Function()? _next;
 
   /// 웹 scene(eyebrow,title,paras,btn,alt,illust): 이야기 창. 대기열에 넣는다.
   void scene(String eyebrow, String title, List<String> paras, String btn,
@@ -357,6 +392,7 @@ class GameController extends ChangeNotifier {
     if (_uiT > .4) {
       _uiT = 0;
       calc.produce();
+      calc.pfCheck();
       refresh();
     }
   }
@@ -490,12 +526,39 @@ class GameController extends ChangeNotifier {
   }
 
   /// 장비 비교 창 (웹 showItem) — 고르기 전에는 닫히지 않음
-  Future<void> showItemSheet(BuildContext ctx, Relic it, Relic? cur) => showKdSheet<void>(ctx, closable: false, builder: (c) {
+  Future<void> showItemSheet(BuildContext ctx, Relic it, Relic? cur,
+          {({num gold, num gem, String? card, List<(String, String)> rare})? gob}) =>
+      showKdSheet<void>(ctx, closable: false, builder: (c) {
         final d = (GameCalc.score(it) - GameCalc.score(cur)) * calc.enMul(it.slot);
         final mood = it.g < 1 ? 'angry' : it.g >= 4 ? 'moved' : 'proud';
+        Widget gl(Widget icon, String b, String sm, Color col) => Container(
+              width: 62,
+              padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 2),
+              decoration: BoxDecoration(
+                color: KdColors.panel2,
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(color: col.withValues(alpha: .6)),
+              ),
+              child: Column(children: [
+                SizedBox(width: 34, height: 34, child: icon),
+                FittedBox(fit: BoxFit.scaleDown, child: Text(b, style: KdText.figure(13, color: col))),
+                FittedBox(fit: BoxFit.scaleDown, child: Text(sm, style: KdText.body(10.5, color: KdColors.muted))),
+              ]),
+            );
         return KdSheetBody(
-          title: '성유물을 얻었어요',
+          title: gob != null ? '황금 고블린 처치!' : '성유물을 얻었어요',
           children: [
+            if (gob != null) ...[
+              Wrap(alignment: WrapAlignment.center, spacing: 6, runSpacing: 6, children: [
+                gl(kdImg(goldIcon), '+${fmt(gob.gold)}', '골드', KdColors.gold),
+                gl(kdImg(gemIcon), '+${fmt(gob.gem)}', '황금 이삭', const Color(0xFFFFE08A)),
+                gl(RelicIcon(it, size: 34), itemGrades[it.g].n, slotDef(it.slot).n, gradeColor(it.g)),
+                if (gob.card != null) gl(CompFrame(gob.card!, w: 28, h: 34), '+3', '${comps[gob.card]!.n} 카드', const Color(0xFFC9A4FF)),
+                for (final (t, _) in gob.rare)
+                  gl(kdImg('assets/game/profile/${t}_goblin.png'), t == 'frame' ? '테두리' : '배지', '아주 드묾!', const Color(0xFFFFD34A)),
+              ]),
+              const KdSec('받은 성유물'),
+            ],
             Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
               Expanded(child: RelicCard(it, '새 장비', calc, vs: cur, compare: true)),
               const SizedBox(width: 8),
@@ -556,19 +619,20 @@ class GameController extends ChangeNotifier {
         toast(msg);
       case HapticEvent(:final pattern):
         haptic(pattern);
-      case GoblinLootEvent(:final relic, :final gold, :final gem, :final cardId):
-        // 장비 비교 창은 4단계. 지금은 웹 「자동 열기」처럼 더 좋으면 끼우고 아니면 판다.
-        final cur = calc.equipped(relic.slot);
-        String what;
-        if (GameCalc.score(relic) > GameCalc.score(cur)) {
-          if (cur != null) state.gold = state.gold + cur.price;
-          state.eq[relic.slot] = relic.toJson();
-          what = '${itemGrades[relic.g].n} ${slotDef(relic.slot).n} 장착';
-        } else {
-          state.gold = state.gold + relic.price;
-          what = '${itemGrades[relic.g].n} ${slotDef(relic.slot).n} 판매';
+      case GoblinLootEvent(:final relic, :final gold, :final gem, :final cardId, :final rare):
+        if (!sim.noSave) {
+          online.gobDirty = true;
+          Timer(const Duration(milliseconds: 2600), online.gobRankToast);
         }
-        toast('황금 고블린 처치! 골드 +${fmt(gold)} · 이삭 +${fmt(gem)} · $what${cardId != null ? ' · ${comps[cardId]!.n} 카드 +3' : ''}');
+        // 웹 gobDrop: 장비 비교 창 위에 전리품 줄을 붙여 보여 줌 (다른 장비를 고르는 중이면 건너뜀)
+        queue((ctx) async {
+          if (acts.pending != null) return;
+          acts.pending = relic;
+          await showItemSheet(ctx, relic, calc.equipped(relic.slot), gob: (gold: gold, gem: gem, card: cardId, rare: rare));
+        });
+        for (final (t, n) in rare) {
+          queue((ctx) => showGobRare(ctx, this, t, n));
+        }
       case StoryEvent(:final id):
         final ev = storyEvents.firstWhere((x) => x.id == id);
         scene(ev.eyebrow, ev.title, ev.lines, ev.button);

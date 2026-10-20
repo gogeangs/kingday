@@ -8,11 +8,15 @@ import '../core/save_code.dart';
 import '../game/controller.dart';
 import '../ui/theme.dart';
 import '../ui/widgets.dart';
+import 'social_sheets.dart';
 
 /// 웹 .hdban: 금테 머리 그림 위에 글자
 class HdBanner extends StatelessWidget {
-  const HdBanner(this.img, this.text, {super.key});
+  const HdBanner(this.img, this.text, {super.key, this.size = 20, this.padTop = .01});
   final String img, text;
+
+  /// 글자 크기 (웹 --hs), 글자 위 여백 비율 (웹 --hp)
+  final double size, padTop;
 
   @override
   Widget build(BuildContext context) => Center(
@@ -22,10 +26,13 @@ class HdBanner extends StatelessWidget {
             aspectRatio: 720 / 225,
             child: Stack(fit: StackFit.expand, children: [
               kdImg('assets/game/ui/$img.png', fit: BoxFit.contain),
-              Center(
-                child: Text(text,
-                    style: KdText.display(20, color: const Color(0xFFFFE7A6))
+              Padding(
+                padding: EdgeInsets.only(top: 330 * padTop),
+                child: Center(
+                  child: Text(text,
+                    style: KdText.display(size, color: const Color(0xFFFFE7A6))
                         .copyWith(letterSpacing: .8, shadows: const [Shadow(color: Color(0x99000000), offset: Offset(0, 2), blurRadius: 3)])),
+                ),
               ),
             ]),
           ),
@@ -83,7 +90,7 @@ class _SettingsState extends State<_Settings> {
       titleWidget: const HdBanner('hd_settings', '카엘의 수첩'),
       children: [
         const KdSec('계정', small: '클라우드 저장'),
-        const KdNote('구글·애플 계정 연결과 클라우드 저장은 다음 단계(서버 연결)에서 붙어요. 지금은 아래 저장 코드로 웹 기록을 옮길 수 있어요.'),
+        AccountBox(g),
         const KdSec('저장 데이터 옮기기', small: '코드로 직접'),
         const KdNote('저장은 이 휴대폰에만 돼요. 아래 코드를 복사해 두면 다른 곳(웹 포함)에서 불러올 수 있어요.'),
         TextField(

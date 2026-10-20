@@ -28,8 +28,10 @@ class StageTop extends StatelessWidget {
     final label = st > maxLand ? '왕도 진격로' : '${(st - 1) ~/ 10 + 1}-${(st - 1) % 10 + 1} ${r.n}';
     final sub = st > maxLand ? '' : '${GameCalc.terrName(st)} 탈환전';
     final gi = g.state.raw['guideOff'] == true ? -1 : g.calc.guideIndex();
+    // 오른쪽 위에 우편함·랭킹 버튼이 있으면 그만큼 비움 (웹 .ovtop padding-inline:8px 58px)
+    final fab = g.online.on;
     return Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 12),
+        padding: EdgeInsets.fromLTRB(fab ? 8 : 12, 0, fab ? 58 : 12, 0),
         child: Column(
           children: [
             // .toprow: 영지 표시줄 + 다음 할 일

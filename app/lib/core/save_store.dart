@@ -16,6 +16,9 @@ class SaveStore {
   SaveStore(this._prefs);
   final SharedPreferences _prefs;
 
+  /// 같은 기기 저장소 (서버 로그인 토큰도 여기에)
+  SharedPreferences get prefs => _prefs;
+
   static Future<SaveStore> open() async => SaveStore(await SharedPreferences.getInstance());
 
   /// 웹 load(): 저장이 없거나 깨졌으면 새 게임 (웹 start(): hydrate({gold:60}))

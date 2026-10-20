@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'core/save_store.dart';
+import 'core/server.dart';
 import 'core/state.dart';
 import 'game/controller.dart';
 import 'screens/shell.dart';
@@ -13,7 +14,7 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
   final store = await SaveStore.open();
-  final g = GameController(store: store, state: store.load(DateTime.now().millisecondsSinceEpoch));
+  final g = GameController(store: store, state: store.load(DateTime.now().millisecondsSinceEpoch), server: Server(store.prefs));
   runApp(KingdayApp(g: g));
 }
 
@@ -40,7 +41,7 @@ class KingdayAppState extends State<KingdayApp> with WidgetsBindingObserver {
   void _restart(GameState next) {
     final old = g;
     old.noSave = true;
-    setState(() => g = GameController(store: old.store, state: next)..onRestart = _restart);
+    setState(() => g = GameController(store: old.store, state: next, server: old.online.sv)..onRestart = _restart);
     // 옛 화면이 다 사라진 다음에 정리
     WidgetsBinding.instance.addPostFrameCallback((_) => old.dispose());
   }

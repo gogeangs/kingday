@@ -9,12 +9,13 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../core/data.dart';
 import '../core/fmt.dart';
+import '../core/profile_data.dart';
 import '../game/controller.dart';
 import '../ui/fx.dart';
 import '../ui/theme.dart';
 import '../ui/widgets.dart';
 import 'pages.dart';
-import 'settings_sheet.dart';
+import 'social_sheets.dart';
 import 'stage_overlay.dart';
 
 class GameShell extends ConsumerWidget {
@@ -60,8 +61,8 @@ class _Hud extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final s = g.state, ri = g.calc.rankIdx();
-    final badge = s.raw['badge'] is String ? s.raw['badge'] as String : null;
-    final frame = s.raw['pf'] is String ? s.raw['pf'] as String : 'wood';
+    final badge = g.calc.curBadge();
+    final frame = g.calc.curFrame();
     return Container(
       padding: EdgeInsets.fromLTRB(12, math.max(8, top), 12, 8),
       decoration: const BoxDecoration(
@@ -71,7 +72,7 @@ class _Hud extends StatelessWidget {
       child: Row(children: [
         // 얼굴 + 프로필 테두리 + ⚙
         GestureDetector(
-          onTap: () => _profile(),
+          onTap: () => openProfile(g),
           child: SizedBox(
             width: 52,
             height: 52,
@@ -89,7 +90,29 @@ class _Hud extends StatelessWidget {
                   ),
                 ),
               ),
-              Positioned.fill(child: kdImg('assets/game/profile/frame_$frame.png')),
+              Positioned(
+                left: 0,
+                right: 0,
+                top: isTallFrame(frame) ? -52 * .15625 : 0,
+                height: isTallFrame(frame) ? 52 * 1.15625 : 52,
+                child: kdImg('assets/game/profile/frame_$frame.png', fit: BoxFit.fill),
+              ),
+              // 처음엔 「꾸미기」, 새 테두리·배지를 얻으면 빨간 점 (웹 .face.newpf / .pfdot)
+              if (g.calc.pfNewbie())
+                Positioned(
+                  left: 0,
+                  right: 0,
+                  bottom: -6,
+                  child: Center(
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 5),
+                      decoration: BoxDecoration(color: const Color(0xFFFF5A6E), borderRadius: BorderRadius.circular(8)),
+                      child: Text('꾸미기', style: KdText.body(9.5, color: Colors.white, weight: FontWeight.w600, height: 1.45)),
+                    ),
+                  ),
+                )
+              else if (g.calc.pfDot())
+                const Positioned(top: -2, left: -2, child: _Dot()),
               Positioned(
                 right: -3,
                 bottom: -3,
@@ -173,54 +196,6 @@ class _Hud extends StatelessWidget {
       ]),
     );
   }
-
-  /// 얼굴을 누르면 프로필 (꾸미기·닉네임·설정은 8단계)
-  void _profile() {
-    final s = g.state, ri = g.calc.rankIdx();
-    g.openSheet<void>((c) => KdSheetBody(
-          eyebrow: '프로필',
-          titleWidget: Column(children: [
-            SizedBox(
-              width: 96,
-              height: 96,
-              child: Stack(children: [
-                const Positioned.fill(
-                  left: 10,
-                  top: 10,
-                  right: 10,
-                  bottom: 10,
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.all(Radius.circular(12)),
-                    child: DecoratedBox(
-                      decoration: BoxDecoration(gradient: RadialGradient(center: Alignment(0, -.3), colors: [Color(0xFF3B5A8A), Color(0xFF1A2440)])),
-                      child: FaceImg('kael'),
-                    ),
-                  ),
-                ),
-                Positioned.fill(child: kdImg('assets/game/profile/frame_${s.raw['pf'] is String ? s.raw['pf'] : 'wood'}.png')),
-              ]),
-            ),
-            const SizedBox(height: 6),
-            Text('${ranks[ri].n} 카엘', textAlign: TextAlign.center, style: KdText.display(22)),
-          ]),
-          children: [
-            KdBox(children: [
-              KdKv('원정대 전투력', fmt(g.calc.power())),
-              KdKv('되찾은 영지', '${g.calc.landCount()} / $maxLand'),
-              KdKv('가장 멀리 간 영지', '${s.best}'),
-              KdKv('은퇴', '${s.retires}번 · 추억 ${fmt(s.memory)}'),
-            ]),
-            const KdNote('닉네임 · 프로필 테두리 · 배지 · 랭킹은 8단계에서 옮겨 와요.', center: true),
-          ],
-          acts: KdActs(buttons: [
-            KdAct('⚙ 설정', onTap: () {
-              Navigator.of(c).pop();
-              openSettings(g);
-            }),
-            KdAct('닫기', primary: true, onTap: () => Navigator.of(c).pop()),
-          ]),
-        ));
-  }
 }
 
 class _Dot extends StatelessWidget {
@@ -252,6 +227,7 @@ class _StageArea extends StatelessWidget {
           Positioned.fill(child: GameWidget(game: g.game)),
           Positioned(left: 0, right: 0, top: 8, child: ValueListenableBuilder<int>(valueListenable: g.frame, builder: (_, __, ___) => StageTop(g))),
           Positioned(left: 0, right: 0, bottom: 0, child: ValueListenableBuilder<int>(valueListenable: g.frame, builder: (_, __, ___) => StageBottom(g))),
+          Positioned(top: 8, right: 8, child: SocialFabs(g)),
           // 반쯤 열린 창 위 빈 곳을 누르면 닫힘 (웹 .pgshade)
           if (half) Positioned(left: 0, right: 0, top: 0, height: top, child: GestureDetector(behavior: HitTestBehavior.opaque, onTap: () => g.setTab(null))),
           if (t != null)

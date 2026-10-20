@@ -84,6 +84,9 @@ jobs:
         run: |
           M=android/app/src/main/AndroidManifest.xml
           sed -i 's/android:label="[^"]*"/android:label="왕이 되는 그날까지"/' "$M"
+          # 서버 연결용 인터넷 권한 (릴리스 APK 에 꼭 필요)
+          grep -q 'android.permission.INTERNET' "$M" || \
+            sed -i 's|<application|<uses-permission android:name="android.permission.INTERNET"/>\n    <application|' "$M"
           grep -q 'android:screenOrientation' "$M" || \
             sed -i 's/android:name=".MainActivity"/android:name=".MainActivity"\n            android:screenOrientation="portrait"/' "$M"
           P=ios/Runner/Info.plist
