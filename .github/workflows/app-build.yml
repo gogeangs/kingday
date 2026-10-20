@@ -128,7 +128,7 @@ jobs:
           code=$?
           cat test.log
           if [ $code -ne 0 ]; then
-            grep -E "≠|웹에만|앱에만|Error:|error:|Expected|Actual|\[E\]|Exception|길이 앱" test.log | head -60 | sed 's/^ */::error title=test::/'
+            grep -E "≠|웹에만|앱에만|Error:|error:|Expected|Actual|Which:|Reason|modalOpen|\[E\]|Exception|길이 앱|Warning|derived an Offset|would not hit|overflowed" test.log | head -60 | sed 's/^ */::error title=test::/'
             exit $code
           fi
 

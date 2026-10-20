@@ -61,9 +61,22 @@ void main() {
         // 좁은 폰에서는 창이 길어 버튼이 아래에 있으므로 내려서 누름
         await tester.ensureVisible(find.text('함께 간다'));
         await tester.pump(const Duration(milliseconds: 100));
-        await tester.tap(find.text('함께 간다'));
-        await tester.pump(const Duration(milliseconds: 400));
-        expect(find.text('함께 간다'), findsNothing);
+        var went = false;
+        g.scene('확인', '눌러지는지', ['sys:두 번째 창'], '확인했어', onGo: () => went = true);
+        await tester.tap(find.text('함께 간다'), warnIfMissed: true);
+        for (var i = 0; i < 8; i++) {
+          await tester.pump(const Duration(milliseconds: 100));
+        }
+        expect(find.text('함께 간다'), findsNothing, reason: 'modalOpen=${g.modalOpen}');
+        // 대기열: 첫 창을 닫으면 다음 창이 뜸
+        expect(find.text('확인했어'), findsOneWidget);
+        await tester.ensureVisible(find.text('확인했어'));
+        await tester.pump(const Duration(milliseconds: 100));
+        await tester.tap(find.text('확인했어'));
+        for (var i = 0; i < 8; i++) {
+          await tester.pump(const Duration(milliseconds: 100));
+        }
+        expect(went, isTrue);
 
         // 알림
         g.toast('세 줄이 넘을 수도 있는 아주 긴 알림 문장이 잘 줄바꿈되는지 확인해요. 황금 고블린 처치! 골드 +1.23M · 이삭 +9');
