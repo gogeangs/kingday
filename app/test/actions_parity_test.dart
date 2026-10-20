@@ -55,9 +55,32 @@ void main() {
           case 'box':
             a.openBox(o.length > 1 && o[1] == 'auto');
           case 'equip':
-            a.equip(a.pending!);
+            if (a.pending != null) a.equip(a.pending!);
           case 'sell':
-            a.sell(a.pending!);
+            if (a.pending != null) a.sell(a.pending!);
+          // ── 피트의 상점 ──
+          case 'daily':
+            c.daily()[o[1]] = num.parse(o[2]);
+          case 'mis':
+            a.claimMission(o[1]);
+          case 'gx':
+            a.buyGoldX(o[1]);
+          case 'cp':
+            a.buyCardPack(int.parse(o[1]));
+          case 'pack':
+            a.buyPack(o[1]);
+          case 'starter':
+            a.buyStarter();
+          case 'sub':
+            a.buySub();
+          case 'subclaim':
+            a.claimSub();
+          case 'adbox':
+            a.adBoxGive();
+          case 'adgem':
+            s.gem = s.gem + 5;
+          case 'adcard':
+            a.adCardGive();
           case 'open10':
             a.open10();
           case 'mul':

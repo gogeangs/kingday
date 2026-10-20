@@ -474,6 +474,19 @@ class GameController extends ChangeNotifier {
             'q@proud:주인, 이걸 받아라. 성검이 축복한 황금 이삭이다. 이삭을 내면 마을 사람들이 힘을 내서 공사를 바로 끝낸다.',
             'sys:황금 이삭 $tutGem개를 선물로 받았어요. 공사 중인 건물의 파란 "바로 완료" 버튼을 누르면 이삭으로 공사를 끝낼 수 있어요. 공사 중에도 다른 건물을 $buildQueueMax개까지 예약해 두면 차례로 지어져요.',
           ], '이삭으로 바로 완료', altLabel: '그냥 기다릴래요', onGo: () => act((a) => a.finishByGem()));
+        case ActCardReveal(:final got, :final title):
+          queue((ctx) => showCardReveal(ctx, this, got, title));
+        case ActLaterToast(:final msg, :final ms):
+          Timer(Duration(milliseconds: ms), () => toast(msg));
+        case ActStarter(:final it, :final cur):
+          scene('첫 거래 특가', '피트의 진품 보증', [
+            'm:피트|형씨, 첫 거래 기념이야. 이번 건 진짜 진품이라고. 진짜로.',
+            'k@surprised:…이번엔 정말 빛이 나네요.',
+            'sys:전설 등급 성유물 1개와 황금 이삭 ${starterPack['gem']}개를 받았어요.',
+          ], '성유물 확인하기', onGo: () => queue((ctx) async {
+                acts.pending = it;
+                await showItemSheet(ctx, it, cur);
+              }));
         case ActGemPlotAsk(:final n, :final cost):
           scene('황금 밭', '새 밭 일구기', [
             'm:마르타|황금 이삭을 땅에 뿌리면 굳은 땅도 금세 부드러워지지. 한 칸 더 일궈 볼 텐가?',

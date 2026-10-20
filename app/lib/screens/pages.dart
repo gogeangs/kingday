@@ -11,6 +11,7 @@ import '../ui/widgets.dart';
 import 'eq_page.dart';
 import 'mp_page.dart';
 import 'pt_page.dart';
+import 'shop_page.dart';
 import 'up_page.dart';
 import 'vl_page.dart';
 
@@ -21,13 +22,8 @@ Widget pageBody(GameController g, GameTab t) => switch (t) {
       GameTab.up => UpPage(g),
       GameTab.vl => VlPage(g),
       GameTab.mp => MpPage(g),
-      GameTab.sh => _soon(g, '오늘의 할 일 · 피트의 무료 선물 · 골드 바꾸기 · 카드 · 상품', '다음'),
+      GameTab.sh => ShopPage(g),
     };
-
-Widget _soon(GameController g, String what, String when) => KdBox(children: [
-      KdSec(what),
-      KdNote('이 화면은 $when 에서 웹과 똑같이 옮겨 와요. 지금은 화면 틀(반쯤 열리기 · 크게 보기 · 아래로 끌어 닫기)만 들어 있어요.'),
-    ]);
 
 /// 탭 화면 한 장. [half] 면 위쪽이 비어 전투가 보이고, 머리를 아래로 끌면 닫힘.
 class PageSheet extends StatefulWidget {

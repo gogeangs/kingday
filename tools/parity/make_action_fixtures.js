@@ -21,8 +21,8 @@ function op(o) {
   const [k, a, b] = o.split(':');
   switch (k) {
     case 'box': return F('openBox')(a === 'auto');
-    case 'equip': return w.run('(()=>{const it=pending;const c=S.eq[it.slot];if(c)S.gold+=c.price;S.eq[it.slot]=it;closeModal()})()');
-    case 'sell': return w.run('(()=>{S.gold+=pending.price;closeModal()})()');
+    case 'equip': return w.run('(()=>{if(!pending)return;const it=pending;const c=S.eq[it.slot];if(c)S.gold+=c.price;S.eq[it.slot]=it;closeModal()})()');
+    case 'sell': return w.run('(()=>{if(!pending)return;S.gold+=pending.price;closeModal()})()');
     case 'open10': return F('open10')();
     case 'mul': return w.run(`S.upMul=${a === 'max' ? "'max'" : a}`);
     case 'up': return F('upFire')(a);
@@ -58,6 +58,18 @@ function op(o) {
     case 'time': { clock += +a; w.setNow(clock); return F('produce')(); }
     case 'seeds': return w.run(`S.seeds[${q(a)}]=${b}`);
     case 'items': return w.run(`S.items[${q(a)}]=${b}`);
+    // ── 피트의 상점 ──
+    case 'daily': return w.run(`daily()[${q(a)}]=${b}`);
+    case 'mis': return w.run(`(()=>{const k=${q(a)},m=MISSIONS.find(x=>x.k===k);if(!misCan(m||null))return;daily().claim[k]=true;if(k==='all'){gainCard(5)}gainGem(m?m.r:MIS_ALL,m?m.n:'오늘의 할 일 완료')})()`);
+    case 'gx': return F('buyGoldX')(a);
+    case 'cp': return w.run(`(()=>{const c=CARDPK[${+a}];if(!CARDIDS().some(x=>cardOpen(x)&&recStar(x)<starMax(x)))return;if(!spendGem(c.gem))return;if(c.n>=30){const av=g=>CARDIDS().some(x=>cardOpen(x)&&gr(x).w<=GR[g].w&&recStar(x)<starMax(x));gainCard(c.n,av('epic')?'epic':av('rare')?'rare':null)}else for(let i=0;i<c.n;i++)gainCard(1)})()`);
+    case 'pack': return F('buyPack')(F('PACKS').find((p) => p.k === a));
+    case 'starter': return F('buyStarter')();
+    case 'sub': return F('buySub')();
+    case 'subclaim': return F('claimSub')();
+    case 'adbox': return w.run('(()=>{S.gold+=boxCost();openBox(false)})()');
+    case 'adgem': return w.run('(()=>{S.gem=(S.gem||0)+5})()');
+    case 'adcard': return w.run('(()=>{for(let i=0;i<3;i++)gainCard(1)})()');
     default: throw new Error('모르는 조작 ' + o);
   }
 }
@@ -80,6 +92,13 @@ const CASES = {
     'items:ore:3', 'build:diner', 'bgem:diner', 'items:ore:9999', 'build:diner', 'sellall', 'tag:0', 'tag:0', 'tag:0', 'tag:0', 'tag:9']],
   // 첫 공사: 이삭 10개 선물 → 바로 완료
   firstBuild: [Object.assign({}, base.fresh, { stage: 3, best: 3, done: { marta: true }, bld: { farm: 1 } }), ['gold:100000', 'ensure', 'build:inn', 'bfin', 'build:farm', 'build:inn', 'time:' + 2 * H, 'gem:3', 'build:farm', 'bfin', 'time:' + 24 * H]],
+  // 피트의 상점: 할 일 보상·무료 선물·골드 바꾸기·카드 묶음·꾸러미·첫 거래·정기 배송 (결제는 시험용 바로 지급)
+  shop: [base.mid, ['mis:kill', 'daily:kill:150', 'mis:kill', 'mis:kill', 'daily:box:10', 'daily:harv:12', 'mis:all', 'mis:box', 'mis:harv', 'mis:all', 'mis:all',
+    'gem:20', 'gx:g1', 'gx:g2', 'gem:5000', 'gx:g1', 'gx:g2', 'gx:g3', 'cp:0', 'cp:1', 'cp:1', 'cp:0',
+    'pack:p1', 'pack:p1', 'pack:p6', 'starter', 'starter', 'sub', 'subclaim', 'time:' + 24 * H, 'subclaim', 'subclaim', 'sub',
+    'adgem', 'adcard', 'adbox', 'sell', 'gold:0', 'adbox', 'equip']],
+  // 카드 동료가 아직 없을 때 카드 묶음
+  shopEarly: [base.fresh, ['gem:999', 'cp:0', 'cp:1', 'adcard', 'mis:all']],
 };
 
 const out = { now: NOW, cases: {} };
