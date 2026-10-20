@@ -51,7 +51,7 @@ final Map<String, String?> _badSaves = {
   '배열': '[1,2,3]',
   '빈 객체': '{}',
   '골드가 글자': '{"gold":"많이","stage":3}',
-  '타입 뒤섞임': '{"gold":100,"stage":"7","best":null,"eq":3,"plots":"x","party":[],"joined":5,"lv":"a","up":[],"bld":{"farm":"2"},"items":{"ore":-5},"seeds":null,"cards":{"daisy":"many"},"done":[],"started":true}',
+  '타입 뒤섞임': '{"gold":100,"stage":"7","best":null,"eq":3,"plots":"x","party":[],"joined":5,"lv":"a","up":[],"bld":{"farm":"2"},"items":{"ore":"5"},"seeds":null,"cards":{"daisy":"many"},"done":[],"started":true}',
   '음수와 이상한 숫자': '{"gold":-500,"gem":-3,"stage":-2,"best":0,"boxLv":0,"wave":99,"memory":-1,"retires":-1,"started":true}',
   '아주 큰 숫자': '{"gold":1.7e308,"gem":1e300,"stage":51,"best":51,"boxLv":10,"up":{"atk":900,"hp":900,"spd":40,"crit":55},"started":true}',
   '미래 시각(시계 되돌림)': '{"gold":1000,"stage":12,"best":12,"started":true,"last":${_now + 10 * 86400000},"prod":{"dock":${_now + 86400000}},"bld":{"dock":3,"farm":2},"plots":[{"k":"wheat","at":${_now + 86400000}}],"buffs":{"atk":${_now + 9e9}}}',
