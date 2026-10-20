@@ -107,7 +107,7 @@ class _Hud extends StatelessWidget {
         Expanded(
           child: Column(crossAxisAlignment: CrossAxisAlignment.start, mainAxisSize: MainAxisSize.min, children: [
             Row(children: [
-              Text('카엘', style: KdText.display(15)),
+              Flexible(child: Text('카엘', maxLines: 1, overflow: TextOverflow.clip, softWrap: false, style: KdText.display(15))),
               if (badge != null) ...[const SizedBox(width: 5), kdImg('assets/game/profile/badge_$badge.png', w: 20, h: 20)],
               const SizedBox(width: 5),
               Flexible(
