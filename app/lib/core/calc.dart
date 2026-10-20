@@ -43,8 +43,11 @@ class GameCalc {
   final int Function() _clock;
   int get now => _clock();
 
-  /// 루카 스킬 「아침 빵 배달」 공속 증가 중인지 (웹 SKX.bake>0, 전투 화면이 바꿈)
+  /// 루카 스킬 「아침 빵 배달」 공속 증가 중인지 (웹 SKX.bake>0).
+  /// 전투 시뮬레이션이 [bakeProbe] 로 알려 준다.
   bool bakeActive = false;
+  bool Function()? bakeProbe;
+  bool get _bake => bakeProbe?.call() ?? bakeActive;
 
   // ───────────── 영지 ─────────────
   static RegionDef region(int st) => regions[((st - 1) ~/ 10) % regions.length];
@@ -228,7 +231,7 @@ class GameCalc {
     return Stats(
       (base.atk * g + gs.a * bless) * (1 + .08 * s.bldLv('apiary')) * (buff('atk') ? 1.2 : 1) * m,
       (base.hp * g + gs.h * bless) * (1 + .05 * s.bldLv('diner')) * m,
-      base.aps! * (buff('spd') ? 1.2 : 1) * (bakeActive ? 1.3 : 1),
+      base.aps! * (buff('spd') ? 1.2 : 1) * (_bake ? 1.3 : 1),
       .05 + (buff('crit') ? .1 : 0),
     );
   }

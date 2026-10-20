@@ -29,8 +29,13 @@ flutter:
   # 단계가 진행될 때마다 필요한 폴더를 여기에 추가합니다.
   assets:
     - assets/game/characters/
+    - assets/game/monsters/
     - assets/game/bg/
+    - assets/game/fx/
+    - assets/game/skills/
+    - assets/game/portraits/
     - assets/game/ui/
+    - assets/game/gem/
     - assets/game/illust/
 
 # ── 앱 아이콘 (dart run flutter_launcher_icons) ──

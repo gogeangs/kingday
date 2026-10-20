@@ -29,6 +29,11 @@ const TABLES = [
   ['ADS', 'ADS'], ['PACKS', 'PACKS'], ['SUB', 'SUB'], ['STARTER', 'STARTER'], ['CARDPK', 'CARDPK'], ['GOLDX', 'GOLDX'],
   ['GEM10', 'GEM10'], ['GEM_PLOT', 'GEM_PLOT'], ['GEM_OFFLINE', 'GEM_OFFLINE'], ['LUMQ', 'LUMQ'],
   ['SAVE_KEY', 'KEY'],
+  // ── 전투 (2단계) ──
+  ['SPRITES', 'SPRITES'], ['SPR_CONST', '({frame:SPR_FRAME,foot:SPR_FOOT,fig:SPR_FIG})'],
+  ['MON_SPRITES', 'MON_SPRITES'], ['MON_ALT', 'MON_ALT'], ['TRAITS', 'TRAITS'], ['GOB', 'GOB'],
+  ['FXDEF', 'FXDEF'], ['FORM', 'FORM'], ['GOB_RARE', 'GOB_RARE'], ['BG_IMG', 'BG_IMG'], ['BG_FULL', 'BG_FULL'],
+  ['DECO', 'DECO'],
 ];
 
 function dartStr(s) {

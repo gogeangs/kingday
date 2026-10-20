@@ -715,3 +715,168 @@ const wLumq = [
 
 const wSaveKey = 'acorn-idle-v1';
 
+const wSprites = {
+  'kael': {'idle': 4, 'walk': 6, 'attack': 4, 'hit': 2, 'h': 70},
+  'bron': {'idle': 4, 'walk': 6, 'attack': 4, 'hit': 2, 'h': 74},
+  'haral': {'idle': 4, 'walk': 6, 'attack': 4, 'hit': 2, 'h': 72},
+  'riel': {'idle': 4, 'walk': 6, 'attack': 4, 'hit': 2, 'h': 76},
+  'margo': {'idle': 4, 'walk': 6, 'attack': 4, 'hit': 2, 'h': 72},
+  'luka': {'idle': 4, 'walk': 6, 'attack': 4, 'hit': 2, 'h': 72},
+  'nella': {'idle': 4, 'walk': 6, 'attack': 4, 'hit': 2, 'h': 68},
+  'brida': {'idle': 4, 'walk': 6, 'attack': 4, 'hit': 2, 'h': 74},
+  'daisy': {'idle': 4, 'walk': 6, 'attack': 4, 'hit': 2, 'h': 70},
+  'gordon': {'idle': 4, 'walk': 6, 'attack': 4, 'hit': 2, 'h': 74},
+};
+
+const wSprConst = {'frame': 256, 'foot': 250, 'fig': 171};
+
+const wMonSprites = {
+  '0': {
+    'id': 'slime_plague',
+    'walk': 4,
+    'attack': 4,
+    'hit': 2,
+    'fig': 150,
+    'h': 54,
+    'boss': {'id': 'boss_morbas', 'walk': 4, 'attack': 4, 'hit': 2, 'fig': 200, 'h': 76},
+  },
+  '1': {
+    'id': 'bat_shadow',
+    'walk': 4,
+    'attack': 4,
+    'hit': 2,
+    'fig': 180,
+    'h': 44,
+    'lift': 30,
+    'boss': {'id': 'boss_seril', 'walk': 4, 'attack': 4, 'hit': 2, 'fig': 195, 'h': 72},
+  },
+  '2': {
+    'id': 'golem_steel',
+    'walk': 4,
+    'attack': 4,
+    'hit': 2,
+    'fig': 190,
+    'h': 58,
+    'boss': {'id': 'boss_gromak', 'walk': 4, 'attack': 4, 'hit': 2, 'fig': 200, 'h': 74},
+  },
+  '3': {
+    'id': 'wraith_frost',
+    'walk': 4,
+    'attack': 4,
+    'hit': 2,
+    'fig': 185,
+    'h': 50,
+    'lift': 18,
+    'boss': {'id': 'boss_aldor', 'walk': 4, 'attack': 4, 'hit': 2, 'fig': 195, 'h': 74},
+  },
+  '4': {
+    'id': 'slime_ash',
+    'walk': 4,
+    'attack': 4,
+    'hit': 2,
+    'fig': 150,
+    'h': 52,
+    'boss': {'id': 'boss_ignis', 'walk': 4, 'attack': 4, 'hit': 2, 'fig': 200, 'h': 78},
+  },
+};
+
+const wMonAlt = {
+  '0': {
+    'id': 'scarecrow_cursed',
+    'walk': 4,
+    'attack': 4,
+    'hit': 2,
+    'fig': 150,
+    'h': 46,
+    'trait': 'tank',
+  },
+  '1': {
+    'id': 'wolf_shadow',
+    'walk': 4,
+    'attack': 4,
+    'hit': 2,
+    'fig': 150,
+    'h': 40,
+    'trait': 'swift',
+  },
+  '2': {
+    'id': 'goblin_pick',
+    'walk': 4,
+    'attack': 4,
+    'hit': 2,
+    'fig': 150,
+    'h': 40,
+    'trait': 'swarm',
+  },
+  '3': {
+    'id': 'skeleton_frost',
+    'walk': 4,
+    'attack': 4,
+    'hit': 2,
+    'fig': 150,
+    'h': 46,
+    'trait': 'guard',
+  },
+  '4': {
+    'id': 'imp_flame',
+    'walk': 4,
+    'attack': 4,
+    'hit': 2,
+    'fig': 150,
+    'h': 40,
+    'lift': 26,
+    'trait': 'flier',
+  },
+};
+
+const wTraits = {
+  'tank': {'hp': 1.6, 'atk': 0.9, 'mv': 0.6, 'cd': 1.15, 'n': '단단함'},
+  'swift': {'hp': 0.7, 'atk': 1.1, 'mv': 1.7, 'cd': 0.8, 'n': '빠름'},
+  'swarm': {'hp': 0.55, 'atk': 0.6, 'mv': 1.2, 'cd': 1, 'n': '떼'},
+  'guard': {'hp': 1.4, 'atk': 0.85, 'mv': 0.8, 'cd': 1.1, 'n': '방패'},
+  'flier': {'hp': 0.8, 'atk': 1.05, 'mv': 1.5, 'cd': 0.9, 'n': '비행'},
+};
+
+const wGob = {'id': 'goblin_gold', 'walk': 4, 'attack': 4, 'hit': 2, 'fig': 150, 'h': 46};
+
+const wFxdef = {
+  'hit': 4,
+  'crit': 5,
+  'bees': 4,
+  'heal': 5,
+  'coin': 4,
+  'harpoon': 1,
+  'soup': 1,
+  'skill_kael': 4,
+  'skill_bron': 4,
+  'skill_haral': 4,
+  'skill_riel': 4,
+  'skill_margo': 4,
+  'skill_luka': 4,
+  'skill_nella': 4,
+  'skill_brida': 4,
+  'skill_daisy': 4,
+  'skill_gordon': 4,
+};
+
+const wForm = {
+  'kael': [0.46, 0.34],
+  'bron': [0.58, 0.72],
+  'haral': [0.31, 1],
+  'riel': [0.17, 0.16],
+  'margo': [0.1, 0.58],
+  'luka': [0.1, 0.58],
+  'nella': [0.31, 1],
+  'brida': [0.58, 0.72],
+  'daisy': [0.17, 0.16],
+  'gordon': [0.58, 0.72],
+};
+
+const wGobRare = {'badge': 0.005, 'frame': 0.002};
+
+const wBgImg = {'0': 'erdan', '1': 'dusk', '2': 'canyon', '3': 'frost', '4': 'ash'};
+
+const wBgFull = {'dusk': true, 'canyon': true, 'frost': true, 'ash': true};
+
+const wDeco = ['windmill', 'trees', 'spires', 'graves', 'volcano'];
+
