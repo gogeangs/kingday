@@ -14,6 +14,7 @@ import '../ui/fx.dart';
 import '../ui/theme.dart';
 import '../ui/widgets.dart';
 import 'pages.dart';
+import 'settings_sheet.dart';
 import 'stage_overlay.dart';
 
 class GameShell extends ConsumerWidget {
@@ -209,9 +210,15 @@ class _Hud extends StatelessWidget {
               KdKv('가장 멀리 간 영지', '${s.best}'),
               KdKv('은퇴', '${s.retires}번 · 추억 ${fmt(s.memory)}'),
             ]),
-            const KdNote('닉네임 · 프로필 테두리 · 배지 · 설정은 8단계에서 옮겨 와요.', center: true),
+            const KdNote('닉네임 · 프로필 테두리 · 배지 · 랭킹은 8단계에서 옮겨 와요.', center: true),
           ],
-          acts: KdActs(buttons: [KdAct('닫기', primary: true, onTap: () => Navigator.of(c).pop())]),
+          acts: KdActs(buttons: [
+            KdAct('⚙ 설정', onTap: () {
+              Navigator.of(c).pop();
+              openSettings(g);
+            }),
+            KdAct('닫기', primary: true, onTap: () => Navigator.of(c).pop()),
+          ]),
         ));
   }
 }

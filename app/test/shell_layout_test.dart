@@ -1,12 +1,15 @@
 // 화면 틀이 폰 크기 4종(320·360·390·430 폭)에서 넘치거나 깨지지 않는지 확인.
 // (웹 버전을 Playwright 로 확인하던 크기와 같음) Flutter 는 글자·상자가 넘치면 테스트를 실패시킨다.
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:kingday/core/save_code.dart';
 import 'package:kingday/core/save_store.dart';
 import 'package:kingday/game/controller.dart';
 import 'package:kingday/main.dart';
 import 'package:kingday/screens/pt_page.dart';
+import 'package:kingday/screens/settings_sheet.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 /// 후반 저장 (긴 칭호·큰 숫자·5명 원정대)
@@ -29,7 +32,7 @@ void main() {
         final store = await SaveStore.open();
         final g = GameController(store: store, state: store.load(DateTime.now().millisecondsSinceEpoch));
 
-        await tester.pumpWidget(ProviderScope(overrides: [gameProvider.overrideWithValue(g)], child: KingdayApp(g: g)));
+        await tester.pumpWidget(KingdayApp(g: g));
         await tester.pump(const Duration(milliseconds: 50));
         expect(find.text('게임 시작'), findsOneWidget);
 
@@ -202,5 +205,87 @@ void main() {
         await tester.pump(const Duration(seconds: 3));
       });
     }
+  }
+
+  // 7단계: 방치 보상 창 → 설정(카엘의 수첩) → 저장 코드로 불러오기 → 게임 초기화
+  for (final w in [320.0, 390.0]) {
+    testWidgets('방치 보상·설정·저장 코드 · 폭 ${w.toInt()}', (tester) async {
+      tester.view.devicePixelRatio = 3;
+      tester.view.physicalSize = Size(w * 3, 760 * 3);
+      addTearDown(tester.view.reset);
+      final away = DateTime.now().millisecondsSinceEpoch - 3 * 3600 * 1000;
+      SharedPreferences.setMockInitialValues({
+        'acorn-idle-v1': '{"gold":5000,"stage":12,"best":12,"gem":40,"started":true,"done":{"marta":true},"bld":{"inn":2,"farm":1},"last":$away,"v":3}',
+      });
+      final store = await SaveStore.open();
+      final g = GameController(store: store, state: store.load(DateTime.now().millisecondsSinceEpoch));
+      expect(g.state.gold, greaterThan(5000), reason: '꺼 둔 3시간 동안의 세금이 바로 더해짐');
+
+      await tester.pumpWidget(KingdayApp(g: g));
+      Future<void> frames([int n = 6]) async {
+        for (var i = 0; i < n; i++) {
+          await tester.pump(const Duration(milliseconds: 100));
+        }
+      }
+
+      Future<void> press(String label) async {
+        expect(find.text(label), findsOneWidget, reason: '「$label」 버튼이 있어야 함');
+        await tester.ensureVisible(find.text(label));
+        await frames(1);
+        await tester.tap(find.text(label));
+        await frames();
+      }
+
+      await frames(1);
+      await press('게임 시작');
+      expect(find.text('영지에서 세금이 걷혔어요'), findsOneWidget);
+      expect(find.text('3시간 0분 동안'), findsOneWidget);
+      await press('받기');
+      expect(find.text('영지에서 세금이 걷혔어요'), findsNothing);
+
+      // 설정 창
+      openSettings(g);
+      await frames();
+      expect(find.text('카엘의 수첩'), findsOneWidget);
+      await press('진동 끄기');
+      expect(g.state.raw['vib'], false);
+      await press('코드 만들기·복사');
+      final code = tester.widget<TextField>(find.byType(TextField)).controller!.text;
+      expect(importSaveCode(code)!['stage'], 12);
+
+      // 다른 기록(영지 30)을 코드로 불러오기 → 앱이 그 기록으로 다시 시작
+      final other = Map<String, dynamic>.from(importSaveCode(code)!)
+        ..['stage'] = 30
+        ..['best'] = 30
+        ..['last'] = DateTime.now().millisecondsSinceEpoch;
+      await tester.enterText(find.byType(TextField), base64Encode(utf8.encode(jsonEncode(other))));
+      await press('불러오기');
+      final g2 = tester.state<KingdayAppState>(find.byType(KingdayApp)).g;
+      expect(identical(g2, g), isFalse);
+      expect(g2.state.stage, 30);
+      await press('게임 시작');
+
+      // 엉터리 코드는 거절
+      openSettings(g2);
+      await frames();
+      await tester.enterText(find.byType(TextField), '엉터리 코드');
+      await press('불러오기');
+      expect(find.text('저장 코드가 올바르지 않아요'), findsOneWidget);
+
+      // 게임 초기화 (두 번 확인)
+      await press('게임 초기화');
+      expect(find.text('모두 지우기'), findsOneWidget);
+      await press('모두 지우기');
+      final g3 = tester.state<KingdayAppState>(find.byType(KingdayApp)).g;
+      expect(g3.state.stage, 1);
+      expect(g3.state.gold, 60);
+      await press('게임 시작');
+      await frames();
+      expect(find.text('밭에 박힌 쇠막대'), findsOneWidget);
+
+      await tester.pumpWidget(const SizedBox());
+      g3.dispose();
+      await tester.pump(const Duration(seconds: 3));
+    });
   }
 }

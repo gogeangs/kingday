@@ -11,6 +11,7 @@ import 'package:kingday/core/calc.dart';
 import 'package:kingday/core/data.dart';
 import 'package:kingday/core/fmt.dart';
 import 'package:kingday/core/rng.dart';
+import 'package:kingday/core/save_code.dart';
 import 'package:kingday/core/state.dart';
 
 late Map<String, dynamic> fx;
@@ -87,6 +88,22 @@ void main() {
     for (final p in (f['mmss'] as List).cast<List>()) {
       same(mmss(p[0] as num), p[1], 'mmss(${p[0]})');
     }
+  });
+
+  test('웹에서 만든 저장 코드를 그대로 불러오고, 앱 코드도 다시 읽힘', () {
+    final codes = (fx['codes'] as Map).cast<String, String>();
+    for (final e in codes.entries) {
+      final d = importSaveCode(e.value);
+      expect(d, isNotNull, reason: e.key);
+      final st = GameState.hydrate(d!, now, GameCalc.rankIdxOf);
+      same(jsonDecode(jsonEncode(st.raw)), (fx['scenarios'] as Map)[e.key]['hydrated'], '코드 ${e.key}');
+      // 줄바꿈이 섞여 붙여 넣어도
+      final broken = e.value.replaceAllMapped(RegExp(r'.{40}'), (m) => '${m[0]}\n ');
+      expect(importSaveCode(broken), isNotNull, reason: '줄바꿈 ${e.key}');
+      same(jsonDecode(jsonEncode(importSaveCode(exportSaveCode(st)))), jsonDecode(jsonEncode(st.raw)), '앱 코드 ${e.key}');
+    }
+    expect(importSaveCode('엉터리'), isNull);
+    expect(importSaveCode(base64Encode(utf8.encode('{"stage":3}'))), isNull);
   });
 
   test('카드 동료·전체 동료 목록 순서', () {

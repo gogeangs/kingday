@@ -62,7 +62,11 @@ class GameController extends ChangeNotifier {
     state.raw['started'] = true;
     state.raw['v'] = 3;
     calc.produce();
-    if (isNew) _intro();
+    if (isNew) {
+      _intro();
+    } else {
+      offline();
+    }
     // 웹 loop(): 5초마다 저장
     _saveTimer = Timer.periodic(const Duration(seconds: 5), (_) => save());
   }
@@ -114,13 +118,130 @@ class GameController extends ChangeNotifier {
   void refresh() => ui.value++;
 
   // ── 저장 ──
-  Future<void> save() => store.save(state, DateTime.now().millisecondsSinceEpoch);
+  /// 기록을 바꿔 끼우는 중이면 저장하지 않음 (웹 noSave)
+  bool noSave = false;
+
+  /// 앱이 뒤로 가 있는 동안은 마지막 접속 시각을 올리지 않음 (방치 보상 계산이 맞게)
+  bool backgrounded = false;
+
+  Future<void> save() async {
+    if (noSave || backgrounded) return;
+    await store.save(state, DateTime.now().millisecondsSinceEpoch);
+  }
+
+  /// 앱이 뒤로 갈 때: 지금 저장하고 멈춤
+  void onPause() {
+    if (backgrounded) return;
+    save();
+    backgrounded = true;
+  }
+
+  /// 앱으로 돌아올 때: 꺼 둔 동안의 방치 보상
+  void onResume() {
+    if (!backgrounded) return;
+    backgrounded = false;
+    calc.produce();
+    offline();
+    refresh();
+  }
+
+  /// 기록을 통째로 바꿔 끼움 (저장 코드 불러오기·초기화). main.dart 의 앱 뿌리가 새 진행 담당을 만든다
+  void Function(GameState next)? onRestart;
+
+  /// 저장 코드 불러오기 (웹 setImp: 저장 후 다시 시작)
+  Future<void> loadFromCode(Map<String, dynamic> d) async {
+    noSave = true;
+    await store.putRaw(d);
+    onRestart?.call(store.load(DateTime.now().millisecondsSinceEpoch));
+  }
+
+  /// 게임 초기화 (웹 setYes)
+  Future<void> resetAll() async {
+    noSave = true;
+    await store.clear();
+    onRestart?.call(store.load(DateTime.now().millisecondsSinceEpoch));
+  }
+
+  // ── 방치 보상 (웹 offline()) ──
+  /// 꺼 둔 동안 쌓인 골드를 바로 더하고, 창으로 알려 줌 (1분 미만이면 없음)
+  void offline() {
+    final r = calc.offlineReward();
+    if (r.gold <= 0) return;
+    state.gold = state.gold + r.gold;
+    // 다시 돌아왔을 때 두 번 받지 않게
+    state.last = DateTime.now().millisecondsSinceEpoch;
+    queue((ctx) => _offlineSheet(ctx, r));
+  }
+
+  Future<void> _offlineSheet(BuildContext ctx, ({num sec, num cap, num gold}) r) => showKdSheet<void>(ctx, closable: false, builder: (c) {
+        final g = r.gold, hr = (r.sec / 3600).floor(), mn = (r.sec % 3600 / 60).floor(), capH = (r.cap / 3600).round();
+        final full = r.sec >= r.cap, adN = calc.adLeft('offline');
+        void twice() {
+          state.gold = state.gold + g;
+          toast('세금 2배! 골드 +${fmt(g)}');
+        }
+
+        return KdSheetBody(
+          illust: 'offline',
+          eyebrow: '돌아온 카엘',
+          title: '영지에서 세금이 걷혔어요',
+          children: [
+            Container(
+              padding: const EdgeInsets.all(10),
+              decoration: BoxDecoration(
+                color: const Color(0xFF29334F),
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: const Color(0xFFFFC94A), width: 2),
+              ),
+              child: Column(children: [
+                Text('${hr > 0 ? '$hr시간 ' : ''}$mn분 동안', style: KdText.body(12, color: const Color(0xFF97A2C3)).copyWith(letterSpacing: .7)),
+                Text('+${fmt(g)}', style: KdText.display(28, color: const Color(0xFFFFC94A))),
+                Text('되찾은 영지의 백성들이 보낸 골드예요${truthy(state.bld['farm']) ? ' · 밭의 작물도 자랐어요' : ''}',
+                    textAlign: TextAlign.center, style: KdText.body(12, color: const Color(0xFF97A2C3))),
+                const SizedBox(height: 4),
+                Text('${full ? '⏳ 최대 $capH시간이 가득 찼어요! ' : '최대 $capH시간까지 쌓여요 · '}여관 레벨을 올리면 1시간씩 늘어나요',
+                    textAlign: TextAlign.center, style: KdText.body(12, color: const Color(0xFFFFC94A))),
+              ]),
+            ),
+            const Para('k:…이 돈, 은퇴 자금으로 모아 둬도 되죠?'),
+            if (adN > 0)
+              KdBuy(
+                kind: BuyKind.ad,
+                minWidth: 0,
+                text: '▶ 광고 보고 2배 받기 · 오늘 $adN회',
+                onTap: () {
+                  Navigator.of(c).pop();
+                  watchAd('offline', twice);
+                },
+              ),
+          ],
+          acts: KdActs(buttons: [
+            KdAct(
+              '2배 받기',
+              onTap: () {
+                if (!acts.spendGem(gemOffline)) {
+                  _flush();
+                  return;
+                }
+                twice();
+                Navigator.of(c).pop();
+              },
+              child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+                Text('2배 받기 · ', style: KdText.display(15, color: const Color(0xFFFFE08A))),
+                iconNum(gemIcon, '$gemOffline', size: 16, style: KdText.figure(15, color: const Color(0xFFFFE08A))),
+              ]),
+            ),
+            KdAct('받기', primary: true, onTap: () => Navigator.of(c).pop()),
+          ]),
+        );
+      });
 
   @override
   void dispose() {
     _saveTimer?.cancel();
     _toastTimer?.cancel();
     save();
+    game.pauseEngine();
     super.dispose();
   }
 

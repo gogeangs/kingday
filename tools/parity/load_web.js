@@ -67,7 +67,7 @@ function loadWeb(opts = {}) {
     Image: function () { return s; }, Audio: function () { return s; },
     fetch: () => new Promise(() => {}), URLSearchParams,
     devicePixelRatio: 1, innerWidth: 390, innerHeight: 844, screen: s, history: s,
-    CSS: { supports: () => false },
+    CSS: { supports: () => false }, btoa, atob, escape, unescape,
   };
   for (const k of ['MutationObserver', 'ResizeObserver', 'IntersectionObserver', 'Event', 'CustomEvent',
     'HTMLElement', 'AudioContext', 'webkitAudioContext', 'FontFace', 'OffscreenCanvas', 'Blob', 'FileReader', 'XMLHttpRequest'])

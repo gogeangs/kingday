@@ -7,7 +7,7 @@
 | 항목 | 값 |
 |---|---|
 | 패키지명 | `kr.co.project30s.kingday` (안드로이드·iOS 공통, 스토어 등록 후 변경 불가) |
-| 상태 | 6단계 — 프롤로그·이야기 창·다음 할 일 안내·칭호·은퇴 |
+| 상태 | 7단계 — 방치 보상·저장 코드로 웹 기록 옮기기·설정(카엘의 수첩)·게임 초기화 |
 
 ## APK 받는 법 (설치 없이)
 
@@ -55,6 +55,7 @@ app/
 - `lib/core/state.dart` — 저장 데이터. 웹 `S` 와 **같은 JSON** (웹 기록을 그대로 불러옴).
 - `test/parity_test.dart` — 웹 코드를 Node 로 그대로 돌려 뽑은 정답 값(`test/fixtures/web_parity.json`)과 앱 공식 결과를 비교. 새 게임·중반·후반·옛 저장 4가지 기록으로 확인합니다.
 - `test/actions_parity_test.dart` — 상자 열기·10연속·단련·레벨업·별 올리기·편성·대장간을 웹과 같은 난수로 실행해 매 조작 뒤 저장 데이터 전체를 비교 (`node tools/parity/make_action_fixtures.js`).
+- `lib/core/save_code.dart` — 웹 「저장 코드」와 같은 방식(JSON → base64). 웹에서 만든 코드를 앱에, 앱에서 만든 코드를 웹에 붙여 넣을 수 있음 (`test/parity_test.dart` 가 웹이 만든 코드 3개로 확인).
 - `test/shell_layout_test.dart` — 화면 틀을 폰 폭 4종(320·360·390·430)에서 새 게임·후반 기록으로 그려 넘침이 없는지 확인.
 - `test/battle_parity_test.dart` — 웹 전투(step)를 같은 난수로 돌린 결과(`test/fixtures/battle_parity.json`)와 앱 전투를 1초마다 비교 (보스·군단장·황금 고블린·스킬 10종·전멸 포함, `node tools/parity/make_battle_fixtures.js`).
 - 웹 공식이나 데이터를 바꾸면: `node tools/parity/gen_dart_data.js` → `node tools/parity/make_fixtures.js` → 앱 공식도 맞게 고치기. 안 하면 GitHub Actions 가 알려 줍니다.

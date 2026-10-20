@@ -4,6 +4,8 @@
 /// 방치 보상·웹 기록 가져오기·클라우드 저장은 7·8단계에서 붙인다.
 library;
 
+import 'dart:convert';
+
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'calc.dart';
@@ -27,6 +29,12 @@ class SaveStore {
     }
     return GameState.newGame(now, GameCalc.rankIdxOf);
   }
+
+  /// 저장 코드로 받은 기록을 그대로 저장 (웹: localStorage.setItem(KEY, JSON.stringify(d)))
+  Future<void> putRaw(Map<String, dynamic> d) => _prefs.setString(wSaveKey, jsonEncode(d));
+
+  /// 게임 초기화 (웹: localStorage.removeItem(KEY))
+  Future<void> clear() => _prefs.remove(wSaveKey);
 
   /// 웹 save(): 마지막 접속 시각을 적고 통째로 저장
   Future<void> save(GameState s, int now) async {

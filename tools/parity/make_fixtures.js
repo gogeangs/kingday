@@ -168,6 +168,13 @@ for (const name of Object.keys(SAVES)) {
   out.scenarios[name] = sc;
 }
 
+// 저장 코드: 웹 설정의 「코드 만들기」와 똑같이 만든 코드 (앱이 그대로 불러와야 함)
+out.codes = {};
+for (const name of ['mid', 'late', 'old']) {
+  setSave(name);
+  out.codes[name] = w.run('btoa(unescape(encodeURIComponent(JSON.stringify(S))))');
+}
+
 out.misc.cardIds = IDS;
 out.misc.compIds = COMPS;
 
