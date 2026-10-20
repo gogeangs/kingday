@@ -727,6 +727,8 @@ class GameActions {
     }
     buys[id] = orNum(buys[id], 0) + 1;
     give();
+    // 웹 pay() 끝의 save(): 마지막 접속 시각도 이때 적힘
+    s.last = c.now;
     return true;
   }
 

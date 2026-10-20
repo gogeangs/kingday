@@ -59,9 +59,16 @@ class _Hud extends StatelessWidget {
   final GameController g;
   final double top;
 
+  static Widget _fit(double max, Widget w) => ConstrainedBox(
+        constraints: BoxConstraints(maxWidth: max),
+        child: FittedBox(fit: BoxFit.scaleDown, child: w),
+      );
+
   @override
   Widget build(BuildContext context) {
     final s = g.state, ri = g.calc.rankIdx();
+    // 이삭·골드 칸이 쓸 수 있는 최대 폭: 얼굴(52)·간격·이름 최소 70 을 빼고 나눔
+    final pillMax = math.max(60.0, (math.min(480.0, MediaQuery.sizeOf(context).width) - 24 - 52 - 18 - 70) / 2);
     final badge = g.calc.curBadge();
     final frame = g.calc.curFrame();
     return Container(
@@ -151,8 +158,8 @@ class _Hud extends StatelessWidget {
           ]),
         ),
         const SizedBox(width: 6),
-        // 황금 이삭 (누르면 상점)
-        GestureDetector(
+        // 황금 이삭 (누르면 상점) — 숫자가 길면 좁은 폰에서 줄여 보여 줌
+        _fit(pillMax, GestureDetector(
           onTap: () => g.setTab(GameTab.sh),
           child: Stack(clipBehavior: Clip.none, children: [
             Container(
@@ -178,10 +185,10 @@ class _Hud extends StatelessWidget {
             ),
             if (g.gemDot) const Positioned(top: -2, right: -2, child: _Dot()),
           ]),
-        ),
+        )),
         const SizedBox(width: 6),
         // 골드
-        Container(
+        _fit(pillMax, Container(
           padding: const EdgeInsets.fromLTRB(7, 5, 9, 5),
           decoration: BoxDecoration(
             color: const Color(0xFF0B0F1A),
@@ -193,7 +200,7 @@ class _Hud extends StatelessWidget {
             const SizedBox(width: 3),
             Text(fmt(s.gold), style: KdText.figure(16)),
           ]),
-        ),
+        )),
       ]),
     );
   }
