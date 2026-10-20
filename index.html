@@ -394,6 +394,8 @@ button:focus-visible,input:focus-visible{outline:2px solid var(--gold);outline-o
 .bossface{width:34px;height:34px;margin:-10px 0 -10px -4px;object-fit:cover;object-position:50% 15%;border-radius:50%;border:2px solid var(--bad);background:#2a0e14}
 .illust{display:block;width:calc(100% + 12px);margin:-10px -6px 4px;aspect-ratio:16/10;object-fit:cover;object-position:50% 45%;border-radius:4px}
 .illust.il-prologue{object-position:50% 34%}
+.ilwrap{position:relative;margin:-10px -6px 4px}.ilwrap .illust{margin:0;width:100%}.joinpf{position:absolute;left:12%;bottom:4%;width:38%;aspect-ratio:1;object-fit:contain;filter:drop-shadow(0 0 10px rgba(255,230,140,.95)) drop-shadow(0 0 3px var(--g));animation:joinpf .9s ease-out both .2s}@keyframes joinpf{0%{opacity:0;transform:translateY(20px) scale(.7)}100%{opacity:1;transform:none}}
+.illust.il-join{object-position:50% 55%}
 .illust.il-retire{object-position:50% 48%}
 .illust.il-offline{object-position:42% 50%}
 .lore.sys{font-family:var(--f-body);font-size:13px;color:var(--muted);border-top:1px solid var(--line);padding-top:10px}
@@ -616,7 +618,7 @@ function cardReveal(list,title){const m={};for(const[id,n]of list)m[id]=(m[id]||
  <div class="acts"><button id="mX">닫기</button><button class="pri" id="mGo">원정대에서 보기</button></div>`;
  $('modal').hidden=false;ids.forEach(id=>faceTo($('rv-'+id),id));$('mX').onclick=closeModal;$('mGo').onclick=()=>{closeModal();setTab('pt');setTimeout(()=>{const e=$('pcd-'+best);if(e)e.scrollIntoView({block:'center'})},200)}}
 function recruitUp(id){const stv=recStar(id),need=starNeed(id),n=(S.cards&&S.cards[id])||0;if(stv>=starMax(id)||n<need)return;S.cards[id]-=need;if(!S.rec)S.rec={};S.rec[id]=stv+1;if(!S.lv[id])S.lv[id]=1;partySig='';
- if(stv===0){const R=RECRUITS[id];queue(()=>scene('동료 합류',R.title,R.lines,R.ok))}
+ if(stv===0){const R=RECRUITS[id];queue(()=>{scene('동료 합류',R.title,R.lines,R.ok,null,'join');const il=$('sheet').querySelector('.illust');if(il){const w=document.createElement('div');w.className='ilwrap';il.replaceWith(w);w.appendChild(il);w.insertAdjacentHTML('beforeend',`<img class="joinpf" style="--g:${gr(id).c}" src="assets/portraits/portrait_${id}_idle.png" alt="" onerror="this.remove()">`)}})}
  else toast(COMP[id].n+' ★'+(stv+1)+'! 능력치 +'+Math.round((STAR_MUL[stv+1]-1)*100)+'%'+(isRec(id)&&(stv+1===3||stv+1===5)?' · 스킬 강화':''));renderAll()}
 function gainCard(n,minGrade){const ids=CARDIDS().filter(id=>cardOpen(id)&&recStar(id)<starMax(id)&&(!minGrade||gr(id).w<=GR[minGrade].w));if(!ids.length)return null;if(!S.cards)S.cards={};
  let id;if(S.wish&&ids.includes(S.wish)&&Math.random()<.5)id=S.wish;else{const gs=[...new Set(ids.map(x=>GRADE[x]))],tot=gs.reduce((a,g)=>a+GR[g].w,0);let r=Math.random()*tot,g=gs[0];for(const q of gs){r-=GR[q].w;if(r<0){g=q;break}}const pool=ids.filter(x=>GRADE[x]===g);id=pool[Math.floor(Math.random()*pool.length)]}
