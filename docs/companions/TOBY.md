@@ -1,6 +1,6 @@
 # 희귀 어부 「토비」 기획 기록
 
-작성일: 2026-10-21 · 상태: **기획·그림 완료, 게임 등록은 보류** (대표님 지시: 기록만)
+작성일: 2026-10-21 · 상태: **게임 등록 완료 (웹·앱)** — 브랜치 `update/backlog-oct21-qa`, main 합치기 전
 
 ## 확정 설정
 | 항목 | 내용 |
@@ -39,7 +39,18 @@
 | ② 초상화 | `art/source/portraits/portrait_toby_idle.png`, `portrait_toby_laugh.png` (원본 한 장을 덩어리 단위로 좌우 분리, 여백 자름) |
 | ③ 스킬 아이콘 | `art/source/skills/skill_toby.png` |
 | ④ 스킬 효과 | `art/source/fx/fx_skill_toby.png` |
-- `assets/`·`index.html`은 아직 손대지 않음 → 등록 세션에서 COMPANION_GUIDE.md 4장 도구로 처리.
+- 2026-10-21 등록 세션에서 게임 파일로 처리함 (아래 「게임 등록」).
 
 ## 등록할 때 할 일 (COMPANION_GUIDE.md 6장)
 COMP · JOB(`fisher`) · RECRUITS(넬라와 남매 티격태격) · GRADE(`rare`) · HEIGHT/SPRITES/FORM · SKILLS · castSkill(앞쪽 광역 피해 + 적 위치 뒤로 밀기 — 밀치기 처리 필요) · FXDEF(`skill_toby:4`) · SPRITE_ALT/DRAW · NPCID(`'토비':'toby'`) · extract_skill_fx.py
+
+## 게임 등록 (2026-10-21) — 브랜치 `update/backlog-oct21-qa`, main 합치기 전
+| 항목 | 값 |
+|---|---|
+| 기본 능력치 | 공격 10 · 체력 92 · 공격 속도 0.9 (레벨당 공격 +3.1, 체력 +18), 희귀 배율 ×1.1 |
+| 일반 공격 | 앞의 적 한 명 (어부 자리, 투사체 없음) |
+| 스킬 「파도 가르기」 | 앞쪽 적 3마리에게 공격력 3배 피해 + 밀쳐내 다음 공격을 1.2초(보스 0.6초) 늦춤, 게이지 22, ★3 ×1.3. 밀쳐냄은 그림으로 잠깐 뒤로 밀렸다 돌아옴(전투 위치는 그대로) |
+| 합류 대사 | 나루터 쪽배 → 넬라 「집에 가라 했지!」 → 하랄 「노질 하나는 내 젊을 적 같구먼」 → 루미나르 환영 |
+| 키 / 위치 | HEIGHT 56, SPRITES h 66, 어부 자리(하랄과 같은 위치) |
+| 그림 → 게임 파일 | `assets/characters/toby_{idle,walk,attack,hit}.png`, `assets/portraits/portrait_toby_{idle,laugh}.png`, `assets/skills/skill_toby.png`, `assets/fx/fx_skill_toby.png` |
+| 이름 겹침 | 마을 꼬마 NPC 「토비」는 「티모」로 이름 변경(초상화 `portrait_timo_idle.png`), `toby` id 는 새 동료가 사용 |
