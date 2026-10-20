@@ -1,6 +1,8 @@
 /// 공통 화면 부품 — 웹 index.html CSS 의 .box .row .sec .note .kv .xp .buy .acts .sheet .talk 를 옮긴 것.
 library;
 
+import 'dart:ui' as ui;
+
 import 'package:flutter/material.dart';
 
 import '../core/fmt.dart';
@@ -368,15 +370,9 @@ class KdSheetFrame extends StatelessWidget {
               child: DecoratedBox(decoration: BoxDecoration(color: KdColors.panel, borderRadius: BorderRadius.circular(4))),
             ),
           ),
-          Container(
-            decoration: const BoxDecoration(
-              image: DecorationImage(
-                image: AssetImage('$_ui/frame_popup.png'),
-                centerSlice: Rect.fromLTRB(70, 70, 408, 291),
-                scale: 70 / 22,
-                fit: BoxFit.fill,
-              ),
-            ),
+          // 금테: 웹 border-image: frame_popup.png 70 fill / 22px (모서리 70px 를 22px 로 줄여 그림)
+          const Positioned.fill(child: NineSlice('$_ui/frame_popup.png', slice: 70, border: 22)),
+          Padding(
             padding: const EdgeInsets.fromLTRB(28, 32, 28, 30),
             child: SingleChildScrollView(child: child),
           ),
@@ -491,4 +487,68 @@ List<Widget> _gap(List<Widget> ws, double g, {bool horizontal = false}) {
     out.add(ws[i]);
   }
   return out;
+}
+
+
+/// 9칸 나눠 그리기 (웹 border-image): 그림의 가장자리 [slice]px 를 화면에서 [border]px 로 그리고 가운데는 늘림
+class NineSlice extends StatefulWidget {
+  const NineSlice(this.asset, {super.key, required this.slice, required this.border});
+  final String asset;
+  final double slice, border;
+
+  @override
+  State<NineSlice> createState() => _NineSliceState();
+}
+
+class _NineSliceState extends State<NineSlice> {
+  ui.Image? _img;
+  ImageStream? _stream;
+  late final ImageStreamListener _l = ImageStreamListener((info, _) {
+    if (mounted) setState(() => _img = info.image);
+  });
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _stream?.removeListener(_l);
+    _stream = AssetImage(widget.asset).resolve(createLocalImageConfiguration(context))..addListener(_l);
+  }
+
+  @override
+  void dispose() {
+    _stream?.removeListener(_l);
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) => CustomPaint(painter: _NinePainter(_img, widget.slice, widget.border));
+}
+
+class _NinePainter extends CustomPainter {
+  _NinePainter(this.img, this.s, this.b);
+  final ui.Image? img;
+  final double s, b;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final im = img;
+    if (im == null) return;
+    final iw = im.width.toDouble(), ih = im.height.toDouble();
+    final p = Paint()..filterQuality = FilterQuality.medium;
+    final sx = [0.0, s, iw - s, iw], sy = [0.0, s, ih - s, ih];
+    final dx = [0.0, b, size.width - b, size.width], dy = [0.0, b, size.height - b, size.height];
+    for (var r = 0; r < 3; r++) {
+      for (var c = 0; c < 3; c++) {
+        canvas.drawImageRect(
+          im,
+          Rect.fromLTRB(sx[c], sy[r], sx[c + 1], sy[r + 1]),
+          Rect.fromLTRB(dx[c], dy[r], dx[c + 1], dy[r + 1]),
+          p,
+        );
+      }
+    }
+  }
+
+  @override
+  bool shouldRepaint(_NinePainter o) => o.img != img || o.s != s || o.b != b;
 }

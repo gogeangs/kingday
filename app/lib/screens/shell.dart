@@ -2,6 +2,7 @@
 library;
 
 import 'dart:math' as math;
+import 'dart:ui' as ui;
 
 import 'package:flame/game.dart';
 import 'package:flutter/material.dart';
@@ -333,17 +334,8 @@ class _Title extends StatelessWidget {
     final pad = MediaQuery.paddingOf(context);
     return Positioned.fill(
       child: Stack(fit: StackFit.expand, children: [
+        // 웹은 그림이 어둡게 하는 막(gradient) 위에 그려져 밝게 보임 → 그림만
         kdImg('assets/game/illust/illust_title.jpg', fit: BoxFit.cover, align: const Alignment(0, .4)),
-        const DecoratedBox(
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              colors: [Color(0xF00A0E1A), Color(0x330A0E1A), Color(0x330A0E1A), Color(0xFA0A0E1A)],
-              stops: [0, .34, .52, .78],
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
-            ),
-          ),
-        ),
         Padding(
           padding: EdgeInsets.fromLTRB(24, 56 + pad.top, 24, 48 + pad.bottom),
           child: Column(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
@@ -351,10 +343,17 @@ class _Title extends StatelessWidget {
               widthFactor: .9,
               child: ConstrainedBox(
                 constraints: const BoxConstraints(maxWidth: 340),
-                child: Container(
-                  decoration: const BoxDecoration(boxShadow: [BoxShadow(color: Color(0x80000000), blurRadius: 18, offset: Offset(0, 8))]),
-                  child: kdImg('assets/game/ui/logo.png'),
-                ),
+                // 웹 filter: drop-shadow — 글자 모양 그대로 그림자 (네모 상자 그림자 아님)
+                child: Stack(children: [
+                  Transform.translate(
+                    offset: const Offset(0, 8),
+                    child: ImageFiltered(
+                      imageFilter: ui.ImageFilter.blur(sigmaX: 9, sigmaY: 9),
+                      child: ColorFiltered(colorFilter: const ColorFilter.mode(Color(0x80000000), BlendMode.srcIn), child: kdImg('assets/game/ui/logo.png')),
+                    ),
+                  ),
+                  kdImg('assets/game/ui/logo.png'),
+                ]),
               ),
             ),
             Column(mainAxisSize: MainAxisSize.min, children: [

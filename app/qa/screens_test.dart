@@ -138,6 +138,12 @@ void main() {
         await shot('offline_reward');
         await close();
       }
+      // 밀린 이야기 창들을 모두 닫음
+      for (var i = 0; i < 25; i++) {
+        final nav = g.navKey.currentState!;
+        if (nav.canPop()) nav.pop();
+        await frames(3);
+      }
       await frames(30);
       await shot('battle');
 
