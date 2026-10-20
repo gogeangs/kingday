@@ -254,7 +254,7 @@ class StageBottom extends StatelessWidget {
             img: 'relic_chest',
             label: fmt(cost),
             dim: !canBox,
-            onTap: () => g.setTab(GameTab.eq),
+            onTap: () => g.openBox(),
           ),
           const SizedBox(height: 6),
           _QBtn(img: 'btn_auto', label: manual ? '자동 끔' : '자동 켬', dim: manual, on: !manual, onTap: () {

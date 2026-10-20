@@ -10,15 +10,18 @@ import '../core/data.dart';
 import '../game/controller.dart';
 import '../ui/theme.dart';
 import '../ui/widgets.dart';
+import 'eq_page.dart';
+import 'pt_page.dart';
+import 'up_page.dart';
 
 /// 탭 내용. 4~6단계에서 하나씩 실제 화면으로 바뀐다.
 Widget pageBody(GameController g, GameTab t) => switch (t) {
-      GameTab.eq => _soon(g, '성유물 상자 · 장비 칸 · 브론의 대장간', '4단계'),
-      GameTab.pt => _soon(g, '편성 · 동료 · 동료 카드', '4단계'),
-      GameTab.up => _soon(g, '단련(연속 강화) · 은퇴', '4·6단계'),
+      GameTab.eq => EqPage(g),
+      GameTab.pt => PtPage(g),
+      GameTab.up => UpPage(g),
       GameTab.vl => _soon(g, '마을 풍경 · 건물 · 밭 · 식당', '5단계'),
       GameTab.mp => _MapInfo(g),
-      GameTab.sh => _soon(g, '오늘의 할 일 · 피트의 무료 선물 · 골드 바꾸기 · 카드 · 상품', '4·9단계'),
+      GameTab.sh => _soon(g, '오늘의 할 일 · 피트의 무료 선물 · 골드 바꾸기 · 카드 · 상품', '다음'),
     };
 
 Widget _soon(GameController g, String what, String when) => KdBox(children: [

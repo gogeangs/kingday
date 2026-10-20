@@ -11,12 +11,14 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../battle/battle_game.dart';
 import '../battle/sim.dart';
+import '../core/actions.dart';
 import '../core/calc.dart';
 import '../core/data.dart';
 import '../core/fmt.dart';
 import '../core/js.dart';
 import '../core/save_store.dart';
 import '../core/state.dart';
+import '../ui/game_widgets.dart';
 import '../ui/widgets.dart';
 
 /// 화면 어디서나 ref.watch(gameProvider) 로 꺼내 씀 (main.dart 에서 실제 값으로 바꿔 끼움)
@@ -47,6 +49,13 @@ class GameController extends ChangeNotifier {
     calc = GameCalc(state);
     sim = BattleSim(calc);
     game = BattleGame(sim, insets: const BattleInsets(top: 84, bottom: 118))..onTick = _onFrame;
+    acts = GameActions(calc)
+      ..bossFight = (() => sim.mons.any((m) => m.boss && m.hp > 0 && m.dead == 0))
+      ..onSwap = _swap
+      ..onHpAdd = (id, h) {
+        final p = sim.party[id];
+        if (p != null) p.hp += h;
+      };
     if (!truthy(state.raw['started'])) state.raw['started'] = true;
     state.raw['v'] = 3;
     calc.produce();
@@ -59,6 +68,10 @@ class GameController extends ChangeNotifier {
   late final GameCalc calc;
   late final BattleSim sim;
   late final BattleGame game;
+  late final GameActions acts;
+
+  /// 방금 바뀐 장비 칸 → 시각 (반짝임)
+  final Map<String, int> flashAt = {};
 
   /// 매 프레임 (전투 위 표시: 보스 막대·초상화)
   final frame = ValueNotifier<int>(0);
@@ -177,10 +190,11 @@ class GameController extends ChangeNotifier {
 
   /// 웹 scene(eyebrow,title,paras,btn,alt,illust): 이야기 창. 대기열에 넣는다.
   void scene(String eyebrow, String title, List<String> paras, String btn,
-      {String? altLabel, VoidCallback? onGo, String? illust, Widget? titleWidget, bool closable = false}) {
+      {String? altLabel, VoidCallback? onGo, String? illust, String? illustFace, Widget? titleWidget, bool closable = false}) {
     queue((ctx) => showKdSheet<void>(ctx, closable: closable, builder: (c) {
           return KdSheetBody(
             illust: illust,
+            illustFace: illustFace,
             eyebrow: eyebrow,
             title: titleWidget == null ? title : null,
             titleWidget: titleWidget,
@@ -197,21 +211,159 @@ class GameController extends ChangeNotifier {
   }
 
   // ── 매 프레임 ──
-  num _uiT = 0;
-  void _onFrame() {
+  num _uiT = 0, _autoT = 0;
+  void _onFrame(double dt) {
     for (final e in sim.events) {
       _handle(e);
     }
     sim.events.clear();
     frame.value++;
+    // 웹 loop(): 자동 열기 0.9초마다 (창이 없을 때)
+    _autoT += dt;
+    if (truthy(state.raw['autoOpen']) && _autoT > .9 && !modalOpen) {
+      _autoT = 0;
+      act((a) => a.openBox(true));
+    }
     // 웹 loop(): 0.4초마다 생산·화면 새로 그리기
-    _uiT += 1 / 60;
+    _uiT += dt;
     if (_uiT > .4) {
       _uiT = 0;
       calc.produce();
       refresh();
     }
   }
+
+  // ── 누르면 일어나는 일 (core/actions.dart) ──
+  /// 조작을 하고, 그 결과(알림·창)를 처리한 뒤 화면을 새로 그림
+  T act<T>(T Function(GameActions a) f) {
+    final r = f(acts);
+    _flush();
+    refresh();
+    return r;
+  }
+
+  bool _peteAuto = false;
+
+  void _flush() {
+    final out = List.of(acts.out);
+    acts.out.clear();
+    for (final r in out) {
+      switch (r) {
+        case ActToast(:final msg):
+          toast(msg);
+        case ActHaptic(:final pattern):
+          haptic(pattern);
+        case ActFlashSlot(:final slot):
+          flashAt[slot] = DateTime.now().millisecondsSinceEpoch;
+        case ActBoxLevelScene(:final lv):
+          if (lv == 5) {
+            scene('성유물 상자 Lv.5', '단골 대접', [
+              'm:피트|단골 대접이야. 이번 물건은 진짜 진품이라고. …이번엔 진짜.',
+              'k@flustered:지난번엔 가짜였어요?',
+              'm:피트|자, 자! 영웅 등급이 더 잘 나오게 해 놨어!',
+            ], '…믿어 볼게요');
+          } else {
+            scene('성유물 상자 Lv.10', '왕국 최고의 상인', [
+              'm:피트|형씨 덕분에 내가 왕국 최고의 상인이 됐어. 이제 내 상자엔 신화 등급도 들어 있다고!',
+              'q@proud:…저 상인, 처음부터 주인의 재능을 알아본 거로군.',
+              'm:피트|아니, 난 돈 냄새를 맡았지.',
+            ], '그럴 줄 알았어요');
+          }
+        case ActPeteIntro():
+          scene('수상한 행상인', '행상인 피트', [
+            '마을 어귀에 낯선 마차가 서 있었다. 짐칸 가득 녹슨 상자가 실려 있었다.',
+            'm:피트|어이, 거기 성검 든 형씨! 성유물 상자 하나 어때? 마왕군이 흘리고 간 진품이야. …아마도.',
+            'k@surprised:아마도요?',
+            'q@angry:주인, 저자 눈빛이 수상하다.',
+            'm:피트|수상하긴! 열어 보면 알아. 환불은 안 되지만.',
+            'sys:상자를 열면 카엘의 장비가 나와요. 많이 열수록 피트가 더 좋은 물건을 들여와요.',
+          ], '한번 열어 본다', onGo: () => act((a) => a.openBox(_peteAuto)));
+        case ActShowItem(:final it, :final cur):
+          queue((ctx) => showItemSheet(ctx, it, cur));
+        case ActOpen10():
+          queue((ctx) => showOpen10Sheet(ctx, r));
+        case ActRecruitScene(:final id):
+          final rc = recruits[id]!;
+          scene('동료 합류', rc.title, rc.lines, rc.ok, illust: 'join', illustFace: id);
+      }
+    }
+  }
+
+  /// 상자 열기 (빠른 버튼·장비 탭)
+  void openBox({bool auto = false}) {
+    _peteAuto = auto;
+    act((a) => a.openBox(auto));
+  }
+
+  /// 원정대 교체: 나간 동료의 체력 비율을 이어받고 스킬 게이지는 처음부터 (웹 setMember)
+  void _swap(String cur, String id) {
+    final p = sim.party[cur];
+    if (p == null) return;
+    final r = p.down ? 0 : p.hp / calc.stats(cur).hp;
+    sim.party.remove(cur);
+    sim.party[id] = Member(hp: calc.stats(id).hp * (r < 0 ? 0 : r), cd: .5)..down = r <= 0;
+  }
+
+  /// 장비 비교 창 (웹 showItem) — 고르기 전에는 닫히지 않음
+  Future<void> showItemSheet(BuildContext ctx, Relic it, Relic? cur) => showKdSheet<void>(ctx, closable: false, builder: (c) {
+        final d = (GameCalc.score(it) - GameCalc.score(cur)) * calc.enMul(it.slot);
+        final mood = it.g < 1 ? 'angry' : it.g >= 4 ? 'moved' : 'proud';
+        return KdSheetBody(
+          title: '성유물을 얻었어요',
+          children: [
+            Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
+              Expanded(child: RelicCard(it, '새 장비', calc, vs: cur, compare: true)),
+              const SizedBox(width: 8),
+              Expanded(child: RelicCard(cur, '착용 중', calc)),
+            ]),
+            Text('전투력 ${d >= 0 ? '▲' : '▼'} ${fmt(d.abs())}',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                    fontFamily: 'Hahmlet', fontSize: 17, fontWeight: FontWeight.w700, color: d > 0 ? const Color(0xFF7BE08F) : d < 0 ? const Color(0xFFFF6B7D) : null)),
+            Para('q@$mood:${lumQuotes[it.g]}'),
+          ],
+          acts: KdActs(buttons: [
+            KdAct('판매 +${fmt(it.price)}', onTap: () {
+              Navigator.of(c).pop();
+              act((a) => a.sell(it));
+            }),
+            KdAct('장착', primary: true, onTap: () {
+              Navigator.of(c).pop();
+              act((a) => a.equip(it));
+            }),
+          ]),
+        );
+      });
+
+  /// 10연속 결과 창 (웹 open10)
+  Future<void> showOpen10Sheet(BuildContext ctx, ActOpen10 r) => showKdSheet<void>(ctx, closable: false, builder: (c) {
+        final cnt = <(int, int)>[
+          for (var g = 0; g < itemGrades.length; g++)
+            if (r.items.any((x) => x.g == g)) (g, r.items.where((x) => x.g == g).length)
+        ];
+        return KdSheetBody(
+          eyebrow: '성유물 상자 10연속',
+          title: '피트의 특별 배달',
+          children: [
+            Wrap(alignment: WrapAlignment.center, spacing: 10, runSpacing: 4, children: [
+              for (final (g, n) in cnt) oddsChip(gradeColor(g), '${itemGrades[g].n} $n개', size: 13),
+            ]),
+            Wrap(alignment: WrapAlignment.center, spacing: 6, runSpacing: 6, children: [
+              for (final it in r.items)
+                SizedBox(
+                  width: 56,
+                  child: Column(children: [
+                    RelicIcon(it, size: 56),
+                    Text(r.equipped.contains(it) ? '장착' : ' ', style: KdText.body(10, color: gradeColor(it.g), weight: FontWeight.w600)),
+                  ]),
+                ),
+            ]),
+            Para(r.equipped.isNotEmpty ? 'q@proud:좋다! 더 강한 성유물 ${r.equipped.length}개를 바로 걸쳤다.' : 'q@angry:흥, 지금 것보다 나은 게 없군.'),
+            Text('나머지를 팔아 골드 +${fmt(r.sold)}', style: const TextStyle(fontSize: 13, color: Color(0xFF97A2C3))),
+          ],
+          acts: KdActs(buttons: [KdAct('확인', primary: true, onTap: () => Navigator.of(c).pop())]),
+        );
+      });
 
   void _handle(BattleEvent e) {
     switch (e) {

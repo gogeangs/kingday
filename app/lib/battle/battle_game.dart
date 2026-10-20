@@ -32,7 +32,7 @@ class BattleGame extends FlameGame {
   int get speed => sim.s.raw['speed'] == 2 ? 2 : 1;
 
   /// 매 프레임 끝에 부름 (화면 위 Flutter 위젯 새로 그리기용)
-  void Function()? onTick;
+  void Function(double dt)? onTick;
 
   final Map<String, ui.Image> _img = {};
   ui.Image? img(String path) => _img[path];
@@ -161,7 +161,7 @@ class BattleGame extends FlameGame {
       _lastRegion = ri;
       _ensureRegion(ri);
     }
-    onTick?.call();
+    onTick?.call(math.min(.1, dt));
   }
 
   // ════════════════════════ 그리기 ════════════════════════

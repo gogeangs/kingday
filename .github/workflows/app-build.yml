@@ -55,6 +55,7 @@ jobs:
           node tools/parity/gen_dart_data.js --check
           node tools/parity/make_fixtures.js --check
           node tools/parity/make_battle_fixtures.js --check
+          node tools/parity/make_action_fixtures.js --check
 
       - name: 그림 복사 (assets/ → app/assets/game/)
         working-directory: .

@@ -399,8 +399,11 @@ class KdSheetFrame extends StatelessWidget {
 
 /// 창 안의 내용 순서: 그림 → 작은 머리글 → 제목 → 내용 → 버튼
 class KdSheetBody extends StatelessWidget {
-  const KdSheetBody({super.key, this.illust, this.eyebrow, this.eyebrowColor, this.title, this.titleWidget, this.children = const [], this.acts});
+  const KdSheetBody({super.key, this.illust, this.illustFace, this.eyebrow, this.eyebrowColor, this.title, this.titleWidget, this.children = const [], this.acts});
   final String? illust, eyebrow, title;
+
+  /// 그림 위 왼쪽 아래에 띄울 동료 초상화 (웹 .joinpf)
+  final String? illustFace;
   final Color? eyebrowColor;
   final Widget? titleWidget;
   final List<Widget> children;
@@ -421,7 +424,25 @@ class KdSheetBody extends StatelessWidget {
               borderRadius: BorderRadius.circular(4),
               child: AspectRatio(
                 aspectRatio: 16 / 10,
-                child: kdImg('assets/game/illust/illust_$illust.jpg', fit: BoxFit.cover, align: _illPos[illust] ?? const Alignment(0, -.1)),
+                child: LayoutBuilder(
+                  builder: (_, c) => Stack(fit: StackFit.expand, children: [
+                    kdImg('assets/game/illust/illust_$illust.jpg', fit: BoxFit.cover, align: _illPos[illust] ?? const Alignment(0, -.1)),
+                    if (illustFace != null)
+                      Positioned(
+                        left: c.maxWidth * .12,
+                        bottom: c.maxHeight * .04,
+                        width: c.maxWidth * .38,
+                        height: c.maxWidth * .38,
+                        child: Container(
+                          decoration: const BoxDecoration(
+                            shape: BoxShape.circle,
+                            boxShadow: [BoxShadow(color: Color(0x80FFE68C), blurRadius: 18)],
+                          ),
+                          child: kdImg('assets/game/portraits/portrait_${illustFace}_idle.png'),
+                        ),
+                      ),
+                  ]),
+                ),
               ),
             ),
           if (eyebrow != null)

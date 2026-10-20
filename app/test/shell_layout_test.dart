@@ -6,6 +6,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:kingday/core/save_store.dart';
 import 'package:kingday/game/controller.dart';
 import 'package:kingday/main.dart';
+import 'package:kingday/screens/pt_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 /// 후반 저장 (긴 칭호·큰 숫자·5명 원정대)
@@ -77,6 +78,66 @@ void main() {
           await tester.pump(const Duration(milliseconds: 100));
         }
         expect(went, isTrue);
+
+        Future<void> frames([int n = 6]) async {
+          for (var i = 0; i < n; i++) {
+            await tester.pump(const Duration(milliseconds: 100));
+          }
+        }
+
+        Future<void> closeTop() async {
+          g.navKey.currentState!.pop();
+          await frames();
+        }
+
+        // 4단계 화면: 장비·원정대(하위 탭 3개)·단련
+        g.state.raw['pgFull'] = false;
+        for (final t in [GameTab.eq, GameTab.up]) {
+          g.setTab(t);
+          await frames(2);
+        }
+        for (final sub in ['form', 'list', 'card']) {
+          g.state.raw['ptTab'] = sub;
+          g.setTab(null);
+          g.setTab(GameTab.pt);
+          await frames(2);
+        }
+        g.setTab(null);
+        await frames(2);
+
+        // 상자 열기 → 비교 창 → 장착
+        g.state.gold = 1e12;
+        g.state.done['pete'] = true;
+        g.openBox();
+        await frames();
+        expect(find.text('성유물을 얻었어요'), findsOneWidget);
+        await tester.ensureVisible(find.text('장착'));
+        await frames(1);
+        await tester.tap(find.text('장착'));
+        await frames();
+        expect(find.text('성유물을 얻었어요'), findsNothing);
+
+        // 10연속 결과 창
+        g.state.gem = 1000;
+        g.act((a) => a.open10());
+        await frames();
+        expect(find.text('피트의 특별 배달'), findsOneWidget);
+        await closeTop();
+
+        // 동료 정보 창·자리 고르기 창·장비 칸 창
+        for (final id in ['margo', 'brida']) {
+          if (!g.calc.owned(id)) continue;
+          compSheet(g, id);
+          await frames();
+          expect(find.text('레벨업'), findsWidgets);
+          await closeTop();
+        }
+        if (g.calc.jobMembers('miner').length > 1) {
+          seatSheet(g, 'miner');
+          await frames();
+          expect(find.text('누구를 출전시킬까요?'), findsOneWidget);
+          await closeTop();
+        }
 
         // 알림
         g.toast('세 줄이 넘을 수도 있는 아주 긴 알림 문장이 잘 줄바꿈되는지 확인해요. 황금 고블린 처치! 골드 +1.23M · 이삭 +9');
