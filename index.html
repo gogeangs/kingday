@@ -1726,7 +1726,7 @@ if(DEMO==='goblin'){noSave=true;gobT=0;setTimeout(()=>toast('황금 고블린 �
 function save(){if(noSave)return;S.last=Date.now();try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
 
 /* ---------- 랭킹 (Supabase) — 설정: docs/RANKING.md, supabase/schema.sql ---------- */
-const SB={url:'',key:''};/* Supabase Project URL과 anon(public) 키를 넣으면 랭킹이 켜져요 */
+const SB={url:'https://xqrdqigdwfyoaalqalfc.supabase.co',key:'sb_publishable_b0VfItWh30lKMyHaOSehXQ_lWqe_xTM'};/* Supabase Project URL과 anon(public) 키를 넣으면 랭킹이 켜져요 */
 const sbOn=()=>!!(SB.url&&SB.key);
 let sbAuth=(()=>{try{return JSON.parse(localStorage.getItem('kd-sb'))||null}catch(e){return null}})();
 const sbSave=()=>{try{localStorage.setItem('kd-sb',JSON.stringify(sbAuth))}catch(e){}};
