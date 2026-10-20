@@ -19,6 +19,7 @@ import '../core/js.dart';
 import '../core/save_store.dart';
 import '../core/state.dart';
 import '../ui/game_widgets.dart';
+import '../ui/theme.dart';
 import '../ui/widgets.dart';
 
 /// 화면 어디서나 ref.watch(gameProvider) 로 꺼내 씀 (main.dart 에서 실제 값으로 바꿔 끼움)
