@@ -9,7 +9,9 @@ const pathOf=u=>{const s=new URL(base).pathname,p=new URL(u).pathname;return p.s
 self.addEventListener('install',e=>{self.skipWaiting();e.waitUntil((async()=>{
   const pc=await caches.open(PAGE);try{await pc.add(new Request(base,{cache:'reload'}))}catch(_){}
   const fc=await caches.open(FILES),have=new Set((await fc.keys()).map(r=>r.url));
-  const need=Object.entries(MAP).filter(([p,h])=>!have.has(key(p,h)));
+  /* 첫 설치 때는 화면 틀(UI·글꼴·아이콘)만 받고, 그림은 게임이 쓸 때 받아 저장해요 → 첫 접속 데이터 절약 */
+  const CORE=/^(assets\/(ui|icon|fonts|gem|profile)\/|manifest|favicon)/;
+  const need=Object.entries(MAP).filter(([p,h])=>CORE.test(p)&&!have.has(key(p,h)));
   let i=0;const worker=async()=>{while(i<need.length){const[p,h]=need[i++];try{const r=await fetch(key(p,h));if(r.ok)await fc.put(key(p,h),r)}catch(_){}}};
   await Promise.all(Array.from({length:6},worker));
 })())});
