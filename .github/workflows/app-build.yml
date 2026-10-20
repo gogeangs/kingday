@@ -56,6 +56,7 @@ jobs:
           node tools/parity/make_fixtures.js --check
           node tools/parity/make_battle_fixtures.js --check
           node tools/parity/make_action_fixtures.js --check
+          node tools/parity/make_soak_fixtures.js --check
 
       - name: 그림 복사 (assets/ → app/assets/game/)
         working-directory: .
@@ -147,6 +148,26 @@ jobs:
             echo "::error title=test-fail::$msg"
             exit $code
           fi
+
+      - name: QA 화면 캡처 (qa 가 들어간 브랜치만 · 결과는 qa-shots 브랜치)
+        if: contains(github.ref, 'qa')
+        continue-on-error: true
+        run: |
+          set +e
+          flutter test --update-goldens qa/screens_test.dart > shots.log 2>&1
+          code=$?
+          tail -80 shots.log
+          if [ $code -ne 0 ]; then
+            msg=$( { grep -E "\[E\]$|Expected|Actual|Exception|Error" shots.log | awk '!seen[$0]++' | head -40; } | sed -e 's/%/%25/g' | awk '{printf "%s%%0A", $0}')
+            echo "::warning title=qa-shots::$msg"
+          fi
+          ls qa/shots/*.png >/dev/null 2>&1 || exit 0
+          H=$(git config --get http.https://github.com/.extraheader)
+          rm -rf /tmp/shots && mkdir -p /tmp/shots && cp qa/shots/*.png /tmp/shots/ && cp shots.log /tmp/shots/
+          cd /tmp/shots
+          git init -q && git checkout -q -b qa-shots && git add -A
+          git -c user.name="github-actions[bot]" -c user.email="41898282+github-actions[bot]@users.noreply.github.com" commit -qm "QA 화면 ${GITHUB_SHA::7}"
+          git -c http.https://github.com/.extraheader="$H" push -q -f "https://github.com/${{ github.repository }}" qa-shots
 
       - name: APK 빌드
         run: flutter build apk --release
