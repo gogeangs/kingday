@@ -59,6 +59,9 @@ app/
 - `lib/core/server.dart` — 서버(Supabase) 연결. 웹처럼 SDK 없이 REST 로 직접 부름. **공개용 키만** 들어 있음(비밀 키·DB 비밀번호는 넣지 않음).
 - `lib/game/online.dart` — 계정·닉네임·랭킹 제출·고블린 주간·우편·클라우드 저장 (웹 sbEnsure·rankSubmit·mailFetch·cloudPut 자리). 웹과 앱이 같은 계정 서버를 함께 씀.
 - `test/online_test.dart` — 가짜 서버로 시즌 결과→우편함→닉네임→랭킹→프로필 흐름과 보내는 요청 모양을 확인 (진짜 서버엔 접속 안 함).
+- `test/soak_parity_test.dart` — QA 긴 플레이 비교: 같은 규칙으로 30~60분 자동 플레이한 저장 전체를 웹과 비교 (`node tools/parity/make_soak_fixtures.js`).
+- `test/robustness_test.dart` — QA 예외 상황: 깨진 저장·시계 되돌림·오래 꺼 둠·10분 자동 플레이. 결과 보고서는 `docs/QA_NATIVE.md`.
+- `qa/screens_test.dart` — QA 화면 캡처(브랜치 이름에 qa 가 있을 때만, 결과는 `qa-shots` 브랜치).
 - `test/shell_layout_test.dart` — 화면 틀을 폰 폭 4종(320·360·390·430)에서 새 게임·후반 기록으로 그려 넘침이 없는지 확인.
 - `test/battle_parity_test.dart` — 웹 전투(step)를 같은 난수로 돌린 결과(`test/fixtures/battle_parity.json`)와 앱 전투를 1초마다 비교 (보스·군단장·황금 고블린·스킬 10종·전멸 포함, `node tools/parity/make_battle_fixtures.js`).
 - 웹 공식이나 데이터를 바꾸면: `node tools/parity/gen_dart_data.js` → `node tools/parity/make_fixtures.js` → 앱 공식도 맞게 고치기. 안 하면 GitHub Actions 가 알려 줍니다.
