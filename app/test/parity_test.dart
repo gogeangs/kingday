@@ -94,7 +94,7 @@ void main() {
     same(comps.keys.toList(), fx['misc']['compIds'], 'COMP');
   });
 
-  for (final name in ['fresh', 'mid', 'late', 'old']) {
+  for (final name in ['fresh', 'mid', 'late', 'old', 'g1', 'g2', 'g3', 'g4']) {
     group('저장 데이터 「$name」', () {
       late Map<String, dynamic> sc;
       setUp(() => sc = (fx['scenarios'] as Map)[name] as Map<String, dynamic>);
@@ -127,6 +127,7 @@ void main() {
         final gs = c.gearSum();
         same({'a': gs.a, 'h': gs.h}, b['gearSum'], 'gearSum');
         same(c.kStats().toJson(), b['kStats'], 'kStats');
+        same(c.guideIndex(), b['guide'], 'guide');
       });
 
       test('동료별 능력치·별·전투력', () {

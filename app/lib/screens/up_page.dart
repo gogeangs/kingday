@@ -64,10 +64,7 @@ class UpPage extends StatelessWidget {
       const SizedBox(height: 12),
       for (final u in upgrades) ...[_UpRow(g, u, best: u.k == best), const SizedBox(height: 8)],
       const SizedBox(height: 4),
-      const KdBox(children: [
-        KdSec('은퇴'),
-        KdNote('은퇴(처음부터 다시 · 추억으로 영구 강화)는 6단계에서 옮겨 와요.'),
-      ]),
+      _RetireBox(g),
     ]);
   }
 }
@@ -209,6 +206,48 @@ class _UpRowState extends State<_UpRow> {
             child: Text('추천', style: KdText.body(10, color: const Color(0xFF1A1206), weight: FontWeight.w600, height: 1.6)),
           ),
         ),
+    ]);
+  }
+}
+
+/// 카엘의 은퇴 계획 (웹 renderRetire)
+class _RetireBox extends StatelessWidget {
+  const _RetireBox(this.g);
+  final GameController g;
+
+  @override
+  Widget build(BuildContext context) {
+    final s = g.state, c = g.calc, t = c.retireTarget(), pts = c.retirePts(), can = s.stage >= 20;
+    return KdBox(children: [
+      const KdSec('카엘의 은퇴 계획'),
+      KdKv('은퇴의 추억 ${fmt(s.memory)}개', '모든 능력치·골드 +${fmt(s.memory * 5)}%'),
+      if (can)
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+          decoration: BoxDecoration(
+            color: const Color(0x1AFFC94A),
+            border: Border.all(color: const Color(0x73FFC94A)),
+            borderRadius: BorderRadius.circular(10),
+          ),
+          child: Text.rich(
+            TextSpan(children: [
+              const TextSpan(text: '지금 은퇴하면 '),
+              TextSpan(text: '+${pts * 5}%', style: const TextStyle(color: KdColors.gold, fontSize: 15, fontWeight: FontWeight.w700)),
+              const TextSpan(text: ' → 모든 능력치·골드 '),
+              TextSpan(text: '+${fmt((s.memory + pts) * 5)}%', style: const TextStyle(color: KdColors.gold, fontSize: 15, fontWeight: FontWeight.w700)),
+            ]),
+            textAlign: TextAlign.center,
+            style: KdText.body(13),
+          ),
+        ),
+      KdKv('은퇴 자금', '${fmt(s.gold)} / ${fmt(t)}'),
+      XpBar(math.min(1, s.gold / t).toDouble()),
+      const KdNote('영지를 되찾을수록 목표 금액이 올라가요. 카엘은 아직 이 사실을 몰라요.'),
+      KdBuy(
+        text: can ? '은퇴하기 · 추억 +$pts' : '영지 19곳을 되찾으면 은퇴할 수 있어요',
+        minWidth: 0,
+        onTap: can ? g.askRetire : null,
+      ),
     ]);
   }
 }

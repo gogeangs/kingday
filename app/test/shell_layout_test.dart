@@ -37,6 +37,29 @@ void main() {
         await tester.pump(const Duration(milliseconds: 50));
         expect(find.text('게임 시작'), findsNothing);
 
+        Future<void> frames([int n = 6]) async {
+          for (var i = 0; i < n; i++) {
+            await tester.pump(const Duration(milliseconds: 100));
+          }
+        }
+
+        Future<void> press(String label) async {
+          expect(find.text(label), findsOneWidget, reason: '「$label」 버튼이 있어야 함');
+          await tester.ensureVisible(find.text(label));
+          await frames(1);
+          await tester.tap(find.text(label));
+          await frames();
+        }
+
+        // 새 게임: 프롤로그 → 첫 지역 소개
+        if (save == 'new') {
+          await frames();
+          expect(find.text('밭에 박힌 쇠막대'), findsOneWidget);
+          await press('일단 마을부터 지키자');
+          await press('진격한다');
+          expect(find.text('할 일'), findsOneWidget);
+        }
+
         // 탭 화면 모두 열어 보기 (반쯤 열림 → 크게 보기)
         for (final full in [false, true]) {
           if (g.pgFull != full) g.togglePgFull();
@@ -78,12 +101,6 @@ void main() {
           await tester.pump(const Duration(milliseconds: 100));
         }
         expect(went, isTrue);
-
-        Future<void> frames([int n = 6]) async {
-          for (var i = 0; i < n; i++) {
-            await tester.pump(const Duration(milliseconds: 100));
-          }
-        }
 
         Future<void> closeTop() async {
           g.navKey.currentState!.pop();
@@ -159,6 +176,22 @@ void main() {
           expect(find.text('누구를 출전시킬까요?'), findsOneWidget);
           await closeTop();
         }
+
+        // 6단계: 은퇴 (단련 탭 상자 → 은퇴하기 → 확인 → 몇 년 뒤 → 첫 지역)
+        g.state.stage = 25;
+        g.state.best = 25;
+        g.setTab(GameTab.up);
+        await frames(2);
+        g.askRetire();
+        await frames();
+        await press('은퇴 준비하기');
+        expect(find.text('정말 은퇴할까요?'), findsOneWidget);
+        await press('은퇴 확정');
+        expect(find.text('…다시 끌려 나오다'), findsOneWidget);
+        await press('괭이 대신 검을 든다');
+        await press('진격한다');
+        expect(g.state.stage, 1);
+        expect(g.state.retires, greaterThan(0));
 
         // 알림
         g.toast('세 줄이 넘을 수도 있는 아주 긴 알림 문장이 잘 줄바꿈되는지 확인해요. 황금 고블린 처치! 골드 +1.23M · 이삭 +9');

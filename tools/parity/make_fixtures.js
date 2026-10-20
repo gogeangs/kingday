@@ -66,6 +66,11 @@ const SAVES = {
     prod: { dock: NOW - 50 * MIN, apiary: NOW - 50 * MIN, mine: NOW - 50 * MIN },
     gem: 5000, v: 3,
   },
+  // 안내(다음 할 일) 단계 확인용
+  g1: { gold: 100, stage: 4, best: 4, eq: { weapon: item('weapon', 0, 2, 6, 0, 5) } },
+  g2: { gold: 100, stage: 8, best: 8, up: { atk: 3, hp: 0, spd: 0, crit: 0 }, eq: { weapon: item('weapon', 0, 2, 6, 0, 5) }, joined: { margo: true }, done: { marta: true } },
+  g3: { gold: 100, stage: 14, best: 14, up: { atk: 3 }, bld: { inn: 1, farm: 1 }, joined: { margo: true }, lv: { margo: 2 }, done: { marta: true }, stat: { harv: 4 } },
+  g4: { gold: 100, stage: 22, best: 22, up: { atk: 3 }, bld: { inn: 1, farm: 1 }, joined: { margo: true }, lv: { margo: 2 }, done: { marta: true }, stat: { harv: 4 }, daily: { d: '2026-10-20', kill: 0, box: 0, harv: 0, claim: { box: true } } },
   // 옛 저장(v 없음): crops 필드 → items 로 합치기, rankSeen 계산
   old: { gold: 500, stage: 14, best: 14, crops: { wheat: 7, carrot: 2 }, items: { wheat: 1 }, joined: { margo: true }, lv: { margo: 3 } },
 };
@@ -101,7 +106,8 @@ for (const name of Object.keys(SAVES)) {
   sc.basic = run(`({rankIdx:rankIdx(),memMul:memMul(),allMul:allMul(),boxCost:boxCost(),xpNeed:xpNeed(),odds:odds(),
     retireTarget:retireTarget(),retirePts:retirePts(),plotCount:plotCount(),landCount:landCount(),vpMine:vpMine(),
     members:members(),power:power(),gemGold:gemGold(),goldRate:goldRate(),goldX:GOLDX.map(goldX),
-    buffs:Object.keys(BUFFN).map(k=>buff(k)),subOn:subOn(),gearSum:gearSum(),kStats:kStats()})`);
+    buffs:Object.keys(BUFFN).map(k=>buff(k)),subOn:subOn(),gearSum:gearSum(),kStats:kStats(),
+    guide:(S.retires>0||S.best>30)?-1:GUIDE.findIndex((x,j)=>!x.ok()&&!(j<3&&S.best>12))})`);
   sc.comp = {};
   for (const id of COMPS) {
     sc.comp[id] = run(`({stats:${id === 'kael' ? 'kStats()' : `cStats('${id}')`},cPow:cPow('${id}'),owned:owned('${id}'),

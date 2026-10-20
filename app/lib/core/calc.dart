@@ -558,6 +558,40 @@ class GameCalc {
     return done;
   }
 
+  // ───────────── 다음 할 일 안내 (웹 GUIDE / renderGuide) ─────────────
+  /// 처음 하는 사람을 위한 안내 문구 (순서대로 하나씩)
+  static const guideTexts = [
+    '성유물 상자를 열어 장비를 얻어요',
+    '단련에서 공격력을 3번 올려요',
+    '1-10 성주를 쓰러뜨려요',
+    '마을에 여관을 재건해요',
+    '원정대에서 동료 레벨을 올려요',
+    '마을에 밭을 일궈요',
+    '밭에 씨앗을 심고 수확해요',
+    '피트의 상점에서 오늘의 할 일 보상을 받아요',
+    '단련 탭에서 첫 은퇴를 해 봐요',
+  ];
+
+  /// 지금 보여 줄 안내 번호. 다 했거나(은퇴했거나 31영지 이상) 없으면 -1
+  int guideIndex() {
+    if (s.retires > 0 || s.best > 30) return -1;
+    final checks = <bool Function()>[
+      () => s.eq.values.any(truthy),
+      () => s.upLv('atk') >= 3,
+      () => s.best > 10,
+      () => s.bldLv('inn') >= 1,
+      () => !s.isJoined('margo') || s.lv.keys.any((k) => s.isJoined(k) && orNum(s.lv[k], 0) > 1),
+      () => !truthy(s.done['marta']) || s.bldLv('farm') >= 1,
+      () => !truthy(s.bld['farm']) || orNum(asMap(s.raw['stat'])?['harv'], 0) > 0,
+      () => (asMap(daily()['claim']) ?? const <String, dynamic>{}).values.any(truthy),
+      () => s.best < 20 || s.retires > 0,
+    ];
+    for (var j = 0; j < checks.length; j++) {
+      if (!checks[j]() && !(j < 3 && s.best > 12)) return j;
+    }
+    return -1;
+  }
+
   // ───────────── 은퇴 ─────────────
   /// retire(p): 처음부터 다시(추억 +p). 전투 화면 정리는 화면 쪽에서.
   void retire(int p) {

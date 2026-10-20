@@ -27,13 +27,14 @@ class StageTop extends StatelessWidget {
     final s = g.state, st = s.stage, r = GameCalc.region(st), boss = g.sim.boss;
     final label = st > maxLand ? '왕도 진격로' : '${(st - 1) ~/ 10 + 1}-${(st - 1) % 10 + 1} ${r.n}';
     final sub = st > maxLand ? '' : '${GameCalc.terrName(st)} 탈환전';
-    return IgnorePointer(
-      child: Padding(
+    final gi = g.state.raw['guideOff'] == true ? -1 : g.calc.guideIndex();
+    return Padding(
         padding: const EdgeInsets.symmetric(horizontal: 12),
         child: Column(
           children: [
-            // .stagepill
-            Container(
+            // .toprow: 영지 표시줄 + 다음 할 일
+            Wrap(alignment: WrapAlignment.center, crossAxisAlignment: WrapCrossAlignment.center, spacing: 6, runSpacing: 6, children: [
+            IgnorePointer(child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
               decoration: BoxDecoration(
                 gradient: const LinearGradient(colors: [Color(0xE00A0E1A), Color(0xD1141A29)], begin: Alignment.topCenter, end: Alignment.bottomCenter),
@@ -52,13 +53,14 @@ class StageTop extends StatelessWidget {
                 const SizedBox(width: 8),
                 _pips(s.wave, boss != null),
               ]),
-            ),
-            if (boss != null) ...[const SizedBox(height: 6), _BossBar(g, boss)],
+            )),
+            if (gi >= 0) _GuidePill(g, gi),
+            ]),
+            if (boss != null) ...[const SizedBox(height: 6), IgnorePointer(child: _BossBar(g, boss))],
             const SizedBox(height: 6),
-            _Buffs(g),
+            IgnorePointer(child: _Buffs(g)),
           ],
         ),
-      ),
     );
   }
 
@@ -83,6 +85,71 @@ class StageTop extends StatelessWidget {
           child: OverflowBox(maxWidth: 20, maxHeight: 20, child: uiImg('ui_boss_mark', size: 20)),
         ),
       ]);
+}
+
+/// 다음 할 일 (웹 .guide): 바뀌면 6초 동안 펼쳐 보여 주고, 접힌 걸 누르면 펼침, 펼친 걸 누르면 그곳으로
+class _GuidePill extends StatefulWidget {
+  const _GuidePill(this.g, this.i);
+  final GameController g;
+  final int i;
+
+  @override
+  State<_GuidePill> createState() => _GuidePillState();
+}
+
+class _GuidePillState extends State<_GuidePill> {
+  int? _shown;
+  int _openUntil = 0;
+
+  int get _now => DateTime.now().millisecondsSinceEpoch;
+
+  @override
+  Widget build(BuildContext context) {
+    if (_shown != widget.i) {
+      _shown = widget.i;
+      _openUntil = _now + 6000;
+    }
+    final open = _now < _openUntil;
+    final pulse = open ? 1.0 : .75 + .25 * math.sin(widget.g.sim.time * 3);
+    return GestureDetector(
+      onTap: () {
+        if (!open) {
+          setState(() => _openUntil = _now + 6000);
+          return;
+        }
+        setState(() => _openUntil = 0);
+        widget.g.guideGo(widget.i);
+      },
+      child: Opacity(
+        opacity: pulse,
+        child: Container(
+          padding: const EdgeInsets.fromLTRB(4, 4, 8, 4),
+          decoration: BoxDecoration(
+            color: const Color(0xE00A0E1A),
+            border: Border.all(color: const Color(0x997BE08F)),
+            borderRadius: BorderRadius.circular(999),
+          ),
+          child: Row(mainAxisSize: MainAxisSize.min, children: [
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
+              decoration: BoxDecoration(color: KdColors.good, borderRadius: BorderRadius.circular(999)),
+              child: Text('할 일', style: KdText.body(10.5, color: const Color(0xFF0D1A10), weight: FontWeight.w600, height: 1.2)),
+            ),
+            if (open) ...[
+              const SizedBox(width: 6),
+              ConstrainedBox(
+                constraints: BoxConstraints(maxWidth: math.min(280, MediaQuery.sizeOf(context).width - 120)),
+                child: Text(GameCalc.guideTexts[widget.i],
+                    maxLines: 1, overflow: TextOverflow.ellipsis, style: KdText.body(12, color: const Color(0xFFE9F4EA), height: 1.2)),
+              ),
+            ],
+            const SizedBox(width: 6),
+            Text('›', style: KdText.body(13, color: KdColors.good, weight: FontWeight.w600, height: 1.1)),
+          ]),
+        ),
+      ),
+    );
+  }
 }
 
 class _BossBar extends StatelessWidget {
@@ -254,6 +321,7 @@ class StageBottom extends StatelessWidget {
             img: 'relic_chest',
             label: fmt(cost),
             dim: !canBox,
+            hint: DateTime.now().millisecondsSinceEpoch - g.hintBoxAt < 2500,
             onTap: () => g.openBox(),
           ),
           const SizedBox(height: 6),
@@ -274,10 +342,13 @@ class StageBottom extends StatelessWidget {
 }
 
 class _QBtn extends StatelessWidget {
-  const _QBtn({required this.img, required this.label, required this.onTap, this.on = false, this.dim = false, this.round = false});
+  const _QBtn({required this.img, required this.label, required this.onTap, this.on = false, this.dim = false, this.round = false, this.hint = false});
   final String img, label;
   final VoidCallback onTap;
   final bool on, dim, round;
+
+  /// 안내: 초록 고리로 깜빡 (웹 .qbtn.hint)
+  final bool hint;
 
   @override
   Widget build(BuildContext context) {
@@ -289,7 +360,11 @@ class _QBtn extends StatelessWidget {
               shape: BoxShape.circle,
               border: Border.all(color: const Color(0xFFC9952A), width: 2),
               gradient: const RadialGradient(center: Alignment(0, -.3), colors: [Color(0xFF3A2A12), Color(0xFF16110A)]),
-              boxShadow: const [BoxShadow(color: Color(0x59000000), spreadRadius: 3)],
+              boxShadow: [
+                hint
+                    ? BoxShadow(color: const Color(0xCC7BE08F), spreadRadius: 4 + 2 * math.sin(DateTime.now().millisecondsSinceEpoch / 100))
+                    : const BoxShadow(color: Color(0x59000000), spreadRadius: 3),
+              ],
             ),
             alignment: Alignment.center,
             child: uiImg(img, size: 34),

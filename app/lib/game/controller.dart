@@ -57,9 +57,12 @@ class GameController extends ChangeNotifier {
         final p = sim.party[id];
         if (p != null) p.hp += h;
       };
-    if (!truthy(state.raw['started'])) state.raw['started'] = true;
+    // 웹 start(): 처음이면 프롤로그 (방치 보상은 7단계)
+    final isNew = !truthy(state.raw['started']);
+    state.raw['started'] = true;
     state.raw['v'] = 3;
     calc.produce();
+    if (isNew) _intro();
     // 웹 loop(): 5초마다 저장
     _saveTimer = Timer.periodic(const Duration(seconds: 5), (_) => save());
   }
@@ -473,6 +476,139 @@ class GameController extends ChangeNotifier {
       case FightResetEvent():
         break;
     }
+  }
+
+  /// 웹 intro(): 새 게임 프롤로그 → 첫 지역 소개
+  void _intro() {
+    scene('왕이 되는 그날까지 · 프롤로그', '밭에 박힌 쇠막대', const [
+      '300년 전 봉인되었던 마계의 문이 열렸다. 마왕군은 하룻밤 만에 에르단 왕국을 집어삼켰고, 왕은 전사했다.',
+      '변두리 마을의 농부 카엘은 그날도 밭을 갈고 있었다. 마물이 마을로 쏟아지자, 그는 밭에 박혀 있던 녹슨 쇠막대를 뽑아 휘둘렀다.',
+      'q@moved:…드디어 나를 뽑는 자가 나타났군. 300년 기다렸다, 주인. 이제 왕이 되러 가자.',
+      'k@surprised:누구세요? 그리고 전 농부인데요.',
+      'sys:마족에게 빼앗긴 영지를 하나씩 되찾고, 동료를 모아 폐허가 된 마을을 다시 세우세요.',
+    ], '일단 마을부터 지키자', illust: 'prologue');
+    _chapter();
+  }
+
+  // ── 다음 할 일 안내 (웹 GUIDE.go) ──
+  /// 상자 버튼 깜빡이기 (첫 안내)
+  int hintBoxAt = 0;
+
+  void guideGo(int i) {
+    switch (i) {
+      case 0:
+        hintBoxAt = DateTime.now().millisecondsSinceEpoch;
+      case 1 || 8:
+        setTab(GameTab.up);
+      case 2:
+        toast('원정대가 자동으로 싸워요. 막히면 장비와 단련을 올려요');
+      case 3:
+        vlSel = 'inn';
+        setTab(GameTab.vl);
+      case 4:
+        state.raw['ptTab'] = 'list';
+        setTab(GameTab.pt);
+      case 5 || 6:
+        vlSel = 'farm';
+        setTab(GameTab.vl);
+      case 7:
+        setTab(GameTab.sh);
+    }
+  }
+
+  // ── 은퇴 (웹 renderRetire 버튼 → scene → retireConfirm → retire) ──
+  void askRetire() {
+    if (state.stage < 20) return;
+    final p = calc.retirePts();
+    scene('은퇴하기', '드디어 은퇴?', const ['k@smile:좋아, 이 정도면 충분해. 난 밭으로 돌아간다.', 'q@angry:주인! 아직 왕좌가…!'], '은퇴 준비하기',
+        altLabel: '아직은 아니야', onGo: () => queue((ctx) => _retireConfirm(ctx, p)));
+  }
+
+  Future<void> _retireConfirm(BuildContext ctx, int p) => showKdSheet<void>(ctx, closable: false, builder: (c) {
+        final s = state, eqN = s.eq.values.where(truthy).length;
+        num up = 0;
+        for (final v in s.up.values) {
+          up = up + asNum(v);
+        }
+        final cl = [
+          for (final e in s.lv.entries)
+            if (calc.owned(e.key) && orNum(e.value, 0) > 1 && comps.containsKey(e.key)) '${comps[e.key]!.n} Lv.${e.value}'
+        ];
+        Widget box(String head, Color col, Widget body, {Color? border}) => Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+              decoration: BoxDecoration(
+                color: const Color(0xFF29334F),
+                borderRadius: BorderRadius.circular(12),
+                border: border != null ? Border.all(color: border) : null,
+              ),
+              child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+                Text(head, style: KdText.body(13, color: col, weight: FontWeight.w600)),
+                const SizedBox(height: 6),
+                body,
+              ]),
+            );
+        Widget li(String a, String b) => Container(
+              padding: const EdgeInsets.symmetric(vertical: 3),
+              decoration: const BoxDecoration(border: Border(top: BorderSide(color: Color(0x0FFFFFFF)))),
+              child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                Text(a, style: KdText.body(13, color: const Color(0xFF97A2C3))),
+                const SizedBox(width: 10),
+                Expanded(child: Text(b, textAlign: TextAlign.right, style: KdText.body(13, weight: FontWeight.w600))),
+              ]),
+            );
+        final land = (s.stage < maxLand + 1 ? s.stage : maxLand + 1) - 1;
+        return KdSheetBody(
+          eyebrow: '은퇴 확인',
+          eyebrowColor: const Color(0xFFFF8A7A),
+          title: '정말 은퇴할까요?',
+          children: [
+            box('처음으로 돌아가요', const Color(0xFFFF8A7A), border: const Color(0x80FF8A7A), Column(children: [
+              li('되찾은 영지', '$land곳 → 0곳 (1-1부터)'),
+              li('골드', '${fmt(s.gold)} → 60'),
+              li('착용한 성유물', '$eqN개 → 모두 사라짐'),
+              li('단련 능력치', up > 0 ? '+${fmt(up)}단계 → 0' : '없음'),
+              li('동료 레벨', cl.isNotEmpty ? '${cl.join(', ')} → Lv.1' : '모두 Lv.1'),
+              li('칭호', '${ranks[calc.rankIdx()].n} → 농부'),
+            ])),
+            box('그대로 남아요', const Color(0xFF9BE3C0),
+                Text('마을 건물·밭·재료, 동료 합류와 모집 동료의 카드·별, 대장간 강화, 성유물 상자 레벨, 황금 이삭, 프로필 테두리·배지', style: KdText.body(13, height: 1.5))),
+            box('얻는 것', const Color(0xFFFFD34A), border: const Color(0x80FFD23C), Text.rich(
+              TextSpan(children: [
+                const TextSpan(text: '은퇴의 추억 '),
+                TextSpan(text: '+$p개', style: const TextStyle(color: Color(0xFFFFD34A), fontWeight: FontWeight.w700)),
+                const TextSpan(text: ' → 모든 능력치·골드 획득 '),
+                TextSpan(text: '+${fmt((s.memory + p) * 5)}%', style: const TextStyle(color: Color(0xFFFFD34A), fontWeight: FontWeight.w700)),
+                TextSpan(text: ' (지금 +${fmt(s.memory * 5)}%), 영구 적용'),
+              ]),
+              style: KdText.body(13, height: 1.5),
+            )),
+          ],
+          acts: KdActs(buttons: [
+            KdAct('취소', onTap: () => Navigator.of(c).pop()),
+            KdAct('은퇴 확정', danger: true, onTap: () {
+              Navigator.of(c).pop();
+              _retire(p);
+            }),
+          ]),
+        );
+      });
+
+  /// 웹 retire(p): 처음부터 다시 + 추억 + 전투 정리 + 「몇 년 뒤」 장면 + 첫 지역 소개
+  void _retire(int p) {
+    calc.retire(p);
+    sim.party.clear();
+    sim.mons = [];
+    sim.syncParty();
+    save();
+    scene('몇 년 뒤', '…다시 끌려 나오다', const [
+      '평화로운 3년이었다. 카엘은 매일 밭을 갈았고, 호박은 해마다 커졌다.',
+      '그러던 어느 날, 마계의 문이 다시 열렸다.',
+      'q@proud:일어나라, 주인. 은퇴는 끝났다.',
+      'k@flustered:…왜 또 나야.',
+      'm:토비|형! 은퇴했다더니 또 나왔네요! 역시 영웅은 쉬지 않아!',
+    ], '괭이 대신 검을 든다', illust: 'retire');
+    _chapter();
+    setTab(null);
   }
 
   /// 웹 chapter(): 새 지역에 들어설 때 군단 소개
