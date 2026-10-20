@@ -97,7 +97,8 @@ body{word-break:keep-all;overflow-wrap:break-word;line-break:strict;background:#
 .upr .upic{width:46px;height:46px;flex:0 0 auto}.upr .upv{white-space:nowrap;font-size:12.5px;color:var(--muted)}.upr .upv b{color:var(--fg)}.upr .upv b.nx{color:#7be08f}.upr.best{border-color:var(--gold)!important;box-shadow:0 0 0 1px var(--gold),0 0 14px rgba(255,201,74,.35)}.upr.best::before{content:'추천';position:absolute;top:-8px;left:12px;background:var(--gold);color:#1a1206;font-size:10px;font-weight:800;border-radius:6px;padding:0 6px;line-height:16px}.upr{position:relative}
 .rtgain{background:rgba(255,201,74,.1);border:1px solid rgba(255,201,74,.45);border-radius:10px;padding:8px 10px;font-size:13px;text-align:center}.rtgain b{color:var(--gold);font-size:15px}
 .mailbtn{position:absolute;top:8px;right:8px;z-index:4;width:42px;height:42px;padding:0;border-radius:12px;background:rgba(10,14,26,.78);border:1px solid rgba(255,201,74,.55);display:grid;place-items:center;cursor:pointer;font-size:20px}.mailbtn img{width:34px;height:34px;object-fit:contain}.mailbtn .mdot{position:absolute;top:-5px;right:-5px;min-width:17px;height:17px;padding:0 4px;border-radius:9px;background:var(--bad);color:#fff;font-style:normal;font-size:10px;font-weight:800;line-height:17px;text-align:center}
-@media (max-width:380px){.stagewrap:has(.mailbtn:not([hidden])) .ovtop{padding-inline:8px 56px}}
+.stagewrap:has(.mailbtn:not([hidden])) .ovtop{padding-inline:8px 58px}
+.pfnick{display:flex;align-items:center;gap:6px;flex-wrap:wrap}.pfnick b{color:#ffe7a6}.pfnick i{font-style:normal;font-size:10px;background:rgba(255,201,74,.2);color:#ffc94a;border-radius:6px;padding:0 5px}.pfnick .buy{padding:2px 9px;font-size:11px;min-height:0}
 .mlist{display:flex;flex-direction:column;gap:8px;max-height:52vh;overflow:auto;margin:6px 0}.mitem{display:flex;align-items:center;gap:10px;padding:10px;border-radius:12px;background:rgba(255,255,255,.04);border:1px solid rgba(255,201,74,.25)}.mico{font-size:24px;flex:0 0 auto}.mtx{flex:1;min-width:0;display:flex;flex-direction:column;gap:3px}.mtx b{font-size:14px}.mtx small{color:var(--muted,#9aa6c1);font-size:12px}.mtx .mexp{color:#ffc94a;font-size:11px}.mrws{display:flex;flex-wrap:wrap;gap:4px}.mrw{display:inline-flex;align-items:center;gap:3px;font-size:12px;background:rgba(0,0,0,.3);border-radius:8px;padding:2px 6px 2px 2px}.mrw img{width:20px;height:20px;object-fit:contain}.mitem .buy{flex:0 0 auto;padding:8px 14px}
 .toprow{display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:6px;max-width:100%}
 .stagepill{flex:0 0 auto;flex-direction:row!important;gap:8px!important;padding:5px 10px!important;min-width:0!important}.stagepill .sth{flex-direction:column;align-items:flex-start!important;gap:0!important}.stagepill .sth b{font-size:14px}.stagepill .sth small{font-size:10.5px}.pip{width:8px!important;height:5px}
@@ -1750,17 +1751,17 @@ async function rankSubmit(force){if(!sbOn()||!S.nick||rkBusy)return;const st=Mat
 setInterval(()=>rankSubmit(false),30000);
 const stgName=st=>st>MAXLAND?'왕도':(Math.floor((st-1)/10)+1)+'-'+((st-1)%10+1);
 const NICKERR={length:'2~10글자로 정해 주세요',chars:'한글·영문·숫자·_ 만 쓸 수 있어요',bad:'쓸 수 없는 단어가 들어 있어요',taken:'이미 누가 쓰고 있어요',once:'닉네임은 시즌마다 한 번만 바꿀 수 있어요',login:'연결에 실패했어요. 잠시 후 다시 해 주세요'};
-function nickSheet(after){$('sheet').innerHTML=`<div class="eyebrow">랭킹</div><h2>닉네임을 정해 주세요</h2><p class="note" style="text-align:center">랭킹에 표시되는 이름이에요. 2~10글자, 시즌마다 한 번 바꿀 수 있어요.</p>
- <input class="nickin" id="nickIn" maxlength="10" value="${S.nick||''}" placeholder="예: 은퇴하고픈농부" autocomplete="off"><p class="note nickerr" id="nickErr"></p>
+function nickSheet(after){$('sheet').innerHTML=`<div class="eyebrow">프로필</div><h2>닉네임 ${S.nickTemp||!S.nick?'정하기':'바꾸기'}</h2><p class="note" style="text-align:center">${S.nickTemp?'지금은 임시 닉네임이에요. 원하는 이름으로 바꿔 보세요.<br>':''}랭킹과 우편에 쓰이는 이름이에요. 2~10글자, 시즌마다 한 번 바꿀 수 있어요.</p>
+ <input class="nickin" id="nickIn" maxlength="10" value="${S.nickTemp?'':(S.nick||'')}" placeholder="예: 은퇴하고픈농부" autocomplete="off"><p class="note nickerr" id="nickErr"></p>
  <div class="acts"><button id="mX">취소</button><button class="pri" id="nickOk">정하기</button></div>`;$('modal').hidden=false;$('mX').onclick=closeModal;
  $('nickOk').onclick=async()=>{const n=$('nickIn').value.trim();$('nickOk').disabled=true;$('nickErr').textContent='확인하는 중…';
-  try{const r=await sbRpc('kd_set_nick',{p_nick:n,...rkMeta()});if(r==='ok'){S.nick=n;save();rkSent=0;await rankSubmit(true);toast('닉네임을 「'+n+'」(으)로 정했어요');mailFetch();(after||rankSheet)()}else{$('nickErr').textContent=NICKERR[r]||'다시 시도해 주세요';$('nickOk').disabled=false}}
+  try{const r=await sbRpc('kd_set_nick',{p_nick:n,...rkMeta()});if(r==='ok'){S.nick=n;S.nickTemp=false;save();rkSent=0;await rankSubmit(true);toast('닉네임을 「'+n+'」(으)로 정했어요');mailFetch();(after||rankSheet)()}else{$('nickErr').textContent=NICKERR[r]||'다시 시도해 주세요';$('nickOk').disabled=false}}
   catch(e){$('nickErr').textContent='인터넷 연결이 필요해요';$('nickOk').disabled=false}}}
 const RKREW=[['1위','이삭 500 · 시즌 왕관 테두리 · 전용 배지'],['2~10위','이삭 300 · 전용 배지'],['상위 10%','이삭 150 · 동료 카드 30장'],['상위 50%','이삭 50'],['참여','이삭 20']];
 let rkTab='season';
 async function rankSheet(tab){if(tab)rkTab=tab;
  if(!sbOn()){scene('랭킹','준비 중이에요',['랭킹 서버를 연결하고 있어요. 곧 다른 영주들과 겨룰 수 있어요!','q@proud:흥, 주인이 1등인 건 정해진 일이다.'],'기대할게요');return}
- if(!S.nick)return nickSheet();
+ if(!S.nick){await sbEnsure();if(!S.nick)return nickSheet()}
  const tabs=`<div class="subtabs rktabs"><button data-rk="season" class="${rkTab==='season'?'on':''}">시즌</button><button data-rk="hall" class="${rkTab==='hall'?'on':''}">명예의 전당</button></div>`;
  $('sheet').innerHTML=`<div class="hdban" style="--hb:url(assets/ui/hd_rank.png)"><span>랭킹</span></div>${tabs}<p class="note" style="text-align:center">불러오는 중…</p><div class="acts one"><button class="pri" id="mGo">닫기</button></div>`;
  $('modal').hidden=false;$('mGo').onclick=closeModal;const bind=()=>document.querySelectorAll('[data-rk]').forEach(b=>b.onclick=()=>rankSheet(b.dataset.rk));bind();
@@ -1782,9 +1783,14 @@ async function rankSheet(tab){if(tab)rkTab=tab;
 const esc=t=>String(t).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 /* 우편함: 서버에서만 만들고 받기도 서버가 확인 → 받은 보상을 게임에 넣어요 */
 let mails=[],mailBusy=false;
-const mailOn=()=>sbOn()&&!!S.nick;
+const mailOn=()=>sbOn();
+let ensBusy=null;
+function sbEnsure(){if(!sbOn())return Promise.resolve();if(ensBusy)return ensBusy;ensBusy=(async()=>{try{const r=await sbRpc('kd_ensure_profile',rkMeta());if(r&&r.nick){
+  if(S.nick&&r.temp&&S.nick!==r.nick){let ok=false;try{ok=(await sbRpc('kd_set_nick',{p_nick:S.nick,...rkMeta()}))==='ok'}catch(e){}if(ok)S.nickTemp=false;else{S.nick=r.nick;S.nickTemp=true}}
+  else{S.nick=r.nick;S.nickTemp=!!r.temp}save();rankSubmit(false)}}catch(e){}finally{ensBusy=null}await mailFetch()})();return ensBusy}
+window.addEventListener('online',()=>{if(S.started)sbEnsure()});
 function mailDot(){const b=$('mailBtn');if(!b)return;b.hidden=!mailOn();const d=$('mailDot');if(d){d.hidden=!mails.length;d.textContent=mails.length>9?'9+':mails.length}}
-async function mailFetch(){if(!mailOn())return mailDot();try{mails=await sbRpc('kd_mail_list',{})||[]}catch(e){}mailDot();return mails}
+async function mailFetch(){if(!mailOn()||!S.nick)return mailDot();try{mails=await sbRpc('kd_mail_list',{})||[]}catch(e){}mailDot();return mails}
 setInterval(()=>{if(!document.hidden)mailFetch()},300000);
 const PFN=k=>(PFRAMES.find(f=>f.k===k)||{}).n||k,BDN=k=>(BADGES.find(b=>b.k===k)||{}).n||k;
 function rewChips(r){const c=[];if(r.gem)c.push(`<span class="mrw"><img src="assets/gem/ui_gem.png" alt="">${fmt(r.gem)}</span>`);if(r.cards)c.push(`<span class="mrw"><img src="assets/ui/card_pack30.png" alt="">동료 카드 ${r.cards}장</span>`);
@@ -1798,8 +1804,8 @@ function mailApply(list){let gem=0;const got=[],items=[];
  const msg=[gem?'황금 이삭 +'+fmt(gem):'',...items].filter(Boolean).join(' · ');if(msg)toast(msg);if(got.length)setTimeout(()=>cardReveal(got,'우편 보상'),60)}
 async function mailClaim(id){if(mailBusy)return;mailBusy=true;try{const r=await sbRpc('kd_mail_claim',{p_id:id==null?null:id});if(Array.isArray(r)&&r.length)mailApply(r);await mailFetch()}catch(e){toast('인터넷 연결이 필요해요')}finally{mailBusy=false}if(!$('modal').hidden&&$('mailList'))mailSheet(true)}
 async function mailSheet(cached){const head=`<div class="hdban" style="--hb:url(assets/ui/hd_mail.png)"><span>우편함</span></div>`;
- if(!mailOn()){$('sheet').innerHTML=head+`<p class="note" style="text-align:center">랭킹에서 닉네임을 정하면 우편을 받을 수 있어요.</p><div class="acts one"><button class="pri" id="mGo">닫기</button></div>`;$('modal').hidden=false;$('mGo').onclick=closeModal;return}
- if(!cached){$('sheet').innerHTML=head+`<p class="note" style="text-align:center">우편을 확인하는 중…</p><div class="acts one"><button class="pri" id="mGo">닫기</button></div>`;$('modal').hidden=false;$('mGo').onclick=closeModal;await mailFetch()}
+ if(!mailOn()){$('sheet').innerHTML=head+`<p class="note" style="text-align:center">우편함을 준비하고 있어요.</p><div class="acts one"><button class="pri" id="mGo">닫기</button></div>`;$('modal').hidden=false;$('mGo').onclick=closeModal;return}
+ if(!cached){$('sheet').innerHTML=head+`<p class="note" style="text-align:center">우편을 확인하는 중…</p><div class="acts one"><button class="pri" id="mGo">닫기</button></div>`;$('modal').hidden=false;$('mGo').onclick=closeModal;if(!S.nick)await sbEnsure();else await mailFetch();if(!S.nick){$('sheet').querySelector('.note').textContent='인터넷에 연결되면 우편을 받을 수 있어요.';return}}
  const day=t=>{const d=(new Date(t)-Date.now())/864e5;return d>=1?Math.floor(d)+'일 남음':Math.max(1,Math.ceil(d*24))+'시간 남음'};
  const ico={season:'🏆',hall:'👑',notice:'📜'};
  $('sheet').innerHTML=head+`<p class="note" style="text-align:center">받은 우편은 30일 동안 보관돼요.</p><div class="mlist" id="mailList">${mails.length?mails.map(m=>`<div class="mitem"><div class="mico">${ico[m.kind]||'✉️'}</div><div class="mtx"><b>${esc(m.title)}</b>${m.body?`<small>${esc(m.body)}</small>`:''}<div class="mrws">${rewChips(m.reward||{})}</div><small class="mexp">${day(m.expires_at)}</small></div><button class="buy" data-mail="${m.id}">받기</button></div>`).join(''):'<p class="note" style="text-align:center;padding:18px 0">도착한 우편이 없어요.</p>'}</div>
@@ -1844,13 +1850,13 @@ function pfCheck(){if(!S.pfUnl)S.pfUnl={};for(const f of PFRAMES){if(!S.pfUnl[f.
  {const fb=$('faceBtn');if(fb){fb.classList.toggle('newpf',!S.pfSeen);fb.classList.toggle('pfdot',!!S.pfSeen&&!!S.pfNew&&Object.keys(S.pfNew).length>0)}}
  const im=$('hFrame'),src='assets/profile/frame_'+(S.pf||'wood')+'.png';if(im&&!im.src.endsWith(src)){im.src=src;im.className='pfr'+pfTall(S.pf||'wood')}}
 function profileSheet(){S.pfSeen=1;const nw=S.pfNew||{};S.pfNew={};pfCheck();const cur=S.pf||'wood',ri=rankIdx();
- $('sheet').innerHTML=`<div class="hdban" style="--hb:url(assets/ui/hd_profile.png)"><span>프로필</span></div><div class="pfhead"><div class="pfbig"><canvas id="pfCv"></canvas><img class="pfr${pfTall(cur)}" src="assets/profile/frame_${cur}.png" alt=""></div><div class="pfinfo"><b>카엘${S.badge&&bdHas(S.badge)?`<img class="pfbd" src="assets/profile/badge_${S.badge}.png" alt="">`:''}</b><small>${RANKS[ri].n} · 전투력 ${fmt(power())}</small><small>최고 영지 ${Math.min(S.best,MAXLAND)} · 은퇴 ${S.retires||0}번 · 은퇴의 추억 ${S.memory||0}개</small></div></div>
+ $('sheet').innerHTML=`<div class="hdban" style="--hb:url(assets/ui/hd_profile.png)"><span>프로필</span></div><div class="pfhead"><div class="pfbig"><canvas id="pfCv"></canvas><img class="pfr${pfTall(cur)}" src="assets/profile/frame_${cur}.png" alt=""></div><div class="pfinfo"><b>카엘${S.badge&&bdHas(S.badge)?`<img class="pfbd" src="assets/profile/badge_${S.badge}.png" alt="">`:''}</b><small class="pfnick">닉네임 <b>${esc(S.nick||'준비 중')}</b>${S.nickTemp?' <i>임시</i>':''}${sbOn()?'<button class="buy" id="pfNick">'+(S.nickTemp?'정하기':'바꾸기')+'</button>':''}</small><small>${RANKS[ri].n} · 전투력 ${fmt(power())}</small><small>최고 영지 ${Math.min(S.best,MAXLAND)} · 은퇴 ${S.retires||0}번 · 은퇴의 추억 ${S.memory||0}개</small></div></div>
  <div class="sec">테두리 <small>${PFRAMES.filter(f=>pfHas(f.k)).length} / ${PFRAMES.length}</small></div>
  <div class="pfgrid">${PFRAMES.map(f=>{const has=pfHas(f.k);return`<button class="pfc${f.k===cur?' on':''}${has?'':' lock'}${f.rare||f.rk?' rare':''}" data-pf="${f.k}"><span class="pv"><i></i><img class="pfr${pfTall(f.k)}" src="assets/profile/frame_${f.k}.png" alt=""></span><b>${f.n}</b>${nw['f_'+f.k]?'<i class="nwb">NEW</i>':''}<small>${f.k===cur?'사용 중':has?'바꾸기':'🔒 '+f.d}</small></button>`}).join('')}</div>
  <div class="sec">대표 배지 <small>${BADGES.filter(b=>bdHas(b.k)).length} / ${BADGES.length}</small></div>
  <div class="pfgrid">${BADGES.map(b=>{const has=bdHas(b.k),on=S.badge===b.k;return`<button class="pfc bd${on?' on':''}${has?'':' lock'}${b.rare||b.rk?' rare':''}" data-bd="${b.k}"><span class="pv"><img class="pfr" src="assets/profile/badge_${b.k}.png" alt=""></span><b>${b.n}</b>${nw['b_'+b.k]?'<i class="nwb">NEW</i>':''}<small>${on?'다는 중':has?'달기':'🔒 '+b.d}</small></button>`}).join('')}</div>
  <div class="acts three"><button id="pfSet">⚙ 설정</button><button id="pfRank">🏆 랭킹</button><button class="pri" id="mGo">닫기</button></div>`;
- $('modal').hidden=false;faceTo($('pfCv'),'kael');$('mGo').onclick=closeModal;$('pfSet').onclick=()=>settingsSheet();$('pfRank').onclick=()=>rankSheet();
+ $('modal').hidden=false;faceTo($('pfCv'),'kael');$('mGo').onclick=closeModal;$('pfSet').onclick=()=>settingsSheet();$('pfRank').onclick=()=>rankSheet();if($('pfNick'))$('pfNick').onclick=async()=>{if(!S.nick)await sbEnsure();nickSheet(()=>profileSheet())};
  document.querySelectorAll('[data-bd]').forEach(b=>b.onclick=()=>{const k=b.dataset.bd,f=BADGES.find(x=>x.k===k);if(!bdHas(k))return toast(f.rk?f.d+'로 우편함에 도착해요':f.rare?'황금 고블린을 잡으면 아주 드물게 얻어요':f.d+' 달성 시 얻어요');S.badge=S.badge===k?null:k;pfCheck();save();profileSheet()});
  document.querySelectorAll('[data-pf]').forEach(b=>b.onclick=()=>{const k=b.dataset.pf,f=PFRAMES.find(x=>x.k===k);if(!pfHas(k))return toast(f.rk?f.d+'로 우편함에 도착해요':f.rare?'황금 고블린을 잡으면 아주 드물게 얻어요':f.d+' 달성 시 얻어요');S.pf=k;pfCheck();save();profileSheet()});
 }
@@ -1897,7 +1903,7 @@ function start(data){
  if('serviceWorker'in navigator&&/github\.io$|^localhost$|^127\./.test(location.hostname)){try{navigator.serviceWorker.register('sw.js').then(reg=>{reg.addEventListener('updatefound',()=>{const w=reg.installing;if(w&&navigator.serviceWorker.controller)w.addEventListener('statechange',()=>{if(w.state==='activated')toast('새 버전을 받았어요. 게임을 다시 열면 적용돼요')})})}).catch(()=>{})}catch(e){}}BANNER.src='assets/ui/banner_capture.png';
  S=(data&&typeof data.gold==='number')?hydrate(data):(load()||hydrate({gold:60}));
  $('autoSell').checked=S.autoSell;$('autoOpen').checked=S.autoOpen;
- const isNew=!S.started;S.started=true;setTimeout(mailFetch,2500);S.v=3;syncParty();resize();produce();renderSpeed();
+ const isNew=!S.started;S.started=true;setTimeout(sbEnsure,2500);S.v=3;syncParty();resize();produce();renderSpeed();
  if(isNew)intro();else offline();
  faceTo($('faceCv'),'kael');
  $('startBtn').onclick=()=>{$('title').hidden=true;titleOpen=false;faceTo($('faceCv'),'kael');pump()};
