@@ -43,3 +43,4 @@ build(load("art/source/fx/fx_skill_luka.png"), "fx_skill_luka", 256, 288, bottom
 build(load("art/source/fx/fx_skill_nella.png"), "fx_skill_nella", 384, 256)
 build(load("art/source/fx/fx_skill_brida.png"), "fx_skill_brida", 320, 256, bottom=True)
 build(load("art/source/fx/fx_skill_daisy.png"), "fx_skill_daisy", 384, 256, bottom=True)
+build(load("art/source/fx/fx_skill_gordon.png"), "fx_skill_gordon", 384, 256, bottom=True)
