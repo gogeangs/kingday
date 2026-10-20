@@ -58,6 +58,9 @@ void main() {
         ], '함께 간다', illust: 'join', altLabel: '나중에');
         await tester.pump(const Duration(milliseconds: 400));
         expect(find.text('함께 간다'), findsOneWidget);
+        // 좁은 폰에서는 창이 길어 버튼이 아래에 있으므로 내려서 누름
+        await tester.ensureVisible(find.text('함께 간다'));
+        await tester.pump(const Duration(milliseconds: 100));
         await tester.tap(find.text('함께 간다'));
         await tester.pump(const Duration(milliseconds: 400));
         expect(find.text('함께 간다'), findsNothing);
