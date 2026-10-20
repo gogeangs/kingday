@@ -169,11 +169,14 @@ class KdBuy extends StatelessWidget {
     final content = <Widget>[
       if (label != null) Text(label!, style: KdText.body(small ? 10 : 11, color: fg.withValues(alpha: .8), weight: FontWeight.w600, height: 1.2)),
       if (cost != null || text != null)
-        Row(mainAxisSize: MainAxisSize.min, children: [
-          if (costIcon != null) ...[kdImg(costIcon!, w: 18, h: 18), const SizedBox(width: 3)],
-          Text(text ?? fmt(cost!), style: KdText.figure(small ? 13 : 15, color: text != null ? fg : costColor)),
-          if (extra != null) ...[const SizedBox(width: 6), extra!],
-        ]),
+        FittedBox(
+          fit: BoxFit.scaleDown,
+          child: Row(mainAxisSize: MainAxisSize.min, children: [
+            if (costIcon != null) ...[kdImg(costIcon!, w: 18, h: 18), const SizedBox(width: 3)],
+            Text(text ?? fmt(cost!), style: KdText.figure(small ? 13 : 15, color: text != null ? fg : costColor)),
+            if (extra != null) ...[const SizedBox(width: 6), extra!],
+          ]),
+        ),
     ];
     return GestureDetector(
       onTap: onTap,

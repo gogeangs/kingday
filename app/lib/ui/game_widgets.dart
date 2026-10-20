@@ -59,8 +59,10 @@ class RelicCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final r = it;
     final col = r == null ? KdColors.line : gradeColor(r.g);
-    Widget statRow(String n, num v, num? d) => Row(
-          mainAxisAlignment: MainAxisAlignment.center,
+    Widget statRow(String n, num v, num? d) => FittedBox(
+        fit: BoxFit.scaleDown,
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.baseline,
           textBaseline: TextBaseline.alphabetic,
           children: [
@@ -72,7 +74,7 @@ class RelicCard extends StatelessWidget {
               Text('${d > 0 ? '▲' : '▼'}${fmt(d.abs())}', style: KdText.figure(11, color: d > 0 ? KdColors.good : const Color(0xFFFF8A7A))),
             ],
           ],
-        );
+        ));
     return Container(
       padding: const EdgeInsets.all(10),
       decoration: BoxDecoration(color: KdColors.panel2, borderRadius: BorderRadius.circular(12), border: Border.all(color: col, width: 2)),

@@ -355,7 +355,7 @@ class PtPage extends StatelessWidget {
                   child: Row(children: [
                     uiImg('village_skill', size: 16),
                     const SizedBox(width: 3),
-                    Text('마을 스킬 · ${villageSkillName[id]}', style: KdText.body(12, color: const Color(0xFFFFC23A))),
+                    Flexible(child: Text('마을 스킬 · ${villageSkillName[id]}', style: KdText.body(12, color: const Color(0xFFFFC23A)))),
                   ]),
                 ),
               info,

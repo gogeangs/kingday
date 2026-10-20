@@ -129,7 +129,9 @@ jobs:
           code=$?
           cat test.log
           if [ $code -ne 0 ]; then
-            grep -E "≠|웹에만|앱에만|Error:|error:|Expected|Actual|Which:|Reason|modalOpen|\[E\]|Exception|길이 앱|Warning|derived an Offset|would not hit|overflowed|lib/[a-z_/]+\.dart:[0-9]+" test.log | awk '!seen[$0]++' | head -80 | sed 's/^ */::error title=test::/'
+            grep -E "≠|웹에만|앱에만|Error:|error:|Expected|Actual|Which:|Reason|modalOpen|\[E\]|Exception|길이 앱|Warning|derived an Offset|would not hit" test.log | awk '!seen[$0]++' | head -40 | sed 's/^ */::error title=test::/'
+            # 넘침: 크기와 원인 코드 줄을 짝지어 (테스트 이름 · 넘친 크기 · 파일:줄)
+            awk '/^[0-9:]+ \+[0-9]+/{t=$0} /overflowed by/{o=$0} /error-causing widget was/{w=1;next} w&&/file:/{if(o!="")print t" | "o" | "$0; o="";w=0}' test.log | sed 's#file:///home/runner/work/kingday/kingday/app/##' | awk '!seen[$0]++' | head -40 | sed 's/^ */::error title=overflow::/'
             exit $code
           fi
 
