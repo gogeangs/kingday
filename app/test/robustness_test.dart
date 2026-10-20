@@ -125,6 +125,11 @@ void main() {
     await tester.pumpWidget(KingdayApp(g: g));
     await tester.pump(const Duration(milliseconds: 100));
     await tester.tap(find.text('게임 시작'));
+    // 전투 화면(Flame)이 그림을 불러 준비를 마치도록 진짜 시간으로 잠깐 기다림
+    for (var k = 0; k < 5; k++) {
+      await tester.runAsync(() => Future<void>.delayed(const Duration(milliseconds: 400)));
+      await tester.pump(const Duration(milliseconds: 100));
+    }
     final tabs = [null, GameTab.eq, GameTab.pt, GameTab.up, GameTab.vl, GameTab.mp, null];
     for (var i = 0; i < 6000; i++) {
       await tester.pump(const Duration(milliseconds: 100));
@@ -138,7 +143,7 @@ void main() {
       }
       if (i % 600 == 0) g.setTab(tabs[(i ~/ 600) % tabs.length]);
     }
-    expect(g.state.stage, greaterThan(3), reason: '10분 동안 영지를 몇 곳은 되찾아야 함');
+    expect(g.state.stage, greaterThan(3), reason: '10분 동안 영지를 몇 곳은 되찾아야 함 (loaded=${g.game.isLoaded})');
     sane(g.state, '10분 자동 플레이');
     await tester.pumpWidget(const SizedBox());
     g.dispose();
