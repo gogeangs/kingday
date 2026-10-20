@@ -1757,7 +1757,7 @@ async function rankSheet(tab){if(tab)rkTab=tab;
  if(!sbOn()){scene('랭킹','준비 중이에요',['랭킹 서버를 연결하고 있어요. 곧 다른 영주들과 겨룰 수 있어요!','q@proud:흥, 주인이 1등인 건 정해진 일이다.'],'기대할게요');return}
  if(!S.nick)return nickSheet();
  const tabs=`<div class="subtabs rktabs"><button data-rk="season" class="${rkTab==='season'?'on':''}">시즌</button><button data-rk="hall" class="${rkTab==='hall'?'on':''}">명예의 전당</button></div>`;
- $('sheet').innerHTML=`<div class="hdban" style="--hb:url(assets/ui/hd_profile.png)"><span>랭킹</span></div>${tabs}<p class="note" style="text-align:center">불러오는 중…</p><div class="acts one"><button class="pri" id="mGo">닫기</button></div>`;
+ $('sheet').innerHTML=`<div class="hdban" style="--hb:url(assets/ui/hd_rank.png)"><span>랭킹</span></div>${tabs}<p class="note" style="text-align:center">불러오는 중…</p><div class="acts one"><button class="pri" id="mGo">닫기</button></div>`;
  $('modal').hidden=false;$('mGo').onclick=closeModal;const bind=()=>document.querySelectorAll('[data-rk]').forEach(b=>b.onclick=()=>rankSheet(b.dataset.rk));bind();
  let rows;try{await rankSubmit(false);rows=await sbRpc('kd_ranking',{p_season:rkTab==='hall'?0:null})}catch(e){if($('modal').hidden)return;$('sheet').querySelector('.note').textContent=navigator.onLine?'랭킹 서버가 잠시 쉬고 있어요. 조금 뒤에 다시 열어 주세요':'인터넷 연결이 필요해요';return}
  if($('modal').hidden)return;
@@ -1768,7 +1768,7 @@ async function rankSheet(tab){if(tab)rkTab=tab;
  let info='';if(rkTab==='season'&&rows.length){const left=Math.max(0,(new Date(rows[0].season_end)-Date.now())/1000);info=`<div class="rkinfo"><b>${rows[0].season}시즌</b> · ${left>86400?Math.ceil(left/86400)+'일':Math.ceil(left/3600)+'시간'} 남음 · ${tot}명 참여<details><summary>시즌 보상 보기</summary>${RKREW.map(([a,b])=>`<div class="kv"><span>${a}</span><b>${b}</b></div>`).join('')}</details></div>`}
  else if(rkTab==='hall')info=`<div class="rkinfo">지금까지 도달한 최고 기록이에요 · ${tot}명</div>`;
  const pod=top.slice(0,3),rest=top.slice(3);
- $('sheet').innerHTML=`<div class="hdban" style="--hb:url(assets/ui/hd_profile.png)"><span>랭킹</span></div>${tabs}${info}
+ $('sheet').innerHTML=`<div class="hdban" style="--hb:url(assets/ui/hd_rank.png)"><span>랭킹</span></div>${tabs}${info}
  ${rows.length?`<div class="rkpod">${[1,0,2].map(i=>pod[i]?`<div class="pod p${i+1}${pod[i].me?' me':''}"><i class="crown">${['🥇','🥈','🥉'][i]}</i>${face(pod[i])}<b>${bd(pod[i])}${esc(pod[i].nick)}</b><small>${stgName(pod[i].stage)}</small></div>`:'<div class="pod empty"></div>').join('')}</div>
  <div class="rklist">${rest.map(line).join('')}</div>`:'<p class="note" style="text-align:center">아직 기록이 없어요. 첫 1위가 되어 보세요!</p>'}
  ${me?`<div class="rkme">${line(me)}<small>상위 ${Math.max(1,Math.ceil(me.rank/Math.max(1,tot)*100))}%</small></div>`:''}
