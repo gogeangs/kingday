@@ -326,13 +326,13 @@ class StageBottom extends StatelessWidget {
             hint: DateTime.now().millisecondsSinceEpoch - g.hintBoxAt < 2500,
             onTap: () => g.openBox(),
           ),
-          const SizedBox(height: 6),
+          const SizedBox(height: 10),
           _QBtn(img: 'btn_auto', label: manual ? '자동 끔' : '자동 켬', dim: manual, on: !manual, onTap: () {
             g.state.raw['autoSkill'] = manual;
             g.toast(manual ? '스킬 자동 사용 켜짐' : '스킬 자동 사용 꺼짐 · 빛나는 초상화를 눌러 쓰세요');
             g.refresh();
           }),
-          const SizedBox(height: 6),
+          const SizedBox(height: 10),
           _QBtn(img: x2 ? 'btn_x2' : 'btn_x1', label: x2 ? 'x2' : 'x1', on: x2, onTap: () {
             g.state.raw['speed'] = x2 ? 1 : 2;
             g.refresh();
@@ -381,10 +381,14 @@ class _QBtn extends StatelessWidget {
       child: SizedBox(
         width: 50,
         child: Column(mainAxisSize: MainAxisSize.min, children: [
-          SizedBox(height: round ? 44 : 46, child: OverflowBox(maxHeight: 50, alignment: Alignment.topCenter, child: pic)),
-          Text(label,
-              maxLines: 1,
-              style: KdText.figure(10, weight: FontWeight.w600).copyWith(shadows: const [Shadow(blurRadius: 2, offset: Offset(0, 1))])),
+          SizedBox(height: round ? 46 : 50, child: Center(child: pic)),
+          const SizedBox(height: 2),
+          // 글자 자리를 따로 잡고 어두운 바탕을 깔아 다음 버튼·배경과 겹치지 않게 (웹 .qbtn small)
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 6),
+            decoration: BoxDecoration(color: const Color(0xD10A0E1A), borderRadius: BorderRadius.circular(8)),
+            child: Text(label, maxLines: 1, style: KdText.figure(10, weight: FontWeight.w600).copyWith(height: 1.45)),
+          ),
         ]),
       ),
     );

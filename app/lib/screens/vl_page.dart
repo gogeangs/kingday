@@ -424,6 +424,9 @@ class _Farm extends StatelessWidget {
       ratio = r;
     }
     final ready = ps.st == 'ready';
+    // 황금 고블린이 다녀간 칸: 수확 2배 (웹 .plot.gob · .pgob)
+    final gob = ps.st != 'empty' && truthy(asMap(s.plots[i])?['g']);
+    if (gob && ready) name = '$name ×2';
     return GestureDetector(
       onTap: () {
         if (edit) return g.act((a) => a.cycleTag(i));
@@ -435,7 +438,7 @@ class _Farm extends StatelessWidget {
         decoration: BoxDecoration(
           gradient: const LinearGradient(colors: [Color(0xFF2C3B2A), Color(0xFF3A2A20)], begin: Alignment.topCenter, end: Alignment.bottomCenter),
           borderRadius: BorderRadius.circular(10),
-          border: Border.all(color: edit ? KdColors.gold : ready ? KdColors.gold : const Color(0xFF5A4030), width: edit || ready ? 2 : 1),
+          border: Border.all(color: edit ? KdColors.gold : ready ? KdColors.gold : gob ? const Color(0x8CFFD23C) : const Color(0xFF5A4030), width: edit || ready || gob ? 2 : 1),
         ),
         child: ClipRRect(
           borderRadius: BorderRadius.circular(9),
@@ -462,6 +465,15 @@ class _Farm extends StatelessWidget {
                   Padding(padding: EdgeInsets.fromLTRB(w * .11, 3, w * .11, 0), child: XpBar(ratio, height: 4, color: KdColors.good, bg: const Color(0x73000000))),
               ]),
             ),
+            if (gob)
+              Positioned(
+                top: 3,
+                right: 3,
+                child: Container(
+                  decoration: const BoxDecoration(boxShadow: [BoxShadow(color: Color(0xE6FFD23C), blurRadius: 8)], shape: BoxShape.circle),
+                  child: uiImg('icon_goblin', size: 22),
+                ),
+              ),
             if (tag != null)
               Positioned(
                 top: 4,

@@ -34,6 +34,8 @@ const TABLES = [
   ['MON_SPRITES', 'MON_SPRITES'], ['MON_ALT', 'MON_ALT'], ['TRAITS', 'TRAITS'], ['GOB', 'GOB'],
   ['FXDEF', 'FXDEF'], ['FORM', 'FORM'], ['GOB_RARE', 'GOB_RARE'], ['BG_IMG', 'BG_IMG'], ['BG_FULL', 'BG_FULL'],
   ['DECO', 'DECO'],
+  // ── 2026-10-21 카드 확률·고블린 밭 ──
+  ['CARD_FIX', 'CARD_FIX'], ['CARD_W', 'CARD_W'], ['GOB_PLOT', '({n:GOB_PLOT,gem:GOB_PLOT_GEM})'],
 ];
 
 function dartStr(s) {

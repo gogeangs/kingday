@@ -828,12 +828,16 @@ Future<void> showResultSheet(BuildContext ctx, GameController g, {required int n
         ));
 
 // ════════════════════ 카드 공개 (웹 cardReveal) ════════════════════
-Future<void> showCardReveal(BuildContext ctx, GameController g, List<(String, int)> list, String title) {
+Future<void> showCardReveal(BuildContext ctx, GameController g, List<(String, int)> list, String title, {num gold = 0}) {
   final m = <String, int>{};
   for (final (id, n) in list) {
     m[id] = (m[id] ?? 0) + n;
   }
   final ids = m.keys.toList()..sort((a, b) => GameCalc.gr(a).w.compareTo(GameCalc.gr(b).w));
+  if (ids.isEmpty) {
+    if (gold > 0) g.toast('동료 카드 → 골드 +${fmt(gold)} (별을 다 채운 동료)');
+    return Future.value();
+  }
   final best = ids.first, c = g.calc;
   return showKdSheet<void>(ctx, builder: (sc) => KdSheetBody(
         eyebrow: title,
@@ -879,6 +883,15 @@ Future<void> showCardReveal(BuildContext ctx, GameController g, List<(String, in
                 ]),
               );
             }),
+          if (gold > 0)
+            Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+              uiImg('ui_gold', size: 20),
+              const SizedBox(width: 6),
+              Text.rich(TextSpan(children: [
+                const TextSpan(text: '별을 다 채운 동료 카드 → 골드 '),
+                TextSpan(text: '+${fmt(gold)}', style: const TextStyle(color: KdColors.gold, fontWeight: FontWeight.w700)),
+              ]), style: _muted(13)),
+            ]),
         ],
         acts: KdActs(buttons: [
           KdAct('닫기', onTap: () => Navigator.of(sc).pop()),

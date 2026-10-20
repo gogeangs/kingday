@@ -491,9 +491,9 @@ class GameController extends ChangeNotifier {
             'q@proud:주인, 이걸 받아라. 성검이 축복한 황금 이삭이다. 이삭을 내면 마을 사람들이 힘을 내서 공사를 바로 끝낸다.',
             'sys:황금 이삭 $tutGem개를 선물로 받았어요. 공사 중인 건물의 파란 "바로 완료" 버튼을 누르면 이삭으로 공사를 끝낼 수 있어요. 공사 중에도 다른 건물을 $buildQueueMax개까지 예약해 두면 차례로 지어져요.',
           ], '이삭으로 바로 완료', altLabel: '그냥 기다릴래요', onGo: () => act((a) => a.finishByGem()));
-        case ActCardReveal(:final got, :final title):
+        case ActCardReveal(:final got, :final title, :final gold):
           sound('gem');
-          queue((ctx) => showCardReveal(ctx, this, got, title));
+          queue((ctx) => showCardReveal(ctx, this, got, title, gold: gold));
         case ActLaterToast(:final msg, :final ms):
           Timer(Duration(milliseconds: ms), () => toast(msg));
         case ActStarter(:final it, :final cur):
@@ -683,11 +683,20 @@ class GameController extends ChangeNotifier {
         haptic(pattern);
       case SoundEvent(:final k):
         sound(k == 'gob' ? 'goblin' : k);
-      case GoblinLootEvent(:final relic, :final gold, :final gem, :final cardId, :final rare):
+      case GoblinLootEvent(:final relic, :final gold, :final gem, :final cardId, :final rare, :final sold):
         sound('coin');
         if (!sim.noSave) {
           online.gobDirty = true;
           Timer(const Duration(milliseconds: 2600), online.gobRankToast);
+        }
+        if (sold) {
+          // 자동 판매: 창 없이 알림 한 줄 (웹 gobDrop)
+          toast('황금 고블린 처치! 골드 +${fmt(gold)} · 이삭 +$gem${cardId != null ? ' · ${comps[cardId]!.n} 카드 +3' : ''} · '
+              '${itemGrades[relic.g].n} ${slotDef(relic.slot).n} 자동 판매 +${fmt(relic.price)}${rare.isNotEmpty ? ' · 희귀 전리품!' : ''}');
+          for (final (t, n) in rare) {
+            queue((ctx) => showGobRare(ctx, this, t, n));
+          }
+          return;
         }
         // 웹 gobDrop: 장비 비교 창 위에 전리품 줄을 붙여 보여 줌 (다른 장비를 고르는 중이면 건너뜀)
         queue((ctx) async {
@@ -704,6 +713,10 @@ class GameController extends ChangeNotifier {
       case RankUpEvent(:final rankIdx, :final gem):
         sound('fanfare');
         final r = ranks[rankIdx];
+        if (_quietStory) {
+          toast('칭호 상승: ${r.n} · 능력치 +4%${gem > 0 ? ' · 황금 이삭 +${fmt(gem)}' : ''}');
+          return;
+        }
         scene('칭호 상승', '${r.n} 카엘', [
           '되찾은 영지가 ${r.at}곳에 이르자, 사람들이 카엘을 ${r.n}(이)라고 부르기 시작했다.',
           'k@flustered:${r.k ?? ''}',
@@ -860,19 +873,30 @@ class GameController extends ChangeNotifier {
     sim.mons = [];
     sim.syncParty();
     save();
+    if (_quietStory) {
+      toast('은퇴의 추억 +$p · 다시 출발!');
+      return;
+    }
     scene('몇 년 뒤', '…다시 끌려 나오다', const [
       '평화로운 3년이었다. 카엘은 매일 밭을 갈았고, 호박은 해마다 커졌다.',
       '그러던 어느 날, 마계의 문이 다시 열렸다.',
       'q@proud:일어나라, 주인. 은퇴는 끝났다.',
       'k@flustered:…왜 또 나야.',
-      'm:토비|형! 은퇴했다더니 또 나왔네요! 역시 영웅은 쉬지 않아!',
+      'm:티모|형! 은퇴했다더니 또 나왔네요! 역시 영웅은 쉬지 않아!',
     ], '괭이 대신 검을 든다', illust: 'retire');
     _chapter();
   }
 
+  /// 두 번째 은퇴부터는 다시 나오는 이야기 창(은퇴 직후·지역 이야기·칭호 상승)을 알림 한 줄로 (웹 quietStory)
+  bool get _quietStory => orNum(state.raw['retires'], 0) >= 2;
+
   /// 웹 chapter(): 새 지역에 들어설 때 군단 소개
   void _chapter() {
     final st = state.stage, r = GameCalc.region(st), i = GameCalc.regionIndex(st);
+    if (_quietStory) {
+      toast('제${i + 1}군단 점령지 · ${r.n} 진입');
+      return;
+    }
     scene('제${i + 1}군단 · 점령지', r.n, [...r.lore, 'sys:이 땅의 지배자 · ${r.boss}'], '진격한다',
         titleWidget: Column(children: [
           kdImg('assets/game/portraits/portrait_${bossIds[i]}_idle.png', w: 120, h: 120),

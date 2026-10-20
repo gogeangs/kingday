@@ -13,6 +13,7 @@ import 'data.dart';
 import 'js.dart';
 import 'rng.dart';
 import 'state.dart';
+import 'web_data.g.dart';
 
 /// 공격·체력·공속·치명
 class Stats {
@@ -459,43 +460,130 @@ class GameCalc {
     return Relic(slot: sl.k, g: g, lv: lv, atk: atk, hp: hp, price: jsFloor(boxCost() * .25 * (1 + g)));
   }
 
-  /// gainCard(n,minGrade): 동료 카드 n장을 한 동료에게. 받을 수 있는 동료가 없으면 null.
-  String? gainCard(KdRandom rng, int n, [String? minGrade]) {
-    final ids = cardIds()
-        .where((id) =>
-            cardOpen(id) && recStar(id) < starMax(id) && (minGrade == null || gr(id).w <= compGrades[minGrade]!.w))
-        .toList();
-    if (ids.isEmpty) return null;
-    final cards = s.cardsW;
-    String id;
-    final wish = s.wish;
-    if (wish != null && ids.contains(wish) && rng.next() < .5) {
-      id = wish;
-    } else {
-      final gs = <String>[];
-      for (final x in ids) {
-        final g = gradeOf[x]!;
-        if (!gs.contains(g)) gs.add(g);
-      }
-      num tot = 0;
-      for (final g in gs) {
-        tot = tot + compGrades[g]!.w;
-      }
-      var r = rng.next() * tot;
-      var g = gs[0];
-      for (final q in gs) {
-        r -= compGrades[q]!.w;
-        if (r < 0) {
-          g = q;
-          break;
-        }
-      }
-      final pool = ids.where((x) => gradeOf[x] == g).toList();
-      id = pool[(rng.next() * pool.length).floor()];
+  // ───── 카드 뽑기 (2026-10-21 규칙, 웹 cardPick/gainCard/gainCards) ─────
+  // 영웅·전설은 등급 확률 고정(상점 영웅 10%·전설 1%, 전투 영웅 10%·전설 0%),
+  // 일반·희귀는 동료마다 비중(일반 10·희귀 8). 별을 다 채운 동료 몫은 골드로.
+
+  /// 이번에 골드로 바뀐 금액 (웹 cardGoldLast)
+  num cardGoldLast = 0;
+
+  bool cardCan(String id) => cardOpen(id) && recStar(id) < starMax(id);
+  num cardGoldOf(int n) => jsFloor(reward(s.stage, false) * 3 * n);
+  static num _cardW(String id) => (wCardW[gradeOf[id]] as num?) ?? 0;
+  static Map<String, num> _fix(String src) => ((wCardFix[src] ?? wCardFix['shop']) as Map).cast<String, num>();
+
+  /// 웹 cardPick(src): 동료 id, 골드로 바뀌면 '', 열린 동료가 없으면 null
+  String? cardPick(KdRandom rng, String src) {
+    final open = cardIds().where(cardOpen).toList();
+    if (open.isEmpty) return null;
+    final fx = _fix(src);
+    final w0 = s.wish;
+    final wish = (w0 != null && cardCan(w0)) ? w0 : null;
+    final r = rng.next();
+    final g = r < fx['legend']! ? 'legend' : r < fx['legend']! + fx['epic']! ? 'epic' : null;
+    if (g != null) {
+      final pool = open.where((x) => gradeOf[x] == g && cardCan(x)).toList();
+      if (pool.isEmpty) return '';
+      if (wish != null && gradeOf[wish] == g && rng.next() < .5) return wish;
+      return pool[(rng.next() * pool.length).floor()];
     }
+    if (wish != null && _cardW(wish) > 0 && rng.next() < .5) return wish;
+    final cr = open.where((x) => _cardW(x) > 0).toList();
+    if (cr.isEmpty) return '';
+    num tot = 0;
+    for (final x in cr) {
+      tot += _cardW(x);
+    }
+    var q = rng.next() * tot;
+    var id = cr.last;
+    for (final x in cr) {
+      q -= _cardW(x);
+      if (q < 0) {
+        id = x;
+        break;
+      }
+    }
+    return cardCan(id) ? id : '';
+  }
+
+  /// 웹 gainCard(n,src): 동료 카드 n장을 한 동료에게. 열린 동료가 없으면 null, 골드로 바뀌면 ''.
+  String? gainCard(KdRandom rng, int n, [String src = 'shop']) {
+    final id = cardPick(rng, src);
+    cardGoldLast = 0;
+    if (id == null) return null;
+    if (id.isEmpty) {
+      final g = cardGoldOf(n);
+      s.gold = s.gold + g;
+      cardGoldLast = g;
+      return '';
+    }
+    final cards = s.cardsW;
     cards[id] = orNum(cards[id], 0) + n;
     stat('card', n);
     return id;
+  }
+
+  /// 웹 cardChunks(n,size)
+  static List<int> cardChunks(int n, int size) {
+    if (n < size) return [n];
+    final k = n ~/ size;
+    final a = List<int>.filled(k, size);
+    a[k - 1] += n - size * k;
+    return a;
+  }
+
+  /// 웹 gainCards(n,src,size): 여러 묶음으로 나눠 뽑기. 열린 동료가 없으면 null.
+  ({List<(String, int)> got, num gold})? gainCards(KdRandom rng, int n, String src, int size) {
+    final got = <(String, int)>[];
+    num gold = 0;
+    for (final c in cardChunks(n, size)) {
+      final id = gainCard(rng, c, src);
+      if (id == null) return null;
+      if (id.isNotEmpty) {
+        got.add((id, c));
+      } else {
+        gold += cardGoldLast;
+      }
+    }
+    return (got: got, gold: gold);
+  }
+
+  /// 웹 cardOdds(src): 카드 한 묶음이 각 동료에게 갈 확률 (희망 동료 제외), 골드로 바뀌는 몫
+  ({Map<String, num> o, num gold}) cardOdds(String src) {
+    final open = cardIds().where(cardOpen).toList();
+    final fx = _fix(src);
+    final o = <String, num>{};
+    num gold = 0;
+    for (final g in ['legend', 'epic']) {
+      final p = fx[g]!;
+      final pool = open.where((x) => gradeOf[x] == g && cardCan(x)).toList();
+      if (pool.isNotEmpty) {
+        for (final x in pool) {
+          o[x] = p / pool.length;
+        }
+      } else {
+        gold += p;
+      }
+    }
+    final rest = 1 - fx['legend']! - fx['epic']!;
+    final cr = open.where((x) => _cardW(x) > 0).toList();
+    num tot = 0;
+    for (final x in cr) {
+      tot += _cardW(x);
+    }
+    if (tot == 0) {
+      gold += rest;
+    } else {
+      for (final x in cr) {
+        final p = rest * _cardW(x) / tot;
+        if (cardCan(x)) {
+          o[x] = p;
+        } else {
+          gold += p;
+        }
+      }
+    }
+    return (o: o, gold: gold);
   }
 
   // ───────────── 밭·생산·공사 ─────────────

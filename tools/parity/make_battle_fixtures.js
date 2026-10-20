@@ -39,6 +39,8 @@ const CASES = [
   ['legends', withTut(base.late, { stage: 70, best: 72, wave: 2, rec: Object.assign({}, base.late.rec || {}, { makrye: 3, malbong: 5, deokbae: 4, peppy: 3 }), lv: Object.assign({}, base.late.lv || {}, { makrye: 60, malbong: 60, deokbae: 60, peppy: 60 }), party: { fisher: 'makrye', keeper: 'malbong', cook: 'deokbae', miner: 'peppy' } }), 200, 240],
   ['andante', withTut(base.late, { stage: 64, best: 68, wave: 1, rec: Object.assign({}, base.late.rec || {}, { andante: 5 }), lv: Object.assign({}, base.late.lv || {}, { andante: 60 }), party: Object.assign({}, base.late.party || {}, { keeper: 'andante' }) }), 200, 180],
   ['honey', withTut(base.late, { stage: 68, best: 68, wave: 3, party: { miner: 'bron', fisher: 'haral', keeper: 'riel', cook: 'margo' } }), 200, 120],
+  // 희귀 동료 3명: 토비(밀치기)·카라(화상)·베릴(약점)
+  ['rares', withTut(base.late, { stage: 66, best: 68, wave: 2, rec: Object.assign({}, base.late.rec || {}, { toby: 3, kara: 3, beryl: 4 }), lv: Object.assign({}, base.late.lv || {}, { toby: 60, kara: 60, beryl: 60 }), party: { miner: 'beryl', fisher: 'toby', keeper: 'riel', cook: 'kara' } }), 200, 240],
 ];
 
 const out = { now: NOW, w: W, ht: HT, dt: DT, snap: SNAP, cases: {} };
@@ -61,7 +63,7 @@ for (const [name, save, gob, secs] of CASES) {
         gemLord:S.gemLord,kill:daily().kill,joined:S.joined,rankSeen:S.rankSeen,gemRank:S.gemRank??0,gobW:S.gobW??null,stat:S.stat??null,
         bdUnl:S.bdUnl??null,
         P:Object.fromEntries(Object.entries(P).map(([k,p])=>[k,[p.hp,p.down,p.sg||0,p.cd,p.swing,p.hit]])),
-        mons:mons.map(m=>[m.x,m.hp,m.dead,!!m.boss,!!m.gob,!!m.alt,!!m.flee,m.cd,m.bind||0,m.psn||0,m.slow||0]),
+        mons:mons.map(m=>[m.x,m.hp,m.dead,!!m.boss,!!m.gob,!!m.alt,!!m.flee,m.cd,m.bind||0,m.psn||0,m.slow||0,m.vul||0,m.brn||0,m.kb||0]),
         engaged,bgX,spawnT,gobT,bossT,shakeT,flash,
         skx:{shield:SKX.shield,honey:SKX.honey,feast:SKX.feast,bake:SKX.bake,mount:SKX.mount,mountK:SKX.mountK,wall:SKX.wall},
         nFloats:floats.length,nFx:fxs.length,nProj:proj.length,quip:quip?quip.txt:null,banner:banner?banner.txt:null,cut:cut?cut.id:null,warn:!!warn})`)));

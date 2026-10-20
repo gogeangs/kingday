@@ -249,8 +249,15 @@ void main() {
         same([for (var i = 0; i < 40; i++) relicJson(c.rollItem(rng))], r['items'], 'rollItem');
         same([for (var g = 0; g < 6; g++) relicJson(c.rollItem(rng, g))], r['forced'], 'rollItem(g)');
         rng = Mulberry32(777);
-        same([for (var i = 0; i < 30; i++) c.gainCard(rng, 1), c.gainCard(rng, 30, 'epic')], r['cards'], 'gainCard');
+        same([
+          for (var i = 0; i < 30; i++) c.gainCard(rng, 1),
+          c.gainCard(rng, 30, 'battle'),
+          for (var i = 0; i < 20; i++) c.gainCard(rng, 2, 'battle'),
+        ], r['cards'], 'gainCard');
+        final ch = c.gainCards(rng, 30, 'shop', 5);
+        same(ch == null ? null : {'got': [for (final (id, n) in ch.got) [id, n]], 'gold': ch.gold}, r['chunks'], 'gainCards');
         same(jsonDecode(jsonEncode(c.s.raw['cards'])), r['cardsAfter'], 'cards');
+        same(c.s.gold, r['goldAfter'], 'gold');
       });
 
       test('은퇴', () {

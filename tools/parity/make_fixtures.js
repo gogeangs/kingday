@@ -148,8 +148,11 @@ for (const name of Object.keys(SAVES)) {
   for (let g = 0; g < 6; g++) sc.rolls.forced.push(J(F('rollItem')(g)));
   w.setSeed(777);
   for (let i = 0; i < 30; i++) sc.rolls.cards.push(F('gainCard')(1) ?? null);
-  sc.rolls.cards.push(F('gainCard')(30, 'epic') ?? null);
+  sc.rolls.cards.push(F('gainCard')(30, 'battle') ?? null);
+  for (let i = 0; i < 20; i++) sc.rolls.cards.push(F('gainCard')(2, 'battle') ?? null);
+  sc.rolls.chunks = F('gainCards')(30, 'shop', 5);
   sc.rolls.cardsAfter = run('S.cards??null');
+  sc.rolls.goldAfter = run('S.gold');
   // 은퇴
   // (retire 끝의 화면 새로 그리기 renderAll 은 칭호 테두리·밭 칸 정리 같은 다른 일도 하므로 잠시 끄고 잰다)
   setSave(name);

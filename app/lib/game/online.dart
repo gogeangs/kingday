@@ -279,7 +279,7 @@ class Online {
 
   /// 웹 mailApply(list): 받은 우편 보상을 게임에 넣기
   void mailApply(List<Map<String, dynamic>> list) {
-    num gem = 0;
+    num gem = 0, cgold = 0;
     final got = <(String, int)>[];
     final items = <String>[];
     for (final m in list) {
@@ -295,10 +295,11 @@ class Online {
       if (asNum(r['gem']) > 0) gem += math.min(asNum(r['gem']), 100000);
       final cards = asNum(r['cards']);
       if (cards > 0) {
-        bool av(String gk) => GameCalc.cardIds().any((x) => c.cardOpen(x) && GameCalc.gr(x).w <= compGrades[gk]!.w && c.recStar(x) < c.starMax(x));
-        final cid = c.gainCard(g.acts.rng, cards.toInt(), av('epic') ? 'epic' : av('rare') ? 'rare' : null);
-        if (cid != null) {
-          got.add((cid, cards.toInt()));
+        // 5장씩 나눠 여러 동료에게 (웹 gainCards(n,'shop',5))
+        final res = c.gainCards(g.acts.rng, cards.toInt(), 'shop', 5);
+        if (res != null) {
+          got.addAll(res.got);
+          cgold += res.gold;
         } else {
           gem += jsRound(cards * 3);
         }
@@ -329,7 +330,7 @@ class Online {
     g.refresh();
     final msg = [if (gem > 0) '황금 이삭 +${fmt(gem)}', ...items].join(' · ');
     if (msg.isNotEmpty) g.toast(msg);
-    if (got.isNotEmpty) g.queue((ctx) => showCardReveal(ctx, g, got, '우편 보상'));
+    if (got.isNotEmpty || cgold > 0) g.queue((ctx) => showCardReveal(ctx, g, got, '우편 보상', gold: cgold));
   }
 
   /// 결제 확인 우편(kind=shop)을 바로 받기

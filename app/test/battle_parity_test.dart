@@ -50,7 +50,7 @@ Map<String, dynamic> snapshot(BattleSim b, int f) {
     'kill': c.daily()['kill'], 'joined': j(s.raw['joined']), 'rankSeen': s.raw['rankSeen'],
     'gemRank': orNum(s.raw['gemRank'], 0), 'gobW': j(s.raw['gobW']), 'stat': j(s.raw['stat']), 'bdUnl': j(s.raw['bdUnl']),
     'P': {for (final e in b.party.entries) e.key: [e.value.hp, e.value.down, e.value.sg, e.value.cd, e.value.swing, e.value.hit]},
-    'mons': [for (final m in b.mons) [m.x, m.hp, m.dead, m.boss, m.gob, m.alt, m.flee, m.cd, m.bind, m.psn, m.slow]],
+    'mons': [for (final m in b.mons) [m.x, m.hp, m.dead, m.boss, m.gob, m.alt, m.flee, m.cd, m.bind, m.psn, m.slow, m.vul, m.brn, m.kb]],
     'engaged': b.engaged, 'bgX': b.bgX, 'spawnT': b.spawnT, 'gobT': b.gobT, 'bossT': b.bossT, 'shakeT': b.shakeT,
     'flash': b.flash,
     'skx': {

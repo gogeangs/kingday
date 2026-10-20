@@ -13,6 +13,7 @@ import 'fmt.dart';
 import 'js.dart';
 import 'rng.dart';
 import 'state.dart';
+import 'web_data.g.dart';
 
 /// 화면이 해야 할 일 (창 띄우기·알림)
 sealed class ActResult {}
@@ -79,7 +80,9 @@ class ActGemPlotAsk extends ActResult {
 
 /// 카드를 받았어요 창 (웹 cardReveal)
 class ActCardReveal extends ActResult {
-  ActCardReveal(this.got, this.title);
+  ActCardReveal(this.got, this.title, [this.gold = 0]);
+  /// 별을 다 채운 동료 카드가 바뀐 골드
+  final num gold;
   final List<(String, int)> got;
   final String title;
 }
@@ -414,9 +417,18 @@ class GameActions {
   bool plant(int i, String k) {
     if (orNum(s.seeds[k], 0) <= 0 || (i < s.plots.length && s.plots[i] != null)) return false;
     s.seeds[k] = asNum(s.seeds[k]) - 1;
-    s.plots[i] = <String, dynamic>{'k': k, 'at': c.now};
+    final p = <String, dynamic>{'k': k, 'at': c.now};
+    s.plots[i] = p;
+    // 황금 고블린의 발자국: 보통 밭 8% · 황금 밭 12% 확률로 그 칸 수확 2배
+    if (rng.next() < (isGemPlot(i) ? asNum(wGobPlot['gem']) : asNum(wGobPlot['n']))) p['g'] = 1;
     return true;
   }
+
+  /// 이삭으로 늘린 황금 밭 칸인지 (웹 isGemPlot)
+  bool isGemPlot(int i) => i >= 2 + orNum(s.bld['farm'], 0);
+
+  /// 방금 수확한 칸에 고블린이 다녀갔는지 (웹 harvGob)
+  int harvGob = 0;
 
   /// 씨앗 고르기 창에서 심기 (전용 밭으로 지정할 수도)
   void plantChosen(int i, String k, {bool tag = false}) {
@@ -443,8 +455,11 @@ class GameActions {
   /// harvest(i): 2개, 30% 확률로 3개
   int harvest(int i) {
     final ps = c.plotState(s.plots[i]);
+    harvGob = 0;
     if (ps.st != 'ready') return 0;
-    final n = 2 + (rng.next() < .3 ? 1 : 0), k = ps.c!.k;
+    final gb = truthy(asMap(s.plots[i])?['g']) ? 2 : 1;
+    final n = (2 + (rng.next() < .3 ? 1 : 0)) * gb, k = ps.c!.k;
+    harvGob = gb > 1 ? 1 : 0;
     s.items[k] = asNum(s.items[k]) + n;
     s.plots[i] = null;
     dailyAdd('harv', n);
@@ -458,18 +473,25 @@ class GameActions {
     final ps = c.plotState(s.plots[i]);
     if (ps.st == 'ready') {
       final n = harvest(i);
-      _toast('${ps.c!.n} $n개 수확. 카엘이 행복해 보여요');
+      if (harvGob > 0) {
+        _toast('황금 고블린이 다녀갔어요! ${ps.c!.n} ×2 · $n개 수확');
+        out.add(ActHaptic(const [20, 30, 20]));
+      } else {
+        _toast('${ps.c!.n} $n개 수확. 카엘이 행복해 보여요');
+      }
     } else if (ps.st == 'grow') {
       _toast('${ps.c!.n} · ${mmss(ps.left!)} 뒤에 수확');
     }
   }
 
   void harvestAll() {
-    var t = 0;
+    var t = 0, gb = 0;
     for (var i = 0; i < s.plots.length; i++) {
       t += harvest(i);
+      gb += harvGob;
     }
-    _toast('작물 $t개 수확');
+    _toast('작물 $t개 수확${gb > 0 ? ' (고블린 2배 $gb칸)' : ''}');
+    if (gb > 0) out.add(ActHaptic(const [20, 30, 20]));
   }
 
   void plantAll() {
@@ -654,8 +676,9 @@ class GameActions {
     if (!misCan(m)) return;
     (asMap(c.daily()['claim'])!)[k] = true;
     if (k == 'all') {
-      final cid = c.gainCard(rng, 5);
-      if (cid != null) out.add(ActLaterToast('${comps[cid]!.n} 카드 +5', 1200));
+      final cid = c.gainCard(rng, 5, 'shop');
+      final t = cardToastText(cid, 5);
+      if (t != null) out.add(ActLaterToast(t, 1200));
     }
     gainGem(m?.r ?? missionAllReward, m?.n ?? '오늘의 할 일 완료');
   }
@@ -677,16 +700,19 @@ class GameActions {
 
   /// 광고 보상: 동료 카드 3장 (웹 adCard)
   void adCardGive() {
-    final got = <(String, int)>[];
-    for (var i = 0; i < 3; i++) {
-      final cid = c.gainCard(rng, 1);
-      if (cid != null) got.add((cid, 1));
-    }
-    if (got.isNotEmpty) {
-      out.add(ActCardReveal(got, '피트의 선물'));
-    } else {
+    final r = c.gainCards(rng, 3, 'shop', 1);
+    if (r == null) {
       _toast('아직 모을 수 있는 동료 카드가 없어요');
+      return;
     }
+    out.add(ActCardReveal(r.got, '피트의 선물', r.gold));
+  }
+
+  /// 웹 cardToast(cid,n): 카드 한 묶음 결과 알림 문장
+  String? cardToastText(String? cid, int n) {
+    if (cid == null) return null;
+    if (cid.isNotEmpty) return '${comps[cid]!.n} 카드 +$n';
+    return '동료 카드 → 골드 +${fmt(c.cardGoldLast)} (별을 다 채운 동료)';
   }
 
   /// 골드 바꾸기 (웹 buyGoldX)
@@ -697,7 +723,7 @@ class GameActions {
     _toast('${x.n} 구매! 골드 +${fmt(g)}');
   }
 
-  /// 동료 카드 묶음 (i: 0 = 무작위 3장, 1 = 한 동료 30장 · 영웅 이상)
+  /// 동료 카드 묶음 (i: 0 = 1장씩 3번, 1 = 5장씩 6번 · 여러 동료 무작위)
   void buyCardPack(int i) {
     final cp = cardPacks[i], n = asNum(cp['n']).toInt();
     if (!GameCalc.cardIds().any((x) => c.cardOpen(x) && c.recStar(x) < c.starMax(x))) {
@@ -705,18 +731,8 @@ class GameActions {
       return;
     }
     if (!spendGem(asNum(cp['gem']))) return;
-    final got = <(String, int)>[];
-    if (n >= 30) {
-      bool av(String g) => GameCalc.cardIds().any((x) => c.cardOpen(x) && GameCalc.gr(x).w <= compGrades[g]!.w && c.recStar(x) < c.starMax(x));
-      final cid = c.gainCard(rng, n, av('epic') ? 'epic' : av('rare') ? 'rare' : null);
-      if (cid != null) got.add((cid, n));
-    } else {
-      for (var j = 0; j < n; j++) {
-        final cid = c.gainCard(rng, 1);
-        if (cid != null) got.add((cid, 1));
-      }
-    }
-    out.add(ActCardReveal(got, '카드 $n장'));
+    final r = c.gainCards(rng, n, 'shop', n >= 30 ? 5 : 1);
+    out.add(ActCardReveal(r?.got ?? const [], '카드 $n장', r?.gold ?? 0));
   }
 
   /// 결제 (웹 pay): 지금은 시험용으로 바로 지급

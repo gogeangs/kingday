@@ -11,6 +11,7 @@ import '../core/calc.dart';
 import '../core/data.dart';
 import '../core/fmt.dart';
 import '../core/js.dart';
+import '../core/web_data.g.dart';
 import '../game/controller.dart';
 import '../game/store.dart';
 import '../ui/game_widgets.dart';
@@ -278,7 +279,14 @@ class _ShopPageState extends State<ShopPage> {
       _anchor('card'),
       if (cardOk) ...[
         const SizedBox(height: 12),
-        const KdSec('동료 카드', small: '3장은 무작위 · 30장은 한 동료로 영웅 이상'),
+        Row(crossAxisAlignment: CrossAxisAlignment.center, children: [
+          Expanded(child: Text('동료 카드', style: KdText.display(15))),
+          Text('여러 동료에게 무작위 · ', style: KdText.body(12, color: KdColors.muted)),
+          GestureDetector(
+            onTap: () => showCardOdds(g),
+            child: Text('확률 보기', style: KdText.body(12, color: KdColors.gold, weight: FontWeight.w600).copyWith(decoration: TextDecoration.underline, decorationColor: KdColors.gold)),
+          ),
+        ]),
         _grid([
           for (var i = 0; i < cardPacks.length; i++)
             Builder(builder: (_) {
@@ -293,7 +301,7 @@ class _ShopPageState extends State<ShopPage> {
                   ),
                 ]),
                 big: '카드 $n장',
-                small: n >= 30 ? '한 동료 30장 · 영웅 이상' : '무작위 3장',
+                small: n >= 30 ? '5장씩 6번 무작위' : '1장씩 3번 무작위',
                 price: _gemPrice(asNum(cardPacks[i]['gem'])),
                 tag: i > 0 ? '10% 이득' : null,
                 onTap: () => g.act((x) => x.buyCardPack(i)),
@@ -359,4 +367,54 @@ class _ShopPageState extends State<ShopPage> {
       KdNote('황금 이삭 ${fmt(s.gem)}개 · 골드 바꾸기, 성유물 상자 10연속(장비 탭), 작물 바로 키우기·건물 바로 짓기(마을 탭), 방치 보상 2배 받기에 써요.'),
     ]);
   }
+}
+
+
+/// 웹 cardOddsSheet(): 동료 카드 확률 보기 (한국 확률형 상품 확률 공개)
+void showCardOdds(GameController g) {
+  final c = g.calc, a = c.cardOdds('shop'), b = c.cardOdds('battle');
+  final fixShop = (wCardFix['shop'] as Map).cast<String, num>(), fixBattle = (wCardFix['battle'] as Map).cast<String, num>();
+  final ids = GameCalc.cardIds().where(c.cardOpen).toList()..sort((x, y) => GameCalc.gr(x).w.compareTo(GameCalc.gr(y).w));
+  String pc(num v) => v <= 0 ? '-' : '${(v * 100 < 1 ? (v * 100).toStringAsFixed(2) : (v * 100).toStringAsFixed(1))}%';
+  num gsum(({Map<String, num> o, num gold}) r, String gk) => ids.where((x) => gradeOf[x] == gk).fold<num>(0, (t, x) => t + (r.o[x] ?? 0));
+  TableRow row(List<Widget> cells, {bool head = false}) => TableRow(
+        decoration: const BoxDecoration(border: Border(bottom: BorderSide(color: KdColors.line))),
+        children: [for (final w in cells) Padding(padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 6), child: w)],
+      );
+  Text t(String s, {Color? col, bool right = true, bool bold = false}) =>
+      Text(s, textAlign: right ? TextAlign.right : TextAlign.left, style: KdText.body(13, color: col, weight: bold ? FontWeight.w700 : FontWeight.w400));
+  const cols = {0: FlexColumnWidth(1.4), 1: FlexColumnWidth(1), 2: FlexColumnWidth(1)};
+  g.openSheet<void>((ctx) => KdSheetBody(
+        eyebrow: '피트의 상점',
+        title: '동료 카드 확률',
+        children: [
+          const KdNote('카드 한 묶음이 어떤 동료에게 갈지 정하는 확률이에요. 영웅·전설 확률은 동료 수와 상관없이 늘 같아요.'),
+          Table(columnWidths: cols, children: [
+            row([t('등급', right: false, col: KdColors.muted), t('상점·광고·우편', col: KdColors.muted), t('전투', col: KdColors.muted)]),
+            for (final gk in const ['legend', 'epic', 'rare', 'common'])
+              row([
+                t(compGrades[gk]!.n, right: false, col: Color(hexColor(compGrades[gk]!.color)), bold: true),
+                t(gk == 'legend' || gk == 'epic' ? pc(fixShop[gk]!) : pc(gsum(a, gk))),
+                t(gk == 'legend' || gk == 'epic' ? pc(fixBattle[gk]!) : pc(gsum(b, gk))),
+              ]),
+          ]),
+          const KdSec('동료 한 명당'),
+          Table(columnWidths: cols, children: [
+            for (final id in ids)
+              row([
+                Text.rich(TextSpan(children: [
+                  TextSpan(text: comps[id]!.n, style: TextStyle(color: compColor(id), fontWeight: FontWeight.w700)),
+                  TextSpan(text: ' ${compGrades[gradeOf[id]]!.n}', style: const TextStyle(color: KdColors.muted, fontSize: 11)),
+                ]), style: KdText.body(13)),
+                c.cardCan(id) ? t(pc(a.o[id] ?? 0)) : t('별 모두 모음', col: KdColors.muted),
+                c.cardCan(id) ? t(pc(b.o[id] ?? 0)) : t(''),
+              ]),
+          ]),
+          const KdNote('· 전투(보스·몬스터·황금 고블린)에서 얻는 카드에는 전설이 나오지 않아요.\n'
+              '· 별을 다 채운 동료 몫이나 아직 모을 동료가 없는 등급의 몫은 골드로 바뀌어요.\n'
+              '· 희망 동료를 정하면 뽑을 때마다 절반 확률로 그 동료가 나와요. 단, 영웅·전설 희망 동료는 그 등급이 뽑혔을 때만 적용돼요.\n'
+              '· 30장 묶음과 우편 카드는 5장씩 나눠 뽑아요.'),
+        ],
+        acts: KdActs(buttons: [KdAct('닫기', primary: true, onTap: () => Navigator.of(ctx).pop())]),
+      ));
 }

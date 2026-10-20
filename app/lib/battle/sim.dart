@@ -39,6 +39,10 @@ class Mon {
   bool boss, lord, alt, gob;
   num? mv, cdm, life;
   num hit = 0, dead = 0, sw = 0, slow = 0, bind = 0, psn = 0, psnD = 0, psnT = 0;
+  /// 베릴 「약점 감정」 취약(받는 피해 ×vulM), 토비 밀쳐냄(그림만), 카라 화상(0.5초마다 brnD)
+  num vul = 0, vulM = 1.3, kb = 0, brn = 0, brnD = 0, brnT = 0;
+  /// 묶임 종류: 'net' 넬라 그물 · 'stun' 기절 (그림만 다름)
+  String? bindK;
   bool flee = false, gone = false;
   num? tx, barY;
   num y = 0;
@@ -149,8 +153,10 @@ class GemEvent extends BattleEvent {
 
 /// 황금 고블린 처치 전리품 (성유물은 장착·판매를 고르게 해야 함 → 4단계 장비 창)
 class GoblinLootEvent extends BattleEvent {
-  GoblinLootEvent(this.gold, this.gem, this.relic, this.cardId, this.rare);
+  GoblinLootEvent(this.gold, this.gem, this.relic, this.cardId, this.rare, {this.sold = false});
   final num gold, gem;
+  /// 자동 판매로 바로 팔렸으면 true (창 없이 알림 한 줄)
+  final bool sold;
   final Relic relic;
   final String? cardId;
 
@@ -388,6 +394,42 @@ class BattleSim {
         }
         shakeT = .5;
         if (fxOk('skill_peppy')) spawnFx('skill_peppy', cx, cy - 30 * sc, 190 * sc, .8);
+      case 'toby':
+        // 파도 가르기: 앞쪽 적 3마리 피해 + 밀쳐내 공격을 늦춤
+        final k = c.skPow(id);
+        final idx = [for (var i = 0; i < alive.length; i++) i]..sort((a, b) {
+            final d = alive[a].x.compareTo(alive[b].x);
+            return d != 0 ? d : a.compareTo(b);
+          });
+        final fr = [for (final i in idx.take(3)) alive[i]];
+        for (final m in fr) {
+          hitMon(m, t.atk * 3 * k * feast, true, sc);
+          m.cd = m.cd + (m.boss ? .6 : 1.2);
+          m.kb = .5;
+          addFloat(m.x, m.y - 80 * sc, '밀쳐냄!', 0xFF9BE3FF, 13);
+        }
+        shakeT = .2;
+        if (fxOk('skill_toby')) spawnFx('skill_toby', (fr.isNotEmpty ? fr[0].x : cx) - 10 * sc, cy - 30 * sc, 170 * sc, .8);
+      case 'kara':
+        // 불맛 한 숟갈: 모든 적 피해 + 화상 5초
+        final k = c.skPow(id);
+        for (final m in alive) {
+          hitMon(m, t.atk * 1.5 * k * feast, true, sc);
+          m.brn = 5;
+          m.brnD = t.atk * .35 * k;
+          m.brnT = .5;
+        }
+        if (fxOk('skill_kara')) spawnFx('skill_kara', cx, cy - 30 * sc, 180 * sc, .9);
+      case 'beryl':
+        // 약점 감정: 모든 적 6초 취약(받는 피해 +30%, ★3 +39%)
+        final k = c.skPow(id);
+        for (final m in alive) {
+          m.vul = 6;
+          m.vulM = 1 + .3 * k;
+          hitMon(m, t.atk * k * feast, false, sc);
+          addFloat(m.x, m.y - 80 * sc, '약점!', 0xFFD6A8FF, 13);
+        }
+        if (fxOk('skill_beryl')) spawnFx('skill_beryl', cx, cy - 40 * sc, 160 * sc, .8);
       case 'andante':
         skx.sym = 6;
         skx.symK = c.skPow(id);
@@ -399,6 +441,7 @@ class BattleSim {
         for (final m in alive) {
           hitMon(m, t.atk * 3 * k * feast, true, sc);
           m.bind = math.max(m.bind, m.boss ? 1 : 2);
+          m.bindK = 'stun';
           addFloat(m.x, m.y - 80 * sc, '기절!', 0xFFFFE27A, 13);
         }
         shakeT = .35;
@@ -412,6 +455,7 @@ class BattleSim {
         for (final m in alive) {
           hitMon(m, t.atk * 2 * k * feast, true, sc);
           m.bind = (m.boss ? 2 : 4) * k;
+          m.bindK = 'net';
           addFloat(m.x, m.y - 80 * sc, '꽁꽁!', 0xFF9BE3FF, 13);
         }
         if (fxOk('skill_nella')) spawnFx('skill_nella', cx, cy - 40 * sc, 170 * sc, .8);
@@ -495,6 +539,7 @@ class BattleSim {
 
   // ───────────── 마물 ─────────────
   void hitMon(Mon m, num d, bool cr, num sc) {
+    if (m.vul > 0) d *= m.vulM;
     m.hp -= d;
     m.hit = .12;
     final fx = m.x + (rng.next() - .5) * 10 * sc;
@@ -573,7 +618,9 @@ class BattleSim {
     addFloat(m.x, m.y - 66 * sc, '황금 이삭 +$gem', 0xFFFFE27A, 14);
     final it = c.rollItem(rng, math.max(2, c.rollItem(rng).g));
     s.gem = s.gem + gem;
-    final gc = c.gainCard(rng, 3);
+    final gc0 = c.gainCard(rng, 3, 'battle');
+    final cg = gc0 == '' ? c.cardGoldLast : 0;
+    final gc = (gc0 == null || gc0.isEmpty) ? null : gc0;
     final rare = <(String, String)>[];
     s.raw['bdUnl'] = asMap(s.raw['bdUnl']) ?? <String, dynamic>{};
     s.raw['pfUnl'] = asMap(s.raw['pfUnl']) ?? <String, dynamic>{};
@@ -586,7 +633,11 @@ class BattleSim {
       pf['goblin'] = 1;
       rare.add(('frame', '황금 고블린'));
     }
-    events.add(GoblinLootEvent(g, gem, it, gc, rare));
+    // 자동 판매가 켜져 있고 착용 중인 것보다 좋지 않으면 바로 판매 (창 없이 알림 한 줄)
+    final cur = c.equipped(it.slot);
+    final sold = truthy(s.raw['autoSell']) && cur != null && GameCalc.score(it) <= GameCalc.score(cur);
+    if (sold) s.gold = s.gold + it.price;
+    events.add(GoblinLootEvent(g + cg, gem, it, gc, rare, sold: sold));
   }
 
   /// events(): 영지를 되찾을 때 이야기 사건·칭호 확인
@@ -684,6 +735,17 @@ class BattleSim {
     for (final m in mons) {
       if (m.slow > 0) m.slow -= dt;
       if (m.bind > 0) m.bind -= dt;
+      if (m.vul > 0) m.vul -= dt;
+      if (m.kb > 0) m.kb -= dt;
+      if (m.brn > 0 && m.hp > 0 && m.dead == 0) {
+        m.brn -= dt;
+        m.brnT -= dt;
+        if (m.brnT <= 0) {
+          m.brnT = .5;
+          m.hp -= m.brnD;
+          addFloat(m.x + (rng.next() - .5) * 14 * sc, m.y - 50 * sc, fmt(m.brnD), 0xFFFF9A4A, 12);
+        }
+      }
       if (m.psn > 0 && m.hp > 0 && m.dead == 0) {
         m.psn -= dt;
         m.psnT -= dt;
@@ -931,8 +993,12 @@ class BattleSim {
     addFloat(m.x, m.y - 30 * sc, '+${fmt(g)}', 0xFFFFC94A, 14);
     final nc = m.boss ? (GameCalc.isLord(s.stage) ? 5 : 2) : (rng.next() < .003 ? 1 : 0);
     if (nc != 0) {
-      final cid = c.gainCard(rng, nc);
-      if (cid != null) addFloat(m.x, m.y - 74 * sc, '${comps[cid]!.n} 카드 +$nc', 0xFFC9A4FF, 13);
+      final cid = c.gainCard(rng, nc, 'battle');
+      if (cid != null && cid.isNotEmpty) {
+        addFloat(m.x, m.y - 74 * sc, '${comps[cid]!.n} 카드 +$nc', 0xFFC9A4FF, 13);
+      } else if (cid == '') {
+        addFloat(m.x, m.y - 74 * sc, '+${fmt(c.cardGoldLast)}', 0xFFFFC94A, 13);
+      }
     }
     if (truthy(s.bld['farm'])) {
       for (final cr in crops.reversed) {

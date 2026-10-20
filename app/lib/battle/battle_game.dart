@@ -410,13 +410,15 @@ class BattleGame extends FlameGame {
   }
 
   void _drawMon(int ri, double y, double s, Mon m) {
-    final k0 = m.boss ? (m.lord ? 1.8 : 1.5) : m.gob ? 1.3 : 1.0, x = m.x.toDouble(), ss = s * k0;
+    // 토비 「파도 가르기」로 밀쳐지면 잠깐 뒤로 밀렸다 돌아옴 (그림만, 웹 drawMon 의 m.kb)
+    final kbx = m.kb > 0 ? math.sin(m.kb / .5 * math.pi) * 36 * s : 0.0;
+    final k0 = m.boss ? (m.lord ? 1.8 : 1.5) : m.gob ? 1.3 : 1.0, x = m.x.toDouble() + kbx, ss = s * k0;
     final fade = m.dead > 0 ? (m.dead / .35).clamp(0, 1).toDouble() : 1.0;
     if (m.boss) _drawAura(x, y, ss, m.lord);
     _ell(x, y, 18 * ss, 5 * ss, ui.Color.fromRGBO(0, 0, 0, .25 * fade));
     final ph = x * .05;
     final md = _monSheet(ri, m);
-    double top = y - 40 * ss;
+    double top = y - 40 * ss, bot = y;
     if (md != null) {
       final sk = (m.lord && md == monSheets[ri]?.boss) ? ss * .8 : ss;
       final ly = (md.lift != null ? y - md.lift! * sk * (1 + .08 * math.sin(_t * 5 + ph)) : y).toDouble();
@@ -460,23 +462,43 @@ class BattleGame extends FlameGame {
         _c.restore();
       }
       top = (ly - md.fig * kk).toDouble();
+      bot = ly;
+    }
+    // 베릴 「약점 감정」: 과녁 표시 · 카라 「불맛 한 숟갈」: 발밑 불길
+    if (m.vul > 0 && m.dead == 0 && sim.fxOk('skill_beryl')) {
+      _fxFrame('skill_beryl', 0, x, (top + bot) / 2, (m.boss ? 70 : 48) * s, alpha: _cl(m.vul) * .85);
+    }
+    if (m.brn > 0 && m.dead == 0 && sim.fxOk('skill_kara')) {
+      _fxFrame('skill_kara', 2 + (_t * 6).floor() % 2, x, y - 10 * s, (m.boss ? 60 : 40) * s, alpha: _cl(m.brn) * .7);
     }
     if (m.bind > 0 && m.dead == 0) {
-      final nr = (m.boss ? 34 : 24) * s, ny = (top + y) / 2;
-      final p = ui.Paint()
-        ..style = ui.PaintingStyle.stroke
-        ..strokeWidth = 1.4 * s
-        ..color = ui.Color.fromRGBO(217, 230, 238, _cl(m.bind) * .85);
-      _c.drawOval(ui.Rect.fromCenter(center: ui.Offset(x, ny), width: nr * 2, height: nr * 2.3), p);
-      final path = ui.Path();
-      for (var i = -2; i <= 2; i++) {
-        path
-          ..moveTo(x + i * nr * .4, ny - nr * 1.1)
-          ..lineTo(x + i * nr * .4, ny + nr * 1.1)
-          ..moveTo(x - nr, ny + i * nr * .45)
-          ..lineTo(x + nr, ny + i * nr * .45);
+      final nr = (m.boss ? 34 : 24) * s, ny = (top + bot) / 2, a = _cl(m.bind) * .92;
+      if (m.bindK != 'net') {
+        // 기절(막례·고든·말봉): 머리 위 빙글빙글 별
+        for (var k = 0; k < 3; k++) {
+          final an = _t * 4 + k * 2.094;
+          _text('★', x + math.cos(an) * nr * .7, top - 6 * s + math.sin(an) * nr * .22, (m.boss ? 16 : 12) * s,
+              ui.Color.fromRGBO(255, 226, 122, a), stroke: ui.Color.fromRGBO(58, 38, 0, a), strokeW: 3 * s, weight: FontWeight.w900);
+        }
+      } else if (sim.fxOk('net')) {
+        // 넬라 그물: 손그림 그물(fx_net 2번째 칸)을 덮어씌움
+        _fxFrame('net', 1, x, ny + (bot - top) * .08, math.max(nr * 2.6, (bot - top) * 1.25) / 1.5, alpha: a);
+      } else {
+        final p = ui.Paint()
+          ..style = ui.PaintingStyle.stroke
+          ..strokeWidth = 1.4 * s
+          ..color = ui.Color.fromRGBO(217, 230, 238, a);
+        _c.drawOval(ui.Rect.fromCenter(center: ui.Offset(x, ny), width: nr * 2, height: nr * 2.3), p);
+        final path = ui.Path();
+        for (var i = -2; i <= 2; i++) {
+          path
+            ..moveTo(x + i * nr * .4, ny - nr * 1.1)
+            ..lineTo(x + i * nr * .4, ny + nr * 1.1)
+            ..moveTo(x - nr, ny + i * nr * .45)
+            ..lineTo(x + nr, ny + i * nr * .45);
+        }
+        _c.drawPath(path, p);
       }
-      _c.drawPath(path, p);
     }
     if (m.boss) {
       final mk = _img[m.lord ? 'ui/boss_mark_commander.png' : 'ui/boss_mark_lord.png'];
@@ -540,6 +562,9 @@ class BattleGame extends FlameGame {
           _ell(x + math.sin(_t * 14 + i * 1.9) * 7 * s, y + math.cos(_t * 11 + i * 2.6) * 6 * s, 2.2 * s, 2.2 * s,
               i.isOdd ? const ui.Color(0xFFFFE36E) : const ui.Color(0xFFFF9EC7));
         }
+      case 'net' when sim.fxOk('net'):
+        // 넬라 기본 공격: 손그림 감긴 그물(fx_net 1번째 칸)
+        _fxFrame('net', 0, x, y, (6 + k * 8) * s * 2.4, rot: math.sin(_t * 10) * .35);
       case 'net':
         final r = ((6 + k * 8) * s).toDouble();
         _c.save();

@@ -60,16 +60,16 @@ function op(o) {
     case 'items': return w.run(`S.items[${q(a)}]=${b}`);
     // ── 피트의 상점 ──
     case 'daily': return w.run(`daily()[${q(a)}]=${b}`);
-    case 'mis': return w.run(`(()=>{const k=${q(a)},m=MISSIONS.find(x=>x.k===k);if(!misCan(m||null))return;daily().claim[k]=true;if(k==='all'){gainCard(5)}gainGem(m?m.r:MIS_ALL,m?m.n:'오늘의 할 일 완료')})()`);
+    case 'mis': return w.run(`(()=>{const k=${q(a)},m=MISSIONS.find(x=>x.k===k);if(!misCan(m||null))return;daily().claim[k]=true;if(k==='all'){gainCard(5,'shop')}gainGem(m?m.r:MIS_ALL,m?m.n:'오늘의 할 일 완료')})()`);
     case 'gx': return F('buyGoldX')(a);
-    case 'cp': return w.run(`(()=>{const c=CARDPK[${+a}];if(!CARDIDS().some(x=>cardOpen(x)&&recStar(x)<starMax(x)))return;if(!spendGem(c.gem))return;if(c.n>=30){const av=g=>CARDIDS().some(x=>cardOpen(x)&&gr(x).w<=GR[g].w&&recStar(x)<starMax(x));gainCard(c.n,av('epic')?'epic':av('rare')?'rare':null)}else for(let i=0;i<c.n;i++)gainCard(1)})()`);
+    case 'cp': return w.run(`(()=>{const c=CARDPK[${+a}];if(!CARDIDS().some(x=>cardOpen(x)&&recStar(x)<starMax(x)))return;if(!spendGem(c.gem))return;gainCards(c.n,'shop',c.n>=30?5:1)})()`);
     case 'pack': return F('buyPack')(F('PACKS').find((p) => p.k === a));
     case 'starter': return F('buyStarter')();
     case 'sub': return F('buySub')();
     case 'subclaim': return F('claimSub')();
     case 'adbox': return w.run('(()=>{S.gold+=boxCost();openBox(false)})()');
     case 'adgem': return w.run('(()=>{S.gem=(S.gem||0)+5})()');
-    case 'adcard': return w.run('(()=>{for(let i=0;i<3;i++)gainCard(1)})()');
+    case 'adcard': return w.run("(()=>{gainCards(3,'shop',1)})()");
     default: throw new Error('모르는 조작 ' + o);
   }
 }
@@ -92,6 +92,8 @@ const CASES = {
     'items:ore:3', 'build:diner', 'bgem:diner', 'items:ore:9999', 'build:diner', 'sellall', 'tag:0', 'tag:0', 'tag:0', 'tag:0', 'tag:9']],
   // 첫 공사: 이삭 10개 선물 → 바로 완료
   firstBuild: [Object.assign({}, base.fresh, { stage: 3, best: 3, done: { marta: true }, bld: { farm: 1 } }), ['gold:100000', 'ensure', 'build:inn', 'bfin', 'build:farm', 'build:inn', 'time:' + 2 * H, 'gem:3', 'build:farm', 'bfin', 'time:' + 24 * H]],
+  // 희귀 동료 3명(토비·카라·베릴) 맞이하기·별·편성 + 카드 묶음 나눠 받기
+  rares: [base.mid, ['card:toby:30', 'rec:toby', 'card:kara:30', 'rec:kara', 'card:beryl:45', 'rec:beryl', 'rec:beryl', 'set:fisher:toby', 'set:cook:kara', 'set:miner:beryl', 'gem:2000', 'cp:1', 'cp:1', 'wish:kara', 'cp:1', 'cp:0', 'adcard', 'en:weapon', 'cw:haral']],
   // 피트의 상점: 할 일 보상·무료 선물·골드 바꾸기·카드 묶음·꾸러미·첫 거래·정기 배송 (결제는 시험용 바로 지급)
   shop: [base.mid, ['mis:kill', 'daily:kill:150', 'mis:kill', 'mis:kill', 'daily:box:10', 'daily:harv:12', 'mis:all', 'mis:box', 'mis:harv', 'mis:all', 'mis:all',
     'gem:20', 'gx:g1', 'gx:g2', 'gem:5000', 'gx:g1', 'gx:g2', 'gx:g3', 'cp:0', 'cp:1', 'cp:1', 'cp:0',
