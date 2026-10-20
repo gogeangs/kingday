@@ -92,7 +92,7 @@ class SocialFabs extends StatelessWidget {
   const SocialFabs(this.g, {super.key});
   final GameController g;
 
-  Widget _btn(String icon, VoidCallback onTap, Widget? mark, {bool top = true}) => GestureDetector(
+  Widget _btn(String icon, VoidCallback onTap, Widget? mark) => GestureDetector(
         onTap: onTap,
         child: Stack(clipBehavior: Clip.none, children: [
           Container(
