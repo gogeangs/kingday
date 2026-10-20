@@ -226,10 +226,13 @@ class GameController extends ChangeNotifier {
                 twice();
                 Navigator.of(c).pop();
               },
-              child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-                Text('2배 받기 · ', style: KdText.display(15, color: const Color(0xFFFFE08A))),
-                iconNum(gemIcon, '$gemOffline', size: 16, style: KdText.figure(15, color: const Color(0xFFFFE08A))),
-              ]),
+              child: FittedBox(
+                fit: BoxFit.scaleDown,
+                child: Row(mainAxisSize: MainAxisSize.min, children: [
+                  Text('2배 받기 · ', style: KdText.display(15, color: const Color(0xFFFFE08A))),
+                  iconNum(gemIcon, '$gemOffline', size: 16, style: KdText.figure(15, color: const Color(0xFFFFE08A))),
+                ]),
+              ),
             ),
             KdAct('받기', primary: true, onTap: () => Navigator.of(c).pop()),
           ]),
