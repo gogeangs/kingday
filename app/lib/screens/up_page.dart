@@ -89,7 +89,10 @@ class _UpRowState extends State<_UpRow> {
 
   bool _fire() {
     final n = g.act((a) => a.upFire(widget.u.k));
-    if (n > 0) setState(() => _flash = DateTime.now().millisecondsSinceEpoch);
+    if (n > 0) {
+      g.sound('up');
+      setState(() => _flash = DateTime.now().millisecondsSinceEpoch);
+    }
     return n > 0;
   }
 

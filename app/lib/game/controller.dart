@@ -7,7 +7,6 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../battle/battle_game.dart';
@@ -25,6 +24,7 @@ import '../screens/social_sheets.dart';
 import '../ui/game_widgets.dart';
 import '../ui/theme.dart';
 import '../ui/widgets.dart';
+import 'feel.dart';
 import 'online.dart';
 
 /// 화면 어디서나 ref.watch(gameProvider) 로 꺼내 씀 (main.dart 에서 실제 값으로 바꿔 끼움)
@@ -283,12 +283,13 @@ class GameController extends ChangeNotifier {
   /// 웹 haptic(): 설정에서 진동을 끄면(S.vib===false) 울리지 않음
   void haptic([List<int> p = const [12]]) {
     if (state.raw['vib'] == false) return;
-    final total = p.fold<int>(0, (a, b) => a + b);
-    if (total >= 60) {
-      HapticFeedback.mediumImpact();
-    } else {
-      HapticFeedback.lightImpact();
-    }
+    Feel.vibrate(p);
+  }
+
+  /// 효과음 (설정에서 끄면 조용, S.snd === false)
+  void sound(String k) {
+    Feel.soundOn = state.raw['snd'] != false;
+    Feel.sound(k);
   }
 
   // ── 창 대기열 (웹 sceneQ / queue / pump) ──
@@ -435,6 +436,11 @@ class GameController extends ChangeNotifier {
       switch (r) {
         case ActToast(:final msg):
           toast(msg);
+          if (msg.contains('황금 이삭 +')) {
+            sound('gem');
+          } else if (msg.contains('골드 +') || msg.contains('판매 +')) {
+            sound('coin');
+          }
         case ActHaptic(:final pattern):
           haptic(pattern);
         case ActFlashSlot(:final slot):
@@ -463,8 +469,10 @@ class GameController extends ChangeNotifier {
             'sys:상자를 열면 카엘의 장비가 나와요. 많이 열수록 피트가 더 좋은 물건을 들여와요.',
           ], '한번 열어 본다', onGo: () => act((a) => a.openBox(_peteAuto)));
         case ActShowItem(:final it, :final cur):
+          sound('box');
           queue((ctx) => showItemSheet(ctx, it, cur));
         case ActOpen10():
+          sound('box');
           queue((ctx) => showOpen10Sheet(ctx, r));
         case ActBuildTutorial(:final k, :final lv):
           final b = buildingDef(k);
@@ -475,6 +483,7 @@ class GameController extends ChangeNotifier {
             'sys:황금 이삭 $tutGem개를 선물로 받았어요. 공사 중인 건물의 파란 "바로 완료" 버튼을 누르면 이삭으로 공사를 끝낼 수 있어요. 공사 중에도 다른 건물을 $buildQueueMax개까지 예약해 두면 차례로 지어져요.',
           ], '이삭으로 바로 완료', altLabel: '그냥 기다릴래요', onGo: () => act((a) => a.finishByGem()));
         case ActCardReveal(:final got, :final title):
+          sound('gem');
           queue((ctx) => showCardReveal(ctx, this, got, title));
         case ActLaterToast(:final msg, :final ms):
           Timer(Duration(milliseconds: ms), () => toast(msg));
@@ -606,10 +615,12 @@ class GameController extends ChangeNotifier {
           acts: KdActs(buttons: [
             KdAct('판매 +${fmt(it.price)}', onTap: () {
               Navigator.of(c).pop();
+              sound('coin');
               act((a) => a.sell(it));
             }),
             KdAct('장착', primary: true, onTap: () {
               Navigator.of(c).pop();
+              sound('equip');
               act((a) => a.equip(it));
             }),
           ]),
@@ -652,7 +663,10 @@ class GameController extends ChangeNotifier {
         toast(msg);
       case HapticEvent(:final pattern):
         haptic(pattern);
+      case SoundEvent(:final k):
+        sound(k == 'gob' ? 'goblin' : k);
       case GoblinLootEvent(:final relic, :final gold, :final gem, :final cardId, :final rare):
+        sound('coin');
         if (!sim.noSave) {
           online.gobDirty = true;
           Timer(const Duration(milliseconds: 2600), online.gobRankToast);
@@ -670,6 +684,7 @@ class GameController extends ChangeNotifier {
         final ev = storyEvents.firstWhere((x) => x.id == id);
         scene(ev.eyebrow, ev.title, ev.lines, ev.button);
       case RankUpEvent(:final rankIdx, :final gem):
+        sound('fanfare');
         final r = ranks[rankIdx];
         scene('칭호 상승', '${r.n} 카엘', [
           '되찾은 영지가 ${r.at}곳에 이르자, 사람들이 카엘을 ${r.n}(이)라고 부르기 시작했다.',
@@ -685,6 +700,7 @@ class GameController extends ChangeNotifier {
         // 웹: 군단장 첫 처치 이삭은 2.3초 뒤 (「○○ 처치」 알림에 덮이지 않게) + 진동
         Timer(Duration(milliseconds: why == '군단장 첫 처치' ? 2300 : 0), () {
           haptic(const [18]);
+          sound('gem');
           toast('황금 이삭 +${fmt(n)} · $why');
         });
       case SkillTutorialEvent():
@@ -696,6 +712,7 @@ class GameController extends ChangeNotifier {
           'sys:초상화 둘레의 금색 고리가 다 차면 특수 스킬을 쓸 수 있어요. 오른쪽 아래 AUTO를 켜 두면 알아서 써요. 초상화를 길게 누르면 스킬 설명이 나와요.',
         ], '알겠어', onGo: () => state.raw['autoSkill'] = was);
       case StageClearedEvent(:final chapter):
+        sound('clear');
         if (chapter) _chapter();
         save();
       case FightResetEvent():

@@ -14,6 +14,8 @@ dependencies:
   flame: ^1.18.0
   flutter_riverpod: ^2.6.1
   http: ^1.2.2
+  audioplayers: ^6.1.0
+  vibration: ^2.0.1
   shared_preferences: ^2.3.0
 
 dev_dependencies:
@@ -43,6 +45,8 @@ flutter:
     - assets/game/village/
     - assets/game/crops/
     - assets/game/map/
+    # 효과음 (tools/make_sfx.py 로 합성, 앱에만 있음)
+    - assets/audio/
   # 글꼴: 웹과 같은 Hahmlet(제목)·IBM Plex Sans KR(본문). woff2 → ttf 는 tools/sync_app_assets.py 가 만듦
   fonts:
     - family: Hahmlet

@@ -105,6 +105,12 @@ class ToastEvent extends BattleEvent {
   final String msg;
 }
 
+/// 효과음 (앱에만 있음: boss · skill · gob)
+class SoundEvent extends BattleEvent {
+  SoundEvent(this.k);
+  final String k;
+}
+
 class HapticEvent extends BattleEvent {
   HapticEvent(this.pattern);
   final List<int> pattern;
@@ -256,6 +262,7 @@ class BattleSim {
     p!.sg = 0;
     p.swing = .4;
     cut = CutIn(id);
+    events.add(SoundEvent('skill'));
     quip = null;
     num cx = 0, cy = 0;
     for (final m in alive) {
@@ -424,6 +431,7 @@ class BattleSim {
       mons = [Mon(x: w + 70, lane: .55, hp: mx, max: mx, atk: GameCalc.monAtk(st, true), boss: true, lord: lord, cd: .8)];
       bossT = lord ? 40 : 30;
       warn = Warn(lord);
+      events.add(SoundEvent('boss'));
       shakeT = lord ? .6 : .4;
       mons[0].mv = .55;
       say('q', lord ? '군단장이다! 이번엔 도망치지 마라, 주인!' : '성주다! 정신 차려라, 주인!');
@@ -453,6 +461,7 @@ class BattleSim {
       final gh = GameCalc.monHp(st, false) * 5;
       mons.insert(0, Mon(x: w + 30, lane: .3, hp: gh, max: gh, atk: 0, cd: 1e9, gob: true, mv: 1.4, life: 12));
       banner = StageBanner('황금 고블린 출현!', '12초 안에 잡으면 보물을 떨군다');
+      events.add(SoundEvent('gob'));
       shakeT = .3;
     }
   }

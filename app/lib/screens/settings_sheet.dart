@@ -115,7 +115,7 @@ class _SettingsState extends State<_Settings> {
           const SizedBox(width: 8),
           Expanded(child: KdBuy(kind: BuyKind.ghost, minWidth: 0, text: '불러오기', onTap: _import)),
         ]),
-        const KdSec('진동', small: '보상·보스 처치 때'),
+        const KdSec('진동', small: '보상·보스 처치 때 (아이폰은 짧은 진동)'),
         Row(children: [
           Expanded(
             child: KdBuy(
@@ -127,6 +127,24 @@ class _SettingsState extends State<_Settings> {
                 g.save();
                 if (vibOff) g.haptic(const [30]);
                 g.toast(vibOff ? '진동을 켰어요' : '진동을 껐어요');
+                setState(() {});
+              },
+            ),
+          ),
+        ]),
+        const KdSec('효과음', small: '버튼·보상·전투 소리'),
+        Row(children: [
+          Expanded(
+            child: KdBuy(
+              kind: BuyKind.ghost,
+              minWidth: 0,
+              text: g.state.raw['snd'] == false ? '효과음 켜기' : '효과음 끄기',
+              onTap: () {
+                final on = g.state.raw['snd'] == false;
+                g.state.raw['snd'] = on;
+                g.save();
+                if (on) g.sound('gem');
+                g.toast(on ? '효과음을 켰어요' : '효과음을 껐어요');
                 setState(() {});
               },
             ),

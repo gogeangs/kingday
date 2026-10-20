@@ -6,6 +6,7 @@ import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
 
 import '../core/fmt.dart';
+import '../game/feel.dart';
 import 'theme.dart';
 
 const _ui = 'assets/game/ui';
@@ -181,7 +182,12 @@ class KdBuy extends StatelessWidget {
         ),
     ];
     return GestureDetector(
-      onTap: onTap,
+      onTap: onTap == null
+          ? null
+          : () {
+              Feel.sound('tap');
+              onTap!();
+            },
       child: Container(
         constraints: BoxConstraints(minWidth: minWidth),
         padding: EdgeInsets.symmetric(horizontal: small ? 8 : 10, vertical: small ? 5 : 9),
@@ -226,7 +232,12 @@ class KdAct extends StatelessWidget {
     return Opacity(
       opacity: onTap == null ? .45 : 1,
       child: GestureDetector(
-        onTap: onTap,
+        onTap: onTap == null
+            ? null
+            : () {
+                Feel.sound('tap');
+                onTap!();
+              },
         child: Container(
           padding: const EdgeInsets.all(11),
           alignment: Alignment.center,
