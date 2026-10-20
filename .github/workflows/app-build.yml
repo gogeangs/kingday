@@ -133,7 +133,7 @@ jobs:
             # Flutter 오류 머리말 다음 몇 줄
             awk '/EXCEPTION CAUGHT BY/{c=8} c-->0' test.log | grep -v "^ *$" | head -40 | sed 's/^ */::error title=flutter::/'
             # 넘침: 크기와 원인 코드 줄을 짝지어 (테스트 이름 · 넘친 크기 · 파일:줄)
-            awk '/^[0-9:]+ \+[0-9]+/{t=$0} /overflowed by/{o=$0} /error-causing widget was/{w=1;next} w&&/file:/{if(o!="")print t" | "o" | "$0; o="";w=0}' test.log | sed 's#file:///home/runner/work/kingday/kingday/app/##' | awk '!seen[$0]++' | head -40 | sed 's/^ */::error title=overflow::/'
+            awk '/^[0-9:]+ \+[0-9]+/{t=$0} /overflowed by/{o=$0} /error-causing widget was/{w=1;next} w&&/file:/{if(o!="")print t" | "o" | "$0; o="";w=0} /creator:/&&o!=""{print t" | "o" | "substr($0,1,400); o=""}' test.log | sed 's#file:///home/runner/work/kingday/kingday/app/##' | awk '!seen[$0]++' | head -40 | sed 's/^ */::error title=overflow::/'
             exit $code
           fi
 
