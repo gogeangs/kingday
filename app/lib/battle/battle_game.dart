@@ -242,7 +242,7 @@ class BattleGame extends FlameGame {
       {num alpha0 = 1, bool serif = false, ui.Color? stroke, num strokeW = 0, int align = 0, num? maxW, FontWeight weight = FontWeight.w700}) {
     final x = x0.toDouble(), y = y0.toDouble(), size = size0.toDouble(), alpha = _cl(alpha0);
     if (alpha <= 0) return;
-    final family = serif ? 'serif' : null;
+    final family = serif ? 'Hahmlet' : 'PlexKR';
     TextPainter tp(ui.Paint? fg, ui.Color? col) => TextPainter(
           text: TextSpan(
               text: s,
@@ -616,7 +616,7 @@ class BattleGame extends FlameGame {
     final lumi = q.who == 'q';
     final who = lumi ? '루미나르' : id == 'kael' ? '카엘' : comps[id]!.n;
     final tp = TextPainter(
-      text: TextSpan(text: q.txt, style: TextStyle(fontSize: 11 * z, fontWeight: FontWeight.w600)),
+      text: TextSpan(text: q.txt, style: TextStyle(fontFamily: 'PlexKR', fontSize: 11 * z, fontWeight: FontWeight.w600)),
       textDirection: TextDirection.ltr,
     )..layout();
     final w = math.min(_w - 12, tp.width + 16), h = 30 * z;

@@ -58,7 +58,9 @@ jobs:
 
       - name: 그림 복사 (assets/ → app/assets/game/)
         working-directory: .
-        run: python3 tools/sync_app_assets.py
+        run: |
+          pip install --quiet fonttools brotli
+          python3 tools/sync_app_assets.py
 
       - name: 플랫폼 뼈대 만들기 (처음 한 번)
         run: |

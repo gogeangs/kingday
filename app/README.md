@@ -7,7 +7,7 @@
 | 항목 | 값 |
 |---|---|
 | 패키지명 | `kr.co.project30s.kingday` (안드로이드·iOS 공통, 스토어 등록 후 변경 불가) |
-| 상태 | 2단계 — 웹과 같은 자동 전투 화면 (메뉴·탭은 3단계부터) |
+| 상태 | 3단계 — 상단 바·하단 탭·반쯤 열리는 창·공통 창 틀·제목 화면 (탭 내용은 4단계부터) |
 
 ## APK 받는 법 (설치 없이)
 
@@ -40,7 +40,9 @@ app/
     main.dart        시작점
     core/            데이터·공식·저장 구조 (화면과 무관, 웹과 같은 값)
     battle/          전투 계산(sim.dart, 웹 step 그대로)과 Flame 그리기(battle_game.dart)
-    screens/         화면 (전투 화면 위 표시줄·초상화·버튼)
+    game/            진행 담당(controller.dart): 저장·전투·탭·알림·창 대기열
+    ui/              공통 부품: 색·글꼴(theme), 상자·버튼·대사·금테 창(widgets), 그림 효과(fx)
+    screens/         화면: 전체 틀(shell), 전투 위 표시(stage_overlay), 탭 화면(pages)
   tool/              아이콘·시작 화면용 보조 그림
   assets/game/       ← 그림 복사본 (git 제외, tools/sync_app_assets.py 로 생성)
   android/ ios/      플랫폼 뼈대 (첫 빌드 때 GitHub Actions 가 자동 생성·커밋)
@@ -52,6 +54,7 @@ app/
 - `lib/core/calc.dart` — 웹 공식(능력치·밸런스·비용·방치 보상·상자·카드·은퇴)을 옮긴 것. 웹 함수 이름이 주석에 붙어 있습니다.
 - `lib/core/state.dart` — 저장 데이터. 웹 `S` 와 **같은 JSON** (웹 기록을 그대로 불러옴).
 - `test/parity_test.dart` — 웹 코드를 Node 로 그대로 돌려 뽑은 정답 값(`test/fixtures/web_parity.json`)과 앱 공식 결과를 비교. 새 게임·중반·후반·옛 저장 4가지 기록으로 확인합니다.
+- `test/shell_layout_test.dart` — 화면 틀을 폰 폭 4종(320·360·390·430)에서 새 게임·후반 기록으로 그려 넘침이 없는지 확인.
 - `test/battle_parity_test.dart` — 웹 전투(step)를 같은 난수로 돌린 결과(`test/fixtures/battle_parity.json`)와 앱 전투를 1초마다 비교 (보스·군단장·황금 고블린·스킬 10종·전멸 포함, `node tools/parity/make_battle_fixtures.js`).
 - 웹 공식이나 데이터를 바꾸면: `node tools/parity/gen_dart_data.js` → `node tools/parity/make_fixtures.js` → 앱 공식도 맞게 고치기. 안 하면 GitHub Actions 가 알려 줍니다.
 

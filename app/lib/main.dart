@@ -3,36 +3,52 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'core/save_store.dart';
-import 'core/state.dart';
-import 'screens/battle_screen.dart';
+import 'game/controller.dart';
+import 'screens/shell.dart';
+import 'ui/theme.dart';
 
 /// 「왕이 되는 그날까지」 네이티브 앱 시작점.
-///
-/// 지금은 2단계: 웹과 같은 자동 전투 화면. 상단 바·탭·메뉴는 3단계부터 붙인다.
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
   final store = await SaveStore.open();
-  final state = store.load(DateTime.now().millisecondsSinceEpoch);
-  runApp(ProviderScope(child: KingdayApp(store: store, state: state)));
+  final g = GameController(store: store, state: store.load(DateTime.now().millisecondsSinceEpoch));
+  runApp(ProviderScope(overrides: [gameProvider.overrideWithValue(g)], child: KingdayApp(g: g)));
 }
 
-class KingdayApp extends StatelessWidget {
-  const KingdayApp({super.key, required this.store, required this.state});
-  final SaveStore store;
-  final GameState state;
+class KingdayApp extends StatefulWidget {
+  const KingdayApp({super.key, required this.g});
+  final GameController g;
 
   @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: '왕이 되는 그날까지',
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        brightness: Brightness.dark,
-        scaffoldBackgroundColor: KdColors.bg,
-        colorScheme: ColorScheme.fromSeed(seedColor: KdColors.gold, brightness: Brightness.dark),
-      ),
-      home: BattleScreen(store: store, state: state),
-    );
+  State<KingdayApp> createState() => _KingdayAppState();
+}
+
+class _KingdayAppState extends State<KingdayApp> with WidgetsBindingObserver {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
   }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  /// 웹 visibilitychange: 앱을 벗어나면 바로 저장
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState st) {
+    if (st == AppLifecycleState.paused || st == AppLifecycleState.inactive) widget.g.save();
+  }
+
+  @override
+  Widget build(BuildContext context) => MaterialApp(
+        title: '왕이 되는 그날까지',
+        debugShowCheckedModeBanner: false,
+        navigatorKey: widget.g.navKey,
+        theme: kdTheme(),
+        home: const GameShell(),
+      );
 }

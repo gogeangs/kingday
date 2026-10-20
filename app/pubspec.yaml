@@ -37,6 +37,25 @@ flutter:
     - assets/game/ui/
     - assets/game/gem/
     - assets/game/illust/
+    - assets/game/profile/
+    - assets/game/relic/
+    - assets/game/village/
+    - assets/game/crops/
+    - assets/game/map/
+  # 글꼴: 웹과 같은 Hahmlet(제목)·IBM Plex Sans KR(본문). woff2 → ttf 는 tools/sync_app_assets.py 가 만듦
+  fonts:
+    - family: Hahmlet
+      fonts:
+        - asset: assets/game/fonts/hahmlet-500.ttf
+          weight: 500
+        - asset: assets/game/fonts/hahmlet-700.ttf
+          weight: 700
+    - family: PlexKR
+      fonts:
+        - asset: assets/game/fonts/plexkr-400.ttf
+          weight: 400
+        - asset: assets/game/fonts/plexkr-600.ttf
+          weight: 600
 
 # ── 앱 아이콘 (dart run flutter_launcher_icons) ──
 flutter_launcher_icons:
