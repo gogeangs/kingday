@@ -12,6 +12,7 @@ import '../core/fmt.dart';
 import '../core/js.dart';
 import '../core/profile_data.dart';
 import '../game/controller.dart';
+import '../game/login.dart';
 import '../game/online.dart';
 import '../ui/fx.dart';
 import '../ui/game_widgets.dart';
@@ -945,6 +946,26 @@ class _AccountBoxState extends State<AccountBox> {
     if (_loading && o.acct == null) return const KdNote('계정을 확인하는 중…');
     final a = o.acct;
     if (a == null) return const KdNote('인터넷에 연결되면 계정을 확인할 수 있어요.');
+    if (a.anon && Login.googleReady) {
+      return Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+        Text.rich(
+          TextSpan(children: [
+            const TextSpan(text: '지금은 '),
+            const TextSpan(text: '게스트 계정', style: TextStyle(fontWeight: FontWeight.w600, color: KdColors.fg)),
+            const TextSpan(text: '이에요. 휴대폰을 바꾸거나 앱을 지우면 기록이 사라질 수 있어요. 계정을 연결하면 '),
+            const TextSpan(text: '황금 이삭 50', style: TextStyle(fontWeight: FontWeight.w600, color: KdColors.gold)),
+            const TextSpan(text: '을 드려요. 웹에서 쓰던 구글 계정으로 연결하면 웹 기록도 불러올 수 있어요.'),
+          ]),
+          style: _muted(),
+        ),
+        const SizedBox(height: 6),
+        KdBuy(minWidth: 0, text: '구글 계정 연결', onTap: () => o.loginWith('google')),
+        if (Login.appleReady) ...[
+          const SizedBox(height: 6),
+          KdBuy(kind: BuyKind.ghost, minWidth: 0, text: 'Apple로 계속하기', onTap: () => o.loginWith('apple')),
+        ],
+      ]);
+    }
     if (a.anon) {
       return Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
         Text.rich(
@@ -989,3 +1010,45 @@ class _AccountBoxState extends State<AccountBox> {
     ]);
   }
 }
+
+
+// ════════════════════ 어느 기록으로 할까요? (웹 cloudPick) ════════════════════
+Future<void> showCloudPick(BuildContext ctx, GameController g, Map<String, dynamic> cl) => showKdSheet<void>(ctx, closable: false, builder: (c) {
+      final s = g.state, data = (cl['data'] as Map).cast<String, dynamic>();
+      Widget card(String t, num stage, num power, num gem, String when) => Expanded(
+            child: Container(
+              padding: const EdgeInsets.all(10),
+              decoration: BoxDecoration(color: KdColors.panel2, borderRadius: BorderRadius.circular(12), border: Border.all(color: KdColors.line)),
+              child: Column(children: [
+                Text(t, style: KdText.body(12, color: KdColors.gold, weight: FontWeight.w600)),
+                Text(stgName(stage), style: KdText.display(20)),
+                Text('전투력 ${fmt(power)} · 황금 이삭 ${fmt(gem)}', textAlign: TextAlign.center, style: _muted(12)),
+                Text(when, style: _muted(12)),
+              ]),
+            ),
+          );
+      return KdSheetBody(
+        eyebrow: '계정',
+        title: '어느 기록으로 할까요?',
+        children: [
+          Text('이 계정에 저장된 기록이 있어요. 하나를 고르면 다른 쪽은 덮어써져요.', textAlign: TextAlign.center, style: _muted()),
+          Row(children: [
+            card('클라우드 기록', asNum(cl['stage']), asNum(cl['power']), asNum(cl['gem']), '${agoText(cl['updated_at'])} 저장'),
+            const SizedBox(width: 8),
+            card('이 기기 기록', math.min(s.stage, maxLand + 1), g.calc.power(), s.gem, '지금'),
+          ]),
+        ],
+        acts: KdActs(buttons: [
+          KdAct('이 기기 기록 유지', onTap: () async {
+            Navigator.of(c).pop();
+            await g.online.ensure();
+            await g.online.cloudPut(true);
+            g.toast('이 기기 기록을 클라우드에 저장했어요');
+          }),
+          KdAct('클라우드 기록 불러오기', primary: true, onTap: () {
+            Navigator.of(c).pop();
+            g.loadFromCode(data);
+          }),
+        ]),
+      );
+    });

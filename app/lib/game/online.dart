@@ -18,6 +18,7 @@ import '../core/server.dart';
 import '../core/state.dart';
 import '../screens/social_sheets.dart';
 import 'controller.dart';
+import 'login.dart';
 
 /// 시즌·주차가 시작된 때 (2026-10-19 월 0시 KST, 웹 SEAS0 · WEEK0)
 const int seasonZero = 1792335600000;
@@ -384,6 +385,45 @@ class Online {
       }
     } catch (_) {}
     return acct;
+  }
+
+  /// 구글·애플 계정으로 로그인 (웹 linkGoogle·loginGoogle 자리).
+  /// 그 계정에 클라우드 기록이 있으면 「어느 기록으로 할까요?」 창, 없으면 이 기기 기록을 그 계정에 저장.
+  Future<void> loginWith(String which) async {
+    if (!on) return;
+    final name = which == 'apple' ? '애플' : '구글';
+    try {
+      await cloudPut(true);
+      final r = which == 'apple' ? await Login.apple() : await Login.google();
+      if (r == null) return;
+      if (!await sv!.signInWithIdToken(r.$1, r.$2, nonce: r.$3)) {
+        g.toast('$name 로그인에 실패했어요. 잠시 뒤에 다시 해 주세요');
+        return;
+      }
+      acct = null;
+      _linkGiftAsked = false;
+      rkSent = 0;
+      cloudAt = 0;
+      await acctFetch();
+      dynamic cl;
+      try {
+        cl = await rpc('kd_save_get', {});
+      } catch (_) {}
+      if (cl is Map && cl['data'] is Map && (cl['data'] as Map)['gold'] is num) {
+        g.queue((ctx) => showCloudPick(ctx, g, cl.cast<String, dynamic>()));
+      } else {
+        await ensure();
+        await cloudPut(true);
+      }
+      try {
+        await rpc('kd_link_reward', {});
+      } catch (_) {}
+      await mailFetch();
+      g.toast('$name 계정으로 연결했어요${(acct?.email ?? '').isNotEmpty ? ' · ${acct!.email}' : ''}');
+      g.refresh();
+    } catch (_) {
+      g.toast('$name 로그인에 실패했어요. 잠시 뒤에 다시 해 주세요');
+    }
   }
 
   num cloudAt = 0;

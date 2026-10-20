@@ -110,6 +110,17 @@ class Server {
     return jsonDecode(utf8.decode(res.bodyBytes));
   }
 
+  /// 구글·애플에서 받은 ID 토큰으로 로그인 (웹의 OAuth 로그인과 같은 계정이 됨)
+  Future<bool> signInWithIdToken(String provider, String idToken, {String? nonce}) async {
+    final res = await _http
+        .post(Uri.parse('$sbUrl/auth/v1/token?grant_type=id_token'),
+            headers: _h, body: jsonEncode({'provider': provider, 'id_token': idToken, if (nonce != null) 'nonce': nonce}))
+        .timeout(_timeout);
+    if (res.statusCode >= 300) return false;
+    await setSession(jsonDecode(utf8.decode(res.bodyBytes)) as Map<String, dynamic>);
+    return true;
+  }
+
   /// Edge Function 부르기 (인앱결제 확인 kd-iap 등). 응답 JSON 과 상태 코드
   Future<(int, dynamic)> function(String name, Map<String, dynamic> body) async {
     final a = await login();
