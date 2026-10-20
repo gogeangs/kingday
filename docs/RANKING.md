@@ -40,3 +40,15 @@
 1. 익명 로그인, 닉네임, 기록 전송, 랭킹 창(시즌·명예의 전당 탭)
 2. 시즌 정산(2주), 우편함 보상, 전용 테두리·배지
 3. 클라우드 저장, 구글·애플 계정 연결, 주간 황금 고블린 랭킹
+
+## 7. 연결 방법 (1단계)
+1. Supabase 대시보드 → SQL Editor → `supabase/schema.sql` 전체를 붙여 넣고 Run (여러 번 실행해도 안전)
+2. Authentication → Sign In / Providers → Allow anonymous sign-ins 켜기
+3. `index.html`의 `const SB={url:'',key:''}`에 Project URL과 anon(public) 키 넣기
+   - 비어 있으면 랭킹 버튼은 「준비 중이에요」만 보여 줌
+
+### 데이터 구조
+- `profiles`: 닉네임(대소문자 무시 중복 금지)·테두리·배지·칭호
+- `records`: (user, season) 최고 스테이지. season=0 은 명예의 전당
+- 함수: `kd_set_nick` · `kd_submit`(가입 시간 대비 너무 빠르면 hidden) · `kd_ranking`(상위 100 + 내 순위)
+- 시즌: 2026-10-19 00:00 KST부터 14일 단위 (`kd_season()`)
