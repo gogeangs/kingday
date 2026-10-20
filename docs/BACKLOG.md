@@ -36,5 +36,5 @@
 
 ## 결정·외부 작업
 - [ ] 결제(PG)·실제 광고 연동
-- [ ] 출시 방식 (웹 / 앱 감싸기)
+- [x] 출시 방식: Flutter + Flame 네이티브 앱으로 새로 작성 (docs/HANDOFF_NATIVE.md), 웹은 병행 운영
 - [ ] GitHub 병합 끝난 브랜치 삭제 + 「Automatically delete head branches」 켜기 (직접)

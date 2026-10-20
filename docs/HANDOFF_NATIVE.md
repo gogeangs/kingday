@@ -92,35 +92,58 @@ docs/           GAME_DESIGN.md, RANKING.md, BACKLOG.md, DESIGN_BRIEF.md, ART_ASS
 
 ---
 
-## 5. 네이티브 전환 시 결정할 것
+## 5. 결정: Flutter + Flame으로 새로 작성 (2026-10-20 확정)
 
-### 방식 비교
-| 방식 | 내용 | 장점 | 단점 |
-|---|---|---|---|
-| **A. 웹뷰로 감싸기 (Capacitor) — 추천** | 지금 `index.html`과 `assets`를 그대로 앱 안에 넣고 네이티브 기능만 플러그인으로 연결 | 코드 재사용 100%, 1~2주, 웹 버전과 동시 운영 | 아주 무거운 그래픽에선 성능 한계(현재 게임 규모는 충분) |
-| B. 게임 엔진 재작성 (Unity / Godot / Flutter Flame) | 로직·화면 전부 새로 작성 | 성능·도구 최상 | 수개월, 지금까지 코드 재사용 불가 |
+대표님 결정: 웹뷰(Capacitor) 대신 **Flutter + Flame**으로 네이티브 앱을 새로 만든다.
+- 유지: 기획(docs/GAME_DESIGN.md), 그림 `assets/` 전부, Supabase 서버·RPC 전부, 저장 데이터 구조 `S`
+- 새로 작성: 화면(메뉴·창)과 게임 로직·전투 렌더링
+- 웹 버전(GitHub Pages)은 **새 앱이 나올 때까지 그대로 운영**. 두 버전은 같은 Supabase 계정·랭킹·우편·클라우드 저장을 공유한다.
 
-→ 1차 출시는 **A(Capacitor)**로 하고, 반응을 보고 B를 검토하는 것을 권장.
+### 5-A. 기술 구성 (권장)
+| 영역 | 패키지 |
+|---|---|
+| 앱 뼈대·화면 | Flutter (Dart), 상태관리 `riverpod` |
+| 전투 화면·스프라이트·파티클 | `flame` (전투 캔버스만 Flame `GameWidget`, 메뉴·창은 일반 Flutter 위젯) |
+| 서버 | `supabase_flutter` (익명 로그인, RPC, 구글/애플 로그인 연결) |
+| 로그인 | `google_sign_in` + `sign_in_with_apple` → Supabase `signInWithIdToken` / `linkIdentity` |
+| 결제 | `purchases_flutter`(RevenueCat) 또는 `in_app_purchase` (+ Supabase Edge Function 영수증 검증) |
+| 광고 | `google_mobile_ads` (AdMob 보상형) |
+| 저장 | `shared_preferences` 또는 `hive` (로컬) + 기존 `kd_save_put/get` (클라우드) |
+| 진동·소리 | `HapticFeedback`(기본 제공), `flame_audio` |
+| 글꼴 | `assets/fonts/*.woff2` → 앱용 TTF/OTF 원본으로 교체 필요 (Hahmlet, IBM Plex Sans KR) |
+| 빌드 | 안드로이드: 이 작업 환경에서 빌드 가능 / iOS: 맥 또는 Codemagic 클라우드 빌드 |
 
-### A 방식으로 바꿔야 할 것
-1. **서비스 워커 끄기**: 앱 안에 파일이 다 들어가므로 `sw.js` 등록을 앱에서는 건너뛴다(웹은 유지).
-2. **저장 안정성**: `localStorage`는 iOS에서 지워질 수 있음 → `@capacitor/preferences`로 저장(웹은 그대로 localStorage).
-3. **구글 로그인**: 웹뷰 안에서는 구글이 로그인을 막음 → 시스템 브라우저(`@capacitor/browser`) + 앱 딥링크(예: `kingday://auth`)로 복귀.
-   - Supabase Redirect URLs에 딥링크 추가, iOS/Android용 OAuth 클라이언트 추가 생성 필요.
-   - 애플 정책: 구글 로그인을 넣으면 **Sign in with Apple도 필수**.
-4. **결제**: 지금은 `TEST_PAY=true`(누르면 바로 지급). 앱은 **인앱결제 필수**(Google Play Billing / Apple IAP). RevenueCat 등 사용 권장. 영수증 검증 후 서버에서 지급하도록 Supabase 함수 추가.
-5. **광고**: 지금은 가짜 광고(`watchAd`, 3초 대기). AdMob 보상형 광고로 교체.
-6. **뒤로 가기(안드로이드)**: `@capacitor/app`의 backButton → 창 닫기 → 메뉴 닫기 → 종료 확인.
-7. **진동**: `navigator.vibrate` 대신 `@capacitor/haptics`(iOS도 지원).
-8. **화면**: 노치·홈바 safe-area는 이미 CSS에서 처리. 세로 고정, 상태바 색 `#0d1220`.
-9. **아이콘·스플래시**: `assets/icon/app_icon_1024.png`(원본) 사용, `@capacitor/assets`로 생성.
-10. **스토어 준비**: 개인정보처리방침 URL(이미 있음), 데이터 안전 섹션(이메일·게임 기록·기기 식별자), 연령 등급, 스크린샷.
+### 5-B. 저장소 구성
+- 같은 저장소에 `app/` 폴더로 Flutter 프로젝트를 만든다(웹 코드와 그림을 함께 관리). 그림은 `assets/`를 그대로 참조하거나 빌드 시 복사.
+- 저장 데이터는 **웹과 같은 JSON 구조(`S`)를 유지** → 웹에서 클라우드 저장한 기록을 앱에서 그대로 불러올 수 있게 한다. 필드 정의는 `index.html`의 `fresh()`/`hydrate()` 참고.
 
-### 계정이 필요한 것 (대표님 직접)
-- Apple Developer Program (연 $99), Google Play Console (1회 $25)
-- 맥(Xcode)이 있어야 iOS 빌드 가능 — 없으면 클라우드 빌드(Ionic Appflow, Codemagic 등)
+### 5-C. 이식 순서 (index.html 구역 → Flutter)
+| 단계 | 내용 | index.html 참고 구역 |
+|---|---|---|
+| 0 | 개발 환경(Flutter SDK·Android SDK) 설치, 빈 앱 실행, 아이콘·스플래시 | — |
+| 1 | 데이터·공식 이식: 지역/영지, 몬스터 체력·보상, 동료·등급·별, 능력치, 비용 공식, 밸런스 상수 | 「데이터」「능력치」「밸런스 손잡이」 |
+| 2 | 전투 화면(Flame): 배경 4겹 스크롤, 스프라이트 애니메이션, 웨이브·보스·제한시간, 스킬·효과, 황금 고블린 | 「전투」「특수 스킬」「그리기」「이미지 에셋」 |
+| 3 | 상단 바·하단 탭·반쯤 열리는 메뉴 틀, 공통 창(팝업 테두리, ✕) | 「Layout」「공통 렌더」 |
+| 4 | 장비(성유물 상자), 단련(연속 강화), 원정대(편성·동료·카드) | 「장비」「원정대 · 단련 · 지도」「편성」 |
+| 5 | 마을(건물·밭·부엌·광석·증축), 지도 | 「밭 · 부엌 · 마을」「마을 풍경」「영지 지도」 |
+| 6 | 이야기·대화 큐, 튜토리얼 안내, 칭호, 은퇴 | 「이야기 큐」「다음 할 일 안내」 |
+| 7 | 저장·오프라인 보상, 웹 기록 가져오기(저장 코드·클라우드) | 「저장 · 방치 보상」 |
+| 8 | Supabase: 계정·닉네임·랭킹 3탭·우편함·고블린 주간·클라우드 저장·결과 창 | 「랭킹」「우편함」「클라우드 저장」 |
+| 9 | 로그인(구글·애플), 인앱결제, AdMob, 진동·소리 | 「광고 보상 자리」, `pay()` |
+| 10 | QA(웹 버전과 수치 비교 시뮬레이션), 스토어 등록(내부 테스트 → 비공개 테스트 → 출시) | `tools/balance_sim.py` |
 
----
+- 각 단계마다 안드로이드 빌드(APK)를 만들어 대표님 폰에서 확인 → 다음 단계.
+- 밸런스는 웹 버전과 **같은 공식·같은 숫자**를 유지(시뮬레이션으로 웹과 결과 비교).
+
+### 5-D. 로그인 설정 변경 (앱용)
+- Google Cloud에 **Android OAuth 클라이언트**(패키지명 + SHA-1)와 **iOS OAuth 클라이언트** 추가 생성
+- Supabase Google 제공자의 Client IDs에 앱용 클라이언트 ID 추가(쉼표로 여러 개)
+- Supabase Apple 제공자 켜기(Apple Developer에서 Service ID·키 발급)
+- 패키지명(예: `kr.co.project30s.kingday`) 결정 필요
+
+### 5-E. 계정이 필요한 것 (대표님 직접)
+- Google Play Console (1회 25달러), Apple Developer Program (연 99달러)
+- AdMob, RevenueCat(선택), Codemagic(맥이 없으면, 무료 구간 있음)
 
 ## 5-1. 결제(PG)와 광고 연결 계획
 
@@ -128,14 +151,14 @@ docs/           GAME_DESIGN.md, RANKING.md, BACKLOG.md, DESIGN_BRIEF.md, ART_ASS
 - 앱 안에서 파는 디지털 상품(황금 이삭, 첫 거래 특가, 정기 배송)은 **Google Play 결제 / Apple 인앱결제(IAP)** 를 쓰는 것이 기본. 일반 PG(토스페이먼츠 등)를 앱 안에 그냥 붙이면 스토어 심사에서 거절될 수 있음.
 - 한국은 법(2021 인앱결제 강제 금지)으로 **외부 결제(제3자 결제)도 허용**되지만, 스토어 수수료 26% + PG 수수료가 붙어 인앱결제(30%, 소규모 개발사는 15% 프로그램)보다 유리하지 않은 경우가 많음.
 - 구글은 수수료 체계 개편을 발표했고 한국은 2026-12-31 적용 예정이라는 보도가 있음 → 출시 시점에 최신 정책 확인 필요.
-- 구현: `RevenueCat`(Capacitor 플러그인) 또는 `cordova-plugin-purchase`
+- 구현: `purchases_flutter`(RevenueCat) 또는 Flutter `in_app_purchase`
   1. 스토어 콘솔에 상품 등록(이삭 꾸러미 6종, 첫 거래 특가, 정기 배송=구독)
   2. 결제 성공 → 영수증을 Supabase Edge Function으로 보내 검증 → 서버가 우편/직접 지급 (게임 안에서 바로 지급하지 않기)
   3. 지금 코드의 `pay(k,won,cb)` 와 `TEST_PAY` 자리를 교체
 - 웹 버전 결제(선택): 웹에서도 팔려면 토스페이먼츠 등 PG 계약(사업자·통신판매업 신고·PG 심사). 웹 게임을 직접 유료로 서비스하면 게임물관리위원회 등급분류 대상이 될 수 있음(앱은 스토어 자체등급분류). → 1차는 **웹은 무료 체험용, 결제는 앱에서만** 권장.
 
 ### 광고: AdMob 보상형 광고
-- 지금 코드의 가짜 광고 `watchAd(kind, cb)` (3초 대기 후 보상) 자리를 **AdMob 보상형 광고**로 교체. 플러그인 `@capacitor-community/admob`.
+- 지금 코드의 가짜 광고 `watchAd(kind, cb)` (3초 대기 후 보상) 자리를 **AdMob 보상형 광고**로 교체. Flutter 패키지 `google_mobile_ads`.
 - 광고 자리(이미 게임에 있음): 피트의 무료 선물(상자·이삭·카드), 오프라인 보상 2배, 밭 등 → 하루 횟수 제한 그대로 유지
 - 필요: AdMob 계정, 앱 등록(안드로이드·iOS 각각), 보상형 광고 단위 ID, iOS 추적 동의(ATT) 문구, 개인정보처리방침에 광고 식별자 항목 추가
 - 보상은 광고 SDK의 "보상 지급" 콜백에서만 지급(창을 닫기만 하면 지급 안 함)
@@ -164,12 +187,12 @@ docs/           GAME_DESIGN.md, RANKING.md, BACKLOG.md, DESIGN_BRIEF.md, ART_ASS
 ## 7. 남은 업무 (docs/BACKLOG.md 기준)
 
 1. **동료 추가 7명**: 희귀(어부·요리사), 영웅(광부·양봉가), 전설(어부·양봉가·요리사, 각자 마을 스킬 1개)
-2. 보류: 효과음·배경음, 뒤로 가기 처리(네이티브에서 해결), 홈 화면 추가 안내(네이티브에선 불필요)
-3. 출시 준비: 실제 결제·광고, 출시 방식(→ 네이티브), 약관 법무 검토
+2. 보류: 효과음·배경음(Flutter에서 함께), 뒤로 가기(Flutter 기본 지원), 홈 화면 추가 안내(앱에선 불필요)
+3. 출시 준비: Flutter 앱(5-C), 실제 결제·광고, 약관 법무 검토(앱 출시 시 광고 식별자·결제 항목 추가)
 4. 대표님: GitHub 병합된 브랜치 정리 + 「Automatically delete head branches」 켜기
 
 ---
 
 ## 8. 새 세션 시작 문장 (복사용)
 
-> `gogeangs/kingday` 저장소의 `docs/HANDOFF_NATIVE.md`를 먼저 읽고, 「왕이 되는 그날까지」를 Capacitor로 안드로이드·iOS 네이티브 앱으로 전환하는 작업을 시작해줘. 웹 버전(GitHub Pages)은 계속 유지해야 해. 한국어로 답해줘.
+> `gogeangs/kingday` 저장소의 `docs/HANDOFF_NATIVE.md`를 먼저 읽고, 「왕이 되는 그날까지」를 **Flutter + Flame**으로 안드로이드·iOS 네이티브 앱으로 새로 만드는 작업을 5-C의 0단계부터 시작해줘. 그림·서버(Supabase)·저장 데이터 구조는 그대로 쓰고, 웹 버전(GitHub Pages)은 계속 유지해야 해. 한국어로 답해줘.
