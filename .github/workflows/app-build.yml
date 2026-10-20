@@ -169,6 +169,19 @@ jobs:
           git -c user.name="github-actions[bot]" -c user.email="41898282+github-actions[bot]@users.noreply.github.com" commit -qm "QA 화면 ${GITHUB_SHA::7}"
           git -c http.https://github.com/.extraheader="$H" push -q -f "https://github.com/${{ github.repository }}" qa-shots
 
+      - name: 정식 서명 키 준비 (GitHub 비밀값이 있을 때만)
+        env:
+          KS_B64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          KS_PASS: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          KEY_PASS: ${{ secrets.ANDROID_KEY_PASSWORD }}
+        run: |
+          if [ -z "$KS_B64" ]; then echo "비밀값 없음 → 시험용 키로 서명"; exit 0; fi
+          echo "$KS_B64" | base64 -d > android/app/upload.jks
+          printf "storeFile=upload.jks\nstorePassword=%s\nkeyAlias=%s\nkeyPassword=%s\n" "$KS_PASS" "$KEY_ALIAS" "$KEY_PASS" > android/key.properties
+          # 구글 로그인 설정에 넣을 SHA-1 (공개해도 되는 값)
+          keytool -list -v -keystore android/app/upload.jks -storepass "$KS_PASS" -alias "$KEY_ALIAS" | grep -E "SHA1|SHA-1" | head -1 | sed 's/^ */::notice title=upload-key-sha1::/'
+
       - name: APK 빌드
         run: |
           set +e
@@ -180,6 +193,18 @@ jobs:
             echo "::error title=apk-fail::$msg"
             exit $code
           fi
+
+      - name: 스토어용 AAB 빌드 (정식 서명 키가 있을 때만)
+        run: |
+          if [ ! -f android/key.properties ]; then echo "정식 키 없음 → 건너뜀"; exit 0; fi
+          flutter build appbundle --release
+
+      - uses: actions/upload-artifact@v5
+        if: hashFiles('app/build/app/outputs/bundle/release/app-release.aab') != ''
+        with:
+          name: kingday-aab
+          path: app/build/app/outputs/bundle/release/app-release.aab
+          retention-days: 30
 
       - uses: actions/upload-artifact@v5
         with:

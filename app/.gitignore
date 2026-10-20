@@ -34,3 +34,7 @@
 /ios/Runner.xcodeproj/xcuserdata/
 **/DerivedData/
 qa/shots/
+# 정식 서명 키 (절대 올리지 않음)
+android/key.properties
+android/app/*.jks
+*.keystore
