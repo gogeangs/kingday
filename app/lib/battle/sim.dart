@@ -23,6 +23,9 @@ class Member {
   num hp, cd;
   num swing = 0, hit = 0, sg = 0;
   bool down = false;
+
+  /// 덕배 「보양 수라상」: 쓰러질 피해를 한 번 버팀 (웹 P[id].guts)
+  bool guts = false;
 }
 
 /// 마물 한 마리 (웹 mons[] 원소)
@@ -95,6 +98,9 @@ class CutIn {
 /// 스킬 지속 효과 (웹 SKX)
 class SkillTimers {
   num shield = 0, honey = 0, feast = 0, honeyTick = 0, bake = 0, mount = 0, mountK = 1, wall = 0;
+
+  /// 덕배 불굴 남은 시간, 안단테 꿀벌 교향곡 (남은 시간·강화·다음 박자)
+  num guts = 0, sym = 0, symK = 1, symTick = 0;
 }
 
 /// 전투가 화면·저장에 알려야 할 일. 화면이 매 프레임 꺼내서 처리한다.
@@ -341,6 +347,52 @@ class BattleSim {
         } else if (fxOk('skill_bron')) {
           spawnFx('skill_bron', pos[id]! + 30 * sc, py[id]! - 40 * sc, 140 * sc, .9);
         }
+      case 'malbong':
+        // 맨손 잡기: 보스 먼저, 없으면 체력이 가장 많은 적
+        final k = c.skPow(id);
+        Mon? tg;
+        for (final m in alive) {
+          if (m.boss && m.hp > 0) {
+            tg = m;
+            break;
+          }
+        }
+        if (tg == null) {
+          for (final m in alive) {
+            if (m.hp > 0 && (tg == null || m.hp > tg.hp)) tg = m;
+          }
+        }
+        if (tg != null) {
+          hitMon(tg, t.atk * 6 * k * feast, true, sc);
+          tg.bind = math.max(tg.bind, tg.boss ? 1 : 1.5);
+          addFloat(tg.x, tg.y - 80 * sc, '꽉!', 0xFFFFE27A, 14);
+          shakeT = .25;
+          if (fxOk('skill_malbong')) spawnFx('skill_malbong', tg.x, tg.y - 40 * sc, 150 * sc, .8);
+        }
+      case 'deokbae':
+        // 보양 수라상: 원정대 모두 불굴
+        final k = c.skPow(id);
+        skx.guts = 6 * k;
+        for (final j in c.members()) {
+          final q = party[j];
+          if (q == null) continue;
+          if (!q.down) q.guts = true;
+          spawnFx('heal', pos[j]!, py[j]! - 24 * sc, 60 * sc, .5);
+        }
+        if (fxOk('skill_deokbae')) _teamFx('skill_deokbae', sc, pos, py);
+      case 'peppy':
+        // 발파: 모든 적 큰 폭발
+        final k = c.skPow(id);
+        for (final m in alive) {
+          hitMon(m, t.atk * 5 * k * feast, true, sc);
+        }
+        shakeT = .5;
+        if (fxOk('skill_peppy')) spawnFx('skill_peppy', cx, cy - 30 * sc, 190 * sc, .8);
+      case 'andante':
+        skx.sym = 6;
+        skx.symK = c.skPow(id);
+        skx.symTick = 0;
+        if (fxOk('skill_andante')) spawnFx('skill_andante', cx, cy - 40 * sc, 170 * sc, .9);
       case 'makrye':
         // 숨비소리: 말순이 촉수로 모든 적 피해 + 기절 (보스 1초)
         final k = c.skPow(id);
@@ -404,6 +456,19 @@ class BattleSim {
     skx.bake = math.max(0, skx.bake - dt);
     skx.mount = math.max(0, skx.mount - dt);
     skx.wall = math.max(0, skx.wall - dt);
+    skx.guts = math.max(0, skx.guts - dt);
+    if (skx.sym > 0) {
+      // 안단테 「꿀벌 교향곡」: 0.5초마다 벌떼가 모든 적을 쏨
+      skx.sym -= dt;
+      skx.symTick -= dt;
+      if (skx.symTick <= 0 && party.containsKey('andante')) {
+        skx.symTick = .5;
+        final a = c.stats('andante').atk * .6 * skx.symK;
+        for (final m in alive) {
+          if (m.hp > 0) hitMon(m, a, false, l.s);
+        }
+      }
+    }
     if (skx.honey > 0) {
       skx.honey -= dt;
       skx.honeyTick -= dt;
@@ -557,7 +622,7 @@ class BattleSim {
   }
 
   void resetFight(String msg) {
-    skx.shield = skx.honey = skx.feast = 0;
+    skx.shield = skx.honey = skx.feast = skx.guts = skx.sym = 0;
     for (final id in c.members()) {
       party[id]!.hp = c.stats(id).hp;
       party[id]!.down = false;
@@ -782,6 +847,11 @@ class BattleSim {
         hitMon(tgt, d, cr, sc);
         tgt.slow = 2;
         proj.add(Proj(x: pos[id]! + 12 * sc, y: py[id]! - 40 * sc, tx: tgt.x, ty: tgt.y - 28 * sc, d: .3, kind: 'net'));
+      } else if (id == 'andante') {
+        for (final m in alive) {
+          if (m.hp > 0) hitMon(m, d * .6, cr, sc);
+        }
+        proj.add(Proj(x: pos[id]! + 10 * sc, y: py[id]! - 46 * sc, tx: tgt.x, ty: tgt.y - 30 * sc, d: .35, kind: 'bees'));
       } else if (id == 'makrye') {
         hitMon(tgt, d, cr, sc);
         proj.add(Proj(x: pos[id]! + 12 * sc, y: py[id]! - 40 * sc, tx: tgt.x, ty: tgt.y - 28 * sc, d: .22, kind: 'harpoon'));
@@ -839,8 +909,15 @@ class BattleSim {
       q.hit = .15;
       addFloat(pos[tid]!, py[tid]! - (heightOf(tid) + 8) * sc, '-${fmt(dm)}', 0xFFFF6B7D, 13);
       if (q.hp <= 0) {
-        q.hp = 0;
-        q.down = true;
+        if (skx.guts > 0 && q.guts) {
+          // 덕배 불굴: 체력 1로 한 번 버팀
+          q.guts = false;
+          q.hp = 1;
+          addFloat(pos[tid]!, py[tid]! - (heightOf(tid) + 24) * sc, '불굴!', 0xFFFFD27A, 14);
+        } else {
+          q.hp = 0;
+          q.down = true;
+        }
       }
     }
   }

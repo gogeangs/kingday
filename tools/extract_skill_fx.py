@@ -45,3 +45,7 @@ build(load("art/source/fx/fx_skill_brida.png"), "fx_skill_brida", 320, 256, bott
 build(load("art/source/fx/fx_skill_daisy.png"), "fx_skill_daisy", 384, 256, bottom=True)
 build(load("art/source/fx/fx_skill_gordon.png"), "fx_skill_gordon", 384, 256, bottom=True)
 build(load("art/source/fx/fx_skill_makrye.png"), "fx_skill_makrye", 384, 256, bottom=True)
+build(load("art/source/fx/fx_skill_andante.png"), "fx_skill_andante", 384, 256, bottom=True)
+build(load("art/source/fx/fx_skill_peppy.png"), "fx_skill_peppy", 384, 256, bottom=True)
+build(load("art/source/fx/fx_skill_deokbae.png"), "fx_skill_deokbae", 384, 256, bottom=True)
+build(load("art/source/fx/fx_skill_malbong.png"), "fx_skill_malbong", 384, 256, bottom=True)

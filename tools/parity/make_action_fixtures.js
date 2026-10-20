@@ -99,6 +99,11 @@ const CASES = {
     'adgem', 'adcard', 'adbox', 'sell', 'gold:0', 'adbox', 'equip']],
   // 전설 어부 막례: 카드 모아 맞이하기 → 별 올리기 → 편성 → 낚시터 생선 생산 「물질 대장」
   makrye: [base.mid, ['ensure', 'card:makrye:29', 'rec:makrye', 'card:makrye:30', 'rec:makrye', 'set:fisher:makrye', 'time:' + 10 * M, 'card:makrye:40', 'rec:makrye', 'time:' + 30 * M, 'auto', 'card:makrye:999', 'rec:makrye', 'rec:makrye', 'rec:makrye', 'rec:makrye', 'time:' + 2 * H, 'lv:makrye', 'cw:makrye']],
+  // 말봉(꿀 생산)·덕배(요리 시간)·페피·안단테: 맞이하기·별·편성·생산·요리
+  legends: [base.mid, ['ensure', 'gold:1e12', 'card:malbong:30', 'rec:malbong', 'card:deokbae:30', 'rec:deokbae', 'card:peppy:30', 'rec:peppy', 'card:andante:30', 'rec:andante',
+    'set:keeper:malbong', 'set:cook:deokbae', 'set:miner:peppy', 'time:' + 20 * M, 'items:wheat:30', 'items:fish:30', 'cook:bread', 'cook:stew',
+    'card:malbong:9999', 'rec:malbong', 'rec:malbong', 'rec:malbong', 'rec:malbong', 'card:deokbae:9999', 'rec:deokbae', 'rec:deokbae', 'time:' + 30 * M, 'cook:bread',
+    'set:keeper:andante', 'auto', 'card:andante:200', 'rec:andante', 'rec:andante', 'lv:peppy', 'cw:malbong', 'time:' + 2 * H]],
   // 카드 동료가 아직 없을 때 카드 묶음
   shopEarly: [base.fresh, ['gem:999', 'cp:0', 'cp:1', 'adcard', 'mis:all']],
 };

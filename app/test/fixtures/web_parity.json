@@ -762,6 +762,78 @@
      "cwLv": 0,
      "cwMul": 1
     },
+    "malbong": {
+     "stats": {
+      "atk": 16.200000000000003,
+      "hp": 148.5,
+      "aps": 0.7,
+      "crit": 0.05
+     },
+     "cPow": 252.82529999999997,
+     "owned": false,
+     "recStar": 0,
+     "starMul": 1.35,
+     "skPow": 1,
+     "cardOpen": false,
+     "starNeed": 30,
+     "starMax": 5,
+     "cwLv": 0,
+     "cwMul": 1
+    },
+    "deokbae": {
+     "stats": {
+      "atk": 8.100000000000001,
+      "hp": 162,
+      "aps": 0.8,
+      "crit": 0.05
+     },
+     "cPow": 176.90400000000002,
+     "owned": false,
+     "recStar": 0,
+     "starMul": 1.35,
+     "skPow": 1,
+     "cardOpen": false,
+     "starNeed": 30,
+     "starMax": 5,
+     "cwLv": 0,
+     "cwMul": 1
+    },
+    "peppy": {
+     "stats": {
+      "atk": 12,
+      "hp": 228,
+      "aps": 0.8,
+      "crit": 0.05
+     },
+     "cPow": 252,
+     "owned": false,
+     "recStar": 0,
+     "starMul": 1.2,
+     "skPow": 1,
+     "cardOpen": false,
+     "starNeed": 30,
+     "starMax": 5,
+     "cwLv": 0,
+     "cwMul": 1
+    },
+    "andante": {
+     "stats": {
+      "atk": 10.799999999999999,
+      "hp": 93.6,
+      "aps": 0.85,
+      "crit": 0.05
+     },
+     "cPow": 197.92079999999996,
+     "owned": false,
+     "recStar": 0,
+     "starMul": 1.2,
+     "skPow": 1,
+     "cardOpen": false,
+     "starNeed": 30,
+     "starMax": 5,
+     "cwLv": 0,
+     "cwMul": 1
+    },
     "luka": {
      "stats": {
       "atk": 6,
@@ -2665,6 +2737,78 @@
      "cwLv": 4,
      "cwMul": 1.32
     },
+    "malbong": {
+     "stats": {
+      "atk": 1086.1422824448002,
+      "hp": 3021.51276,
+      "aps": 0.7,
+      "crit": 0.05
+     },
+     "cPow": 9814.979081854195,
+     "owned": false,
+     "recStar": 0,
+     "starMul": 1.35,
+     "skPow": 1,
+     "cardOpen": true,
+     "starNeed": 30,
+     "starMax": 5,
+     "cwLv": 0,
+     "cwMul": 1
+    },
+    "deokbae": {
+     "stats": {
+      "atk": 1156.2677381283843,
+      "hp": 3286.7075808000004,
+      "aps": 0.8,
+      "crit": 0.05
+     },
+     "cPow": 8588.423768039056,
+     "owned": false,
+     "recStar": 0,
+     "starMul": 1.35,
+     "skPow": 1,
+     "cardOpen": true,
+     "starNeed": 30,
+     "starMax": 5,
+     "cwLv": 1,
+     "cwMul": 1.08
+    },
+    "peppy": {
+     "stats": {
+      "atk": 1114.5977171804163,
+      "hp": 3294.8049791999997,
+      "aps": 0.8,
+      "crit": 0.05
+     },
+     "cPow": 8385.2086771173,
+     "owned": false,
+     "recStar": 0,
+     "starMul": 1.2,
+     "skPow": 1,
+     "cardOpen": true,
+     "starNeed": 30,
+     "starMax": 5,
+     "cwLv": 2,
+     "cwMul": 1.16
+    },
+    "andante": {
+     "stats": {
+      "atk": 958.5602482176002,
+      "hp": 2623.9651200000003,
+      "aps": 0.85,
+      "crit": 0.05
+     },
+     "cPow": 10464.970598327349,
+     "owned": false,
+     "recStar": 0,
+     "starMul": 1.2,
+     "skPow": 1,
+     "cardOpen": true,
+     "starNeed": 30,
+     "starMax": 5,
+     "cwLv": 0,
+     "cwMul": 1
+    },
     "luka": {
      "stats": {
       "atk": 1025.3097039790082,
@@ -4068,14 +4212,14 @@
      "bron",
      "gordon",
      "haral",
-     "nella",
+     "andante",
      "daisy",
-     "nella",
+     "andante",
      "gordon",
      "brida",
      "gordon",
      "gordon",
-     "nella",
+     "peppy",
      "riel",
      "gordon",
      "gordon",
@@ -4085,7 +4229,7 @@
      "gordon",
      "gordon",
      "luka",
-     "makrye",
+     "deokbae",
      "gordon",
      "gordon",
      "gordon",
@@ -4103,11 +4247,12 @@
      "luka": 34,
      "haral": 10,
      "bron": 2,
-     "nella": 3,
+     "andante": 2,
      "brida": 1,
+     "peppy": 1,
      "riel": 1,
      "margo": 1,
-     "makrye": 1
+     "deokbae": 1
     }
    },
    "retired": {
@@ -4700,6 +4845,78 @@
      "starMax": 5,
      "cwLv": 20,
      "cwMul": 2.6
+    },
+    "malbong": {
+     "stats": {
+      "atk": 550400.7573504001,
+      "hp": 3778758.0864000004,
+      "aps": 0.84,
+      "crit": 0.15000000000000002
+     },
+     "cPow": 9576564.341491444,
+     "owned": false,
+     "recStar": 0,
+     "starMul": 1.35,
+     "skPow": 1,
+     "cardOpen": true,
+     "starNeed": 30,
+     "starMax": 5,
+     "cwLv": 15,
+     "cwMul": 2.2
+    },
+    "deokbae": {
+     "stats": {
+      "atk": 490294.12368384,
+      "hp": 3366606.13632,
+      "aps": 0.96,
+      "crit": 0.15000000000000002
+     },
+     "cPow": 6964441.4497790355,
+     "owned": false,
+     "recStar": 0,
+     "starMul": 1.35,
+     "skPow": 1,
+     "cardOpen": true,
+     "starNeed": 30,
+     "starMax": 5,
+     "cwLv": 12,
+     "cwMul": 1.96
+    },
+    "peppy": {
+     "stats": {
+      "atk": 524804.13499392,
+      "hp": 3603831.9206399997,
+      "aps": 0.96,
+      "crit": 0.15000000000000002
+     },
+     "cPow": 7454933.030586285,
+     "owned": false,
+     "recStar": 0,
+     "starMul": 1.2,
+     "skPow": 1,
+     "cardOpen": true,
+     "starNeed": 30,
+     "starMax": 5,
+     "cwLv": 17,
+     "cwMul": 2.3600000000000003
+    },
+    "andante": {
+     "stats": {
+      "atk": 489213.73163520003,
+      "hp": 3358652.7744000005,
+      "aps": 1.02,
+      "crit": 0.15000000000000002
+     },
+     "cPow": 10335900.326667631,
+     "owned": false,
+     "recStar": 0,
+     "starMul": 1.2,
+     "skPow": 1,
+     "cardOpen": true,
+     "starNeed": 30,
+     "starMax": 5,
+     "cwLv": 15,
+     "cwMul": 2.2
     },
     "luka": {
      "stats": {
@@ -6084,7 +6301,7 @@
      "margo",
      "gordon",
      "bron",
-     "luka",
+     "andante",
      "brida",
      "bron",
      "riel",
@@ -6098,24 +6315,25 @@
      "gordon",
      "bron",
      "gordon",
-     "luka",
+     "andante",
      "gordon",
      "haral",
      "luka",
      "gordon",
      "haral",
      "margo",
-     "luka"
+     "andante"
     ],
     "cardsAfter": {
      "brida": 71,
-     "luka": 62,
+     "luka": 30,
      "nella": 0,
      "gordon": 21,
      "daisy": 79,
      "bron": 9,
      "haral": 5,
      "margo": 5,
+     "andante": 32,
      "riel": 4
     }
    },
@@ -6589,6 +6807,78 @@
      "owned": false,
      "recStar": 0,
      "starMul": 1.35,
+     "skPow": 1,
+     "cardOpen": false,
+     "starNeed": 30,
+     "starMax": 5,
+     "cwLv": 0,
+     "cwMul": 1
+    },
+    "malbong": {
+     "stats": {
+      "atk": 18.5328,
+      "hp": 154.44000000000003,
+      "aps": 0.7,
+      "crit": 0.05
+     },
+     "cPow": 273.3402672,
+     "owned": false,
+     "recStar": 0,
+     "starMul": 1.35,
+     "skPow": 1,
+     "cardOpen": false,
+     "starNeed": 30,
+     "starMax": 5,
+     "cwLv": 0,
+     "cwMul": 1
+    },
+    "deokbae": {
+     "stats": {
+      "atk": 10.1088,
+      "hp": 168.48000000000002,
+      "aps": 0.8,
+      "crit": 0.05
+     },
+     "cPow": 192.47155200000006,
+     "owned": false,
+     "recStar": 0,
+     "starMul": 1.35,
+     "skPow": 1,
+     "cardOpen": false,
+     "starNeed": 30,
+     "starMax": 5,
+     "cwLv": 0,
+     "cwMul": 1
+    },
+    "peppy": {
+     "stats": {
+      "atk": 13.977599999999999,
+      "hp": 237.12,
+      "aps": 0.8,
+      "crit": 0.05
+     },
+     "cPow": 269.627904,
+     "owned": false,
+     "recStar": 0,
+     "starMul": 1.2,
+     "skPow": 1,
+     "cardOpen": false,
+     "starNeed": 30,
+     "starMax": 5,
+     "cwLv": 0,
+     "cwMul": 1
+    },
+    "andante": {
+     "stats": {
+      "atk": 12.7296,
+      "hp": 97.344,
+      "aps": 0.85,
+      "crit": 0.05
+     },
+     "cPow": 217.06513919999998,
+     "owned": false,
+     "recStar": 0,
+     "starMul": 1.2,
      "skPow": 1,
      "cardOpen": false,
      "starNeed": 30,
@@ -8391,6 +8681,78 @@
      "cwLv": 0,
      "cwMul": 1
     },
+    "malbong": {
+     "stats": {
+      "atk": 18.5328,
+      "hp": 154.44000000000003,
+      "aps": 0.7,
+      "crit": 0.05
+     },
+     "cPow": 273.3402672,
+     "owned": false,
+     "recStar": 0,
+     "starMul": 1.35,
+     "skPow": 1,
+     "cardOpen": false,
+     "starNeed": 30,
+     "starMax": 5,
+     "cwLv": 0,
+     "cwMul": 1
+    },
+    "deokbae": {
+     "stats": {
+      "atk": 10.1088,
+      "hp": 168.48000000000002,
+      "aps": 0.8,
+      "crit": 0.05
+     },
+     "cPow": 192.47155200000006,
+     "owned": false,
+     "recStar": 0,
+     "starMul": 1.35,
+     "skPow": 1,
+     "cardOpen": true,
+     "starNeed": 30,
+     "starMax": 5,
+     "cwLv": 0,
+     "cwMul": 1
+    },
+    "peppy": {
+     "stats": {
+      "atk": 13.977599999999999,
+      "hp": 237.12,
+      "aps": 0.8,
+      "crit": 0.05
+     },
+     "cPow": 269.627904,
+     "owned": false,
+     "recStar": 0,
+     "starMul": 1.2,
+     "skPow": 1,
+     "cardOpen": false,
+     "starNeed": 30,
+     "starMax": 5,
+     "cwLv": 0,
+     "cwMul": 1
+    },
+    "andante": {
+     "stats": {
+      "atk": 12.7296,
+      "hp": 97.344,
+      "aps": 0.85,
+      "crit": 0.05
+     },
+     "cPow": 217.06513919999998,
+     "owned": false,
+     "recStar": 0,
+     "starMul": 1.2,
+     "skPow": 1,
+     "cardOpen": false,
+     "starNeed": 30,
+     "starMax": 5,
+     "cwLv": 0,
+     "cwMul": 1
+    },
     "luka": {
      "stats": {
       "atk": 7.7376000000000005,
@@ -9762,7 +10124,7 @@
      "margo",
      "margo",
      "luka",
-     "luka",
+     "deokbae",
      "margo",
      "margo",
      "margo",
@@ -9786,7 +10148,8 @@
     ],
     "cardsAfter": {
      "margo": 26,
-     "luka": 34
+     "luka": 33,
+     "deokbae": 1
     }
    },
    "retired": {
@@ -10182,6 +10545,78 @@
      "owned": false,
      "recStar": 0,
      "starMul": 1.35,
+     "skPow": 1,
+     "cardOpen": false,
+     "starNeed": 30,
+     "starMax": 5,
+     "cwLv": 0,
+     "cwMul": 1
+    },
+    "malbong": {
+     "stats": {
+      "atk": 17.496000000000002,
+      "hp": 160.38000000000002,
+      "aps": 0.7,
+      "crit": 0.05
+     },
+     "cPow": 273.051324,
+     "owned": false,
+     "recStar": 0,
+     "starMul": 1.35,
+     "skPow": 1,
+     "cardOpen": false,
+     "starNeed": 30,
+     "starMax": 5,
+     "cwLv": 0,
+     "cwMul": 1
+    },
+    "deokbae": {
+     "stats": {
+      "atk": 8.748000000000001,
+      "hp": 174.96000000000004,
+      "aps": 0.8,
+      "crit": 0.05
+     },
+     "cPow": 191.05632000000003,
+     "owned": false,
+     "recStar": 0,
+     "starMul": 1.35,
+     "skPow": 1,
+     "cardOpen": true,
+     "starNeed": 30,
+     "starMax": 5,
+     "cwLv": 0,
+     "cwMul": 1
+    },
+    "peppy": {
+     "stats": {
+      "atk": 12.96,
+      "hp": 246.24,
+      "aps": 0.8,
+      "crit": 0.05
+     },
+     "cPow": 272.16,
+     "owned": false,
+     "recStar": 0,
+     "starMul": 1.2,
+     "skPow": 1,
+     "cardOpen": false,
+     "starNeed": 30,
+     "starMax": 5,
+     "cwLv": 0,
+     "cwMul": 1
+    },
+    "andante": {
+     "stats": {
+      "atk": 11.664,
+      "hp": 101.08800000000001,
+      "aps": 0.85,
+      "crit": 0.05
+     },
+     "cPow": 213.754464,
+     "owned": false,
+     "recStar": 0,
+     "starMul": 1.2,
      "skPow": 1,
      "cardOpen": false,
      "starNeed": 30,
@@ -11560,7 +11995,7 @@
      "margo",
      "margo",
      "luka",
-     "luka",
+     "deokbae",
      "margo",
      "margo",
      "margo",
@@ -11584,7 +12019,8 @@
     ],
     "cardsAfter": {
      "margo": 26,
-     "luka": 34
+     "luka": 33,
+     "deokbae": 1
     }
    },
    "retired": {
@@ -11986,6 +12422,78 @@
      "owned": false,
      "recStar": 0,
      "starMul": 1.35,
+     "skPow": 1,
+     "cardOpen": false,
+     "starNeed": 30,
+     "starMax": 5,
+     "cwLv": 0,
+     "cwMul": 1
+    },
+    "malbong": {
+     "stats": {
+      "atk": 18.144000000000002,
+      "hp": 166.32000000000002,
+      "aps": 0.7,
+      "crit": 0.05
+     },
+     "cPow": 283.164336,
+     "owned": false,
+     "recStar": 0,
+     "starMul": 1.35,
+     "skPow": 1,
+     "cardOpen": false,
+     "starNeed": 30,
+     "starMax": 5,
+     "cwLv": 0,
+     "cwMul": 1
+    },
+    "deokbae": {
+     "stats": {
+      "atk": 9.072000000000001,
+      "hp": 181.44000000000003,
+      "aps": 0.8,
+      "crit": 0.05
+     },
+     "cPow": 198.13248000000002,
+     "owned": false,
+     "recStar": 0,
+     "starMul": 1.35,
+     "skPow": 1,
+     "cardOpen": true,
+     "starNeed": 30,
+     "starMax": 5,
+     "cwLv": 0,
+     "cwMul": 1
+    },
+    "peppy": {
+     "stats": {
+      "atk": 13.440000000000001,
+      "hp": 255.36,
+      "aps": 0.8,
+      "crit": 0.05
+     },
+     "cPow": 282.24,
+     "owned": false,
+     "recStar": 0,
+     "starMul": 1.2,
+     "skPow": 1,
+     "cardOpen": false,
+     "starNeed": 30,
+     "starMax": 5,
+     "cwLv": 0,
+     "cwMul": 1
+    },
+    "andante": {
+     "stats": {
+      "atk": 12.096,
+      "hp": 104.83200000000001,
+      "aps": 0.85,
+      "crit": 0.05
+     },
+     "cPow": 221.671296,
+     "owned": false,
+     "recStar": 0,
+     "starMul": 1.2,
      "skPow": 1,
      "cardOpen": false,
      "starNeed": 30,
@@ -13364,7 +13872,7 @@
      "margo",
      "margo",
      "luka",
-     "luka",
+     "deokbae",
      "margo",
      "margo",
      "margo",
@@ -13388,7 +13896,8 @@
     ],
     "cardsAfter": {
      "margo": 26,
-     "luka": 34
+     "luka": 33,
+     "deokbae": 1
     }
    },
    "retired": {
@@ -13786,6 +14295,78 @@
      "owned": false,
      "recStar": 0,
      "starMul": 1.35,
+     "skPow": 1,
+     "cardOpen": false,
+     "starNeed": 30,
+     "starMax": 5,
+     "cwLv": 0,
+     "cwMul": 1
+    },
+    "malbong": {
+     "stats": {
+      "atk": 17.496000000000002,
+      "hp": 160.38000000000002,
+      "aps": 0.7,
+      "crit": 0.05
+     },
+     "cPow": 273.051324,
+     "owned": false,
+     "recStar": 0,
+     "starMul": 1.35,
+     "skPow": 1,
+     "cardOpen": false,
+     "starNeed": 30,
+     "starMax": 5,
+     "cwLv": 0,
+     "cwMul": 1
+    },
+    "deokbae": {
+     "stats": {
+      "atk": 8.748000000000001,
+      "hp": 174.96000000000004,
+      "aps": 0.8,
+      "crit": 0.05
+     },
+     "cPow": 191.05632000000003,
+     "owned": false,
+     "recStar": 0,
+     "starMul": 1.35,
+     "skPow": 1,
+     "cardOpen": true,
+     "starNeed": 30,
+     "starMax": 5,
+     "cwLv": 0,
+     "cwMul": 1
+    },
+    "peppy": {
+     "stats": {
+      "atk": 12.96,
+      "hp": 246.24,
+      "aps": 0.8,
+      "crit": 0.05
+     },
+     "cPow": 272.16,
+     "owned": false,
+     "recStar": 0,
+     "starMul": 1.2,
+     "skPow": 1,
+     "cardOpen": false,
+     "starNeed": 30,
+     "starMax": 5,
+     "cwLv": 0,
+     "cwMul": 1
+    },
+    "andante": {
+     "stats": {
+      "atk": 11.664,
+      "hp": 101.08800000000001,
+      "aps": 0.85,
+      "crit": 0.05
+     },
+     "cPow": 213.754464,
+     "owned": false,
+     "recStar": 0,
+     "starMul": 1.2,
      "skPow": 1,
      "cardOpen": false,
      "starNeed": 30,
@@ -15164,7 +15745,7 @@
      "margo",
      "margo",
      "luka",
-     "luka",
+     "deokbae",
      "margo",
      "margo",
      "margo",
@@ -15188,7 +15769,8 @@
     ],
     "cardsAfter": {
      "margo": 26,
-     "luka": 34
+     "luka": 33,
+     "deokbae": 1
     }
    },
    "retired": {
@@ -16263,7 +16845,11 @@
    "daisy",
    "brida",
    "nella",
-   "makrye"
+   "makrye",
+   "malbong",
+   "deokbae",
+   "peppy",
+   "andante"
   ],
   "stgName": [
    [
@@ -16312,6 +16898,10 @@
    "brida",
    "nella",
    "makrye",
+   "malbong",
+   "deokbae",
+   "peppy",
+   "andante",
    "luka"
   ]
  },

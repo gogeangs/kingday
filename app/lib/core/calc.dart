@@ -150,6 +150,12 @@ class GameCalc {
 
   /// 막례 「물질 대장」: 낚시터 생선 생산 (웹 vpFish)
   num vpFish() => vpSt('makrye') != 0 ? 1 + vpPct(vpSt('makrye')) / 100 : 1;
+
+  /// 말봉 「말벌 퇴치반」: 양봉장 꿀 생산 (웹 vpHoney)
+  num vpHoney() => vpSt('malbong') != 0 ? 1 + vpPct(vpSt('malbong')) / 100 : 1;
+
+  /// 덕배 「수라간의 손맛」: 요리 버프 시간 (웹 vpCook)
+  num vpCook() => vpSt('deokbae') != 0 ? 1 + vpPct(vpSt('deokbae')) / 100 : 1;
   num vpTime() => 1;
   num vpOre() => 1;
 
@@ -321,7 +327,9 @@ class GameCalc {
         final nf = vf > 1 ? _jsNumStr(num.parse((l * vf).toStringAsFixed(1))) : _jsNumStr(l);
         return '생선 $nf마리/2분${vf > 1 ? ' (물질 대장)' : ''}';
       case 'apiary':
-        return '동료 공격력 +${l * 8}% · 꿀 $l병/2분';
+        final vh = vpHoney();
+        final nh = vh > 1 ? _jsNumStr(num.parse((l * vh).toStringAsFixed(1))) : _jsNumStr(l);
+        return '동료 공격력 +${l * 8}% · 꿀 $nh병/2분${vh > 1 ? ' (말벌 퇴치반)' : ''}';
       case 'mine':
         final vm = vpMine();
         final n = vm > 1 ? _jsNumStr(num.parse((l * vm).toStringAsFixed(1))) : _jsNumStr(l);
@@ -552,7 +560,7 @@ class GameCalc {
         s.prod[g.b] = t;
         continue;
       }
-      final iv = 120000 / l / (g.b == 'mine' ? vpMine() : g.b == 'dock' ? vpFish() : 1);
+      final iv = 120000 / l / (g.b == 'mine' ? vpMine() : g.b == 'dock' ? vpFish() : g.b == 'apiary' ? vpHoney() : 1);
       if (!truthy(s.prod[g.b])) s.prod[g.b] = t;
       final n = math.min(2000, ((t - asNum(s.prod[g.b])) / iv).floor());
       if (n > 0) {

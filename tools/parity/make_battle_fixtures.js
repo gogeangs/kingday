@@ -36,6 +36,8 @@ const CASES = [
   ['lateHard', withTut(base.late, { stage: 56, best: 56, wave: 0 }), 200, 120],
   ['lateAlt', withTut(base.late, { stage: 68, best: 68, wave: 0, party: { miner: 'gordon', fisher: 'haral', keeper: 'daisy', cook: 'margo' } }), 200, 120],
   ['makrye', withTut(base.late, { stage: 66, best: 68, wave: 2, rec: Object.assign({}, base.late.rec || {}, { makrye: 5 }), lv: Object.assign({}, base.late.lv || {}, { makrye: 60 }), party: Object.assign({}, base.late.party || {}, { fisher: 'makrye' }) }), 200, 240],
+  ['legends', withTut(base.late, { stage: 70, best: 72, wave: 2, rec: Object.assign({}, base.late.rec || {}, { makrye: 3, malbong: 5, deokbae: 4, peppy: 3 }), lv: Object.assign({}, base.late.lv || {}, { makrye: 60, malbong: 60, deokbae: 60, peppy: 60 }), party: { fisher: 'makrye', keeper: 'malbong', cook: 'deokbae', miner: 'peppy' } }), 200, 240],
+  ['andante', withTut(base.late, { stage: 64, best: 68, wave: 1, rec: Object.assign({}, base.late.rec || {}, { andante: 5 }), lv: Object.assign({}, base.late.lv || {}, { andante: 60 }), party: Object.assign({}, base.late.party || {}, { keeper: 'andante' }) }), 200, 180],
   ['honey', withTut(base.late, { stage: 68, best: 68, wave: 3, party: { miner: 'bron', fisher: 'haral', keeper: 'riel', cook: 'margo' } }), 200, 120],
 ];
 

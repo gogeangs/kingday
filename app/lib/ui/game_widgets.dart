@@ -222,6 +222,8 @@ class VillageSkillBox extends StatelessWidget {
     final d = switch (id) {
       'brida' => '광산 광석 생산 +${GameCalc.vpPct(st)}%',
       'makrye' => '낚시터 생선 생산 +${GameCalc.vpPct(st)}%',
+      'malbong' => '양봉장 꿀 생산 +${GameCalc.vpPct(st)}%',
+      'deokbae' => '요리 버프 시간 +${GameCalc.vpPct(st)}%',
       _ => '',
     };
     return _skl(uiImg('village_skill', size: 28), '마을 스킬 · $name', '$d${c.owned(id) ? ' · 출전하지 않아도 늘 적용' : ' · 합류하면 적용'}', true);

@@ -533,7 +533,7 @@ class GameActions {
     for (final e in r.need.entries) {
       s.items[e.key] = asNum(s.items[e.key]) - e.value;
     }
-    s.buffs[r.buff] = math.max(c.now, orNum(s.buffs[r.buff], 0)) + 600000;
+    s.buffs[r.buff] = math.max(c.now, orNum(s.buffs[r.buff], 0)) + 600000 * c.vpCook();
     c.stat('cook', 1);
     _toast('${r.n} 완성! ${r.desc}');
   }
