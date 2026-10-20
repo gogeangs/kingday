@@ -100,6 +100,7 @@ body{word-break:keep-all;overflow-wrap:break-word;line-break:strict;background:#
 .stagewrap:has(.mailbtn:not([hidden])) .ovtop{padding-inline:8px 58px}
 .pfnick{display:flex;align-items:center;gap:6px;flex-wrap:wrap}.pfnick b{color:#ffe7a6}.pfnick i{font-style:normal;font-size:10px;background:rgba(255,201,74,.2);color:#ffc94a;border-radius:6px;padding:0 5px}.pfnick .buy{padding:2px 9px;font-size:11px;min-height:0}
 .gobi{width:20px;height:auto;vertical-align:-3px;margin-right:3px}
+.ckcs{display:flex;gap:8px;margin:8px 0}.ckc{flex:1;display:flex;flex-direction:column;gap:3px;align-items:center;text-align:center;padding:12px 8px;border-radius:12px;background:rgba(255,255,255,.05);border:1px solid rgba(255,201,74,.3)}.ckc .cpt{font-style:normal;color:var(--gold);font-size:13px;font-weight:700}.ckc .cps{font-style:normal;font-size:20px;font-weight:800;color:#fff}.ckc small{font-size:11.5px;color:var(--muted)}
 .mlist{display:flex;flex-direction:column;gap:8px;max-height:52vh;overflow:auto;margin:6px 0}.mitem{display:flex;align-items:center;gap:10px;padding:10px;border-radius:12px;background:rgba(255,255,255,.04);border:1px solid rgba(255,201,74,.25)}.mico{font-size:24px;flex:0 0 auto}.mtx{flex:1;min-width:0;display:flex;flex-direction:column;gap:3px}.mtx b{font-size:14px}.mtx small{color:var(--muted,#9aa6c1);font-size:12px}.mtx .mexp{color:#ffc94a;font-size:11px}.mrws{display:flex;flex-wrap:wrap;gap:4px}.mrw{display:inline-flex;align-items:center;gap:3px;font-size:12px;background:rgba(0,0,0,.3);border-radius:8px;padding:2px 6px 2px 2px}.mrw img{width:20px;height:20px;object-fit:contain}.mitem .buy{flex:0 0 auto;padding:8px 14px}
 .toprow{display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:6px;max-width:100%}
 .stagepill{flex:0 0 auto;flex-direction:row!important;gap:8px!important;padding:5px 10px!important;min-width:0!important}.stagepill .sth{flex-direction:column;align-items:flex-start!important;gap:0!important}.stagepill .sth b{font-size:14px}.stagepill .sth small{font-size:10.5px}.pip{width:8px!important;height:5px}
@@ -1799,6 +1800,7 @@ let ensBusy=null;
 function sbEnsure(){if(!sbOn())return Promise.resolve();if(ensBusy)return ensBusy;ensBusy=(async()=>{try{const r=await sbRpc('kd_ensure_profile',rkMeta());if(r&&r.nick){
   if(S.nick&&r.temp&&S.nick!==r.nick){let ok=false;try{ok=(await sbRpc('kd_set_nick',{p_nick:S.nick,...rkMeta()}))==='ok'}catch(e){}if(ok)S.nickTemp=false;else{S.nick=r.nick;S.nickTemp=true}}
   else{S.nick=r.nick;S.nickTemp=!!r.temp}save();rankSubmit(false)}}catch(e){}finally{ensBusy=null}await mailFetch()})();return ensBusy}
+async function sbBoot(){if(oauthPending){await oauthAfter()}else{await sbEnsure();acctFetch();cloudPut(false)}}
 window.addEventListener('online',()=>{if(S.started)sbEnsure()});
 function mailDot(){const b=$('mailBtn');if(!b)return;b.hidden=!mailOn();const d=$('mailDot');if(d){d.hidden=!mails.length;d.textContent=mails.length>9?'9+':mails.length}}
 async function mailFetch(){if(!mailOn()||!S.nick)return mailDot();try{mails=await sbRpc('kd_mail_list',{})||[]}catch(e){}mailDot();return mails}
@@ -1823,6 +1825,49 @@ async function mailSheet(cached){const head=`<div class="hdban" style="--hb:url(
  <div class="acts">${mails.length>1?'<button class="pri" id="mAll">모두 받기</button>':''}<button${mails.length>1?'':' class="pri"'} id="mGo">닫기</button></div>`;
  $('modal').hidden=false;$('mGo').onclick=closeModal;if($('mAll'))$('mAll').onclick=()=>mailClaim(null);
  document.querySelectorAll('[data-mail]').forEach(b=>b.onclick=()=>{b.disabled=true;mailClaim(+b.dataset.mail)})}
+/* 클라우드 저장 + 구글 계정 연결 */
+const SITE=location.origin+location.pathname;
+let oauthPending=null;
+(function oauthBack(){const h=location.hash;if(!h||h.length<2||!/(access_token|error)=/.test(h))return;const q=new URLSearchParams(h.slice(1));let intent='link';try{intent=localStorage.getItem('kd-oauth')||'link';localStorage.removeItem('kd-oauth')}catch(e){}
+ if(q.get('access_token')){sbAuth={access_token:q.get('access_token'),refresh_token:q.get('refresh_token'),expires_at:+q.get('expires_at')||Math.floor(Date.now()/1000)+(+q.get('expires_in')||3600),uid:null};sbSave();oauthPending={intent}}
+ else oauthPending={intent,error:q.get('error_code')||q.get('error')||'unknown'};
+ try{history.replaceState(null,'',location.pathname+location.search)}catch(e){}})();
+let acct=null,cloudAt=0,cloudBusy=false;
+async function acctFetch(){if(!sbOn())return null;try{const a=await sbLogin();const r=await fetch(SB.url+'/auth/v1/user',{headers:{apikey:SB.key,Authorization:'Bearer '+a.access_token}});if(!r.ok)return acct;const u=await r.json();acct={anon:!!u.is_anonymous,email:u.email||((u.identities||[]).find(i=>i.identity_data&&i.identity_data.email)||{identity_data:{}}).identity_data.email||''};}catch(e){}return acct}
+const cloudBody=()=>({p_data:S,p_stage:Math.min(S.stage,MAXLAND+1),p_power:Math.round(power()),p_gem:Math.floor(S.gem||0)});
+async function cloudPut(force){if(!sbOn()||!S.started||noSave||cloudBusy||!S.nick)return false;if(!force&&(S.last||0)<=cloudAt)return false;cloudBusy=true;const t=S.last||Date.now();
+ try{const r=await sbRpc('kd_save_put',cloudBody());if(r==='ok'){cloudAt=t;S.cloudAt=Date.now();return true}}catch(e){}finally{cloudBusy=false}return false}
+function cloudBeacon(){if(!sbOn()||!S.started||noSave||!sbAuth||!sbAuth.access_token||!S.nick)return;if((S.last||0)<=cloudAt||sbAuth.expires_at*1000<Date.now())return;
+ try{const b=JSON.stringify(cloudBody());if(b.length>60000)return;fetch(SB.url+'/rest/v1/rpc/kd_save_put',{method:'POST',keepalive:true,headers:{apikey:SB.key,Authorization:'Bearer '+sbAuth.access_token,'Content-Type':'application/json'},body:b});cloudAt=S.last}catch(e){}}
+setInterval(()=>{if(!document.hidden)cloudPut(false)},180000);
+document.addEventListener('visibilitychange',()=>{if(document.hidden){save();cloudBeacon()}});
+async function linkGoogle(){try{const a=await sbLogin();await cloudPut(true);const r=await fetch(SB.url+'/auth/v1/user/identities/authorize?provider=google&skip_http_redirect=true&redirect_to='+encodeURIComponent(SITE),{headers:{apikey:SB.key,Authorization:'Bearer '+a.access_token}});const j=await r.json();
+ if(!j.url)throw 0;try{localStorage.setItem('kd-oauth','link')}catch(e){}save();noSave=true;location.href=j.url}catch(e){toast('지금은 연결할 수 없어요. 잠시 뒤에 다시 해 주세요')}}
+async function loginGoogle(){await cloudPut(true);try{localStorage.setItem('kd-oauth','login')}catch(e){}save();noSave=true;location.href=SB.url+'/auth/v1/authorize?provider=google&redirect_to='+encodeURIComponent(SITE)}
+const ago=t=>{if(!t)return'아직 없음';const m=(Date.now()-new Date(t))/6e4;return m<1?'방금 전':m<60?Math.floor(m)+'분 전':m<1440?Math.floor(m/60)+'시간 전':Math.floor(m/1440)+'일 전'};
+function cloudPick(cl){const me={stage:Math.min(S.stage,MAXLAND+1),power:Math.round(power()),gem:S.gem||0},d=cl.data||{};
+ const card=(t,x,when)=>`<div class="ckc"><i class="cpt">${t}</i><em class="cps">${stgName(x.stage)}</em><small>전투력 ${fmt(x.power)} · 황금 이삭 ${fmt(x.gem)}</small><small>${when}</small></div>`;
+ $('sheet').innerHTML=`<div class="eyebrow">계정</div><h2>어느 기록으로 할까요?</h2><p class="note" style="text-align:center">이 구글 계정에 저장된 기록이 있어요. 하나를 고르면 다른 쪽은 덮어써져요.</p>
+ <div class="ckcs">${card('클라우드 기록',{stage:cl.stage,power:cl.power,gem:cl.gem},ago(cl.updated_at)+' 저장')}${card('이 기기 기록',me,'지금')}</div>
+ <div class="acts"><button id="cpDev">이 기기 기록 유지</button><button class="pri" id="cpCl">클라우드 기록 불러오기</button></div>`;$('modal').hidden=false;
+ $('cpCl').onclick=()=>{if(!d||typeof d.gold!=='number')return toast('클라우드 기록을 읽을 수 없어요');noSave=true;try{localStorage.setItem(KEY,JSON.stringify(d))}catch(e){}location.reload()};
+ $('cpDev').onclick=async()=>{$('cpDev').disabled=true;await sbEnsure();await cloudPut(true);closeModal();toast('이 기기 기록을 클라우드에 저장했어요')}}
+async function oauthAfter(){const o=oauthPending;oauthPending=null;if(!o)return;
+ if(o.error){if(/identity_already_exists|already/i.test(o.error)){queue(()=>{$('sheet').innerHTML=`<div class="eyebrow">계정</div><h2>이미 연결된 구글 계정이에요</h2><p class="note" style="text-align:center">이 구글 계정에는 다른 기록이 저장돼 있어요.<br>그 기록을 불러올까요? 불러오기 전에 두 기록을 비교해서 고를 수 있어요.</p><div class="acts"><button id="mX">취소</button><button class="pri" id="lgGo">기록 불러오기</button></div>`;$('modal').hidden=false;$('mX').onclick=closeModal;$('lgGo').onclick=loginGoogle})}
+  else if(!/access_denied/.test(o.error))toast('구글 연결에 실패했어요. 다시 시도해 주세요');return}
+ await acctFetch();
+ if(o.intent==='login'){let cl=null;try{cl=await sbRpc('kd_save_get',{})}catch(e){}
+  if(cl&&cl.data)queue(()=>cloudPick(cl));else{await sbEnsure();await cloudPut(true)}}
+ else{await sbEnsure();await cloudPut(true)}
+ try{await sbRpc('kd_link_reward',{})}catch(e){}mailFetch();if(acct&&!acct.anon)toast('구글 계정을 연결했어요'+(acct.email?' · '+acct.email:''))}
+function linkNudge(){$('sheet').innerHTML=`<div class="eyebrow">카엘의 수첩</div><h2>영지를 안전하게 지켜요</h2><p class="note" style="text-align:center">지금은 이 휴대폰에만 기록이 있어요. 구글 계정을 연결하면 휴대폰을 바꿔도 이어서 할 수 있어요.<br><b style="color:var(--gold)">연결 선물: 황금 이삭 50</b></p><div class="acts"><button id="mX">나중에</button><button class="pri" id="lkGo">구글 계정 연결</button></div>`;$('modal').hidden=false;$('mX').onclick=closeModal;$('lkGo').onclick=linkGoogle}
+setInterval(()=>{if(S.started&&!S.linkAsk&&S.stage>=11&&acct&&acct.anon&&$('modal').hidden){S.linkAsk=1;save();queue(linkNudge)}},30000);
+async function acctBox(){const el=$('acctBox');if(!el)return;if(!sbOn()){el.innerHTML='<p class="note">계정 기능을 준비하고 있어요.</p>';return}
+ await acctFetch();if(!$('acctBox'))return;
+ if(!acct){el.innerHTML='<p class="note">인터넷에 연결되면 계정을 확인할 수 있어요.</p>';return}
+ if(acct.anon){el.innerHTML=`<p class="note">지금은 <b>게스트 계정</b>이에요. 휴대폰을 바꾸거나 브라우저 데이터를 지우면 기록이 사라질 수 있어요. 구글 계정을 연결하면 <b style="color:var(--gold)">황금 이삭 50</b>을 드려요.</p><div class="btns"><button class="buy" id="acLink">구글 계정 연결</button><button class="buy ghost" id="acLogin">다른 기기 기록 불러오기</button></div>`;$('acLink').onclick=linkGoogle;$('acLogin').onclick=loginGoogle}
+ else{el.innerHTML=`<p class="note">✅ <b>구글 계정 연결됨</b>${acct.email?' · '+esc(acct.email):''}<br>클라우드 저장: <span id="acAt">${ago(S.cloudAt)}</span> (3분마다 자동 저장)</p><div class="btns"><button class="buy ghost" id="acSave">지금 클라우드에 저장</button></div>`;
+  $('acSave').onclick=async()=>{$('acSave').disabled=true;save();const ok=await cloudPut(true);toast(ok?'클라우드에 저장했어요':'저장하지 못했어요. 인터넷 연결을 확인해 주세요');if($('acAt'))$('acAt').textContent=ago(S.cloudAt);$('acSave').disabled=false}}}
 /* 프로필 꾸미기: 테두리 */
 const PFRAMES=[
  {k:'wood',n:'나무 울타리',d:'처음부터',ok:()=>true},
@@ -1873,7 +1918,8 @@ function profileSheet(){S.pfSeen=1;const nw=S.pfNew||{};S.pfNew={};pfCheck();con
 }
 function settingsSheet(step){
  $('sheet').innerHTML=`<div class="hdban" style="--hb:url(assets/ui/hd_settings.png)"><span>카엘의 수첩</span></div>
- <div class="sec">저장 데이터 옮기기 <small>다른 기기·브라우저로</small></div>
+ <div class="sec">계정 <small>클라우드 저장</small></div><div id="acctBox"><p class="note">계정을 확인하는 중…</p></div>
+ <div class="sec">저장 데이터 옮기기 <small>코드로 직접</small></div>
  <p class="note">저장은 이 브라우저에만 돼요. 아래 코드를 복사해 두면 다른 곳에서 불러올 수 있어요.</p>
  <textarea class="setcode" id="setCode" spellcheck="false" placeholder="여기에 저장 코드를 붙여 넣고 불러오기를 누르세요"></textarea>
  <div class="btns"><button class="buy ghost" id="setExp">코드 만들기·복사</button><button class="buy ghost" id="setImp">불러오기</button></div>
@@ -1881,7 +1927,7 @@ function settingsSheet(step){
  ${step==='reset'?`<p class="note" style="color:#ffb3bd">정말 지울까요? 영지, 장비, 동료, 마을, 황금 이삭, 구매 기록이 모두 사라지고 되돌릴 수 없어요.</p><div class="btns"><button class="buy ghost" id="setNo">취소</button><button class="buy danger" id="setYes">모두 지우기</button></div>`
  :`<div class="btns"><button class="buy danger" id="setReset">게임 초기화</button></div>`}
  <div class="acts one"><button class="pri" id="mGo">닫기</button></div>`;
- $('modal').hidden=false;$('mGo').onclick=closeModal;
+ $('modal').hidden=false;$('mGo').onclick=closeModal;acctBox();
  $('setExp').onclick=()=>{save();const c=btoa(unescape(encodeURIComponent(JSON.stringify(S))));const t=$('setCode');t.value=c;t.select();try{navigator.clipboard.writeText(c).then(()=>toast('저장 코드를 복사했어요'),()=>toast('코드를 길게 눌러 복사하세요'))}catch(e){toast('코드를 길게 눌러 복사하세요')}};
  $('setImp').onclick=()=>{try{const d=JSON.parse(decodeURIComponent(escape(atob($('setCode').value.trim()))));if(!d||typeof d.gold!=='number')throw 0;noSave=true;localStorage.setItem(KEY,JSON.stringify(d));location.reload()}catch(e){toast('저장 코드가 올바르지 않아요')}};
  if(step==='reset'){$('setNo').onclick=()=>settingsSheet();$('setYes').onclick=()=>{noSave=true;try{localStorage.removeItem(KEY)}catch(e){}location.reload()}}
@@ -1914,7 +1960,7 @@ function start(data){
  if('serviceWorker'in navigator&&/github\.io$|^localhost$|^127\./.test(location.hostname)){try{navigator.serviceWorker.register('sw.js').then(reg=>{reg.addEventListener('updatefound',()=>{const w=reg.installing;if(w&&navigator.serviceWorker.controller)w.addEventListener('statechange',()=>{if(w.state==='activated')toast('새 버전을 받았어요. 게임을 다시 열면 적용돼요')})})}).catch(()=>{})}catch(e){}}BANNER.src='assets/ui/banner_capture.png';
  S=(data&&typeof data.gold==='number')?hydrate(data):(load()||hydrate({gold:60}));
  $('autoSell').checked=S.autoSell;$('autoOpen').checked=S.autoOpen;
- const isNew=!S.started;S.started=true;setTimeout(sbEnsure,2500);S.v=3;syncParty();resize();produce();renderSpeed();
+ const isNew=!S.started;S.started=true;setTimeout(sbBoot,1500);S.v=3;syncParty();resize();produce();renderSpeed();
  if(isNew)intro();else offline();
  faceTo($('faceCv'),'kael');
  $('startBtn').onclick=()=>{$('title').hidden=true;titleOpen=false;faceTo($('faceCv'),'kael');pump()};
