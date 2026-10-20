@@ -1,0 +1,110 @@
+name: app-build
+# Flutter 네이티브 앱(app/)을 빌드해 안드로이드 APK를 만듭니다.
+# 결과: 이 실행 화면 맨 아래 Artifacts 의 「kingday-apk」 를 내려받아 폰에 설치.
+#
+# 처음 한 번은 android/ ios/ 폴더(플랫폼 뼈대)와 아이콘·시작 화면을 자동으로 만들어
+# 같은 브랜치에 커밋해 둡니다(main 브랜치에는 자동 커밋하지 않음).
+on:
+  push:
+    paths:
+      - 'app/**'
+      - 'assets/**'
+      - 'tools/sync_app_assets.py'
+      - '.github/workflows/app-build.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: app-build-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  android:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    defaults:
+      run:
+        working-directory: app
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: 버전 기록
+        run: flutter --version
+
+      - name: 그림 복사 (assets/ → app/assets/game/)
+        working-directory: .
+        run: python3 tools/sync_app_assets.py
+
+      - name: 플랫폼 뼈대 만들기 (처음 한 번)
+        run: |
+          if [ ! -d android ] || [ ! -d ios ]; then
+            flutter create --org kr.co.project30s --project-name kingday \
+              --platforms android,ios --no-pub .
+            # flutter create 가 넣는 기본 예제 테스트는 우리 앱과 맞지 않아 지움
+            rm -f test/widget_test.dart
+          fi
+
+      - name: 패키지 받기
+        run: flutter pub get
+
+      - name: 아이콘·시작 화면 생성
+        run: |
+          dart run flutter_launcher_icons
+          dart run flutter_native_splash:create
+
+      - name: 앱 이름(한글)·세로 고정 적용
+        run: |
+          M=android/app/src/main/AndroidManifest.xml
+          sed -i 's/android:label="[^"]*"/android:label="왕이 되는 그날까지"/' "$M"
+          grep -q 'android:screenOrientation' "$M" || \
+            sed -i 's/android:name=".MainActivity"/android:name=".MainActivity"\n            android:screenOrientation="portrait"/' "$M"
+          P=ios/Runner/Info.plist
+          /usr/bin/python3 - "$P" <<'PY'
+          import re, sys
+          p = sys.argv[1]; s = open(p, encoding="utf-8").read()
+          s = re.sub(r"(<key>CFBundleDisplayName</key>\s*<string>)[^<]*(</string>)", r"\g<1>왕이 되는 그날까지\g<2>", s)
+          # iPhone 은 세로만
+          s = re.sub(r"(<key>UISupportedInterfaceOrientations</key>\s*<array>)(.*?)(</array>)",
+                     r"\g<1>\n\t\t<string>UIInterfaceOrientationPortrait</string>\n\t\g<3>", s, count=1, flags=re.S)
+          open(p, "w", encoding="utf-8").write(s)
+          PY
+
+      - name: 생성된 파일을 브랜치에 커밋 (main 제외)
+        if: github.ref != 'refs/heads/main'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A .
+          if ! git diff --cached --quiet; then
+            git commit -m "chore(app): 플랫폼 뼈대·아이콘·시작 화면 자동 생성"
+            git push
+          else
+            echo "새로 만든 파일 없음"
+          fi
+
+      - name: 코드 검사
+        run: flutter analyze --no-fatal-infos
+
+      - name: 테스트
+        run: flutter test
+
+      - name: APK 빌드
+        run: flutter build apk --release
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: kingday-apk
+          path: app/build/app/outputs/flutter-apk/app-release.apk
+          retention-days: 14
