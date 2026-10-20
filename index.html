@@ -101,6 +101,7 @@ body{word-break:keep-all;overflow-wrap:break-word;line-break:strict;background:#
 .guide{flex:0 0 auto;max-width:100%;padding:4px 8px 4px 4px!important}.guide{font-size:12px!important;line-height:1.2;background:rgba(10,14,26,.88)!important;color:#e9f4ea!important;border:1px solid rgba(123,224,143,.6)!important;box-shadow:none}.guide .gtg{font-size:10.5px!important;white-space:nowrap}.guide b{font-size:13px!important}.guide .gtx{font-size:12px;display:none;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:280px}.guide.open .gtx{display:inline}.guide:not(.open){animation:gdpulse 2s ease-in-out infinite}@keyframes gdpulse{50%{box-shadow:0 0 0 4px rgba(123,224,143,.25)}}
 .packs.gemp{gap:6px}.packs.gemp .pack{padding:6px 4px 8px}.packs.gemp .pack img{width:52px!important;height:52px!important}.packs.gemp .pack b{font-size:15px}.packs.gemp .pack small{font-size:10.5px}.packs.gemp .pack .price{font-size:13px;padding:5px 0}.packs.gemp .tag{display:none}
 .fg .cw2{display:flex!important;flex-direction:column;align-items:center;gap:1px}.fg .cw2 i{font-style:normal;display:flex;align-items:center;gap:3px}.buy .bc img,.bc img{width:18px!important;height:18px!important}.gpl{margin-top:-2px;text-align:center}
+.dishrow .dish{width:56px;height:56px;flex:0 0 auto;filter:drop-shadow(0 2px 3px rgba(0,0,0,.4))}
 .rareloot{display:flex;justify-content:center;margin:6px 0 10px}.rareloot img{width:132px;height:132px;filter:drop-shadow(0 0 14px rgba(255,210,60,.8));animation:rarepop .6s ease-out}
 @keyframes rarepop{0%{transform:scale(.3) rotate(-20deg);opacity:0}70%{transform:scale(1.12)}100%{transform:scale(1)}}
 .pfc.rare:not(.lock){box-shadow:0 0 10px rgba(255,210,60,.55)}
@@ -969,7 +970,7 @@ function renderKitchen(){
  const now=Date.now(),keys=Object.keys(S.items),val=keys.reduce((a,k)=>a+S.items[k]*itemPrice(k),0);
  const chips=[...CROPS,...GOODS].filter(c=>S.items[c.k]>0||CROPS.includes(c)||S.bld[c.b]).map(c=>`<span class="chip" style="--c:${c.c}">${icoImg(c.k)}${c.n} ${S.items[c.k]}</span>`).join('');
  const rows=RECIPES.map(r=>{const ok=Object.entries(r.need).every(([k,n])=>S.items[k]>=n),need=Object.entries(r.need).map(([k,n])=>ITEMN[k]+' '+n).join(', '),left=((S.buffs[r.buff]||0)-now)/1000;
-  return`<div class="row" style="background:var(--panel2)"><div class="info"><b>${r.n}</b>${left>0?`<span class="lvtag">${mmss(left)} 남음</span>`:''}<div>${r.desc} · 10분</div><div>재료: ${need}</div></div><button class="buy" data-r="${r.k}" ${ok?'':'disabled'}>요리</button></div>`}).join('');
+  return`<div class="row dishrow" style="background:var(--panel2)"><img class="dish" src="assets/ui/dish_${r.k}.png" alt="" onerror="this.remove()"><div class="info"><b>${r.n}</b>${left>0?`<span class="lvtag">${mmss(left)} 남음</span>`:''}<div>${r.desc} · 10분</div><div>재료: ${need}</div></div><button class="buy" data-r="${r.k}" ${ok?'':'disabled'}>요리</button></div>`}).join('');
  const sig=chips+rows+val;if(sig===kitSig)return;kitSig=sig;
  kb.innerHTML=`<div class="sec">${S.joined.margo?'마고의 식당':'마을 부엌'} <small>요리하면 원정대가 강해져요</small></div><div class="inv">${chips}</div>${rows}
   <button class="buy ghost" id="sellAll" ${val>0?'':'disabled'}>창고 물건 모두 판매 +${fmt(val)}</button>`;
@@ -1162,7 +1163,7 @@ function renderAll(){
  renderParty();renderBlds();renderFarm();renderKitchen();vlPanels();renderShop();renderRetire();renderMapInfo();
  const boss=mons.some(m=>m.boss);
  $('pips').innerHTML=Array.from({length:10},(_,i)=>`<i class="pip${i<S.wave?' on':''}"></i>`).join('')+`<i class="pip boss${boss?' on':''}" aria-label="보스"></i>`;
- const now=Date.now();$('buffs').innerHTML=Object.keys(BUFFN).filter(buff).map(b=>`<span class="buff"><img src="assets/ui/buff_${b}.png" alt="" onerror="this.remove()">${BUFFN[b]} ${mmss((S.buffs[b]-now)/1000)}</span>`).join('')+[['shield','bron'],['honey','riel'],['feast','margo']].filter(([k])=>SKX[k]>0).map(([k,id])=>`<span class="buff sk"><img src="assets/skills/skill_${id}.png" alt="" onerror="this.remove()">${SKILLS[id].n} ${Math.ceil(SKX[k])}초</span>`).join('');renderAuto();
+ const now=Date.now();$('buffs').innerHTML=Object.keys(BUFFN).filter(buff).map(b=>`<span class="buff"><img src="assets/ui/buff_${b}.png" alt="" onerror="this.onerror=()=>this.remove();this.src='assets/ui/dish_${(RECIPES.find(x=>x.buff===b)||{}).k}.png'">${BUFFN[b]} ${mmss((S.buffs[b]-now)/1000)}</span>`).join('')+[['shield','bron'],['honey','riel'],['feast','margo']].filter(([k])=>SKX[k]>0).map(([k,id])=>`<span class="buff sk"><img src="assets/skills/skill_${id}.png" alt="" onerror="this.remove()">${SKILLS[id].n} ${Math.ceil(SKX[k])}초</span>`).join('');renderAuto();
  const ready=S.bld.farm&&S.plots.some(p=>plotState(p).st==='ready');
  $('vlDot').hidden=!ready;{const pd=$('ptDot');if(pd&&(T*2|0)!==pd._t){pd._t=T*2|0;const a=ptAct();pd.hidden=!a||a===S.dotSeen||curTab==='pt';if(curTab==='pt'&&a!==S.dotSeen)S.dotSeen=a;const cd=$('ptCardDot');if(cd)cd.hidden=!cardReady().length}}
 }
