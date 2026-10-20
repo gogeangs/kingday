@@ -228,9 +228,9 @@ class PtPage extends StatelessWidget {
       onTap: () => id == 'kael' ? g.setTab(GameTab.eq) : compSheet(g, id),
       child: _crowBox(
         face: FaceImg(id),
-        title: Row(children: [
+        title: Wrap(crossAxisAlignment: WrapCrossAlignment.center, spacing: 5, children: [
           Text(cd.n, style: KdText.display(15)),
-          if (id != 'kael') ...[const SizedBox(width: 5), GradeTag(id), const SizedBox(width: 4), Stars(c, id)],
+          if (id != 'kael') ...[GradeTag(id), Stars(c, id)],
         ]),
         sub: id == 'kael'
             ? '${ranks[c.rankIdx()].n} · 원정대 전투력 ${fmt(c.power())}'
@@ -363,11 +363,11 @@ class PtPage extends StatelessWidget {
           ),
           if (op && !mx) ...[
             const SizedBox(width: 8),
-            Column(crossAxisAlignment: CrossAxisAlignment.stretch, mainAxisSize: MainAxisSize.min, children: [
+            SizedBox(width: 92, child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, mainAxisSize: MainAxisSize.min, children: [
               KdBuy(
                 text: stv > 0 ? '★ 올리기' : '맞이하기',
                 glow: n >= need!,
-                minWidth: 84,
+                minWidth: 0,
                 onTap: n >= need ? () => g.act((a) => a.recruitUp(id)) : null,
               ),
               const SizedBox(height: 6),
@@ -384,7 +384,7 @@ class PtPage extends StatelessWidget {
                       style: KdText.body(12, color: g.state.wish == id ? const Color(0xFFFF8FB1) : KdColors.muted)),
                 ),
               ),
-            ]),
+            ])),
           ],
         ]),
       ),

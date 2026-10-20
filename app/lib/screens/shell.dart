@@ -106,23 +106,23 @@ class _Hud extends StatelessWidget {
         const SizedBox(width: 6),
         Expanded(
           child: Column(crossAxisAlignment: CrossAxisAlignment.start, mainAxisSize: MainAxisSize.min, children: [
-            Row(children: [
-              Flexible(child: Text('카엘', maxLines: 1, overflow: TextOverflow.clip, softWrap: false, style: KdText.display(15))),
+            // 웹 .who{min-width:0}: 자리가 모자라면 줄여서 보여 줌
+            FittedBox(fit: BoxFit.scaleDown, alignment: Alignment.centerLeft, child: Row(mainAxisSize: MainAxisSize.min, children: [
+              Text('카엘', maxLines: 1, style: KdText.display(15)),
               if (badge != null) ...[const SizedBox(width: 5), kdImg('assets/game/profile/badge_$badge.png', w: 20, h: 20)],
               const SizedBox(width: 5),
-              Flexible(
-                child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 1),
-                  decoration: BoxDecoration(color: KdColors.gold, borderRadius: BorderRadius.circular(999)),
-                  child: Text(ranks[ri].n,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: KdText.body(11, color: KdColors.goldInk, weight: FontWeight.w600, height: 1.3)),
-                ),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 1),
+                decoration: BoxDecoration(color: KdColors.gold, borderRadius: BorderRadius.circular(999)),
+                child: Text(ranks[ri].n, maxLines: 1, style: KdText.body(11, color: KdColors.goldInk, weight: FontWeight.w600, height: 1.3)),
               ),
-            ]),
+            ])),
             const SizedBox(height: 2),
-            Text('⚔ ${fmt(g.calc.power())}', maxLines: 1, overflow: TextOverflow.clip, style: KdText.figure(13, color: KdColors.gold)),
+            FittedBox(
+              fit: BoxFit.scaleDown,
+              alignment: Alignment.centerLeft,
+              child: Text('⚔ ${fmt(g.calc.power())}', maxLines: 1, style: KdText.figure(13, color: KdColors.gold)),
+            ),
           ]),
         ),
         const SizedBox(width: 6),
