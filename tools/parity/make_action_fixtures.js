@@ -94,6 +94,7 @@ const CASES = {
   firstBuild: [Object.assign({}, base.fresh, { stage: 3, best: 3, done: { marta: true }, bld: { farm: 1 } }), ['gold:100000', 'ensure', 'build:inn', 'bfin', 'build:farm', 'build:inn', 'time:' + 2 * H, 'gem:3', 'build:farm', 'bfin', 'time:' + 24 * H]],
   // 희귀 동료 3명(토비·카라·베릴) 맞이하기·별·편성 + 카드 묶음 나눠 받기
   rares: [base.mid, ['card:toby:30', 'rec:toby', 'card:kara:30', 'rec:kara', 'card:beryl:45', 'rec:beryl', 'rec:beryl', 'set:fisher:toby', 'set:cook:kara', 'set:miner:beryl', 'gem:2000', 'cp:1', 'cp:1', 'wish:kara', 'cp:1', 'cp:0', 'adcard', 'en:weapon', 'cw:haral']],
+  commons: [base.mid, ['card:mora:30', 'rec:mora', 'card:melo:30', 'rec:melo', 'card:pori:50', 'rec:pori', 'rec:pori', 'set:fisher:mora', 'set:keeper:melo', 'set:cook:pori', 'cp:1', 'wish:pori', 'cp:1']],
   // 피트의 상점: 할 일 보상·무료 선물·골드 바꾸기·카드 묶음·꾸러미·첫 거래·정기 배송 (결제는 시험용 바로 지급)
   shop: [base.mid, ['mis:kill', 'daily:kill:150', 'mis:kill', 'mis:kill', 'daily:box:10', 'daily:harv:12', 'mis:all', 'mis:box', 'mis:harv', 'mis:all', 'mis:all',
     'gem:20', 'gx:g1', 'gx:g2', 'gem:5000', 'gx:g1', 'gx:g2', 'gx:g3', 'cp:0', 'cp:1', 'cp:1', 'cp:0',

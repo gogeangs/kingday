@@ -430,6 +430,47 @@ class BattleSim {
           addFloat(m.x, m.y - 80 * sc, '약점!', 0xFFD6A8FF, 13);
         }
         if (fxOk('skill_beryl')) spawnFx('skill_beryl', cx, cy - 40 * sc, 160 * sc, .8);
+      case 'mora':
+        // 싱싱한 한 방: 맨 앞 적 하나에 4배 피해
+        final k = c.skPow(id);
+        final tg = alive.reduce((a, m) => m.x < a.x ? m : a);
+        hitMon(tg, t.atk * 4 * k * feast, true, sc);
+        addFloat(tg.x, tg.y - 80 * sc, '싱싱!', 0xFFFFE27A, 13);
+        shakeT = .2;
+        if (fxOk('skill_mora')) spawnFx('skill_mora', tg.x, tg.y - 40 * sc, 150 * sc, .7);
+      case 'melo':
+        // 끈적 꿀단지: 맨 앞 적 하나에 2.5배 피해 + 4초 느려짐
+        final k = c.skPow(id);
+        final tg = alive.reduce((a, m) => m.x < a.x ? m : a);
+        hitMon(tg, t.atk * 2.5 * k * feast, true, sc);
+        tg.slow = math.max(tg.slow, 4);
+        addFloat(tg.x, tg.y - 80 * sc, '끈적!', 0xFFFFD36B, 13);
+        if (fxOk('skill_melo')) spawnFx('skill_melo', tg.x, tg.y - 40 * sc, 150 * sc, .8);
+      case 'pori':
+        // 따끈한 수프 배달: 체력 비율이 가장 낮은 동료 하나 35% 회복 (쓰러졌으면 일으킴)
+        final k = c.skPow(id);
+        String? tj;
+        num tr = 2;
+        for (final j in c.members()) {
+          final q = party[j];
+          if (q == null) continue;
+          final r = q.down ? 0 : q.hp / c.stats(j).hp;
+          if (r < tr) {
+            tr = r;
+            tj = j;
+          }
+        }
+        if (tj != null) {
+          final q = party[tj]!;
+          if (q.down) {
+            q.down = false;
+            q.hp = 0;
+          }
+          q.hp = math.min(c.stats(tj).hp, q.hp + c.stats(tj).hp * .35 * k);
+          spawnFx('heal', pos[tj]!, py[tj]! - 24 * sc, 70 * sc, .6);
+          addFloat(pos[tj]!, py[tj]! - 70 * sc, '따끈!', 0xFF9CF08A, 13);
+          if (fxOk('skill_pori')) spawnFx('skill_pori', pos[tj]!, py[tj]! - 50 * sc, 150 * sc, .8);
+        }
       case 'andante':
         skx.sym = 6;
         skx.symK = c.skPow(id);

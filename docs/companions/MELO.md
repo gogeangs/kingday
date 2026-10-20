@@ -1,6 +1,6 @@
 # 일반 양봉가 「멜로」 기획 기록
 
-작성일: 2026-10-21 · 상태: **기획·그림 완료, 게임 등록은 보류** (대표님 지시: 기록만)
+작성일: 2026-10-21 · 상태: **게임 등록 완료 (웹·앱)** — 브랜치 `update/backlog-oct21-qa`, main 합치기 전
 
 ## 추가 배경
 - 일반 모집 동료 추가 3명(모라·멜로·포리) 중 두 번째 (대표님 결정, 2026-10-21).
@@ -37,7 +37,7 @@
   - 효과 시트 4프레임(웅덩이)은 바닥에 깔리는 모양 → 감속 지속 표시로 반복 재생해도 됨.
   - 동작 시트 가장자리에 옅은 번짐이 있어 자를 때 투명도 기준값으로 걸러낼 것.
 
-## 원본 그림 위치 (저장소 `art/source/`, 게임 미반영)
+## 원본 그림 위치 (저장소 `art/source/`)
 | 그림 | 파일 |
 |---|---|
 | ⓪ 참고 시트 | `art/source/melo_ref.png` |
@@ -45,7 +45,18 @@
 | ② 초상화 | `art/source/portraits/portrait_melo_idle.png`, `portrait_melo_laugh.png` (원본 한 장을 덩어리 단위로 좌우 분리, 여백 자름) |
 | ③ 스킬 아이콘 | `art/source/skills/skill_melo.png` |
 | ④ 스킬 효과 | `art/source/fx/fx_skill_melo.png` |
-- `assets/`·`index.html`은 아직 손대지 않음 → 등록 세션에서 COMPANION_GUIDE.md 4장 도구로 처리.
+- 2026-10-21 등록 세션에서 게임 파일로 처리함 (아래 「게임 등록」).
 
 ## 등록할 때 할 일 (COMPANION_GUIDE.md 6장)
 COMP · JOB(양봉가 기존 값) · RECRUITS(리엘이 꿀값 독촉) · GRADE(`common`) · HEIGHT/SPRITES/FORM · SKILLS · castSkill(단일 피해 + 감속) · FXDEF(`skill_melo:4`) · SPRITE_ALT/DRAW · NPCID(`'멜로':'melo'`) · extract_skill_fx.py
+
+## 게임 등록 (2026-10-21) — 브랜치 `update/backlog-oct21-qa`, main 합치기 전
+| 항목 | 값 |
+|---|---|
+| 기본 능력치 | 공격 8 · 체력 72 · 공격 속도 0.75 (레벨당 공격 +3, 체력 +14), 일반 배율 ×1 |
+| 일반 공격 | 양봉가 자리 기본 공격 |
+| 스킬 「끈적 꿀단지」 | 맨 앞 적 하나에 공격력 2.5배 피해 + 4초 느려짐(공격 간격 느려짐), 게이지 18, ★3 ×1.3 |
+| 합류 대사 | 꿀단지 지게 소년 등장 → 리엘 「꿀값은 언제 줄 거니?」 → 멜로 「다 팔면 드린다니까요」 → 카엘 「꿀을 던지는 거야, 파는 거야?」 |
+| 키 / 위치 | HEIGHT 58, SPRITES h 68, 양봉가 자리(리엘과 같은 위치) |
+| 그림 → 게임 파일 | `assets/characters/melo_{idle,walk,attack,hit}.png`, `assets/portraits/portrait_melo_{idle,laugh}.png`, `assets/skills/skill_melo.png`, `assets/fx/fx_skill_melo.png` |
+| 자르기 메모 | 자동 자르기 도구로 문제없이 잘림 |

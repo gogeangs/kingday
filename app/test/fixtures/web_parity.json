@@ -888,6 +888,60 @@
      "cwLv": 0,
      "cwMul": 1
     },
+    "mora": {
+     "stats": {
+      "atk": 10,
+      "hp": 95,
+      "aps": 0.85,
+      "crit": 0.05
+     },
+     "cPow": 138.3375,
+     "owned": false,
+     "recStar": 0,
+     "starMul": 1,
+     "skPow": 1,
+     "cardOpen": false,
+     "starNeed": 30,
+     "starMax": 3,
+     "cwLv": 0,
+     "cwMul": 1
+    },
+    "melo": {
+     "stats": {
+      "atk": 8,
+      "hp": 72,
+      "aps": 0.75,
+      "crit": 0.05
+     },
+     "cPow": 132.29999999999998,
+     "owned": false,
+     "recStar": 0,
+     "starMul": 1,
+     "skPow": 1,
+     "cardOpen": false,
+     "starNeed": 30,
+     "starMax": 3,
+     "cwLv": 0,
+     "cwMul": 1
+    },
+    "pori": {
+     "stats": {
+      "atk": 4,
+      "hp": 88,
+      "aps": 0.85,
+      "crit": 0.05
+     },
+     "cPow": 99.96000000000001,
+     "owned": false,
+     "recStar": 0,
+     "starMul": 1,
+     "skPow": 1,
+     "cardOpen": false,
+     "starNeed": 30,
+     "starMax": 3,
+     "cwLv": 0,
+     "cwMul": 1
+    },
     "luka": {
      "stats": {
       "atk": 6,
@@ -2939,6 +2993,60 @@
      "cwLv": 2,
      "cwMul": 1.16
     },
+    "mora": {
+     "stats": {
+      "atk": 1056.9461111193605,
+      "hp": 2922.490032,
+      "aps": 0.85,
+      "crit": 0.05
+     },
+     "cPow": 8268.268778604175,
+     "owned": false,
+     "recStar": 0,
+     "starMul": 1,
+     "skPow": 1,
+     "cardOpen": true,
+     "starNeed": 30,
+     "starMax": 3,
+     "cwLv": 4,
+     "cwMul": 1.32
+    },
+    "melo": {
+     "stats": {
+      "atk": 796.8836628480001,
+      "hp": 2176.9776,
+      "aps": 0.75,
+      "crit": 0.05
+     },
+     "cPow": 7671.5032337395205,
+     "owned": false,
+     "recStar": 0,
+     "starMul": 1,
+     "skPow": 1,
+     "cardOpen": true,
+     "starNeed": 30,
+     "starMax": 3,
+     "cwLv": 0,
+     "cwMul": 1
+    },
+    "pori": {
+     "stats": {
+      "atk": 852.3548857958401,
+      "hp": 2378.956608,
+      "aps": 0.85,
+      "crit": 0.05
+     },
+     "cPow": 6687.579186076724,
+     "owned": false,
+     "recStar": 0,
+     "starMul": 1,
+     "skPow": 1,
+     "cardOpen": true,
+     "starNeed": 30,
+     "starMax": 3,
+     "cwLv": 1,
+     "cwMul": 1.08
+    },
     "luka": {
      "stats": {
       "atk": 1025.3097039790082,
@@ -4342,54 +4450,54 @@
      "gordon",
      "gordon",
      "gordon",
-     "daisy",
      "kara",
-     "gordon",
+     "melo",
+     "toby",
      "bron",
-     "beryl",
+     "pori",
      "gordon",
      "andante",
-     "toby",
+     "beryl",
      "peppy",
      "nella",
      "gordon",
      "luka",
      "gordon",
      "gordon",
-     "daisy",
-     "beryl",
-     "haral",
-     "haral",
-     "gordon",
-     "haral",
-     "gordon",
      "kara",
+     "pori",
+     "haral",
+     "riel",
      "gordon",
+     "riel",
+     "gordon",
+     "melo",
+     "gordon",
+     "gordon",
+     "beryl",
+     "mora",
+     "mora",
+     "mora",
+     "haral",
+     "daisy",
+     "gordon",
+     "bron",
+     "gordon",
+     "gordon",
+     "bron",
+     "toby",
      "gordon",
      "daisy",
-     "toby",
-     "toby",
-     "toby",
-     "bron",
      "gordon",
-     "gordon",
-     "bron",
-     "gordon",
-     "gordon",
-     "bron",
-     "gordon",
-     "gordon",
-     "margo",
-     "gordon",
-     "toby",
+     "mora",
      "peppy",
      "bron",
-     "margo",
+     "daisy",
      "gordon",
      "gordon",
      "andante",
      "gordon",
-     "haral"
+     "riel"
     ],
     "chunks": {
      "got": [
@@ -4421,18 +4529,21 @@
      "gold": 0
     },
     "cardsAfter": {
-     "daisy": 14,
-     "gordon": 59,
+     "daisy": 17,
+     "gordon": 54,
      "luka": 9,
-     "haral": 14,
+     "haral": 12,
      "kara": 2,
-     "bron": 14,
-     "beryl": 2,
+     "melo": 2,
+     "toby": 3,
+     "bron": 12,
+     "pori": 2,
      "andante": 3,
-     "toby": 35,
+     "beryl": 2,
      "peppy": 3,
      "nella": 1,
-     "margo": 4
+     "riel": 4,
+     "mora": 34
     },
     "goldAfter": 123456.7
    },
@@ -5152,6 +5263,60 @@
      "starMax": 4,
      "cwLv": 17,
      "cwMul": 2.3600000000000003
+    },
+    "mora": {
+     "stats": {
+      "atk": 481811.70585599996,
+      "hp": 3307891.392,
+      "aps": 1.02,
+      "crit": 0.15000000000000002
+     },
+     "cPow": 7271147.388630527,
+     "owned": false,
+     "recStar": 0,
+     "starMul": 1,
+     "skPow": 1,
+     "cardOpen": true,
+     "starNeed": 30,
+     "starMax": 3,
+     "cwLv": 20,
+     "cwMul": 2.6
+    },
+    "melo": {
+     "stats": {
+      "atk": 407669.39136,
+      "hp": 2798839.296,
+      "aps": 0.8999999999999999,
+      "crit": 0.15000000000000002
+     },
+     "cPow": 7599795.828387839,
+     "owned": false,
+     "recStar": 0,
+     "starMul": 1,
+     "skPow": 1,
+     "cardOpen": true,
+     "starNeed": 30,
+     "starMax": 3,
+     "cwLv": 15,
+     "cwMul": 2.2
+    },
+    "pori": {
+     "stats": {
+      "atk": 363165.29786879994,
+      "hp": 2493601.6895999997,
+      "aps": 1.02,
+      "crit": 0.15000000000000002
+     },
+     "cPow": 5480952.148301413,
+     "owned": false,
+     "recStar": 0,
+     "starMul": 1,
+     "skPow": 1,
+     "cardOpen": true,
+     "starNeed": 30,
+     "starMax": 3,
+     "cwLv": 12,
+     "cwMul": 1.96
     },
     "luka": {
      "stats": {
@@ -6529,58 +6694,70 @@
     "cards": [
      "bron",
      "haral",
-     "margo",
-     "toby",
-     "toby",
-     "kara",
-     "",
+     "gordon",
+     "mora",
+     "mora",
+     "melo",
      "beryl",
+     "pori",
      "bron",
-     "toby",
+     "mora",
      "haral",
      "bron",
-     "gordon",
      "toby",
+     "beryl",
      "peppy",
      "luka",
-     "margo",
+     "",
      "luka",
-     "margo",
-     "margo",
-     "beryl",
+     "gordon",
+     "gordon",
+     "pori",
      "haral",
-     "beryl",
-     "beryl",
-     "beryl",
-     "haral",
+     "pori",
+     "pori",
+     "pori",
      "riel",
+     "margo",
+     "melo",
+     "margo",
      "kara",
+     "melo",
+     "",
+     "haral",
+     "kara",
+     "gordon",
+     "mora",
+     "pori",
+     "kara",
+     "mora",
+     "toby",
      "riel",
      "",
-     "kara",
-     "gordon",
-     "haral",
-     "gordon",
      "margo",
-     "toby",
      "beryl",
-     "gordon",
-     "toby",
-     "gordon",
-     "haral",
-     "gordon",
-     "riel",
-     "toby",
      "andante",
-     "toby",
-     "kara",
+     "mora",
+     "melo",
      "bron",
-     "toby",
-     "riel",
-     "toby"
+     "mora",
+     "margo",
+     "beryl"
     ],
     "chunks": {
      "got": [
+      [
+       "haral",
+       5
+      ],
+      [
+       "melo",
+       5
+      ],
+      [
+       "haral",
+       5
+      ],
       [
        "margo",
        5
@@ -6588,43 +6765,30 @@
       [
        "bron",
        5
-      ],
-      [
-       "kara",
-       5
-      ],
-      [
-       "bron",
-       5
-      ],
-      [
-       "riel",
-       5
-      ],
-      [
-       "bron",
-       5
       ]
      ],
-     "gold": 0
+     "gold": 30857
     },
     "cardsAfter": {
      "brida": 70,
      "luka": 31,
      "nella": 0,
-     "gordon": 26,
+     "gordon": 20,
      "daisy": 79,
-     "bron": 23,
-     "haral": 8,
-     "margo": 11,
-     "toby": 16,
-     "kara": 39,
-     "beryl": 7,
+     "bron": 13,
+     "haral": 15,
+     "mora": 11,
+     "melo": 39,
+     "beryl": 6,
+     "pori": 7,
+     "toby": 3,
      "peppy": 1,
-     "riel": 11,
+     "riel": 3,
+     "margo": 11,
+     "kara": 5,
      "andante": 2
     },
-    "goldAfter": 987000000012342
+    "goldAfter": 987000000061714
    },
    "retired": {
     "gold": 60,
@@ -7226,6 +7390,60 @@
      "cardOpen": false,
      "starNeed": 30,
      "starMax": 4,
+     "cwLv": 0,
+     "cwMul": 1
+    },
+    "mora": {
+     "stats": {
+      "atk": 11.648,
+      "hp": 98.8,
+      "aps": 0.85,
+      "crit": 0.05
+     },
+     "cPow": 150.55404,
+     "owned": false,
+     "recStar": 0,
+     "starMul": 1,
+     "skPow": 1,
+     "cardOpen": false,
+     "starNeed": 30,
+     "starMax": 3,
+     "cwLv": 0,
+     "cwMul": 1
+    },
+    "melo": {
+     "stats": {
+      "atk": 9.568,
+      "hp": 74.88,
+      "aps": 0.75,
+      "crit": 0.05
+     },
+     "cPow": 145.84752,
+     "owned": false,
+     "recStar": 0,
+     "starMul": 1,
+     "skPow": 1,
+     "cardOpen": false,
+     "starNeed": 30,
+     "starMax": 3,
+     "cwLv": 0,
+     "cwMul": 1
+    },
+    "pori": {
+     "stats": {
+      "atk": 5.408,
+      "hp": 91.52000000000001,
+      "aps": 0.85,
+      "crit": 0.05
+     },
+     "cPow": 110.64144,
+     "owned": false,
+     "recStar": 0,
+     "starMul": 1,
+     "skPow": 1,
+     "cardOpen": false,
+     "starNeed": 30,
+     "starMax": 3,
      "cwLv": 0,
      "cwMul": 1
     },
@@ -9172,6 +9390,60 @@
      "cwLv": 0,
      "cwMul": 1
     },
+    "mora": {
+     "stats": {
+      "atk": 11.648,
+      "hp": 98.8,
+      "aps": 0.85,
+      "crit": 0.05
+     },
+     "cPow": 150.55404,
+     "owned": false,
+     "recStar": 0,
+     "starMul": 1,
+     "skPow": 1,
+     "cardOpen": false,
+     "starNeed": 30,
+     "starMax": 3,
+     "cwLv": 0,
+     "cwMul": 1
+    },
+    "melo": {
+     "stats": {
+      "atk": 9.568,
+      "hp": 74.88,
+      "aps": 0.75,
+      "crit": 0.05
+     },
+     "cPow": 145.84752,
+     "owned": false,
+     "recStar": 0,
+     "starMul": 1,
+     "skPow": 1,
+     "cardOpen": false,
+     "starNeed": 30,
+     "starMax": 3,
+     "cwLv": 0,
+     "cwMul": 1
+    },
+    "pori": {
+     "stats": {
+      "atk": 5.408,
+      "hp": 91.52000000000001,
+      "aps": 0.85,
+      "crit": 0.05
+     },
+     "cPow": 110.64144,
+     "owned": false,
+     "recStar": 0,
+     "starMul": 1,
+     "skPow": 1,
+     "cardOpen": true,
+     "starNeed": 30,
+     "starMax": 3,
+     "cwLv": 0,
+     "cwMul": 1
+    },
     "luka": {
      "stats": {
       "atk": 7.7376000000000005,
@@ -10535,68 +10807,68 @@
     "cards": [
      "margo",
      "margo",
+     "kara",
+     "pori",
+     "pori",
+     "pori",
+     "pori",
+     "pori",
+     "margo",
+     "pori",
+     "margo",
      "margo",
      "kara",
-     "kara",
-     "kara",
-     "kara",
-     "kara",
-     "margo",
-     "kara",
-     "margo",
-     "margo",
-     "kara",
-     "kara",
+     "pori",
      "luka",
      "luka",
-     "margo",
-     "luka",
-     "margo",
-     "margo",
-     "kara",
-     "margo",
-     "kara",
-     "kara",
-     "kara",
-     "margo",
-     "margo",
-     "kara",
-     "margo",
-     "kara",
-     "kara",
-     "margo",
-     "margo",
-     "kara",
-     "margo",
-     "kara",
-     "kara",
-     "kara",
-     "kara",
-     "margo",
-     "margo",
-     "margo",
-     "margo",
      "kara",
      "luka",
      "kara",
      "kara",
+     "pori",
+     "margo",
+     "pori",
+     "pori",
+     "pori",
+     "margo",
+     "margo",
+     "pori",
+     "margo",
+     "kara",
+     "pori",
+     "kara",
+     "margo",
+     "kara",
+     "kara",
+     "pori",
+     "pori",
+     "kara",
+     "pori",
+     "kara",
      "margo",
      "kara",
      "margo",
-     "kara"
+     "pori",
+     "luka",
+     "pori",
+     "pori",
+     "margo",
+     "pori",
+     "margo",
+     "pori"
     ],
     "chunks": {
      "got": [
       [
-       "margo",
-       5
-      ],
-      [
-       "margo",
-       5
-      ],
-      [
        "kara",
+       5
+      ],
+      [
+       "margo",
+       5
+      ],
+      [
+       "pori",
        5
       ],
       [
@@ -10615,8 +10887,9 @@
      "gold": 0
     },
     "cardsAfter": {
-     "margo": 56,
-     "kara": 69,
+     "margo": 39,
+     "kara": 23,
+     "pori": 63,
      "luka": 5
     },
     "goldAfter": 100
@@ -11144,6 +11417,60 @@
      "cardOpen": false,
      "starNeed": 30,
      "starMax": 4,
+     "cwLv": 0,
+     "cwMul": 1
+    },
+    "mora": {
+     "stats": {
+      "atk": 10.8,
+      "hp": 102.60000000000001,
+      "aps": 0.85,
+      "crit": 0.05
+     },
+     "cPow": 149.40450000000004,
+     "owned": false,
+     "recStar": 0,
+     "starMul": 1,
+     "skPow": 1,
+     "cardOpen": false,
+     "starNeed": 30,
+     "starMax": 3,
+     "cwLv": 0,
+     "cwMul": 1
+    },
+    "melo": {
+     "stats": {
+      "atk": 8.64,
+      "hp": 77.76,
+      "aps": 0.75,
+      "crit": 0.05
+     },
+     "cPow": 142.88400000000004,
+     "owned": false,
+     "recStar": 0,
+     "starMul": 1,
+     "skPow": 1,
+     "cardOpen": false,
+     "starNeed": 30,
+     "starMax": 3,
+     "cwLv": 0,
+     "cwMul": 1
+    },
+    "pori": {
+     "stats": {
+      "atk": 4.32,
+      "hp": 95.04,
+      "aps": 0.85,
+      "crit": 0.05
+     },
+     "cPow": 107.9568,
+     "owned": false,
+     "recStar": 0,
+     "starMul": 1,
+     "skPow": 1,
+     "cardOpen": true,
+     "starNeed": 30,
+     "starMax": 3,
      "cwLv": 0,
      "cwMul": 1
     },
@@ -12510,68 +12837,68 @@
     "cards": [
      "margo",
      "margo",
+     "kara",
+     "pori",
+     "pori",
+     "pori",
+     "pori",
+     "pori",
+     "margo",
+     "pori",
+     "margo",
      "margo",
      "kara",
-     "kara",
-     "kara",
-     "kara",
-     "kara",
-     "margo",
-     "kara",
-     "margo",
-     "margo",
-     "kara",
-     "kara",
+     "pori",
      "luka",
      "luka",
-     "margo",
-     "luka",
-     "margo",
-     "margo",
-     "kara",
-     "margo",
-     "kara",
-     "kara",
-     "kara",
-     "margo",
-     "margo",
-     "kara",
-     "margo",
-     "kara",
-     "kara",
-     "margo",
-     "margo",
-     "kara",
-     "margo",
-     "kara",
-     "kara",
-     "kara",
-     "kara",
-     "margo",
-     "margo",
-     "margo",
-     "margo",
      "kara",
      "luka",
      "kara",
      "kara",
+     "pori",
+     "margo",
+     "pori",
+     "pori",
+     "pori",
+     "margo",
+     "margo",
+     "pori",
+     "margo",
+     "kara",
+     "pori",
+     "kara",
+     "margo",
+     "kara",
+     "kara",
+     "pori",
+     "pori",
+     "kara",
+     "pori",
+     "kara",
      "margo",
      "kara",
      "margo",
-     "kara"
+     "pori",
+     "luka",
+     "pori",
+     "pori",
+     "margo",
+     "pori",
+     "margo",
+     "pori"
     ],
     "chunks": {
      "got": [
       [
-       "margo",
-       5
-      ],
-      [
-       "margo",
-       5
-      ],
-      [
        "kara",
+       5
+      ],
+      [
+       "margo",
+       5
+      ],
+      [
+       "pori",
        5
       ],
       [
@@ -12590,8 +12917,9 @@
      "gold": 0
     },
     "cardsAfter": {
-     "margo": 56,
-     "kara": 69,
+     "margo": 39,
+     "kara": 23,
+     "pori": 63,
      "luka": 5
     },
     "goldAfter": 100
@@ -13125,6 +13453,60 @@
      "cardOpen": false,
      "starNeed": 30,
      "starMax": 4,
+     "cwLv": 0,
+     "cwMul": 1
+    },
+    "mora": {
+     "stats": {
+      "atk": 11.200000000000001,
+      "hp": 106.4,
+      "aps": 0.85,
+      "crit": 0.05
+     },
+     "cPow": 154.93800000000002,
+     "owned": false,
+     "recStar": 0,
+     "starMul": 1,
+     "skPow": 1,
+     "cardOpen": false,
+     "starNeed": 30,
+     "starMax": 3,
+     "cwLv": 0,
+     "cwMul": 1
+    },
+    "melo": {
+     "stats": {
+      "atk": 8.96,
+      "hp": 80.64000000000001,
+      "aps": 0.75,
+      "crit": 0.05
+     },
+     "cPow": 148.17600000000004,
+     "owned": false,
+     "recStar": 0,
+     "starMul": 1,
+     "skPow": 1,
+     "cardOpen": false,
+     "starNeed": 30,
+     "starMax": 3,
+     "cwLv": 0,
+     "cwMul": 1
+    },
+    "pori": {
+     "stats": {
+      "atk": 4.48,
+      "hp": 98.56,
+      "aps": 0.85,
+      "crit": 0.05
+     },
+     "cPow": 111.95519999999999,
+     "owned": false,
+     "recStar": 0,
+     "starMul": 1,
+     "skPow": 1,
+     "cardOpen": true,
+     "starNeed": 30,
+     "starMax": 3,
      "cwLv": 0,
      "cwMul": 1
     },
@@ -14491,68 +14873,68 @@
     "cards": [
      "margo",
      "margo",
+     "kara",
+     "pori",
+     "pori",
+     "pori",
+     "pori",
+     "pori",
+     "margo",
+     "pori",
+     "margo",
      "margo",
      "kara",
-     "kara",
-     "kara",
-     "kara",
-     "kara",
-     "margo",
-     "kara",
-     "margo",
-     "margo",
-     "kara",
-     "kara",
+     "pori",
      "luka",
      "luka",
-     "margo",
-     "luka",
-     "margo",
-     "margo",
-     "kara",
-     "margo",
-     "kara",
-     "kara",
-     "kara",
-     "margo",
-     "margo",
-     "kara",
-     "margo",
-     "kara",
-     "kara",
-     "margo",
-     "margo",
-     "kara",
-     "margo",
-     "kara",
-     "kara",
-     "kara",
-     "kara",
-     "margo",
-     "margo",
-     "margo",
-     "margo",
      "kara",
      "luka",
      "kara",
      "kara",
+     "pori",
+     "margo",
+     "pori",
+     "pori",
+     "pori",
+     "margo",
+     "margo",
+     "pori",
+     "margo",
+     "kara",
+     "pori",
+     "kara",
+     "margo",
+     "kara",
+     "kara",
+     "pori",
+     "pori",
+     "kara",
+     "pori",
+     "kara",
      "margo",
      "kara",
      "margo",
-     "kara"
+     "pori",
+     "luka",
+     "pori",
+     "pori",
+     "margo",
+     "pori",
+     "margo",
+     "pori"
     ],
     "chunks": {
      "got": [
       [
-       "margo",
-       5
-      ],
-      [
-       "margo",
-       5
-      ],
-      [
        "kara",
+       5
+      ],
+      [
+       "margo",
+       5
+      ],
+      [
+       "pori",
        5
       ],
       [
@@ -14571,8 +14953,9 @@
      "gold": 0
     },
     "cardsAfter": {
-     "margo": 56,
-     "kara": 69,
+     "margo": 39,
+     "kara": 23,
+     "pori": 63,
      "luka": 5
     },
     "goldAfter": 100
@@ -15102,6 +15485,60 @@
      "cardOpen": false,
      "starNeed": 30,
      "starMax": 4,
+     "cwLv": 0,
+     "cwMul": 1
+    },
+    "mora": {
+     "stats": {
+      "atk": 10.8,
+      "hp": 102.60000000000001,
+      "aps": 0.85,
+      "crit": 0.05
+     },
+     "cPow": 149.40450000000004,
+     "owned": false,
+     "recStar": 0,
+     "starMul": 1,
+     "skPow": 1,
+     "cardOpen": false,
+     "starNeed": 30,
+     "starMax": 3,
+     "cwLv": 0,
+     "cwMul": 1
+    },
+    "melo": {
+     "stats": {
+      "atk": 8.64,
+      "hp": 77.76,
+      "aps": 0.75,
+      "crit": 0.05
+     },
+     "cPow": 142.88400000000004,
+     "owned": false,
+     "recStar": 0,
+     "starMul": 1,
+     "skPow": 1,
+     "cardOpen": false,
+     "starNeed": 30,
+     "starMax": 3,
+     "cwLv": 0,
+     "cwMul": 1
+    },
+    "pori": {
+     "stats": {
+      "atk": 4.32,
+      "hp": 95.04,
+      "aps": 0.85,
+      "crit": 0.05
+     },
+     "cPow": 107.9568,
+     "owned": false,
+     "recStar": 0,
+     "starMul": 1,
+     "skPow": 1,
+     "cardOpen": true,
+     "starNeed": 30,
+     "starMax": 3,
      "cwLv": 0,
      "cwMul": 1
     },
@@ -16468,68 +16905,68 @@
     "cards": [
      "margo",
      "margo",
+     "kara",
+     "pori",
+     "pori",
+     "pori",
+     "pori",
+     "pori",
+     "margo",
+     "pori",
+     "margo",
      "margo",
      "kara",
-     "kara",
-     "kara",
-     "kara",
-     "kara",
-     "margo",
-     "kara",
-     "margo",
-     "margo",
-     "kara",
-     "kara",
+     "pori",
      "luka",
      "luka",
-     "margo",
-     "luka",
-     "margo",
-     "margo",
-     "kara",
-     "margo",
-     "kara",
-     "kara",
-     "kara",
-     "margo",
-     "margo",
-     "kara",
-     "margo",
-     "kara",
-     "kara",
-     "margo",
-     "margo",
-     "kara",
-     "margo",
-     "kara",
-     "kara",
-     "kara",
-     "kara",
-     "margo",
-     "margo",
-     "margo",
-     "margo",
      "kara",
      "luka",
      "kara",
      "kara",
+     "pori",
+     "margo",
+     "pori",
+     "pori",
+     "pori",
+     "margo",
+     "margo",
+     "pori",
+     "margo",
+     "kara",
+     "pori",
+     "kara",
+     "margo",
+     "kara",
+     "kara",
+     "pori",
+     "pori",
+     "kara",
+     "pori",
+     "kara",
      "margo",
      "kara",
      "margo",
-     "kara"
+     "pori",
+     "luka",
+     "pori",
+     "pori",
+     "margo",
+     "pori",
+     "margo",
+     "pori"
     ],
     "chunks": {
      "got": [
       [
-       "margo",
-       5
-      ],
-      [
-       "margo",
-       5
-      ],
-      [
        "kara",
+       5
+      ],
+      [
+       "margo",
+       5
+      ],
+      [
+       "pori",
        5
       ],
       [
@@ -16548,8 +16985,9 @@
      "gold": 0
     },
     "cardsAfter": {
-     "margo": 56,
-     "kara": 69,
+     "margo": 39,
+     "kara": 23,
+     "pori": 63,
      "luka": 5
     },
     "goldAfter": 500
@@ -17633,7 +18071,10 @@
    "andante",
    "toby",
    "kara",
-   "beryl"
+   "beryl",
+   "mora",
+   "melo",
+   "pori"
   ],
   "stgName": [
    [
@@ -17689,6 +18130,9 @@
    "toby",
    "kara",
    "beryl",
+   "mora",
+   "melo",
+   "pori",
    "luka"
   ]
  },
