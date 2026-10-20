@@ -37,11 +37,34 @@ function op(o) {
     case 'gold': return w.run(`S.gold=${a}`);
     case 'gem': return w.run(`S.gem=${a}`);
     case 'card': return w.run(`S.cards=S.cards||{};S.cards[${q(a)}]=${b}`);
+    // ── 마을 (5단계) ──
+    case 'ensure': return F('ensurePlots')();
+    case 'plant': return F('plant')(+a, b);
+    case 'plantc': return w.run(`(()=>{const i=${+a},k=${q(b)};if(!S.plotTag)S.plotTag=[];S.plotTag[i]=k;plant(i,k)})()`);
+    case 'choose': return F('chooseSeed')(+a);
+    case 'harv': return F('harvest')(+a);
+    case 'tap': return w.run(`(()=>{const i=${+a};const ps=plotState(S.plots[i]);if(ps.st==='ready'){harvest(i)}})()`);
+    case 'harvall': return w.run('(()=>{let t=0;S.plots.forEach((p,i)=>t+=harvest(i))})()');
+    case 'plantall': return w.run("(()=>{S.plots.forEach((p,i)=>{if(p)return;const t=plotTag(i);if(t){if(S.seeds[t]>0)plant(i,t);return}const c=[...CROPS].reverse().find(c=>S.seeds[c.k]>0);if(c)plant(i,c.k)})})()");
+    case 'tag': return F('cycleTag')(+a);
+    case 'gemplot': return w.run('(()=>{const n=S.gemPlots||0,c=GEM_PLOTS[n];if(c==null)return;if(!spendGem(c))return;S.gemPlots=n+1;ensurePlots()})()');
+    case 'grownow': return F('growNow')();
+    case 'cook': return w.run(`(()=>{const r=RECIPES.find(x=>x.k===${q(a)});if(!Object.entries(r.need).every(([k,n])=>S.items[k]>=n))return;for(const[k,n]of Object.entries(r.need))S.items[k]-=n;S.buffs[r.buff]=Math.max(Date.now(),S.buffs[r.buff]||0)+600000;stat('cook',1)})()`);
+    case 'sellall': return w.run('(()=>{const keys=Object.keys(S.items),val=keys.reduce((a,k)=>a+S.items[k]*itemPrice(k),0);S.gold+=val;keys.forEach(k=>S.items[k]=0)})()');
+    case 'build': return F('orderBuild')(F('bldK')(a));
+    case 'cancel': return F('cancelQueued')(a);
+    case 'bgem': return w.run(`(()=>{const b=bldK(${q(a)}),l=S.bld[b.k];if(l>=b.max||inBuild(b.k))return;if(!oreOk(b,l))return;if(!spendGem(bldGem(bldCost(b,l))+timeGem(bldTime(b,l))))return;S.items.ore-=bldOre(b,l);S.bld[b.k]=l+1;if(!l)S.prod[b.k]=Date.now()})()`);
+    case 'bfin': return w.run('(()=>{if(!building()||!spendGem(timeGem(buildLeft())))return;finishBuild()})()');
+    case 'time': { clock += +a; w.setNow(clock); return F('produce')(); }
+    case 'seeds': return w.run(`S.seeds[${q(a)}]=${b}`);
+    case 'items': return w.run(`S.items[${q(a)}]=${b}`);
     default: throw new Error('모르는 조작 ' + o);
   }
 }
 
 const rep = (o, n) => Array(n).fill(o);
+let clock = NOW;
+const H = 3600000, M = 60000;
 const CASES = {
   fresh: [base.fresh, ['gold:5000', 'box:auto', ...rep('box:auto', 45), 'box', 'equip', 'box', 'sell', 'mul:10', 'up:atk', 'up:hp', 'mul:max', 'up:spd', 'up:crit', 'mul:1', 'up:atk', 'gold:3', 'up:atk']],
   mid: [base.mid, ['box', 'equip', 'box', 'sell', 'box', 'equip', 'autosell:on', ...rep('box', 6), 'autosell:off', 'open10', 'gem:300', 'open10', 'open10', 'lv:haral', 'lv:haral', 'lv:haral', 'lv:daisy',
@@ -49,10 +72,19 @@ const CASES = {
     'wish:gordon', 'wish:gordon', 'wish:luka', 'mul:max', 'up:atk', 'up:spd']],
   late: [base.late, ['open10', 'open10', 'open10', 'auto', 'set:fisher:haral', 'auto', 'mul:max', 'up:atk', 'up:hp', 'up:spd', 'up:crit', 'rec:brida', 'card:brida:200', 'rec:brida', 'rec:nella', 'rec:luka',
     'card:luka:500', 'rec:luka', 'rec:luka', 'rec:luka', 'en:weapon', 'en:boots', 'cw:haral', 'cw:margo', 'lv:brida', 'lv:luka', ...rep('box:auto', 20), 'box', 'sell']],
+  // 마을: 밭·전용 밭·황금 밭·바로 키우기·요리·판매·공사(예약·취소·바로 짓기·바로 완료)·시간 흐름
+  village: [base.mid, ['ensure', 'seeds:wheat:9', 'seeds:carrot:4', 'seeds:pumpkin:2', 'plant:2:wheat', 'plantc:3:carrot', 'tag:5', 'tag:5', 'choose:5', 'choose:3', 'plantall',
+    'time:' + 2 * M, 'tap:0', 'harv:2', 'time:' + 6 * M, 'harvall', 'plantall', 'gem:500', 'grownow', 'harvall', 'gemplot', 'gemplot', 'ensure', 'plantall', 'time:' + 25 * M, 'harvall',
+    'items:wheat:30', 'items:fish:9', 'cook:bread', 'cook:bread', 'cook:stew', 'cook:pie', 'cook:grill', 'time:' + 5 * M, 'cook:bread',
+    'gold:1e12', 'build:farm', 'build:diner', 'build:dock', 'build:inn', 'cancel:diner', 'build:apiary', 'time:' + 30 * M, 'bfin', 'bgem:inn', 'bgem:mine', 'time:' + 3 * H, 'time:' + 13 * H,
+    'items:ore:3', 'build:diner', 'bgem:diner', 'items:ore:9999', 'build:diner', 'sellall', 'tag:0', 'tag:0', 'tag:0', 'tag:0', 'tag:9']],
+  // 첫 공사: 이삭 10개 선물 → 바로 완료
+  firstBuild: [Object.assign({}, base.fresh, { stage: 3, best: 3, done: { marta: true }, bld: { farm: 1 } }), ['gold:100000', 'ensure', 'build:inn', 'bfin', 'build:farm', 'build:inn', 'time:' + 2 * H, 'gem:3', 'build:farm', 'bfin', 'time:' + 24 * H]],
 };
 
 const out = { now: NOW, cases: {} };
 for (const [name, [save, ops]] of Object.entries(CASES)) {
+  clock = NOW;
   w.setNow(NOW);
   w.setS(F('hydrate')(J(save)));
   w.run('pending=null;P={};mons=[];');

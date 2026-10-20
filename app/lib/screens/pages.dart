@@ -5,22 +5,22 @@ import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 
-import '../core/calc.dart';
-import '../core/data.dart';
 import '../game/controller.dart';
 import '../ui/theme.dart';
 import '../ui/widgets.dart';
 import 'eq_page.dart';
+import 'mp_page.dart';
 import 'pt_page.dart';
 import 'up_page.dart';
+import 'vl_page.dart';
 
 /// 탭 내용. 4~6단계에서 하나씩 실제 화면으로 바뀐다.
 Widget pageBody(GameController g, GameTab t) => switch (t) {
       GameTab.eq => EqPage(g),
       GameTab.pt => PtPage(g),
       GameTab.up => UpPage(g),
-      GameTab.vl => _soon(g, '마을 풍경 · 건물 · 밭 · 식당', '5단계'),
-      GameTab.mp => _MapInfo(g),
+      GameTab.vl => VlPage(g),
+      GameTab.mp => MpPage(g),
       GameTab.sh => _soon(g, '오늘의 할 일 · 피트의 무료 선물 · 골드 바꾸기 · 카드 · 상품', '다음'),
     };
 
@@ -28,27 +28,6 @@ Widget _soon(GameController g, String what, String when) => KdBox(children: [
       KdSec(what),
       KdNote('이 화면은 $when 에서 웹과 똑같이 옮겨 와요. 지금은 화면 틀(반쯤 열리기 · 크게 보기 · 아래로 끌어 닫기)만 들어 있어요.'),
     ]);
-
-/// 지도 아래 정보 (웹 renderMapInfo) — 지도 그림은 5단계
-class _MapInfo extends StatelessWidget {
-  const _MapInfo(this.g);
-  final GameController g;
-
-  @override
-  Widget build(BuildContext context) {
-    final s = g.state, c = g.calc.landCount(), ri = g.calc.rankIdx(), r = GameCalc.region(s.stage);
-    final nx = ri + 1 < ranks.length ? ranks[ri + 1] : null;
-    return KdBox(children: [
-      KdSec('${s.stage > maxLand ? '왕도 아스테리온' : GameCalc.terrName(s.stage)} 탈환 중', small: '${r.n} · ${(s.stage - 1) % 10 + 1}/10'),
-      KdKv('되찾은 영지', '$c / $maxLand'),
-      KdKv('지금 칭호', '${ranks[ri].n} (원정대 +${ri * 4}%)'),
-      KdKv('다음 칭호', nx != null ? '${nx.n}까지 ${nx.at - c}곳' : '왕도 탈환만 남았어요'),
-      KdKv('이 지역의 지배자', r.boss),
-      const KdNote('영지마다 마족 성주가 지키고, 지역의 마지막 영지에는 군단장이 있어요. 다섯 군단을 모두 몰아내면 왕도로 가는 길이 열려요.'),
-      const KdNote('영지 지도 그림은 5단계에서 옮겨 와요.'),
-    ]);
-  }
-}
 
 /// 탭 화면 한 장. [half] 면 위쪽이 비어 전투가 보이고, 머리를 아래로 끌면 닫힘.
 class PageSheet extends StatefulWidget {

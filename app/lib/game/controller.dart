@@ -283,11 +283,68 @@ class GameController extends ChangeNotifier {
           queue((ctx) => showItemSheet(ctx, it, cur));
         case ActOpen10():
           queue((ctx) => showOpen10Sheet(ctx, r));
+        case ActBuildTutorial(:final k, :final lv):
+          final b = buildingDef(k);
+          scene('황금 이삭 사용법', '공사는 시간이 걸려요', [
+            'sys:${b.n} ${lv > 0 ? '확장' : '재건'} 공사가 시작됐어요. 다 지어지려면 ${fmtT(calc.bldTime(b, lv))} 걸려요. 비싼 건물일수록 공사가 오래 걸려요.',
+            'k@flustered:벽돌 쌓는 건 자신 있는데… 기다리는 건 좀 지루하네요.',
+            'q@proud:주인, 이걸 받아라. 성검이 축복한 황금 이삭이다. 이삭을 내면 마을 사람들이 힘을 내서 공사를 바로 끝낸다.',
+            'sys:황금 이삭 $tutGem개를 선물로 받았어요. 공사 중인 건물의 파란 "바로 완료" 버튼을 누르면 이삭으로 공사를 끝낼 수 있어요. 공사 중에도 다른 건물을 $buildQueueMax개까지 예약해 두면 차례로 지어져요.',
+          ], '이삭으로 바로 완료', altLabel: '그냥 기다릴래요', onGo: () => act((a) => a.finishByGem()));
+        case ActGemPlotAsk(:final n, :final cost):
+          scene('황금 밭', '새 밭 일구기', [
+            'm:마르타|황금 이삭을 땅에 뿌리면 굳은 땅도 금세 부드러워지지. 한 칸 더 일궈 볼 텐가?',
+            'sys:황금 이삭 $cost개로 밭을 1칸 늘려요 (${n + 1} / ${gemPlotCost.length}). 은퇴해도 사라지지 않아요.',
+          ], '이삭 $cost개로 일구기', altLabel: '다음에', onGo: () => act((a) => a.buyGemPlot(n, cost)));
         case ActRecruitScene(:final id):
           final rc = recruits[id]!;
           scene('동료 합류', rc.title, rc.lines, rc.ok, illust: 'join', illustFace: id);
       }
     }
+  }
+
+  // ── 마을 ──
+  /// 마을에서 고른 건물 (웹 vlSel)
+  String vlSel = 'farm';
+
+  /// 밭 지정 모드 (웹 plotEdit)
+  bool plotEdit = false;
+
+  void vlSelect(String k) {
+    vlSel = k;
+    refresh();
+  }
+
+  // ── 광고 보상 자리 (웹 AD_TEST: 3초 가짜 광고. 9단계에서 AdMob 보상형 광고로 바꿈) ──
+  static const adTest = true;
+
+  /// watchAd(k, give): 오늘 남은 횟수가 있으면 광고를 보고 보상
+  Future<void> watchAd(String k, void Function() give) async {
+    if (calc.adLeft(k) <= 0) {
+      toast('오늘은 다 봤어요. 내일 다시 받을 수 있어요');
+      return;
+    }
+    final ctx = navKey.currentContext;
+    if (ctx == null || modalOpen) return;
+    modalOpen = true;
+    notifyListeners();
+    try {
+      await showGeneralDialog<void>(
+        context: ctx,
+        barrierDismissible: false,
+        barrierColor: const Color(0xE0000000),
+        pageBuilder: (c, _, __) => _AdCountdown(onDone: () => Navigator.of(c).pop()),
+      );
+    } finally {
+      modalOpen = false;
+      notifyListeners();
+    }
+    final ad = asMap(calc.daily()['ad'])!;
+    ad[k] = orNum(ad[k], 0) + 1;
+    give();
+    save();
+    refresh();
+    pump();
   }
 
   /// 상자 열기 (빠른 버튼·장비 탭)
@@ -471,3 +528,50 @@ class GameController extends ChangeNotifier {
 
 /// 칭호 그림 (웹 RANKIMG)
 const rankImg = ['rank_farmer', 'rank_guard', 'rank_knight', 'rank_lord', 'rank_count', 'rank_duke', 'rank_king'];
+
+/// 테스트 광고 화면: 3, 2, 1 뒤 보상 (웹 #adOv)
+class _AdCountdown extends StatefulWidget {
+  const _AdCountdown({required this.onDone});
+  final VoidCallback onDone;
+
+  @override
+  State<_AdCountdown> createState() => _AdCountdownState();
+}
+
+class _AdCountdownState extends State<_AdCountdown> {
+  int n = 3;
+  Timer? _t;
+
+  @override
+  void initState() {
+    super.initState();
+    _t = Timer.periodic(const Duration(seconds: 1), (_) {
+      if (n <= 1) {
+        _t?.cancel();
+        widget.onDone();
+        return;
+      }
+      setState(() => n--);
+    });
+  }
+
+  @override
+  void dispose() {
+    _t?.cancel();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) => Material(
+        type: MaterialType.transparency,
+        child: Center(
+          child: Column(mainAxisSize: MainAxisSize.min, children: [
+            Text('광고 자리 · 테스트 모드', style: KdText.body(12, color: const Color(0xFF97A2C3))),
+            const SizedBox(height: 6),
+            Text('$n', style: KdText.display(56, color: const Color(0xFFFFC94A))),
+            const SizedBox(height: 6),
+            Text('초 뒤 보상을 받아요', style: KdText.body(14, color: Colors.white)),
+          ]),
+        ),
+      );
+}

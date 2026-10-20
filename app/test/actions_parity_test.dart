@@ -46,7 +46,8 @@ void main() {
     test('조작 「${e.key}」 — 웹과 같은 결과', () {
       final cs = e.value as Map<String, dynamic>;
       final s = GameState.hydrate(cs['save'] as Map<String, dynamic>, now, GameCalc.rankIdxOf);
-      final c = GameCalc(s, clock: () => now);
+      var clock = now;
+      final c = GameCalc(s, clock: () => clock);
       final a = GameActions(c, rng: Mulberry32(9090));
       for (final st in (cs['steps'] as List).cast<Map<String, dynamic>>()) {
         final o = (st['op'] as String).split(':');
@@ -85,6 +86,49 @@ void main() {
             s.gem = num.parse(o[1]);
           case 'card':
             s.cardsW[o[1]] = int.parse(o[2]);
+          // ── 마을 ──
+          case 'ensure':
+            a.ensurePlots();
+          case 'plant':
+            a.plant(int.parse(o[1]), o[2]);
+          case 'plantc':
+            a.plantChosen(int.parse(o[1]), o[2], tag: true);
+          case 'choose':
+            a.chooseSeedTagged(int.parse(o[1]));
+          case 'harv':
+            a.harvest(int.parse(o[1]));
+          case 'tap':
+            a.tapPlot(int.parse(o[1]));
+          case 'harvall':
+            a.harvestAll();
+          case 'plantall':
+            a.plantAll();
+          case 'tag':
+            a.cycleTag(int.parse(o[1]));
+          case 'gemplot':
+            final n = s.gemPlots.toInt();
+            if (n < gemPlotCost.length) a.buyGemPlot(n, gemPlotCost[n]);
+          case 'grownow':
+            a.growNow();
+          case 'cook':
+            a.cook(o[1]);
+          case 'sellall':
+            a.sellAll();
+          case 'build':
+            a.orderBuild(o[1]);
+          case 'cancel':
+            a.cancelQueued(o[1]);
+          case 'bgem':
+            a.buildByGem(o[1]);
+          case 'bfin':
+            a.finishByGem();
+          case 'time':
+            clock += int.parse(o[1]);
+            c.produce();
+          case 'seeds':
+            s.seeds[o[1]] = num.parse(o[2]);
+          case 'items':
+            s.items[o[1]] = num.parse(o[2]);
           default:
             fail('모르는 조작 ${st['op']}');
         }

@@ -63,6 +63,20 @@ class ActHaptic extends ActResult {
   final List<int> pattern;
 }
 
+/// 첫 공사 안내 (황금 이삭 10개 선물, 「이삭으로 바로 완료」)
+class ActBuildTutorial extends ActResult {
+  ActBuildTutorial(this.k, this.lv);
+  final String k;
+  final num lv;
+}
+
+/// 황금 밭 일구기 확인 창
+class ActGemPlotAsk extends ActResult {
+  ActGemPlotAsk(this.n, this.cost);
+  final int n;
+  final num cost;
+}
+
 /// 원정대 교체로 전투 중 체력을 옮겨 줘야 할 때 (웹 P[cur] → P[id])
 typedef PartySwap = void Function(String cur, String id);
 
@@ -341,5 +355,253 @@ class GameActions {
   void toggleWish(String id) {
     s.wish = s.wish == id ? null : id;
     _toast(s.wish != null ? '${comps[id]!.n} 카드가 더 잘 나와요 (절반)' : '희망 동료를 해제했어요');
+  }
+
+  // ════════════════════ 밭 (웹 「밭 · 부엌 · 마을」) ════════════════════
+  /// ensurePlots(): 밭 칸 수만큼 빈 칸을 채움 (웹은 밭 화면을 그릴 때 부름)
+  void ensurePlots() {
+    final n = c.plotCount();
+    while (s.plots.length < n) {
+      s.plots.add(null);
+    }
+  }
+
+  /// plotTag(i): 그 칸 전용 작물 (없으면 자유)
+  String? plotTag(int i) {
+    final t = s.raw['plotTag'];
+    if (t is List && i < t.length && t[i] is String) return t[i] as String;
+    return null;
+  }
+
+  List<dynamic> _tags() => s.raw['plotTag'] is List ? s.raw['plotTag'] as List : (s.raw['plotTag'] = <dynamic>[]);
+
+  void _setTag(int i, String? k) {
+    final t = _tags();
+    while (t.length <= i) {
+      t.add(null);
+    }
+    t[i] = k;
+  }
+
+  /// cycleTag(i): 밭 지정 — 자유 → 밀 → 은빛 당근 → 달빛 호박
+  void cycleTag(int i) {
+    final order = <String?>[null, ...crops.map((x) => x.k)];
+    _setTag(i, order[(order.indexOf(plotTag(i)) + 1) % order.length]);
+  }
+
+  /// plant(i,k)
+  bool plant(int i, String k) {
+    if (orNum(s.seeds[k], 0) <= 0 || (i < s.plots.length && s.plots[i] != null)) return false;
+    s.seeds[k] = asNum(s.seeds[k]) - 1;
+    s.plots[i] = <String, dynamic>{'k': k, 'at': c.now};
+    return true;
+  }
+
+  /// 씨앗 고르기 창에서 심기 (전용 밭으로 지정할 수도)
+  void plantChosen(int i, String k, {bool tag = false}) {
+    if (tag) {
+      _setTag(i, k);
+      _toast('${crops.firstWhere((x) => x.k == k).n} 전용 밭으로 지정했어요');
+    }
+    plant(i, k);
+  }
+
+  /// chooseSeed(i): 전용 밭이면 바로 심고 true, 아니면 false (화면이 씨앗 고르기 창을 띄움)
+  bool chooseSeedTagged(int i) {
+    final tg = plotTag(i);
+    if (tg == null) return false;
+    final cn = crops.firstWhere((x) => x.k == tg).n;
+    if (orNum(s.seeds[tg], 0) > 0) {
+      plant(i, tg);
+    } else {
+      _toast('$cn 전용 밭이에요. $cn 씨앗이 없어요');
+    }
+    return true;
+  }
+
+  /// harvest(i): 2개, 30% 확률로 3개
+  int harvest(int i) {
+    final ps = c.plotState(s.plots[i]);
+    if (ps.st != 'ready') return 0;
+    final n = 2 + (rng.next() < .3 ? 1 : 0), k = ps.c!.k;
+    s.items[k] = asNum(s.items[k]) + n;
+    s.plots[i] = null;
+    dailyAdd('harv', n);
+    c.stat('harv', n);
+    if (k == 'pumpkin') c.stat('pump', n);
+    return n;
+  }
+
+  /// 밭 칸을 눌렀을 때 (빈 칸은 화면이 씨앗 고르기, 다 자랐으면 수확, 자라는 중이면 남은 시간)
+  void tapPlot(int i) {
+    final ps = c.plotState(s.plots[i]);
+    if (ps.st == 'ready') {
+      final n = harvest(i);
+      _toast('${ps.c!.n} $n개 수확. 카엘이 행복해 보여요');
+    } else if (ps.st == 'grow') {
+      _toast('${ps.c!.n} · ${mmss(ps.left!)} 뒤에 수확');
+    }
+  }
+
+  void harvestAll() {
+    var t = 0;
+    for (var i = 0; i < s.plots.length; i++) {
+      t += harvest(i);
+    }
+    _toast('작물 $t개 수확');
+  }
+
+  void plantAll() {
+    for (var i = 0; i < s.plots.length; i++) {
+      if (s.plots[i] != null) continue;
+      final t = plotTag(i);
+      if (t != null) {
+        if (orNum(s.seeds[t], 0) > 0) plant(i, t);
+        continue;
+      }
+      for (final cr in crops.reversed) {
+        if (orNum(s.seeds[cr.k], 0) > 0) {
+          plant(i, cr.k);
+          break;
+        }
+      }
+    }
+  }
+
+  /// 황금 밭 일구기: 확인 창부터
+  void askGemPlot() {
+    final n = s.gemPlots.toInt();
+    if (n >= gemPlotCost.length) return;
+    out.add(ActGemPlotAsk(n, gemPlotCost[n]));
+  }
+
+  /// buyGemPlot 의 「이삭으로 일구기」
+  void buyGemPlot(int n, num cost) {
+    if (!spendGem(cost)) return;
+    s.raw['gemPlots'] = n + 1;
+    ensurePlots();
+    _toast('황금 밭 1칸이 생겼어요!');
+  }
+
+  /// growNow(): 자라는 작물 바로 키우기 (칸마다 이삭 5)
+  void growNow() {
+    final g = [for (final p in s.plots) if (c.plotState(p).st == 'grow') p as Map];
+    if (g.isEmpty) return;
+    if (!spendGem(g.length * gemPlot)) return;
+    for (final p in g) {
+      p['at'] = 0;
+    }
+    _toast('리엘의 벌들이 밭을 도왔어요. 모두 다 자랐어요');
+  }
+
+  /// 광고 보상: 자라는 작물 바로 키우기 (adFarm 의 보상 부분)
+  void growByAd() {
+    for (final p in s.plots) {
+      if (c.plotState(p).st == 'grow') (p as Map)['at'] = 0;
+    }
+    _toast('리엘의 벌들이 밭을 도왔어요. 모두 다 자랐어요');
+  }
+
+  // ════════════════════ 식당 ════════════════════
+  bool canCook(RecipeDef r) => r.need.entries.every((e) => orNum(s.items[e.key], 0) >= e.value);
+
+  /// 요리: 재료를 쓰고 10분 버프 (이미 있으면 10분 더)
+  void cook(String k) {
+    final r = recipes.firstWhere((x) => x.k == k);
+    if (!canCook(r)) return;
+    for (final e in r.need.entries) {
+      s.items[e.key] = asNum(s.items[e.key]) - e.value;
+    }
+    s.buffs[r.buff] = math.max(c.now, orNum(s.buffs[r.buff], 0)) + 600000;
+    c.stat('cook', 1);
+    _toast('${r.n} 완성! ${r.desc}');
+  }
+
+  /// 창고 물건 값 합계
+  num storeValue() {
+    num v = 0;
+    for (final k in s.items.keys) {
+      v = v + asNum(s.items[k]) * c.itemPrice(k);
+    }
+    return v;
+  }
+
+  void sellAll() {
+    final val = storeValue();
+    s.gold = s.gold + val;
+    for (final k in s.items.keys.toList()) {
+      s.items[k] = 0;
+    }
+    _toast('창고 판매 +${fmt(val)}');
+  }
+
+  // ════════════════════ 건물 공사 ════════════════════
+  bool inBuild(String k) {
+    final bd = c.building();
+    return (bd != null && bd['k'] == k) || c.bq().contains(k);
+  }
+
+  num buildLeft() {
+    final bd = c.building();
+    return bd == null ? 0 : math.max(0, (asNum(bd['end']) - c.now) / 1000);
+  }
+
+  void _built(BuildingDef b, num l) => _toast('${b.n}${l > 0 ? ' 확장' : ' 재건'} 완료! ${c.bldEff(b.k, l + 1)}');
+
+  /// orderBuild(b): 공사 시작, 공사 중이면 예약(2개까지)
+  void orderBuild(String k) {
+    final b = buildingDef(k), l = s.bldLv(k), cost = GameCalc.bldCost(b, l), o = c.bldOre(b, l);
+    if (l >= b.max || s.gold < cost || inBuild(k)) return;
+    if (!c.oreOk(b, l)) return _toast('광석이 $o개 필요해요. 광산에서 브론이 캐 와요');
+    if (c.building() != null) {
+      if (c.bq().length >= buildQueueMax) return;
+      s.gold = s.gold - cost;
+      s.items['ore'] = asNum(s.items['ore']) - o;
+      c.bq().add(k);
+      _toast('${b.n} 공사를 예약했어요 · 앞 공사가 끝나면 시작해요');
+      return;
+    }
+    s.gold = s.gold - cost;
+    s.items['ore'] = asNum(s.items['ore']) - o;
+    s.raw['build'] = <String, dynamic>{'k': k, 'end': c.now + c.bldTime(b, l) * 1000, 'dur': c.bldTime(b, l)};
+    if (!truthy(s.done['tutBuild'])) {
+      s.done['tutBuild'] = true;
+      s.gem = s.gem + tutGem;
+      out.add(ActBuildTutorial(k, l));
+    } else {
+      _toast('${b.n}${l > 0 ? ' 확장' : ' 재건'} 공사를 시작했어요 · ${fmtT(c.bldTime(b, l))}');
+    }
+  }
+
+  /// cancelQueued(k): 예약 취소 (골드·광석 돌려받음)
+  void cancelQueued(String k) {
+    final q = c.bq(), i = q.indexOf(k);
+    if (i < 0) return;
+    q.removeAt(i);
+    final b = buildingDef(k), l = s.bldLv(k), o = c.bldOre(b, l);
+    s.gold = s.gold + GameCalc.bldCost(b, l);
+    s.items['ore'] = asNum(s.items['ore']) + o;
+    _toast('${b.n} 예약을 취소했어요. 골드${o > 0 ? '와 광석을' : '를'} 돌려받았어요');
+  }
+
+  /// 황금 이삭으로 바로 짓기 (공사비 + 시간)
+  void buildByGem(String k) {
+    final b = buildingDef(k), l = s.bldLv(k);
+    if (l >= b.max || inBuild(k)) return;
+    if (!c.oreOk(b, l)) return _toast('광석이 ${c.bldOre(b, l)}개 필요해요. 광산에서 브론이 캐 와요');
+    if (!spendGem(c.bldGem(GameCalc.bldCost(b, l)) + GameCalc.timeGem(c.bldTime(b, l)))) return;
+    s.items['ore'] = asNum(s.items['ore']) - c.bldOre(b, l);
+    s.bld[k] = l + 1;
+    if (l == 0) s.prod[k] = c.now;
+    _built(b, l);
+  }
+
+  /// 공사 중인 건물 황금 이삭으로 바로 완료 (남은 3분당 1)
+  void finishByGem() {
+    final bd = c.building();
+    if (bd == null || !spendGem(GameCalc.timeGem(buildLeft()))) return;
+    final k = bd['k'] as String, l = s.bldLv(k);
+    c.finishBuild();
+    _built(buildingDef(k), l);
   }
 }

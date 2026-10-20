@@ -15,7 +15,7 @@ Map<String, Object> _lateSave() => {
           '"joined":{"margo":true,"haral":true,"riel":true,"bron":true},'
           '"done":{"marta":true,"margo":true,"haral":true,"riel":true,"bron":true,"tutSkill":true},'
           '"lv":{"bron":60,"haral":61,"riel":58,"margo":55},"bld":{"inn":10,"farm":6,"diner":10,"dock":10,"apiary":9,"mine":10},'
-          '"rec":{"brida":3},"party":{"miner":"brida"},"buffs":{"atk":9999999999999,"gold":9999999999999},"v":3}',
+          '"rec":{"brida":3},"party":{"miner":"brida"},"seeds":{"wheat":5,"carrot":2,"pumpkin":1},"items":{"wheat":40,"carrot":9,"pumpkin":4,"fish":120,"honey":80,"ore":999},"plots":[{"k":"wheat","at":0},{"k":"carrot","at":9999999999999},null],"plotTag":[null,"carrot"],"build":{"k":"dock","end":9999999999999,"dur":3600},"bq":["apiary"],"gemPlots":2,"buffs":{"atk":9999999999999,"gold":9999999999999},"v":3}',
     };
 
 void main() {
@@ -102,6 +102,27 @@ void main() {
           g.setTab(GameTab.pt);
           await frames(2);
         }
+        g.setTab(null);
+        await frames(2);
+
+        // 5단계: 마을(건물 6곳·밭·식당)·지도
+        g.setTab(GameTab.vl);
+        for (final k in ['farm', 'inn', 'diner', 'dock', 'apiary', 'mine']) {
+          g.vlSelect(k);
+          await frames(2);
+        }
+        if (g.calc.plotCount() > 0) {
+          g.vlSelect('farm');
+          g.state.seeds['wheat'] = 3;
+          g.plotEdit = true;
+          await frames(2);
+          g.plotEdit = false;
+          g.acts.ensurePlots();
+          g.state.plots[0] = null;
+          await frames(2);
+        }
+        g.setTab(GameTab.mp);
+        await frames(2);
         g.setTab(null);
         await frames(2);
 
