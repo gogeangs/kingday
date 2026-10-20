@@ -3,12 +3,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import 'core/calc.dart';
+import 'core/data.dart';
+import 'core/fmt.dart';
+import 'core/state.dart';
 import 'stage0/preview_game.dart';
 
 /// 「왕이 되는 그날까지」 네이티브 앱 시작점.
 ///
-/// 0단계: 개발 환경 확인용 빈 앱. 전투 캔버스(Flame)와 일반 화면(Flutter 위젯)이
-/// 함께 돌아가는지만 확인한다. 실제 게임 화면은 1단계부터 이식한다.
+/// 지금은 시험 화면: 전투 캔버스(Flame)·일반 화면(Flutter)이 함께 돌아가는지(0단계),
+/// 웹과 같은 공식이 들어왔는지(1단계) 확인한다. 실제 게임 화면은 2단계부터 옮긴다.
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
   SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
@@ -73,10 +77,14 @@ class _Stage0ScreenState extends State<Stage0Screen> {
                 padding: const EdgeInsets.fromLTRB(24, 20, 24, 24),
                 child: Column(
                   children: [
-                    Image.asset('assets/game/ui/logo.png', width: 260),
+                    Expanded(
+                      child: SingleChildScrollView(
+                        child: Column(
+                          children: [
+                    Image.asset('assets/game/ui/logo.png', width: 200),
                     const SizedBox(height: 16),
                     const Text(
-                      '네이티브 앱 개발 중 · 0단계',
+                      '네이티브 앱 개발 중 · 1단계',
                       style: TextStyle(
                         color: KdColors.gold,
                         fontSize: 16,
@@ -85,11 +93,17 @@ class _Stage0ScreenState extends State<Stage0Screen> {
                     ),
                     const SizedBox(height: 8),
                     const Text(
-                      '전투 화면(Flame)과 메뉴 화면(Flutter)이\n함께 움직이는지 확인하는 시험판입니다.',
+                      '웹과 같은 공식으로 계산한 값입니다.',
                       textAlign: TextAlign.center,
                       style: TextStyle(color: KdColors.text, height: 1.5),
                     ),
-                    const Spacer(),
+                    const SizedBox(height: 10),
+                    const _FormulaCheck(),
+                          ],
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 8),
                     FilledButton(
                       onPressed: () {
                         HapticFeedback.lightImpact();
@@ -105,6 +119,37 @@ class _Stage0ScreenState extends State<Stage0Screen> {
           ],
         ),
       ),
+    );
+  }
+}
+
+/// 1단계 확인용: 새 게임 기준으로 웹과 같은 공식 결과를 몇 줄 보여 준다.
+class _FormulaCheck extends StatelessWidget {
+  const _FormulaCheck();
+
+  @override
+  Widget build(BuildContext context) {
+    final c = GameCalc(GameState.newGame(DateTime.now().millisecondsSinceEpoch, GameCalc.rankIdxOf));
+    final rows = <(String, String)>[
+      ('새 게임 원정대 전투력', fmt(c.power())),
+      ('${GameCalc.terrName(10)} 군단장 체력', fmt(GameCalc.monHp(10, true))),
+      ('${GameCalc.terrName(50)} 군단장 체력', fmt(GameCalc.monHp(50, true))),
+      ('성유물 상자 가격 (1영지)', fmt(c.boxCost())),
+      ('여관 Lv.10 공사비', fmt(GameCalc.bldCost(buildingDef('inn'), 9))),
+    ];
+    return Column(
+      children: [
+        for (final (k, v) in rows)
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 2),
+            child: Row(
+              children: [
+                Expanded(child: Text(k, style: const TextStyle(color: KdColors.text, fontSize: 13))),
+                Text(v, style: const TextStyle(color: KdColors.gold, fontSize: 13, fontWeight: FontWeight.w700)),
+              ],
+            ),
+          ),
+      ],
     );
   }
 }

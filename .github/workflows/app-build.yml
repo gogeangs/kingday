@@ -10,6 +10,8 @@ on:
       - 'app/**'
       - 'assets/**'
       - 'tools/sync_app_assets.py'
+      - 'tools/parity/**'
+      - 'index.html'
       - '.github/workflows/app-build.yml'
   workflow_dispatch:
 
@@ -42,6 +44,16 @@ jobs:
 
       - name: 버전 기록
         run: flutter --version
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: 웹과 같은 데이터·공식인지 확인 (index.html → 앱 데이터 표·정답 값)
+        working-directory: .
+        run: |
+          node tools/parity/gen_dart_data.js --check
+          node tools/parity/make_fixtures.js --check
 
       - name: 그림 복사 (assets/ → app/assets/game/)
         working-directory: .
@@ -97,8 +109,8 @@ jobs:
       - name: 코드 검사
         run: flutter analyze --no-fatal-infos
 
-      - name: 테스트
-        run: flutter test
+      - name: 테스트 (웹과 공식 비교 포함)
+        run: flutter test --reporter expanded
 
       - name: APK 빌드
         run: flutter build apk --release

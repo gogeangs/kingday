@@ -7,7 +7,7 @@
 | 항목 | 값 |
 |---|---|
 | 패키지명 | `kr.co.project30s.kingday` (안드로이드·iOS 공통, 스토어 등록 후 변경 불가) |
-| 상태 | 0단계 — 빈 앱 + 아이콘·시작 화면 + Flame 시험 화면 |
+| 상태 | 1단계 — 웹과 같은 데이터·공식 이식 완료 (화면은 아직 시험 화면) |
 
 ## APK 받는 법 (설치 없이)
 
@@ -38,11 +38,20 @@
 app/
   lib/               앱 코드 (Dart)
     main.dart        시작점
-    stage0/          0단계 시험 화면 (1단계 이후 정식 화면으로 교체)
+    core/            데이터·공식·저장 구조 (화면과 무관, 웹과 같은 값)
+    stage0/          시험 화면 (2단계부터 정식 화면으로 교체)
   tool/              아이콘·시작 화면용 보조 그림
   assets/game/       ← 그림 복사본 (git 제외, tools/sync_app_assets.py 로 생성)
   android/ ios/      플랫폼 뼈대 (첫 빌드 때 GitHub Actions 가 자동 생성·커밋)
 ```
+
+## 웹과 같은 공식 지키기 (1단계부터)
+
+- `lib/core/web_data.g.dart` — 웹 `index.html` 의 데이터 표(지역·동료·건물·스킬·대사)를 **자동으로 옮긴 파일**. 직접 고치지 않고 `node tools/parity/gen_dart_data.js` 로 다시 만듭니다.
+- `lib/core/calc.dart` — 웹 공식(능력치·밸런스·비용·방치 보상·상자·카드·은퇴)을 옮긴 것. 웹 함수 이름이 주석에 붙어 있습니다.
+- `lib/core/state.dart` — 저장 데이터. 웹 `S` 와 **같은 JSON** (웹 기록을 그대로 불러옴).
+- `test/parity_test.dart` — 웹 코드를 Node 로 그대로 돌려 뽑은 정답 값(`test/fixtures/web_parity.json`)과 앱 공식 결과를 비교. 새 게임·중반·후반·옛 저장 4가지 기록으로 확인합니다.
+- 웹 공식이나 데이터를 바꾸면: `node tools/parity/gen_dart_data.js` → `node tools/parity/make_fixtures.js` → 앱 공식도 맞게 고치기. 안 하면 GitHub Actions 가 알려 줍니다.
 
 ## 규칙
 
