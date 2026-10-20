@@ -1306,7 +1306,7 @@ function gobRare(pop){const got=[];S.bdUnl=S.bdUnl||{};S.pfUnl=S.pfUnl||{};
  if(!pfHas('goblin')&&Math.random()<GOB_RARE.frame){S.pfUnl.goblin=1;got.push(['frame','프로필 테두리','황금 고블린'])}
  for(const[t,kind,n]of got)pop.push(()=>{$('sheet').innerHTML=`<div class="eyebrow" style="color:#ffd34a">아주 드문 전리품!</div><h2>${kind} 「${n}」</h2><div class="rareloot"><img src="assets/profile/${t}_goblin.png" alt=""></div>${para('q@moved:황금 고블린이 이런 걸 숨기고 있었다니… 주인, 오늘은 운이 좋군.')}<p class="note" style="text-align:center">프로필(얼굴 누르기)에서 ${t==='frame'?'끼울':'달'} 수 있어요</p><div class="acts"><button id="mX">닫기</button><button class="pri" id="mGo">바로 ${t==='frame'?'끼우기':'달기'}</button></div>`;$('modal').hidden=false;
   $('mX').onclick=closeModal;$('mGo').onclick=()=>{if(t==='frame')S.pf='goblin';else S.badge='goblin';pfCheck();save();closeModal()}});return got}
-function gobDrop(m,s){const g=Math.floor(reward(S.stage,false)*30*(buff('gold')?1.5:1)*memMul()),gem=5+Math.floor(Math.random()*6);S.gold+=g;stat('gob',1);
+function gobDrop(m,s){const g=Math.floor(reward(S.stage,false)*30*(buff('gold')?1.5:1)*memMul()),gem=5+Math.floor(Math.random()*6);S.gold+=g;stat('gob',1);if(!noSave){gobWeek().n++;gobDirty=true}
  spawnFx('coin',m.x,m.y-30*s,70*s,.8,-70*s);addFloat(m.x,m.y-40*s,'+'+fmt(g),'#ffc94a',20);addFloat(m.x,m.y-66*s,'황금 이삭 +'+gem,'#ffe27a',14);
  const it=rollItem(Math.max(2,rollItem().g));S.gem=(S.gem||0)+gem;const gc=gainCard(3);
  const pop=[],q=gobRare(pop);queue(()=>{if(pending)return;pending=it;showItem(it,S.eq[it.slot]);const sh=$('sheet'),h=sh.querySelector('h2');h.textContent='황금 고블린 처치!';
@@ -1748,7 +1748,12 @@ const rkMeta=()=>({p_frame:S.pf||'wood',p_badge:S.badge||'',p_title:RANKS[rankId
 let rkSent=0,rkBusy=false;
 async function rankSubmit(force){if(!sbOn()||!S.nick||rkBusy)return;const st=Math.min(S.stage,MAXLAND+1);if(!force&&st<=rkSent)return;rkBusy=true;
  try{const r=await sbRpc('kd_submit',{p_stage:st,p_power:Math.round(power()),...rkMeta()});if(r==='ok')rkSent=st}catch(e){}finally{rkBusy=false}}
-setInterval(()=>rankSubmit(false),30000);
+const WEEK0=Date.parse('2026-10-18T15:00:00Z'),curWeek=()=>Math.floor((Date.now()-WEEK0)/6048e5)+1;
+function gobWeek(){const w=curWeek();if(!S.gobW||S.gobW.w!==w)S.gobW={w,n:0};return S.gobW}
+let gobDirty=true,gobBusy=false;
+async function gobSubmit(){if(!sbOn()||!S.nick||gobBusy||!gobDirty)return;const g=gobWeek();if(g.n<1){gobDirty=false;return}gobBusy=true;
+ try{const r=await sbRpc('kd_gob_submit',{p_week:g.w,p_kills:g.n});if(r==='ok'||r==='week'||r==='range')gobDirty=false}catch(e){}finally{gobBusy=false}}
+setInterval(()=>{rankSubmit(false);gobSubmit()},30000);
 const stgName=st=>st>MAXLAND?'왕도':(Math.floor((st-1)/10)+1)+'-'+((st-1)%10+1);
 const NICKERR={length:'2~10글자로 정해 주세요',chars:'한글·영문·숫자·_ 만 쓸 수 있어요',bad:'쓸 수 없는 단어가 들어 있어요',taken:'이미 누가 쓰고 있어요',once:'닉네임은 시즌마다 한 번만 바꿀 수 있어요',login:'연결에 실패했어요. 잠시 후 다시 해 주세요'};
 function nickSheet(after){$('sheet').innerHTML=`<div class="eyebrow">프로필</div><h2>닉네임 ${S.nickTemp||!S.nick?'정하기':'바꾸기'}</h2><p class="note" style="text-align:center">${S.nickTemp?'지금은 임시 닉네임이에요. 원하는 이름으로 바꿔 보세요.<br>':''}랭킹과 우편에 쓰이는 이름이에요. 2~10글자, 시즌마다 한 번 바꿀 수 있어요.</p>
@@ -1757,26 +1762,29 @@ function nickSheet(after){$('sheet').innerHTML=`<div class="eyebrow">프로필</
  $('nickOk').onclick=async()=>{const n=$('nickIn').value.trim();$('nickOk').disabled=true;$('nickErr').textContent='확인하는 중…';
   try{const r=await sbRpc('kd_set_nick',{p_nick:n,...rkMeta()});if(r==='ok'){S.nick=n;S.nickTemp=false;save();rkSent=0;await rankSubmit(true);toast('닉네임을 「'+n+'」(으)로 정했어요');mailFetch();(after||rankSheet)()}else{$('nickErr').textContent=NICKERR[r]||'다시 시도해 주세요';$('nickOk').disabled=false}}
   catch(e){$('nickErr').textContent='인터넷 연결이 필요해요';$('nickOk').disabled=false}}}
+const GOBREW=[['1위','이삭 100 · 고블린 사냥꾼 배지'],['2~10위','이삭 50'],['상위 30%','이삭 20']];
 const RKREW=[['1위','이삭 500 · 시즌 왕관 테두리 · 전용 배지'],['2~10위','이삭 300 · 전용 배지'],['상위 10%','이삭 150 · 동료 카드 30장'],['상위 50%','이삭 50'],['참여','이삭 20']];
 let rkTab='season';
 async function rankSheet(tab){if(tab)rkTab=tab;
  if(!sbOn()){scene('랭킹','준비 중이에요',['랭킹 서버를 연결하고 있어요. 곧 다른 영주들과 겨룰 수 있어요!','q@proud:흥, 주인이 1등인 건 정해진 일이다.'],'기대할게요');return}
  if(!S.nick){await sbEnsure();if(!S.nick)return nickSheet()}
- const tabs=`<div class="subtabs rktabs"><button data-rk="season" class="${rkTab==='season'?'on':''}">시즌</button><button data-rk="hall" class="${rkTab==='hall'?'on':''}">명예의 전당</button></div>`;
+ const tabs=`<div class="subtabs rktabs"><button data-rk="season" class="${rkTab==='season'?'on':''}">시즌</button><button data-rk="hall" class="${rkTab==='hall'?'on':''}">명예의 전당</button><button data-rk="goblin" class="${rkTab==='goblin'?'on':''}">고블린</button></div>`;
  $('sheet').innerHTML=`<div class="hdban" style="--hb:url(assets/ui/hd_rank.png)"><span>랭킹</span></div>${tabs}<p class="note" style="text-align:center">불러오는 중…</p><div class="acts one"><button class="pri" id="mGo">닫기</button></div>`;
  $('modal').hidden=false;$('mGo').onclick=closeModal;const bind=()=>document.querySelectorAll('[data-rk]').forEach(b=>b.onclick=()=>rankSheet(b.dataset.rk));bind();
- let rows;try{await rankSubmit(false);rows=await sbRpc('kd_ranking',{p_season:rkTab==='hall'?0:null})}catch(e){if($('modal').hidden)return;$('sheet').querySelector('.note').textContent=navigator.onLine?'랭킹 서버가 잠시 쉬고 있어요. 조금 뒤에 다시 열어 주세요':'인터넷 연결이 필요해요';return}
+ let rows;try{if(rkTab==='goblin'){gobDirty=true;await gobSubmit();rows=await sbRpc('kd_gob_ranking',{})}else{await rankSubmit(false);rows=await sbRpc('kd_ranking',{p_season:rkTab==='hall'?0:null})}}catch(e){if($('modal').hidden)return;$('sheet').querySelector('.note').textContent=navigator.onLine?'랭킹 서버가 잠시 쉬고 있어요. 조금 뒤에 다시 열어 주세요':'인터넷 연결이 필요해요';return}
  if($('modal').hidden)return;
  const me=rows.find(x=>x.me),tot=rows.length?rows[0].total:0,top=rows.filter(x=>x.rank<=100);
+ const sc=x=>rkTab==='goblin'?fmt(x.kills)+'마리':stgName(x.stage);
  const face=x=>`<span class="rkf"><img class="pt" src="assets/portraits/portrait_kael_idle.png" alt=""><img class="fr" src="assets/profile/frame_${x.frame||'wood'}.png" alt="" onerror="this.remove()"></span>`;
  const bd=x=>x.badge?`<img class="rkb" src="assets/profile/badge_${x.badge}.png" alt="" onerror="this.remove()">`:'';
- const line=x=>`<div class="rkrow${x.me?' me':''}"><b class="rkn">${x.rank}</b>${face(x)}<div class="info"><b>${bd(x)}${esc(x.nick)}</b><small>${x.title||''}</small></div><span class="rks">${stgName(x.stage)}</span></div>`;
+ const line=x=>`<div class="rkrow${x.me?' me':''}"><b class="rkn">${x.rank}</b>${face(x)}<div class="info"><b>${bd(x)}${esc(x.nick)}</b><small>${x.title||''}</small></div><span class="rks">${sc(x)}</span></div>`;
  let info='';if(rkTab==='season'&&rows.length){const left=Math.max(0,(new Date(rows[0].season_end)-Date.now())/1000);info=`<div class="rkinfo"><b>${rows[0].season}시즌</b> · ${left>86400?Math.ceil(left/86400)+'일':Math.ceil(left/3600)+'시간'} 남음 · ${tot}명 참여<details><summary>시즌 보상 보기</summary>${RKREW.map(([a,b])=>`<div class="kv"><span>${a}</span><b>${b}</b></div>`).join('')}</details></div>`}
  else if(rkTab==='hall')info=`<div class="rkinfo">지금까지 도달한 최고 기록이에요 · ${tot}명</div>`;
+ else if(rkTab==='goblin'){const w=rows.length?rows[0].week:curWeek(),end=rows.length?new Date(rows[0].week_end):new Date(WEEK0+w*6048e5),left=Math.max(0,(end-Date.now())/1000);info=`<div class="rkinfo"><b>${w}주차 황금 고블린</b> · ${left>86400?Math.ceil(left/86400)+'일':Math.max(1,Math.ceil(left/3600))+'시간'} 남음 · ${tot}명 참여<br>이번 주 내 기록 ${fmt(gobWeek().n)}마리<details><summary>주간 보상 보기</summary>${GOBREW.map(([a,b])=>`<div class="kv"><span>${a}</span><b>${b}</b></div>`).join('')}</details></div>`}
  const pod=top.slice(0,3),rest=top.slice(3);
  $('sheet').innerHTML=`<div class="hdban" style="--hb:url(assets/ui/hd_rank.png)"><span>랭킹</span></div>${tabs}${info}
- ${rows.length?`<div class="rkpod">${[1,0,2].map(i=>pod[i]?`<div class="pod p${i+1}${pod[i].me?' me':''}"><i class="crown">${['🥇','🥈','🥉'][i]}</i>${face(pod[i])}<b>${bd(pod[i])}${esc(pod[i].nick)}</b><small>${stgName(pod[i].stage)}</small></div>`:'<div class="pod empty"></div>').join('')}</div>
- <div class="rklist">${rest.map(line).join('')}</div>`:'<p class="note" style="text-align:center">아직 기록이 없어요. 첫 1위가 되어 보세요!</p>'}
+ ${rows.length?`<div class="rkpod">${[1,0,2].map(i=>pod[i]?`<div class="pod p${i+1}${pod[i].me?' me':''}"><i class="crown">${['🥇','🥈','🥉'][i]}</i>${face(pod[i])}<b>${bd(pod[i])}${esc(pod[i].nick)}</b><small>${sc(pod[i])}</small></div>`:'<div class="pod empty"></div>').join('')}</div>
+ <div class="rklist">${rest.map(line).join('')}</div>`:`<p class="note" style="text-align:center">${rkTab==='goblin'?'이번 주에 황금 고블린을 잡은 영주가 아직 없어요. 1-3 영지부터 나타나요!':'아직 기록이 없어요. 첫 1위가 되어 보세요!'}</p>`}
  ${me?`<div class="rkme">${line(me)}<small>상위 ${Math.max(1,Math.ceil(me.rank/Math.max(1,tot)*100))}%</small></div>`:''}
  <div class="acts"><button id="rkNick">닉네임 바꾸기</button><button class="pri" id="mGo">닫기</button></div>`;
  bind();$('mGo').onclick=closeModal;$('rkNick').onclick=()=>nickSheet()}
