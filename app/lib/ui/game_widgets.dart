@@ -244,11 +244,15 @@ Widget _skl(Widget icon, String n, String d, bool village) => Container(
     );
 
 /// 아이콘 + 숫자 (웹 costBtn 의 .bc / chip)
-Widget iconNum(String icon, String v, {double size = 18, TextStyle? style}) => Row(mainAxisSize: MainAxisSize.min, children: [
-      kdImg(icon, w: size, h: size),
-      const SizedBox(width: 3),
-      Text(v, style: style ?? KdText.figure(13)),
-    ]);
+/// 자리가 모자라면 줄여서 보여 줌 (좁은 폰·큰 숫자)
+Widget iconNum(String icon, String v, {double size = 18, TextStyle? style}) => FittedBox(
+      fit: BoxFit.scaleDown,
+      child: Row(mainAxisSize: MainAxisSize.min, children: [
+        kdImg(icon, w: size, h: size),
+        const SizedBox(width: 3),
+        Text(v, style: style ?? KdText.figure(13)),
+      ]),
+    );
 
 const goldIcon = 'assets/game/ui/ui_gold.png';
 const gemIcon = 'assets/game/gem/ui_gem.png';
