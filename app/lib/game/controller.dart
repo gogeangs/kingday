@@ -820,7 +820,6 @@ class GameController extends ChangeNotifier {
       'm:토비|형! 은퇴했다더니 또 나왔네요! 역시 영웅은 쉬지 않아!',
     ], '괭이 대신 검을 든다', illust: 'retire');
     _chapter();
-    setTab(null);
   }
 
   /// 웹 chapter(): 새 지역에 들어설 때 군단 소개

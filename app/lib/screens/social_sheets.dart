@@ -23,10 +23,13 @@ import 'settings_sheet.dart';
 
 /// 얼굴 + 프로필 테두리 (웹 .face/.pfbig/.rkf). 큰 테두리(tall)는 위로 솟음
 class FramedFace extends StatelessWidget {
-  const FramedFace({super.key, required this.frame, required this.size, this.dim = false, this.portrait = false});
+  const FramedFace({super.key, required this.frame, required this.size, this.dim = false, this.portrait = false, this.face = true});
   final String frame;
   final double size;
   final bool dim;
+
+  /// false 면 얼굴 없이 바탕만 (웹 프로필 테두리 고르기 칸 .pfc .pv i)
+  final bool face;
 
   /// 랭킹처럼 초상화를 그대로 잘라 보여 줄 때 (웹 .rkf .pt)
   final bool portrait;
@@ -49,9 +52,11 @@ class FramedFace extends StatelessWidget {
             borderRadius: BorderRadius.circular((size - inset * 2) * .16),
             child: DecoratedBox(
               decoration: const BoxDecoration(gradient: RadialGradient(center: Alignment(0, -.3), colors: [Color(0xFF3B5A8A), Color(0xFF1A2440)])),
-              child: portrait
-                  ? kdImg('assets/game/portraits/portrait_kael_idle.png', fit: BoxFit.cover, align: const Alignment(0, -.8))
-                  : const FaceImg('kael'),
+              child: !face
+                  ? null
+                  : portrait
+                      ? kdImg('assets/game/portraits/portrait_kael_idle.png', fit: BoxFit.cover, align: const Alignment(0, -.8))
+                      : const FaceImg('kael'),
             ),
           ),
         ),
@@ -215,7 +220,7 @@ class _ProfileState extends State<_Profile> {
                         height: pv,
                         child: Stack(clipBehavior: Clip.none, alignment: Alignment.center, children: [
                           if (frame)
-                            FramedFace(frame: d.k, size: pv, dim: !has)
+                            FramedFace(frame: d.k, size: pv, dim: !has, face: false)
                           else
                             Positioned.fill(child: has ? _badgeImg(d.k, pv) : filtered(_badgeImg(d.k, pv), gray: 1, bright: .6)),
                           if (!has) uiImg('icon_lock', size: 26),

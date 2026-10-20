@@ -113,6 +113,38 @@ void main() {
     }
   });
 
+  testWidgets('화면을 켠 채 10분 자동 플레이 (창·탭·자동 열기)', (tester) async {
+    tester.view.devicePixelRatio = 3;
+    tester.view.physicalSize = const Size(360 * 3, 740 * 3);
+    addTearDown(tester.view.reset);
+    SharedPreferences.setMockInitialValues({
+      'acorn-idle-v1': jsonEncode({'gold': 3000, 'stage': 1, 'best': 1, 'started': true, 'autoOpen': true, 'autoSell': true, 'done': {'pete': true}, 'last': _now}),
+    });
+    final store = await SaveStore.open();
+    final g = GameController(store: store, state: store.load(DateTime.now().millisecondsSinceEpoch));
+    await tester.pumpWidget(KingdayApp(g: g));
+    await tester.pump(const Duration(milliseconds: 100));
+    await tester.tap(find.text('게임 시작'));
+    final tabs = [null, GameTab.eq, GameTab.pt, GameTab.up, GameTab.vl, GameTab.mp, null];
+    for (var i = 0; i < 6000; i++) {
+      await tester.pump(const Duration(milliseconds: 100));
+      if (i % 30 == 0) {
+        // 뜬 창은 닫고(고르던 장비는 버림), 단련도 조금씩
+        final nav = g.navKey.currentState;
+        if (nav != null && nav.canPop()) nav.pop();
+        g.acts.pending = null;
+        final best = g.acts.bestUpgrade();
+        if (best != null) g.act((a) => a.upFire(best));
+      }
+      if (i % 600 == 0) g.setTab(tabs[(i ~/ 600) % tabs.length]);
+    }
+    expect(g.state.stage, greaterThan(3), reason: '10분 동안 영지를 몇 곳은 되찾아야 함');
+    sane(g.state, '10분 자동 플레이');
+    await tester.pumpWidget(const SizedBox());
+    g.dispose();
+    await tester.pump(const Duration(seconds: 3));
+  }, timeout: const Timeout(Duration(minutes: 6)));
+
   test('시계가 거꾸로 가도 방치 보상·생산이 음수가 아님', () {
     final s = GameState.hydrate(jsonDecode(_badSaves['미래 시각(시계 되돌림)']!) as Map<String, dynamic>, _now, GameCalc.rankIdxOf);
     final c = GameCalc(s);
