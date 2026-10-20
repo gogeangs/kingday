@@ -60,6 +60,9 @@ class Online {
   }
 
   final List<Timer> _timers = [];
+
+  /// 마지막으로 난 연결 오류 (시험·문제 찾기용)
+  Object? lastError;
   bool _dead = false;
 
   void start() {
@@ -133,7 +136,8 @@ class Online {
           g.save();
           rankSubmit(false);
         }
-      } catch (_) {
+      } catch (e) {
+        lastError = e;
       } finally {
         _ens = null;
       }

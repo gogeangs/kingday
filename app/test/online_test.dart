@@ -55,7 +55,18 @@ class FakeSb {
 
   http.Response _j(Object? v) => http.Response.bytes(utf8.encode(jsonEncode(v)), 200, headers: {'content-type': 'application/json'});
 
+  final errors = <String>[];
+
   Future<http.Response> handle(http.Request r) async {
+    try {
+      return await _handle(r);
+    } catch (e) {
+      errors.add('$e');
+      rethrow;
+    }
+  }
+
+  Future<http.Response> _handle(http.Request r) async {
     expect(r.headers['apikey'], sbKey);
     final p = r.url.path;
     if (p == '/auth/v1/signup') {
@@ -129,7 +140,7 @@ void main() {
       await press('게임 시작');
       // 1.5초 뒤 계정 준비 → 임시 닉네임 → 우편 확인 → 시즌 결과 창
       await frames(25);
-      expect(g.online.nick, '영주12345');
+      expect(g.online.nick, '영주12345', reason: 'calls=${fake.calls.map((c) => c.$1)} errors=${fake.errors} last=${g.online.lastError}');
       expect(g.online.nickTemp, isTrue);
       expect(fake.calls.map((c) => c.$1), containsAll(['kd_ensure_profile', 'kd_mail_list']));
       final ens = fake.calls.firstWhere((c) => c.$1 == 'kd_ensure_profile').$2;
