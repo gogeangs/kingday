@@ -160,6 +160,7 @@ body{word-break:keep-all;overflow-wrap:break-word;line-break:strict;background:#
 canvas{display:block;width:100%;height:100%}
 .guide{pointer-events:auto;display:flex;align-items:center;gap:6px;background:rgba(10,14,26,.85);border:1px solid rgba(123,224,143,.6);border-radius:999px;color:#e9f4ea;font:inherit;font-size:12.5px;padding:4px 10px 4px 4px;cursor:pointer;animation:gdin .4s ease-out}.guide .gtg{background:#7be08f;color:#0d1a10;font-weight:800;font-size:11px;border-radius:999px;padding:2px 7px}.guide b{color:#7be08f;font-size:15px}
 @keyframes gdin{from{transform:translateY(-6px);opacity:0}}
+.qbtn.imgb{background:none!important;border:0!important;box-shadow:none!important;width:50px;height:50px;padding:0;position:relative}.qbtn.imgb img{width:50px;height:50px;filter:drop-shadow(0 2px 3px rgba(0,0,0,.5))}.qbtn.imgb small{margin-top:46px}.qbtn.auto.imgb{filter:none}.qbtn.auto.imgb:not(.on) img{filter:grayscale(.85) brightness(.65)}.qbtn.imgb.on img{filter:drop-shadow(0 0 6px rgba(255,210,60,.8))}
 .qbtn.hint{animation:qhint .5s ease-in-out 5 alternate;box-shadow:0 0 0 4px rgba(123,224,143,.8)}@keyframes qhint{to{transform:scale(1.15)}}
 .ovtop{position:absolute;top:8px;left:0;right:0;display:flex;flex-direction:column;align-items:center;gap:6px;pointer-events:none;padding-inline:12px}
 .stagepill{background:linear-gradient(rgba(10,14,26,.88),rgba(20,26,41,.82));border:1px solid rgba(255,201,74,.55);border-radius:12px;padding:5px 12px 6px;display:flex;flex-direction:column;align-items:center;gap:4px;min-width:200px;box-shadow:0 4px 14px rgba(0,0,0,.35)}
@@ -437,8 +438,8 @@ button:focus-visible,input:focus-visible{outline:2px solid var(--gold);outline-o
       <div class="prow" id="partyRow"></div>
       <div class="qbtns">
         <button class="qbtn" id="quickBox" aria-label="성유물 상자 열기"><img src="assets/ui/relic_chest.png" alt="" onerror="this.replaceWith(document.createTextNode('상자'))"><small id="quickCost">20</small></button>
-        <button class="qbtn auto" id="autoBtn" aria-label="스킬 자동 사용">AUTO</button>
-        <button class="qbtn" id="speedBtn" aria-label="전투 속도">x1</button>
+        <button class="qbtn auto imgb" id="autoBtn" aria-label="스킬 자동 사용"><img src="assets/ui/btn_auto.png" alt="" onerror="this.replaceWith('AUTO')"><small>자동</small></button>
+        <button class="qbtn imgb" id="speedBtn" aria-label="전투 속도"><img src="assets/ui/btn_x1.png" alt=""><small>x1</small></button>
       </div>
     </div>
 
@@ -1180,8 +1181,8 @@ $('faceBtn').onclick=()=>{if($('modal').hidden)profileSheet()};$('gemBtn').oncli
 $('quickBox').onclick=()=>openBox(false);
 $('speedBtn').onclick=()=>{S.speed=S.speed===2?1:2;renderSpeed()};
 $('autoBtn').onclick=()=>{S.autoSkill=S.autoSkill===false;renderAuto();toast(S.autoSkill===false?'스킬 자동 사용 꺼짐 · 빛나는 초상화를 눌러 쓰세요':'스킬 자동 사용 켜짐');prowSig=''};
-function renderAuto(){const b=$('autoBtn');if(b)b.classList.toggle('on',S.autoSkill!==false)}
-function renderSpeed(){const b=$('speedBtn');b.textContent='x'+(S.speed||1);b.classList.toggle('on',S.speed===2)}
+function renderAuto(){const b=$('autoBtn');if(b){b.classList.toggle('on',S.autoSkill!==false);const sm=b.querySelector('small');if(sm)sm.textContent=S.autoSkill!==false?'자동 켬':'자동 끔'}}
+function renderSpeed(){const b=$('speedBtn'),x=S.speed===2?2:1,im=b.querySelector('img'),sm=b.querySelector('small');if(im)im.src='assets/ui/btn_x'+x+'.png';if(sm)sm.textContent='x'+x;b.classList.toggle('on',x===2)}
 /* 전투 화면 아래 원정대 초상화 줄 */
 let prowSig='';
 function renderPartyRow(){
