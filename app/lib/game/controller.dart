@@ -6,6 +6,7 @@ library;
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -385,6 +386,16 @@ class GameController extends ChangeNotifier {
   // ── 매 프레임 ──
   num _uiT = 0, _autoT = 0;
   void _onFrame(double dt) {
+    // Flame 이 화면을 다시 짜는 도중(build)에 update(0) 을 부를 때가 있음 → 그때는 화면 갱신을 그 프레임 뒤로 미룸
+    if (dt <= 0) return;
+    if (SchedulerBinding.instance.schedulerPhase == SchedulerPhase.persistentCallbacks) {
+      SchedulerBinding.instance.addPostFrameCallback((_) => _frameNow(dt));
+      return;
+    }
+    _frameNow(dt);
+  }
+
+  void _frameNow(double dt) {
     for (final e in sim.events) {
       _handle(e);
     }
