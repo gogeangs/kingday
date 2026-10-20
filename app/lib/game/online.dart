@@ -283,6 +283,14 @@ class Online {
     final items = <String>[];
     for (final m in list) {
       final r = asMap(m['reward']) ?? const {};
+      // 스토어 결제 확인 우편 (kd-iap): 꾸러미는 첫 구매 2배 계산까지 게임 규칙대로
+      final pk = r['pack'];
+      if (pk is String && gemPacks.any((p) => p.k == pk)) {
+        g.act((a) => a.grantPack(pk));
+        continue;
+      }
+      if (truthy(r['starter'])) g.act((a) => a.grantStarter(count: true));
+      if (asNum(r['sub_days']) > 0) g.act((a) => a.grantSub(count: true, days: asNum(r['sub_days'])));
       if (asNum(r['gem']) > 0) gem += math.min(asNum(r['gem']), 100000);
       final cards = asNum(r['cards']);
       if (cards > 0) {
@@ -321,6 +329,14 @@ class Online {
     final msg = [if (gem > 0) '황금 이삭 +${fmt(gem)}', ...items].join(' · ');
     if (msg.isNotEmpty) g.toast(msg);
     if (got.isNotEmpty) g.queue((ctx) => showCardReveal(ctx, g, got, '우편 보상'));
+  }
+
+  /// 결제 확인 우편(kind=shop)을 바로 받기
+  Future<void> claimShopMails() async {
+    await mailFetch();
+    for (final m in List.of(mails)) {
+      if (m['kind'] == 'shop') await mailClaim(asNum(m['id']).toInt());
+    }
   }
 
   static final _seasonRe = RegExp(r'^(\d+)시즌 랭킹 보상 · (\d+)위');

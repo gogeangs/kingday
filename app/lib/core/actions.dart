@@ -734,33 +734,47 @@ class GameActions {
 
   /// 황금 이삭 꾸러미 (첫 구매 2배)
   void buyPack(String k) {
-    final p = gemPacks.firstWhere((x) => x.k == k), first = !truthy(buys[k]), n = p.gem * (first ? 2 : 1);
-    _pay(k, () {
-      s.gem = s.gem + n;
-      _toast('황금 이삭 +${fmt(n)}${first ? ' (첫 구매 2배)' : ''}');
-    });
+    final first = !truthy(buys[k]);
+    _pay(k, () => _givePack(k, first));
+  }
+
+  /// 스토어 결제 확인 우편으로 받은 꾸러미 (구매 기록도 여기서)
+  void grantPack(String k) {
+    final first = !truthy(buys[k]);
+    buys[k] = orNum(buys[k], 0) + 1;
+    _givePack(k, first);
+  }
+
+  void _givePack(String k, bool first) {
+    final p = gemPacks.firstWhere((x) => x.k == k), n = p.gem * (first ? 2 : 1);
+    s.gem = s.gem + n;
+    _toast('황금 이삭 +${fmt(n)}${first ? ' (첫 구매 2배)' : ''}');
   }
 
   /// 첫 거래 특가: 전설 성유물 1개 + 이삭 100 (한 번만)
   void buyStarter() {
     if (truthy(buys['starter'])) return;
-    _pay('starter', () {
-      s.gem = s.gem + asNum(starterPack['gem']);
-      final it = c.rollItem(rng, 4), cur = c.equipped(it.slot);
-      out.add(ActStarter(it, cur));
-    });
+    _pay('starter', grantStarter);
+  }
+
+  void grantStarter({bool count = false}) {
+    if (count) buys['starter'] = orNum(buys['starter'], 0) + 1;
+    s.gem = s.gem + asNum(starterPack['gem']);
+    final it = c.rollItem(rng, 4), cur = c.equipped(it.slot);
+    out.add(ActStarter(it, cur));
   }
 
   /// 정기 배송 시작·연장
-  void buySub() {
-    _pay('sub', () {
-      final base = math.max(c.now, orNum(sub['until'], 0));
-      sub['until'] = base + asNum(subscription['days']) * 864e5;
-      sub['last'] = c.today();
-      final g = asNum(subscription['now']) + asNum(subscription['day']);
-      s.gem = s.gem + g;
-      _toast('정기 배송 시작! 황금 이삭 +${fmt(g)}');
-    });
+  void buySub() => _pay('sub', grantSub);
+
+  void grantSub({bool count = false, num days = 0}) {
+    if (count) buys['sub'] = orNum(buys['sub'], 0) + 1;
+    final base = math.max(c.now, orNum(sub['until'], 0));
+    sub['until'] = base + (days > 0 ? days : asNum(subscription['days'])) * 864e5;
+    sub['last'] = c.today();
+    final g = asNum(subscription['now']) + asNum(subscription['day']);
+    s.gem = s.gem + g;
+    _toast('정기 배송 시작! 황금 이삭 +${fmt(g)}');
   }
 
   /// 정기 배송 오늘 받기

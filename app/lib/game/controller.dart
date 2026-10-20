@@ -27,6 +27,7 @@ import '../ui/widgets.dart';
 import 'ads.dart';
 import 'feel.dart';
 import 'online.dart';
+import 'store.dart';
 
 /// 화면 어디서나 ref.watch(gameProvider) 로 꺼내 씀 (main.dart 에서 실제 값으로 바꿔 끼움)
 final gameProvider = Provider<GameController>((ref) => throw UnimplementedError('ProviderScope 에서 넣어 주세요'));
@@ -80,7 +81,13 @@ class GameController extends ChangeNotifier {
     _saveTimer = Timer.periodic(const Duration(seconds: 5), (_) => save());
     // 8단계: 계정·랭킹·우편·클라우드 (서버가 없으면 꺼짐)
     online = Online(this, server)..start();
+    // 인앱결제 (스토어 상품을 등록하기 전에는 꺼져 있음 → 시험용 바로 지급)
+    iap = IapStore(this);
+    if (Feel.live) iap.init();
   }
+
+  /// 스토어 결제
+  late final IapStore iap;
 
   /// 계정·랭킹·우편함·클라우드 저장
   late final Online online;
@@ -270,6 +277,7 @@ class GameController extends ChangeNotifier {
     _toastTimer?.cancel();
     save();
     online.dispose();
+    iap.dispose();
     game.pauseEngine();
     super.dispose();
   }

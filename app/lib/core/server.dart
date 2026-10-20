@@ -110,6 +110,20 @@ class Server {
     return jsonDecode(utf8.decode(res.bodyBytes));
   }
 
+  /// Edge Function 부르기 (인앱결제 확인 kd-iap 등). 응답 JSON 과 상태 코드
+  Future<(int, dynamic)> function(String name, Map<String, dynamic> body) async {
+    final a = await login();
+    final res = await _http
+        .post(Uri.parse('$sbUrl/functions/v1/$name'),
+            headers: {..._h, 'Authorization': 'Bearer ${a.access}'}, body: jsonEncode(body))
+        .timeout(const Duration(seconds: 30));
+    dynamic j;
+    try {
+      j = jsonDecode(utf8.decode(res.bodyBytes));
+    } catch (_) {}
+    return (res.statusCode, j);
+  }
+
   /// 웹 acctFetch(): 지금 계정 정보 (게스트인지, 연결된 이메일)
   Future<({bool anon, String email})?> user() async {
     final a = await login();

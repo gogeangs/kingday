@@ -12,6 +12,7 @@ import '../core/data.dart';
 import '../core/fmt.dart';
 import '../core/js.dart';
 import '../game/controller.dart';
+import '../game/store.dart';
 import '../ui/game_widgets.dart';
 import '../ui/theme.dart';
 import '../ui/widgets.dart';
@@ -145,6 +146,12 @@ class _ShopPageState extends State<ShopPage> {
         ],
       );
 
+  /// 스토어 결제가 켜져 있으면 스토어로, 아니면 시험용 바로 지급
+  void _buy(String key, VoidCallback test) => IapStore.enabled ? g.iap.buy(key) : test();
+
+  /// 스토어 가격(나라별 통화)이 있으면 그것, 없으면 웹 가격표
+  String _price(String key, num krw) => g.iap.price(key) ?? won(krw);
+
   Widget _anchor(String k) => SizedBox(key: _jump[k], height: 0, width: double.infinity);
 
   void _go(String k) {
@@ -174,7 +181,7 @@ class _ShopPageState extends State<ShopPage> {
     }
 
     return Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-      if (GameActions.testPay)
+      if (GameActions.testPay && !IapStore.enabled)
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
           decoration: BoxDecoration(
@@ -310,7 +317,7 @@ class _ShopPageState extends State<ShopPage> {
             WidgetSpan(alignment: PlaceholderAlignment.middle, child: kdImg(gemIcon, w: 16, h: 16)),
             TextSpan(text: '${starterPack['gem']}'),
           ])),
-          btn: KdBuy(minWidth: 0, text: won(asNum(starterPack['won'])), onTap: () => g.act((x) => x.buyStarter())),
+          btn: KdBuy(minWidth: 0, text: _price('starter', asNum(starterPack['won'])), onTap: () => _buy('starter', () => g.act((x) => x.buyStarter()))),
         ),
         const SizedBox(height: 10),
       ] else
@@ -330,7 +337,7 @@ class _ShopPageState extends State<ShopPage> {
               ])),
         btn: subOn
             ? KdBuy(minWidth: 0, text: gotToday ? '받음' : '+${subscription['day']} 받기', onTap: gotToday ? null : () => g.act((x) => x.claimSub()))
-            : KdBuy(minWidth: 0, text: won(asNum(subscription['won'])), onTap: () => g.act((x) => x.buySub())),
+            : KdBuy(minWidth: 0, text: _price('sub', asNum(subscription['won'])), onTap: () => _buy('sub', () => g.act((x) => x.buySub()))),
       ),
       const SizedBox(height: 12),
       const KdSec('황금 이삭', small: '상품마다 첫 구매는 2배'),
@@ -343,8 +350,8 @@ class _ShopPageState extends State<ShopPage> {
               img: kdImg('assets/game/gem/gem_pack_${i + 1}.png', w: 52, h: 52),
               big: fmt(p.gem),
               small: first ? '+${fmt(p.gem)} 보너스' : null,
-              price: Text(won(p.won), style: KdText.figure(13, color: KdColors.goldInk)),
-              onTap: () => g.act((x) => x.buyPack(p.k)),
+              price: Text(_price(p.k, p.won), style: KdText.figure(13, color: KdColors.goldInk)),
+              onTap: () => _buy(p.k, () => g.act((x) => x.buyPack(p.k))),
             );
           }),
       ]),
