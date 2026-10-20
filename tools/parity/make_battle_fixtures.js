@@ -35,7 +35,7 @@ const CASES = [
   ['manual', withTut(base.mid, { autoSkill: false, stage: 31, best: 31, wave: 0 }), 200, 60],
   ['lateHard', withTut(base.late, { stage: 56, best: 56, wave: 0 }), 200, 120],
   ['lateAlt', withTut(base.late, { stage: 68, best: 68, wave: 0, party: { miner: 'gordon', fisher: 'haral', keeper: 'daisy', cook: 'margo' } }), 200, 120],
-  ['makrye', withTut(base.late, { stage: 44, best: 68, wave: 2, rec: Object.assign({}, base.late.rec || {}, { makrye: 5 }), lv: Object.assign({}, base.late.lv || {}, { makrye: 60 }), party: Object.assign({}, base.late.party || {}, { fisher: 'makrye' }) }), 200, 90],
+  ['makrye', withTut(base.late, { stage: 66, best: 68, wave: 2, rec: Object.assign({}, base.late.rec || {}, { makrye: 5 }), lv: Object.assign({}, base.late.lv || {}, { makrye: 60 }), party: Object.assign({}, base.late.party || {}, { fisher: 'makrye' }) }), 200, 240],
   ['honey', withTut(base.late, { stage: 68, best: 68, wave: 3, party: { miner: 'bron', fisher: 'haral', keeper: 'riel', cook: 'margo' } }), 200, 120],
 ];
 
