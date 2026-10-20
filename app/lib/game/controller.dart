@@ -65,13 +65,15 @@ class GameController extends ChangeNotifier {
     final isNew = !truthy(state.raw['started']);
     state.raw['started'] = true;
     state.raw['v'] = 3;
-    calc.produce();
+    _builtToast(calc.produce());
     if (isNew) {
       _intro();
     } else {
       offline();
     }
     calc.pfCheck();
+    // 웹 start() 끝의 events(): 옛 기록·다른 곳에서 가져온 기록이면 밀린 이야기·칭호를 바로 보여 줌
+    sim.runStoryEvents();
     // 웹 loop(): 5초마다 저장
     _saveTimer = Timer.periodic(const Duration(seconds: 5), (_) => save());
     // 8단계: 계정·랭킹·우편·클라우드 (서버가 없으면 꺼짐)
@@ -148,11 +150,20 @@ class GameController extends ChangeNotifier {
     backgrounded = true;
   }
 
+  /// 시간이 다 돼 끝난 공사 알림 (웹 checkBuild → finishBuild: 첫 번째만 알림)
+  void _builtToast(List<String> done) {
+    if (done.isEmpty) return;
+    final k = done.first, b = buildingDef(k);
+    final after = state.bldLv(k) - done.skip(1).where((x) => x == k).length;
+    toast('${b.n}${after - 1 > 0 ? ' 확장' : ' 재건'} 완료! ${calc.bldEff(k, after)}');
+    refresh();
+  }
+
   /// 앱으로 돌아올 때: 꺼 둔 동안의 방치 보상
   void onResume() {
     if (!backgrounded) return;
     backgrounded = false;
-    calc.produce();
+    _builtToast(calc.produce());
     offline();
     refresh();
     // 웹 'online' 이벤트처럼: 돌아오면 계정·우편 다시 확인
@@ -223,10 +234,8 @@ class GameController extends ChangeNotifier {
                 kind: BuyKind.ad,
                 minWidth: 0,
                 text: '▶ 광고 보고 2배 받기 · 오늘 $adN회',
-                onTap: () {
-                  Navigator.of(c).pop();
-                  watchAd('offline', twice);
-                },
+                // 창을 닫고 「닫힌 다음」 광고를 띄움 (바로 부르면 창이 아직 열린 것으로 보여 광고가 안 뜸)
+                onTap: () => chainSheet(c, () => watchAd('offline', twice)),
               ),
           ],
           acts: KdActs(buttons: [
@@ -391,7 +400,7 @@ class GameController extends ChangeNotifier {
     _uiT += dt;
     if (_uiT > .4) {
       _uiT = 0;
-      calc.produce();
+      _builtToast(calc.produce());
       calc.pfCheck();
       refresh();
     }
@@ -649,7 +658,11 @@ class GameController extends ChangeNotifier {
               Text('${r.n} 카엘', textAlign: TextAlign.center, style: const TextStyle(fontFamily: 'Hahmlet', fontSize: 22, fontWeight: FontWeight.w700)),
             ]));
       case GemEvent(:final n, :final why):
-        toast('황금 이삭 +${fmt(n)} · $why');
+        // 웹: 군단장 첫 처치 이삭은 2.3초 뒤 (「○○ 처치」 알림에 덮이지 않게) + 진동
+        Timer(Duration(milliseconds: why == '군단장 첫 처치' ? 2300 : 0), () {
+          haptic(const [18]);
+          toast('황금 이삭 +${fmt(n)} · $why');
+        });
       case SkillTutorialEvent():
         // 웹: 안내를 보는 동안 자동 스킬을 잠시 끔
         final was = state.raw['autoSkill'];

@@ -11,6 +11,7 @@ import '../game/controller.dart';
 import '../ui/image_store.dart';
 import '../ui/theme.dart';
 import '../ui/widgets.dart';
+import 'social_sheets.dart';
 
 const _rNode = ['erdan', 'dusk', 'canyon', 'frost', 'ash'];
 
@@ -29,7 +30,7 @@ class MpPage extends StatelessWidget {
         child: ClipRRect(borderRadius: BorderRadius.circular(11), child: CustomPaint(painter: _MapPainter(g), size: Size.infinite)),
       ),
       const SizedBox(height: 12),
-      KdBuy(text: '🏆 랭킹 보기', minWidth: 0, onTap: () => g.toast('랭킹은 8단계(서버 연결)에서 옮겨 와요')),
+      KdBuy(text: '🏆 랭킹 보기', minWidth: 0, onTap: () => openRanking(g)),
       const SizedBox(height: 12),
       KdBox(children: [
         KdSec('${s.stage > maxLand ? '왕도 아스테리온' : GameCalc.terrName(s.stage)} 탈환 중', small: '${r.n} · ${(s.stage - 1) % 10 + 1}/10'),
