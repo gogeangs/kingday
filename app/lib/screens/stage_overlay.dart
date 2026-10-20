@@ -42,10 +42,13 @@ class StageTop extends StatelessWidget {
                 boxShadow: const [BoxShadow(color: Color(0x59000000), blurRadius: 14, offset: Offset(0, 4))],
               ),
               child: Row(mainAxisSize: MainAxisSize.min, children: [
-                Column(crossAxisAlignment: CrossAxisAlignment.start, mainAxisSize: MainAxisSize.min, children: [
-                  Text(label, style: KdText.display(14).copyWith(letterSpacing: .3)),
-                  if (sub.isNotEmpty) Text(sub, style: KdText.body(11.5, color: KdColors.muted, height: 1.2)),
-                ]),
+                Flexible(
+                  child: Column(crossAxisAlignment: CrossAxisAlignment.start, mainAxisSize: MainAxisSize.min, children: [
+                    Text(label, maxLines: 1, overflow: TextOverflow.ellipsis, style: KdText.display(14).copyWith(letterSpacing: .3)),
+                    if (sub.isNotEmpty)
+                      Text(sub, maxLines: 1, overflow: TextOverflow.ellipsis, style: KdText.body(11.5, color: KdColors.muted, height: 1.2)),
+                  ]),
+                ),
                 const SizedBox(width: 8),
                 _pips(s.wave, boss != null),
               ]),

@@ -69,10 +69,11 @@ class KdSec extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.baseline,
         textBaseline: TextBaseline.alphabetic,
         children: [
-          Text(title, style: KdText.display(15)),
-          const SizedBox(width: 8),
-          if (small != null)
-            Expanded(child: Text(small!, textAlign: TextAlign.right, style: KdText.body(12, color: KdColors.muted))),
+          Expanded(child: Text(title, style: KdText.display(15))),
+          if (small != null) ...[
+            const SizedBox(width: 8),
+            Flexible(child: Text(small!, textAlign: TextAlign.right, style: KdText.body(12, color: KdColors.muted))),
+          ],
         ],
       );
 }
