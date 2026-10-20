@@ -382,7 +382,7 @@ void showCardOdds(GameController g) {
         children: [for (final w in cells) Padding(padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 6), child: w)],
       );
   Text t(String s, {Color? col, bool right = true, bool bold = false}) =>
-      Text(s, textAlign: right ? TextAlign.right : TextAlign.left, style: KdText.body(13, color: col, weight: bold ? FontWeight.w700 : FontWeight.w400));
+      Text(s, textAlign: right ? TextAlign.right : TextAlign.left, style: KdText.body(13, color: col ?? KdColors.fg, weight: bold ? FontWeight.w700 : FontWeight.w400));
   const cols = {0: FlexColumnWidth(1.4), 1: FlexColumnWidth(1), 2: FlexColumnWidth(1)};
   g.openSheet<void>((ctx) => KdSheetBody(
         eyebrow: '피트의 상점',
