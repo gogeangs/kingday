@@ -52,3 +52,11 @@
 - `records`: (user, season) 최고 스테이지. season=0 은 명예의 전당
 - 함수: `kd_set_nick` · `kd_submit`(가입 시간 대비 너무 빠르면 hidden) · `kd_ranking`(상위 100 + 내 순위)
 - 시즌: 2026-10-19 00:00 KST부터 14일 단위 (`kd_season()`)
+
+## 8. 2단계: 우편함 + 시즌 정산 (supabase/stage2_mail.sql)
+- 우편함 버튼: 전투 화면 오른쪽 위(닉네임을 정한 뒤 보임), 안 받은 우편 수 빨간 점
+- 우편: 서버(`mails`)에서만 만들고 `kd_mail_claim`으로 받기 확인 → 게임이 보상을 넣음. 보관 30일
+- 시즌 정산: 끝난 시즌은 누군가 우편함을 열 때 `kd_settle_due`가 한 번만 정산(`settlements`)
+- 명예의 전당: 정산 때 1~3위 금·은·동관 배지(각 한 번), 50곳 탈환 시 「정복자」 테두리(한 번, 1년 보관)
+- 운영 우편(SQL Editor 전용): `select public.kd_admin_mail(null, '점검 보상', '고마워요', '{"gem":100}');`
+- 새 꾸미기: 테두리 season·conquer, 배지 champ·top10·crown1~3 (그림은 임시 → 교체 예정), 우편함 아이콘 icon_mail, 배너 hd_mail

@@ -96,6 +96,9 @@ body{word-break:keep-all;overflow-wrap:break-word;line-break:strict;background:#
 #forge.fold>*:not(.sec){display:none}#forge .sec{cursor:pointer}.eqforge-sub{}#forge .sec+.note,#forge .sec ~ .sec{}#forge .sec::after{content:'▴';margin-left:auto;padding-left:8px;color:var(--muted)}#forge.fold .sec::after{content:'▾ 펼치기';font-size:12px}
 .upr .upic{width:46px;height:46px;flex:0 0 auto}.upr .upv{white-space:nowrap;font-size:12.5px;color:var(--muted)}.upr .upv b{color:var(--fg)}.upr .upv b.nx{color:#7be08f}.upr.best{border-color:var(--gold)!important;box-shadow:0 0 0 1px var(--gold),0 0 14px rgba(255,201,74,.35)}.upr.best::before{content:'추천';position:absolute;top:-8px;left:12px;background:var(--gold);color:#1a1206;font-size:10px;font-weight:800;border-radius:6px;padding:0 6px;line-height:16px}.upr{position:relative}
 .rtgain{background:rgba(255,201,74,.1);border:1px solid rgba(255,201,74,.45);border-radius:10px;padding:8px 10px;font-size:13px;text-align:center}.rtgain b{color:var(--gold);font-size:15px}
+.mailbtn{position:absolute;top:8px;right:8px;z-index:4;width:42px;height:42px;padding:0;border-radius:12px;background:rgba(10,14,26,.78);border:1px solid rgba(255,201,74,.55);display:grid;place-items:center;cursor:pointer;font-size:20px}.mailbtn img{width:34px;height:34px;object-fit:contain}.mailbtn .mdot{position:absolute;top:-5px;right:-5px;min-width:17px;height:17px;padding:0 4px;border-radius:9px;background:var(--bad);color:#fff;font-style:normal;font-size:10px;font-weight:800;line-height:17px;text-align:center}
+@media (max-width:380px){.stagewrap:has(.mailbtn:not([hidden])) .ovtop{padding-inline:8px 56px}}
+.mlist{display:flex;flex-direction:column;gap:8px;max-height:52vh;overflow:auto;margin:6px 0}.mitem{display:flex;align-items:center;gap:10px;padding:10px;border-radius:12px;background:rgba(255,255,255,.04);border:1px solid rgba(255,201,74,.25)}.mico{font-size:24px;flex:0 0 auto}.mtx{flex:1;min-width:0;display:flex;flex-direction:column;gap:3px}.mtx b{font-size:14px}.mtx small{color:var(--muted,#9aa6c1);font-size:12px}.mtx .mexp{color:#ffc94a;font-size:11px}.mrws{display:flex;flex-wrap:wrap;gap:4px}.mrw{display:inline-flex;align-items:center;gap:3px;font-size:12px;background:rgba(0,0,0,.3);border-radius:8px;padding:2px 6px 2px 2px}.mrw img{width:20px;height:20px;object-fit:contain}.mitem .buy{flex:0 0 auto;padding:8px 14px}
 .toprow{display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:6px;max-width:100%}
 .stagepill{flex:0 0 auto;flex-direction:row!important;gap:8px!important;padding:5px 10px!important;min-width:0!important}.stagepill .sth{flex-direction:column;align-items:flex-start!important;gap:0!important}.stagepill .sth b{font-size:14px}.stagepill .sth small{font-size:10.5px}.pip{width:8px!important;height:5px}
 .guide{flex:0 0 auto;max-width:100%;padding:4px 8px 4px 4px!important}.guide{font-size:12px!important;line-height:1.2;background:rgba(10,14,26,.88)!important;color:#e9f4ea!important;border:1px solid rgba(123,224,143,.6)!important;box-shadow:none}.guide .gtg{font-size:10.5px!important;white-space:nowrap}.guide b{font-size:13px!important}.guide .gtx{font-size:12px;display:none;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:280px}.guide.open .gtx{display:inline}.guide:not(.open){animation:gdpulse 2s ease-in-out infinite}@keyframes gdpulse{50%{box-shadow:0 0 0 4px rgba(123,224,143,.25)}}
@@ -443,6 +446,7 @@ button:focus-visible,input:focus-visible{outline:2px solid var(--gold);outline-o
 
   <div class="stagewrap" id="wrap">
     <canvas id="cv" aria-label="원정대 자동 전투 화면"></canvas>
+    <button class="mailbtn" id="mailBtn" aria-label="우편함" hidden><img src="assets/ui/icon_mail.png" alt="" onerror="this.outerHTML='<span>✉️</span>'"><i class="mdot" id="mailDot" hidden></i></button>
     <div class="ovtop"><div class="toprow"><div class="stagepill"><div class="sth"><b id="stLabel">1-1 에르단 평원</b><small id="stRegion">개울 마을</small></div><div class="pips" id="pips"></div></div><button class="guide" id="guide" hidden></button></div>
     <div class="bossbar" id="bossbar" hidden><img id="bossFace" class="bossface" alt="" hidden><div class="bb"><div class="bbtop"><span class="btag" id="bossTag">성주</span><span id="bossName">보스</span><span id="bosst">30초</span></div><div class="track"><div class="fill" id="bossfill"></div><span id="bossHp"></span></div><div class="tline"><i id="bossTime"></i></div></div></div>
     <div class="buffs" id="buffs"></div></div>
@@ -1191,6 +1195,7 @@ document.querySelectorAll('#ptTabs [data-pt]').forEach(b=>b.onclick=()=>{ptTab=b
 new MutationObserver(()=>{$('sheet').scrollTop=0}).observe($('sheet'),{childList:true});
 $('forge').addEventListener('click',e=>{if(e.target.closest('.sec'))$('forge').classList.toggle('fold')});
 $('mapRank').onclick=()=>rankSheet();
+$('mailBtn').onclick=()=>{if($('modal').hidden)mailSheet()};
 $('faceBtn').onclick=()=>{if($('modal').hidden)profileSheet()};$('gemBtn').onclick=()=>setTab('sh');
 $('quickBox').onclick=()=>openBox(false);
 $('speedBtn').onclick=()=>{S.speed=S.speed===2?1:2;renderSpeed()};
@@ -1749,7 +1754,7 @@ function nickSheet(after){$('sheet').innerHTML=`<div class="eyebrow">랭킹</div
  <input class="nickin" id="nickIn" maxlength="10" value="${S.nick||''}" placeholder="예: 은퇴하고픈농부" autocomplete="off"><p class="note nickerr" id="nickErr"></p>
  <div class="acts"><button id="mX">취소</button><button class="pri" id="nickOk">정하기</button></div>`;$('modal').hidden=false;$('mX').onclick=closeModal;
  $('nickOk').onclick=async()=>{const n=$('nickIn').value.trim();$('nickOk').disabled=true;$('nickErr').textContent='확인하는 중…';
-  try{const r=await sbRpc('kd_set_nick',{p_nick:n,...rkMeta()});if(r==='ok'){S.nick=n;save();rkSent=0;await rankSubmit(true);toast('닉네임을 「'+n+'」(으)로 정했어요');(after||rankSheet)()}else{$('nickErr').textContent=NICKERR[r]||'다시 시도해 주세요';$('nickOk').disabled=false}}
+  try{const r=await sbRpc('kd_set_nick',{p_nick:n,...rkMeta()});if(r==='ok'){S.nick=n;save();rkSent=0;await rankSubmit(true);toast('닉네임을 「'+n+'」(으)로 정했어요');mailFetch();(after||rankSheet)()}else{$('nickErr').textContent=NICKERR[r]||'다시 시도해 주세요';$('nickOk').disabled=false}}
   catch(e){$('nickErr').textContent='인터넷 연결이 필요해요';$('nickOk').disabled=false}}}
 const RKREW=[['1위','이삭 500 · 시즌 왕관 테두리 · 전용 배지'],['2~10위','이삭 300 · 전용 배지'],['상위 10%','이삭 150 · 동료 카드 30장'],['상위 50%','이삭 50'],['참여','이삭 20']];
 let rkTab='season';
@@ -1775,6 +1780,32 @@ async function rankSheet(tab){if(tab)rkTab=tab;
  <div class="acts"><button id="rkNick">닉네임 바꾸기</button><button class="pri" id="mGo">닫기</button></div>`;
  bind();$('mGo').onclick=closeModal;$('rkNick').onclick=()=>nickSheet()}
 const esc=t=>String(t).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+/* 우편함: 서버에서만 만들고 받기도 서버가 확인 → 받은 보상을 게임에 넣어요 */
+let mails=[],mailBusy=false;
+const mailOn=()=>sbOn()&&!!S.nick;
+function mailDot(){const b=$('mailBtn');if(!b)return;b.hidden=!mailOn();const d=$('mailDot');if(d){d.hidden=!mails.length;d.textContent=mails.length>9?'9+':mails.length}}
+async function mailFetch(){if(!mailOn())return mailDot();try{mails=await sbRpc('kd_mail_list',{})||[]}catch(e){}mailDot();return mails}
+setInterval(()=>{if(!document.hidden)mailFetch()},300000);
+const PFN=k=>(PFRAMES.find(f=>f.k===k)||{}).n||k,BDN=k=>(BADGES.find(b=>b.k===k)||{}).n||k;
+function rewChips(r){const c=[];if(r.gem)c.push(`<span class="mrw"><img src="assets/gem/ui_gem.png" alt="">${fmt(r.gem)}</span>`);if(r.cards)c.push(`<span class="mrw"><img src="assets/ui/card_pack30.png" alt="">동료 카드 ${r.cards}장</span>`);
+ if(r.frame)c.push(`<span class="mrw"><img src="assets/profile/frame_${esc(r.frame)}.png" alt="">${esc(PFN(r.frame))} 테두리</span>`);if(r.badge)c.push(`<span class="mrw"><img src="assets/profile/badge_${esc(r.badge)}.png" alt="">${esc(BDN(r.badge))} 배지</span>`);return c.join('')}
+function mailApply(list){let gem=0;const got=[],items=[];
+ for(const m of list){const r=m.reward||{};if(r.gem>0)gem+=Math.min(+r.gem,100000);
+  if(r.cards>0){const av=g=>CARDIDS().some(x=>cardOpen(x)&&gr(x).w<=GR[g].w&&recStar(x)<starMax(x));const cid=gainCard(+r.cards,av('epic')?'epic':av('rare')?'rare':null);if(cid)got.push([cid,+r.cards]);else gem+=Math.round(r.cards*3)}
+  if(r.frame&&PFRAMES.some(f=>f.k===r.frame)){S.pfUnl=S.pfUnl||{};if(!S.pfUnl[r.frame]){S.pfUnl[r.frame]=1;S.pfNew=S.pfNew||{};S.pfNew['f_'+r.frame]=1}items.push(PFN(r.frame)+' 테두리')}
+  if(r.badge&&BADGES.some(b=>b.k===r.badge)){S.bdUnl=S.bdUnl||{};if(!S.bdUnl[r.badge]){S.bdUnl[r.badge]=1;S.pfNew=S.pfNew||{};S.pfNew['b_'+r.badge]=1}items.push(BDN(r.badge)+' 배지')}}
+ if(gem)S.gem=(S.gem||0)+gem;pfCheck();save();shopSig='';partySig='';renderAll();
+ const msg=[gem?'황금 이삭 +'+fmt(gem):'',...items].filter(Boolean).join(' · ');if(msg)toast(msg);if(got.length)setTimeout(()=>cardReveal(got,'우편 보상'),60)}
+async function mailClaim(id){if(mailBusy)return;mailBusy=true;try{const r=await sbRpc('kd_mail_claim',{p_id:id==null?null:id});if(Array.isArray(r)&&r.length)mailApply(r);await mailFetch()}catch(e){toast('인터넷 연결이 필요해요')}finally{mailBusy=false}if(!$('modal').hidden&&$('mailList'))mailSheet(true)}
+async function mailSheet(cached){const head=`<div class="hdban" style="--hb:url(assets/ui/hd_mail.png)"><span>우편함</span></div>`;
+ if(!mailOn()){$('sheet').innerHTML=head+`<p class="note" style="text-align:center">랭킹에서 닉네임을 정하면 우편을 받을 수 있어요.</p><div class="acts one"><button class="pri" id="mGo">닫기</button></div>`;$('modal').hidden=false;$('mGo').onclick=closeModal;return}
+ if(!cached){$('sheet').innerHTML=head+`<p class="note" style="text-align:center">우편을 확인하는 중…</p><div class="acts one"><button class="pri" id="mGo">닫기</button></div>`;$('modal').hidden=false;$('mGo').onclick=closeModal;await mailFetch()}
+ const day=t=>{const d=(new Date(t)-Date.now())/864e5;return d>=1?Math.floor(d)+'일 남음':Math.max(1,Math.ceil(d*24))+'시간 남음'};
+ const ico={season:'🏆',hall:'👑',notice:'📜'};
+ $('sheet').innerHTML=head+`<p class="note" style="text-align:center">받은 우편은 30일 동안 보관돼요.</p><div class="mlist" id="mailList">${mails.length?mails.map(m=>`<div class="mitem"><div class="mico">${ico[m.kind]||'✉️'}</div><div class="mtx"><b>${esc(m.title)}</b>${m.body?`<small>${esc(m.body)}</small>`:''}<div class="mrws">${rewChips(m.reward||{})}</div><small class="mexp">${day(m.expires_at)}</small></div><button class="buy" data-mail="${m.id}">받기</button></div>`).join(''):'<p class="note" style="text-align:center;padding:18px 0">도착한 우편이 없어요.</p>'}</div>
+ <div class="acts">${mails.length>1?'<button class="pri" id="mAll">모두 받기</button>':''}<button${mails.length>1?'':' class="pri"'} id="mGo">닫기</button></div>`;
+ $('modal').hidden=false;$('mGo').onclick=closeModal;if($('mAll'))$('mAll').onclick=()=>mailClaim(null);
+ document.querySelectorAll('[data-mail]').forEach(b=>b.onclick=()=>{b.disabled=true;mailClaim(+b.dataset.mail)})}
 /* 프로필 꾸미기: 테두리 */
 const PFRAMES=[
  {k:'wood',n:'나무 울타리',d:'처음부터',ok:()=>true},
@@ -1785,7 +1816,9 @@ const PFRAMES=[
  {k:'amethyst',n:'자수정 장식',d:'전설 성유물 착용',ok:()=>Object.values(S.eq).some(it=>it&&it.g>=4)},
  {k:'holy',n:'성검의 가호',d:'첫 은퇴',ok:()=>(S.retires||0)>=1},
  {k:'royal',n:'붉은 왕관',d:'칭호 공작',ok:()=>rankIdx()>=5},
- {k:'goblin',n:'황금 고블린',d:'황금 고블린 희귀 전리품',ok:()=>false,rare:1,tall:1}];
+ {k:'goblin',n:'황금 고블린',d:'황금 고블린 희귀 전리품',ok:()=>false,rare:1,tall:1},
+ {k:'season',n:'시즌 왕관',d:'시즌 랭킹 1위 보상',ok:()=>false,rk:1},
+ {k:'conquer',n:'정복자',d:'영지 50곳 탈환 · 명예의 전당 보상',ok:()=>false,rk:1}];
 const pfTall=k=>(PFRAMES.find(f=>f.k===k)||{}).tall?' tall':'';
 const stat=(k,n)=>{if(!S.stat)S.stat={};S.stat[k]=(S.stat[k]||0)+n},st=k=>(S.stat&&S.stat[k])||0;
 const BADGES=[
@@ -1797,7 +1830,12 @@ const BADGES=[
  {k:'horns',n:'군단장 사냥꾼',d:'군단장 처치',ok:()=>Object.keys(S.gemLord||{}).length>=1},
  {k:'retire',n:'은퇴 전문가',d:'은퇴 3번',ok:()=>(S.retires||0)>=3},
  {k:'king',n:'농부 왕',d:'영지 50곳 모두 탈환',ok:()=>S.best>MAXLAND},
- {k:'goblin',n:'고블린 사냥꾼',d:'황금 고블린 희귀 전리품',ok:()=>false,rare:1}];
+ {k:'goblin',n:'고블린 사냥꾼',d:'황금 고블린 희귀 전리품',ok:()=>false,rare:1},
+ {k:'champ',n:'시즌 챔피언',d:'시즌 랭킹 1위 보상',ok:()=>false,rk:1},
+ {k:'top10',n:'시즌 10강',d:'시즌 랭킹 2~10위 보상',ok:()=>false,rk:1},
+ {k:'crown1',n:'전당의 금관',d:'명예의 전당 1위 보상',ok:()=>false,rk:1},
+ {k:'crown2',n:'전당의 은관',d:'명예의 전당 2위 보상',ok:()=>false,rk:1},
+ {k:'crown3',n:'전당의 동관',d:'명예의 전당 3위 보상',ok:()=>false,rk:1}];
 const bdHas=k=>!!(S.bdUnl&&S.bdUnl[k]);
 const pfHas=k=>k==='wood'||!!(S.pfUnl&&S.pfUnl[k]);
 function pfCheck(){if(!S.pfUnl)S.pfUnl={};for(const f of PFRAMES){if(!S.pfUnl[f.k]&&f.ok()){S.pfUnl[f.k]=1;if(f.k!=='wood'&&S.started){S.pfNew=S.pfNew||{};S.pfNew['f_'+f.k]=1}}}
@@ -1808,13 +1846,13 @@ function pfCheck(){if(!S.pfUnl)S.pfUnl={};for(const f of PFRAMES){if(!S.pfUnl[f.
 function profileSheet(){S.pfSeen=1;const nw=S.pfNew||{};S.pfNew={};pfCheck();const cur=S.pf||'wood',ri=rankIdx();
  $('sheet').innerHTML=`<div class="hdban" style="--hb:url(assets/ui/hd_profile.png)"><span>프로필</span></div><div class="pfhead"><div class="pfbig"><canvas id="pfCv"></canvas><img class="pfr${pfTall(cur)}" src="assets/profile/frame_${cur}.png" alt=""></div><div class="pfinfo"><b>카엘${S.badge&&bdHas(S.badge)?`<img class="pfbd" src="assets/profile/badge_${S.badge}.png" alt="">`:''}</b><small>${RANKS[ri].n} · 전투력 ${fmt(power())}</small><small>최고 영지 ${Math.min(S.best,MAXLAND)} · 은퇴 ${S.retires||0}번 · 은퇴의 추억 ${S.memory||0}개</small></div></div>
  <div class="sec">테두리 <small>${PFRAMES.filter(f=>pfHas(f.k)).length} / ${PFRAMES.length}</small></div>
- <div class="pfgrid">${PFRAMES.map(f=>{const has=pfHas(f.k);return`<button class="pfc${f.k===cur?' on':''}${has?'':' lock'}${f.rare?' rare':''}" data-pf="${f.k}"><span class="pv"><i></i><img class="pfr${pfTall(f.k)}" src="assets/profile/frame_${f.k}.png" alt=""></span><b>${f.n}</b>${nw['f_'+f.k]?'<i class="nwb">NEW</i>':''}<small>${f.k===cur?'사용 중':has?'바꾸기':'🔒 '+f.d}</small></button>`}).join('')}</div>
+ <div class="pfgrid">${PFRAMES.map(f=>{const has=pfHas(f.k);return`<button class="pfc${f.k===cur?' on':''}${has?'':' lock'}${f.rare||f.rk?' rare':''}" data-pf="${f.k}"><span class="pv"><i></i><img class="pfr${pfTall(f.k)}" src="assets/profile/frame_${f.k}.png" alt=""></span><b>${f.n}</b>${nw['f_'+f.k]?'<i class="nwb">NEW</i>':''}<small>${f.k===cur?'사용 중':has?'바꾸기':'🔒 '+f.d}</small></button>`}).join('')}</div>
  <div class="sec">대표 배지 <small>${BADGES.filter(b=>bdHas(b.k)).length} / ${BADGES.length}</small></div>
- <div class="pfgrid">${BADGES.map(b=>{const has=bdHas(b.k),on=S.badge===b.k;return`<button class="pfc bd${on?' on':''}${has?'':' lock'}${b.rare?' rare':''}" data-bd="${b.k}"><span class="pv"><img class="pfr" src="assets/profile/badge_${b.k}.png" alt=""></span><b>${b.n}</b>${nw['b_'+b.k]?'<i class="nwb">NEW</i>':''}<small>${on?'다는 중':has?'달기':'🔒 '+b.d}</small></button>`}).join('')}</div>
+ <div class="pfgrid">${BADGES.map(b=>{const has=bdHas(b.k),on=S.badge===b.k;return`<button class="pfc bd${on?' on':''}${has?'':' lock'}${b.rare||b.rk?' rare':''}" data-bd="${b.k}"><span class="pv"><img class="pfr" src="assets/profile/badge_${b.k}.png" alt=""></span><b>${b.n}</b>${nw['b_'+b.k]?'<i class="nwb">NEW</i>':''}<small>${on?'다는 중':has?'달기':'🔒 '+b.d}</small></button>`}).join('')}</div>
  <div class="acts three"><button id="pfSet">⚙ 설정</button><button id="pfRank">🏆 랭킹</button><button class="pri" id="mGo">닫기</button></div>`;
  $('modal').hidden=false;faceTo($('pfCv'),'kael');$('mGo').onclick=closeModal;$('pfSet').onclick=()=>settingsSheet();$('pfRank').onclick=()=>rankSheet();
- document.querySelectorAll('[data-bd]').forEach(b=>b.onclick=()=>{const k=b.dataset.bd,f=BADGES.find(x=>x.k===k);if(!bdHas(k))return toast(f.rare?'황금 고블린을 잡으면 아주 드물게 얻어요':f.d+' 달성 시 얻어요');S.badge=S.badge===k?null:k;pfCheck();save();profileSheet()});
- document.querySelectorAll('[data-pf]').forEach(b=>b.onclick=()=>{const k=b.dataset.pf,f=PFRAMES.find(x=>x.k===k);if(!pfHas(k))return toast(f.rare?'황금 고블린을 잡으면 아주 드물게 얻어요':f.d+' 달성 시 얻어요');S.pf=k;pfCheck();save();profileSheet()});
+ document.querySelectorAll('[data-bd]').forEach(b=>b.onclick=()=>{const k=b.dataset.bd,f=BADGES.find(x=>x.k===k);if(!bdHas(k))return toast(f.rk?f.d+'로 우편함에 도착해요':f.rare?'황금 고블린을 잡으면 아주 드물게 얻어요':f.d+' 달성 시 얻어요');S.badge=S.badge===k?null:k;pfCheck();save();profileSheet()});
+ document.querySelectorAll('[data-pf]').forEach(b=>b.onclick=()=>{const k=b.dataset.pf,f=PFRAMES.find(x=>x.k===k);if(!pfHas(k))return toast(f.rk?f.d+'로 우편함에 도착해요':f.rare?'황금 고블린을 잡으면 아주 드물게 얻어요':f.d+' 달성 시 얻어요');S.pf=k;pfCheck();save();profileSheet()});
 }
 function settingsSheet(step){
  $('sheet').innerHTML=`<div class="hdban" style="--hb:url(assets/ui/hd_settings.png)"><span>카엘의 수첩</span></div>
@@ -1859,7 +1897,7 @@ function start(data){
  if('serviceWorker'in navigator&&/github\.io$|^localhost$|^127\./.test(location.hostname)){try{navigator.serviceWorker.register('sw.js').then(reg=>{reg.addEventListener('updatefound',()=>{const w=reg.installing;if(w&&navigator.serviceWorker.controller)w.addEventListener('statechange',()=>{if(w.state==='activated')toast('새 버전을 받았어요. 게임을 다시 열면 적용돼요')})})}).catch(()=>{})}catch(e){}}BANNER.src='assets/ui/banner_capture.png';
  S=(data&&typeof data.gold==='number')?hydrate(data):(load()||hydrate({gold:60}));
  $('autoSell').checked=S.autoSell;$('autoOpen').checked=S.autoOpen;
- const isNew=!S.started;S.started=true;S.v=3;syncParty();resize();produce();renderSpeed();
+ const isNew=!S.started;S.started=true;setTimeout(mailFetch,2500);S.v=3;syncParty();resize();produce();renderSpeed();
  if(isNew)intro();else offline();
  faceTo($('faceCv'),'kael');
  $('startBtn').onclick=()=>{$('title').hidden=true;titleOpen=false;faceTo($('faceCv'),'kael');pump()};
