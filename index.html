@@ -1832,8 +1832,8 @@ let oauthPending=null;
  if(q.get('access_token')){sbAuth={access_token:q.get('access_token'),refresh_token:q.get('refresh_token'),expires_at:+q.get('expires_at')||Math.floor(Date.now()/1000)+(+q.get('expires_in')||3600),uid:null};sbSave();oauthPending={intent}}
  else oauthPending={intent,error:q.get('error_code')||q.get('error')||'unknown'};
  try{history.replaceState(null,'',location.pathname+location.search)}catch(e){}})();
-let acct=null,cloudAt=0,cloudBusy=false;
-async function acctFetch(){if(!sbOn())return null;try{const a=await sbLogin();const r=await fetch(SB.url+'/auth/v1/user',{headers:{apikey:SB.key,Authorization:'Bearer '+a.access_token}});if(!r.ok)return acct;const u=await r.json();acct={anon:!!u.is_anonymous,email:u.email||((u.identities||[]).find(i=>i.identity_data&&i.identity_data.email)||{identity_data:{}}).identity_data.email||''};}catch(e){}return acct}
+let acct=null,cloudAt=0,cloudBusy=false,linkGiftAsked=false;
+async function acctFetch(){if(!sbOn())return null;try{const a=await sbLogin();const r=await fetch(SB.url+'/auth/v1/user',{headers:{apikey:SB.key,Authorization:'Bearer '+a.access_token}});if(!r.ok)return acct;const u=await r.json();acct={anon:!!u.is_anonymous,email:u.email||((u.identities||[]).find(i=>i.identity_data&&i.identity_data.email)||{identity_data:{}}).identity_data.email||''};if(!acct.anon&&!linkGiftAsked){linkGiftAsked=true;sbRpc('kd_link_reward',{}).then(r=>{if(r==='ok')mailFetch()}).catch(()=>{linkGiftAsked=false})}}catch(e){}return acct}
 const cloudBody=()=>({p_data:S,p_stage:Math.min(S.stage,MAXLAND+1),p_power:Math.round(power()),p_gem:Math.floor(S.gem||0)});
 async function cloudPut(force){if(!sbOn()||!S.started||noSave||cloudBusy||!S.nick)return false;if(!force&&(S.last||0)<=cloudAt)return false;cloudBusy=true;const t=S.last||Date.now();
  try{const r=await sbRpc('kd_save_put',cloudBody());if(r==='ok'){cloudAt=t;S.cloudAt=Date.now();return true}}catch(e){}finally{cloudBusy=false}return false}
