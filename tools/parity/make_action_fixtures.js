@@ -49,7 +49,7 @@ function op(o) {
     case 'tag': return F('cycleTag')(+a);
     case 'gemplot': return w.run('(()=>{const n=S.gemPlots||0,c=GEM_PLOTS[n];if(c==null)return;if(!spendGem(c))return;S.gemPlots=n+1;ensurePlots()})()');
     case 'grownow': return F('growNow')();
-    case 'cook': return w.run(`(()=>{const r=RECIPES.find(x=>x.k===${q(a)});if(!Object.entries(r.need).every(([k,n])=>S.items[k]>=n))return;for(const[k,n]of Object.entries(r.need))S.items[k]-=n;S.buffs[r.buff]=Math.max(Date.now(),S.buffs[r.buff]||0)+600000;stat('cook',1)})()`);
+    case 'cook': return w.run(`(()=>{const r=RECIPES.find(x=>x.k===${q(a)});if(!Object.entries(r.need).every(([k,n])=>S.items[k]>=n))return;for(const[k,n]of Object.entries(r.need))S.items[k]-=n;S.buffs[r.buff]=Math.max(Date.now(),S.buffs[r.buff]||0)+600000*vpCook();stat('cook',1)})()`);
     case 'sellall': return w.run('(()=>{const keys=Object.keys(S.items),val=keys.reduce((a,k)=>a+S.items[k]*itemPrice(k),0);S.gold+=val;keys.forEach(k=>S.items[k]=0)})()');
     case 'build': return F('orderBuild')(F('bldK')(a));
     case 'cancel': return F('cancelQueued')(a);
