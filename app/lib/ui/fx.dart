@@ -3,6 +3,7 @@ library;
 
 import 'package:flutter/material.dart';
 
+import '../core/fmt.dart';
 import 'widgets.dart';
 
 /// CSS filter: grayscale(g) brightness(b) saturate(s) 를 색 행렬로
@@ -46,4 +47,101 @@ class FaceImg extends StatelessWidget {
           ]),
         );
       });
+}
+
+/// 웹 numFlash(): 숫자가 오르면 초록·크게, 내리면 빨강·작게 반짝이고, 아래에서 「+N」이 떠올라 사라짐.
+/// [big] 이면 작은 변화(10% 미만·50 미만)는 무시 (골드처럼 계속 조금씩 오르는 값)
+class NumFlash extends StatefulWidget {
+  const NumFlash(this.value, {super.key, required this.style, this.big = false, this.prefix = '', this.format});
+  final num value;
+  final TextStyle style;
+  final bool big;
+  final String prefix;
+  final String Function(num)? format;
+
+  @override
+  State<NumFlash> createState() => _NumFlashState();
+}
+
+class _NumFlashState extends State<NumFlash> with TickerProviderStateMixin {
+  late final AnimationController _pulse = AnimationController(vsync: this, duration: const Duration(milliseconds: 600));
+  final List<(String, bool, AnimationController)> _floats = [];
+  bool _up = true;
+
+  String _f(num v) => (widget.format ?? _fmt)(v);
+  static String _fmt(num v) => fmt(v);
+
+  @override
+  void didUpdateWidget(NumFlash old) {
+    super.didUpdateWidget(old);
+    final o = old.value, v = widget.value;
+    if (v == o || !v.isFinite || !o.isFinite) return;
+    final d = v - o;
+    if (widget.big && d.abs() < (o.abs() * .1 > 50 ? o.abs() * .1 : 50)) return;
+    if (!widget.big && d.abs() < 1) return;
+    _up = d > 0;
+    _pulse.forward(from: 0);
+    final c = AnimationController(vsync: this, duration: const Duration(milliseconds: 1100));
+    final f = ('${d > 0 ? '+' : '-'}${_f(d.abs())}', d > 0, c);
+    setState(() => _floats.add(f));
+    c.forward().whenComplete(() {
+      if (!mounted) return;
+      setState(() => _floats.remove(f));
+      c.dispose();
+    });
+  }
+
+  @override
+  void dispose() {
+    _pulse.dispose();
+    for (final f in _floats) {
+      f.$3.dispose();
+    }
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final base = widget.style.color ?? Colors.white;
+    return Stack(clipBehavior: Clip.none, alignment: Alignment.topCenter, children: [
+      AnimatedBuilder(
+        animation: _pulse,
+        builder: (_, __) {
+          // 웹 @keyframes nfu/nfd: 30% 지점에서 가장 크게(작게)·색 바뀜
+          final t = _pulse.value, k = !_pulse.isAnimating ? 0.0 : (t < .3 ? t / .3 : (1 - t) / .7);
+          final hi = _up ? const Color(0xFF9BFFA8) : const Color(0xFFFF8A7A);
+          return Transform.scale(
+            scale: 1 + (_up ? .18 : -.08) * k,
+            child: Text('${widget.prefix}${_f(widget.value)}', maxLines: 1, style: widget.style.copyWith(color: Color.lerp(base, hi, k))),
+          );
+        },
+      ),
+      for (final (txt, up, c) in _floats)
+        Positioned(
+          top: (widget.style.fontSize ?? 14) * 1.2,
+          child: IgnorePointer(
+            child: AnimatedBuilder(
+              animation: c,
+              builder: (_, __) {
+                final t = Curves.easeOut.transform(c.value);
+                return Transform.translate(
+                  offset: Offset(0, -26 * t),
+                  child: Opacity(
+                    opacity: 1 - t,
+                    child: Text(txt,
+                        style: TextStyle(
+                          fontFamily: 'PlexKR',
+                          fontSize: 12,
+                          fontWeight: FontWeight.w600,
+                          color: up ? const Color(0xFF9BFFA8) : const Color(0xFFFF8A7A),
+                          shadows: const [Shadow(color: Colors.black, offset: Offset(0, 1), blurRadius: 2)],
+                        )),
+                  ),
+                );
+              },
+            ),
+          ),
+        ),
+    ]);
+  }
 }

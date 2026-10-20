@@ -153,7 +153,7 @@ class _Hud extends StatelessWidget {
             FittedBox(
               fit: BoxFit.scaleDown,
               alignment: Alignment.centerLeft,
-              child: Text('⚔ ${fmt(g.calc.power())}', maxLines: 1, style: KdText.figure(13, color: KdColors.gold)),
+              child: NumFlash(g.calc.power(), prefix: '⚔ ', style: KdText.figure(13, color: KdColors.gold)),
             ),
           ]),
         ),
@@ -198,7 +198,7 @@ class _Hud extends StatelessWidget {
           child: Row(mainAxisSize: MainAxisSize.min, children: [
             SizedBox(width: 20, height: 18, child: OverflowBox(maxWidth: 26, maxHeight: 26, child: kdImg('assets/game/ui/ui_gold.png', w: 26, h: 26))),
             const SizedBox(width: 3),
-            Text(fmt(s.gold), style: KdText.figure(16)),
+            NumFlash(s.gold, big: true, style: KdText.figure(16, color: KdColors.fg)),
           ]),
         )),
       ]),
