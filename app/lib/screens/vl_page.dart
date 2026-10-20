@@ -280,7 +280,7 @@ class _BuildingRow extends StatelessWidget {
       ],
       if (here) ...[
         const SizedBox(height: 4),
-        XpBar((1 - a.buildLeft() / orNum(bd!['dur'], time)).toDouble(), color: const Color(0xFF6FA8FF)),
+        XpBar((1 - a.buildLeft() / orNum(bd['dur'], time)).toDouble(), color: const Color(0xFF6FA8FF)),
         const SizedBox(height: 3),
         Text('${l > 0 ? '확장' : '재건'} 공사 중 · ${fmtT(a.buildLeft())} 남음', style: KdText.body(12, color: const Color(0xFF9CC3FF))),
       ] else if (queued) ...[
