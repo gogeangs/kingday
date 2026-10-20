@@ -147,6 +147,9 @@ class GameCalc {
   static num vpPct(int st) => jsRound(50 + (st - 1) * 12.5);
   int vpSt(String id) => villageSkillName.containsKey(id) && owned(id) ? recStar(id) : 0;
   num vpMine() => vpSt('brida') != 0 ? 1 + vpPct(vpSt('brida')) / 100 : 1;
+
+  /// 막례 「물질 대장」: 낚시터 생선 생산 (웹 vpFish)
+  num vpFish() => vpSt('makrye') != 0 ? 1 + vpPct(vpSt('makrye')) / 100 : 1;
   num vpTime() => 1;
   num vpOre() => 1;
 
@@ -314,7 +317,9 @@ class GameCalc {
       case 'diner':
         return '원정대 체력 +${l * 5}%';
       case 'dock':
-        return '생선 $l마리/2분';
+        final vf = vpFish();
+        final nf = vf > 1 ? _jsNumStr(num.parse((l * vf).toStringAsFixed(1))) : _jsNumStr(l);
+        return '생선 $nf마리/2분${vf > 1 ? ' (물질 대장)' : ''}';
       case 'apiary':
         return '동료 공격력 +${l * 8}% · 꿀 $l병/2분';
       case 'mine':
@@ -547,7 +552,7 @@ class GameCalc {
         s.prod[g.b] = t;
         continue;
       }
-      final iv = 120000 / l / (g.b == 'mine' ? vpMine() : 1);
+      final iv = 120000 / l / (g.b == 'mine' ? vpMine() : g.b == 'dock' ? vpFish() : 1);
       if (!truthy(s.prod[g.b])) s.prod[g.b] = t;
       final n = math.min(2000, ((t - asNum(s.prod[g.b])) / iv).floor());
       if (n > 0) {

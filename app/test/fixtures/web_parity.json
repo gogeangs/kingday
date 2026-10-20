@@ -744,6 +744,24 @@
      "cwLv": 0,
      "cwMul": 1
     },
+    "makrye": {
+     "stats": {
+      "atk": 17.55,
+      "hp": 155.25,
+      "aps": 0.85,
+      "crit": 0.05
+     },
+     "cPow": 232.54087500000003,
+     "owned": false,
+     "recStar": 0,
+     "starMul": 1.35,
+     "skPow": 1,
+     "cardOpen": false,
+     "starNeed": 30,
+     "starMax": 5,
+     "cwLv": 0,
+     "cwMul": 1
+    },
     "luka": {
      "stats": {
       "atk": 6,
@@ -2629,6 +2647,24 @@
      "cwLv": 4,
      "cwMul": 1.32
     },
+    "makrye": {
+     "stats": {
+      "atk": 1437.1230942351363,
+      "hp": 4002.7419432000006,
+      "aps": 0.85,
+      "crit": 0.05
+     },
+     "cPow": 11268.241353935156,
+     "owned": false,
+     "recStar": 0,
+     "starMul": 1.35,
+     "skPow": 1,
+     "cardOpen": true,
+     "starNeed": 30,
+     "starMax": 5,
+     "cwLv": 4,
+     "cwMul": 1.32
+    },
     "luka": {
      "stats": {
       "atk": 1025.3097039790082,
@@ -4049,7 +4085,7 @@
      "gordon",
      "gordon",
      "luka",
-     "brida",
+     "makrye",
      "gordon",
      "gordon",
      "gordon",
@@ -4068,9 +4104,10 @@
      "haral": 10,
      "bron": 2,
      "nella": 3,
-     "brida": 2,
+     "brida": 1,
      "riel": 1,
-     "margo": 1
+     "margo": 1,
+     "makrye": 1
     }
    },
    "retired": {
@@ -4642,6 +4679,24 @@
      "skPow": 1.6,
      "cardOpen": true,
      "starNeed": null,
+     "starMax": 5,
+     "cwLv": 20,
+     "cwMul": 2.6
+    },
+    "makrye": {
+     "stats": {
+      "atk": 650487.532032,
+      "hp": 4465855.5552,
+      "aps": 1.02,
+      "crit": 0.15000000000000002
+     },
+     "cPow": 9816579.816690816,
+     "owned": false,
+     "recStar": 0,
+     "starMul": 1.35,
+     "skPow": 1,
+     "cardOpen": true,
+     "starNeed": 30,
      "starMax": 5,
      "cwLv": 20,
      "cwMul": 2.6
@@ -6523,6 +6578,24 @@
      "cwLv": 0,
      "cwMul": 1
     },
+    "makrye": {
+     "stats": {
+      "atk": 19.9368,
+      "hp": 161.46,
+      "aps": 0.85,
+      "crit": 0.05
+     },
+     "cPow": 250.864614,
+     "owned": false,
+     "recStar": 0,
+     "starMul": 1.35,
+     "skPow": 1,
+     "cardOpen": false,
+     "starNeed": 30,
+     "starMax": 5,
+     "cwLv": 0,
+     "cwMul": 1
+    },
     "luka": {
      "stats": {
       "atk": 7.7376000000000005,
@@ -8293,6 +8366,24 @@
      "owned": false,
      "recStar": 0,
      "starMul": 1.2,
+     "skPow": 1,
+     "cardOpen": false,
+     "starNeed": 30,
+     "starMax": 5,
+     "cwLv": 0,
+     "cwMul": 1
+    },
+    "makrye": {
+     "stats": {
+      "atk": 19.9368,
+      "hp": 161.46,
+      "aps": 0.85,
+      "crit": 0.05
+     },
+     "cPow": 250.864614,
+     "owned": false,
+     "recStar": 0,
+     "starMul": 1.35,
      "skPow": 1,
      "cardOpen": false,
      "starNeed": 30,
@@ -10073,6 +10164,24 @@
      "owned": false,
      "recStar": 0,
      "starMul": 1.2,
+     "skPow": 1,
+     "cardOpen": false,
+     "starNeed": 30,
+     "starMax": 5,
+     "cwLv": 0,
+     "cwMul": 1
+    },
+    "makrye": {
+     "stats": {
+      "atk": 18.954,
+      "hp": 167.67000000000002,
+      "aps": 0.85,
+      "crit": 0.05
+     },
+     "cPow": 251.144145,
+     "owned": false,
+     "recStar": 0,
+     "starMul": 1.35,
      "skPow": 1,
      "cardOpen": false,
      "starNeed": 30,
@@ -11866,6 +11975,24 @@
      "cwLv": 0,
      "cwMul": 1
     },
+    "makrye": {
+     "stats": {
+      "atk": 19.656000000000002,
+      "hp": 173.88000000000002,
+      "aps": 0.85,
+      "crit": 0.05
+     },
+     "cPow": 260.44578,
+     "owned": false,
+     "recStar": 0,
+     "starMul": 1.35,
+     "skPow": 1,
+     "cardOpen": false,
+     "starNeed": 30,
+     "starMax": 5,
+     "cwLv": 0,
+     "cwMul": 1
+    },
     "luka": {
      "stats": {
       "atk": 6.720000000000001,
@@ -13641,6 +13768,24 @@
      "owned": false,
      "recStar": 0,
      "starMul": 1.2,
+     "skPow": 1,
+     "cardOpen": false,
+     "starNeed": 30,
+     "starMax": 5,
+     "cwLv": 0,
+     "cwMul": 1
+    },
+    "makrye": {
+     "stats": {
+      "atk": 18.954,
+      "hp": 167.67000000000002,
+      "aps": 0.85,
+      "crit": 0.05
+     },
+     "cPow": 251.144145,
+     "owned": false,
+     "recStar": 0,
+     "starMul": 1.35,
      "skPow": 1,
      "cardOpen": false,
      "starNeed": 30,
@@ -16117,7 +16262,8 @@
    "gordon",
    "daisy",
    "brida",
-   "nella"
+   "nella",
+   "makrye"
   ],
   "stgName": [
    [
@@ -16165,6 +16311,7 @@
    "daisy",
    "brida",
    "nella",
+   "makrye",
    "luka"
   ]
  },

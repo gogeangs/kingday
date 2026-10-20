@@ -341,6 +341,20 @@ class BattleSim {
         } else if (fxOk('skill_bron')) {
           spawnFx('skill_bron', pos[id]! + 30 * sc, py[id]! - 40 * sc, 140 * sc, .9);
         }
+      case 'makrye':
+        // 숨비소리: 말순이 촉수로 모든 적 피해 + 기절 (보스 1초)
+        final k = c.skPow(id);
+        for (final m in alive) {
+          hitMon(m, t.atk * 3 * k * feast, true, sc);
+          m.bind = math.max(m.bind, m.boss ? 1 : 2);
+          addFloat(m.x, m.y - 80 * sc, '기절!', 0xFFFFE27A, 13);
+        }
+        shakeT = .35;
+        if (fxOk('skill_makrye')) {
+          spawnFx('skill_makrye', cx, cy - 30 * sc, 190 * sc, .9);
+        } else if (fxOk('skill_nella')) {
+          spawnFx('skill_nella', cx, cy - 40 * sc, 170 * sc, .8);
+        }
       case 'nella':
         final k = c.skPow(id);
         for (final m in alive) {
@@ -768,6 +782,9 @@ class BattleSim {
         hitMon(tgt, d, cr, sc);
         tgt.slow = 2;
         proj.add(Proj(x: pos[id]! + 12 * sc, y: py[id]! - 40 * sc, tx: tgt.x, ty: tgt.y - 28 * sc, d: .3, kind: 'net'));
+      } else if (id == 'makrye') {
+        hitMon(tgt, d, cr, sc);
+        proj.add(Proj(x: pos[id]! + 12 * sc, y: py[id]! - 40 * sc, tx: tgt.x, ty: tgt.y - 28 * sc, d: .22, kind: 'harpoon'));
       } else if (id == 'haral') {
         hitMon(tgt, d, cr, sc);
         proj.add(Proj(x: pos['haral']! + 12 * sc, y: py['haral']! - 40 * sc, tx: tgt.x, ty: tgt.y - 28 * sc, d: .2, kind: 'harpoon'));

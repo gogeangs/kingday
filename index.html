@@ -603,26 +603,28 @@ const COMP={
  daisy:{n:'데이지',role:'양봉가 · 광역',desc:'어스름 숲 어귀에서 꽃밭을 가꾸는 명랑한 정원사 소녀. 리엘의 벌들과 친구다. 꽃가루 씨앗을 뿌려 모든 적을 중독시킨다.',join:'동료 카드 30장을 모으면 합류',base:{atk:8,hp:74,aps:.8},per:{atk:2.9,hp:15}},
  brida:{n:'브리다',role:'광부 · 방어',desc:'300살 드워프 대장장이 여왕이자 브론의 할머니. 산맥을 통째로 깎아 성을 지었다는 전설의 주인공. 거대한 모루 망치로 마물을 내리친다.',join:'동료 카드 30장을 모으면 합류',base:{atk:9,hp:300,aps:.75},per:{atk:2.6,hp:60}},
  nella:{n:'넬라',role:'어부 · 원거리',desc:'갈대 강변의 씩씩한 그물 어부 소녀. 하랄을 "할배"라 부르며 따라다닌다. 그물을 던져 마물을 느리게 만든다.',join:'동료 카드 30장을 모으면 합류',base:{atk:9,hp:96,aps:1},per:{atk:3,hp:19}},
+ makrye:{n:'막례',role:'어부 · 광역',desc:'칠순의 전설 해녀. 하랄과 같은 마을 동갑내기 앙숙이다. 마족이 바다를 지키라고 풀어 둔 아기 크라켄 「말순이」를 몰래 길들여 키운다. 빗창을 휘두르면 말순이가 촉수로 거든다.',join:'동료 카드 30장을 모으면 합류',base:{atk:13,hp:115,aps:.85},per:{atk:3.9,hp:23}},
  luka:{n:'루카',role:'요리사 · 회복',desc:'새벽마다 빵을 굽는 수줍은 제빵사. 카엘의 밀로 빵을 굽는 게 꿈이다. 갓 구운 빵을 던져 동료를 치유한다.',join:'동료 카드 30장을 모으면 합류',base:{atk:5,hp:82,aps:.9},per:{atk:1.7,hp:16}}
 };
 /* ---------- 직업 자리 · 모집 동료 ---------- */
-const JOB={bron:'miner',haral:'fisher',riel:'keeper',margo:'cook',luka:'cook',nella:'fisher',brida:'miner',daisy:'keeper',gordon:'miner'},JOBN={miner:'광부',fisher:'어부',keeper:'양봉가',cook:'요리사'};
+const JOB={bron:'miner',haral:'fisher',riel:'keeper',margo:'cook',luka:'cook',nella:'fisher',brida:'miner',daisy:'keeper',gordon:'miner',makrye:'fisher'},JOBN={miner:'광부',fisher:'어부',keeper:'양봉가',cook:'요리사'};
 const JSLOT=['miner','kael','fisher','keeper','cook'],STORY={miner:'bron',fisher:'haral',keeper:'riel',cook:'margo'};
 const RECRUITS={
  luka:{job:'cook',title:'제빵사 루카',lines:['m:루카|저, 저기… 카엘 씨 밭의 밀로 빵을 구워 보고 싶어서 따라왔어요.','k@surprised:내 밀로? …은퇴하면 빵집 옆에 밭 하나 더 일궈야겠네.','q@proud:흥, 또 식객이 늘었군. 뭐, 빵 냄새는 나쁘지 않다.','sys:원정대 탭의 요리사 자리에서 마고 대신 출전시킬 수 있어요.'],ok:'잘 부탁해, 루카'},
  gordon:{job:'miner',title:'석공 고든',lines:['무너진 성벽 앞에서 거구의 사내가 묵묵히 돌을 쌓고 있었다. 마물이 덤비자, 정 망치 한 번에 날려 버렸다.','m:고든|…성벽은 다시 쌓으면 된다. 사람은 다시 못 쌓지.','m:브론|말수 적은 놈이 마음에 드는군. 같이 가자.','k@smile:든든하다… 은퇴하면 우리 집 담장도 부탁해도 될까?','sys:원정대 탭의 광부 자리에서 브론 대신 출전시킬 수 있어요.'],ok:'잘 부탁해, 고든'},
  daisy:{job:'keeper',title:'정원사 데이지',lines:['m:데이지|안녕! 리엘 언니 벌들이 우리 꽃밭에 놀러 오거든. 그래서 따라와 봤어!','m:리엘|이 아이 꽃밭 꿀이 제일 달아. 400년 동안 먹어 본 것 중에.','k@smile:꽃밭이라… 은퇴하면 우리 밭 옆에도 좀 심어 줄래?','sys:원정대 탭의 양봉가 자리에서 리엘 대신 출전시킬 수 있어요.'],ok:'환영해, 데이지'},
  brida:{job:'miner',title:'전설의 대장장이 여왕 브리다',lines:['협곡이 울렸다. 바위 문이 열리고, 은빛 수염을 땋은 늙은 드워프가 모루 망치를 끌며 걸어 나왔다.','m:브리다|브론! 이 할미를 두고 원정을 떠나? 망치질 삼백 년, 아직 손목은 멀쩡하다.','m:브론|…할머니. 갱도에 계시라고 했잖아요.','q@moved:브리다 여왕… 내가 첫 주인을 모시던 시절에 이미 전설이었지.','k@surprised:성검이 존댓말 쓰는 거 처음 봐.','sys:전설 등급 동료! 원정대 탭의 광부 자리에서 출전시킬 수 있어요.','sys:마을 스킬 「여왕의 대장간」: 광산 광석 생산 +50%. 출전하지 않아도 늘 적용되고, 별이 오를수록 강해져요(★5에서 +100%).'],ok:'모시겠습니다, 여왕님'},
- nella:{job:'fisher',title:'그물 어부 넬라',lines:['m:넬라|하랄 할배! 또 혼자 허풍 떨면서 다니지? 이번엔 나도 같이 간다!','m:하랄@laugh|허허, 이 녀석 그물 솜씨는 나보다 낫지. 고래만 빼고.','k@flustered:…원정대가 점점 마을 잔치가 되어 가네.','sys:원정대 탭의 어부 자리에서 하랄 대신 출전시킬 수 있어요.'],ok:'잘 부탁해, 넬라'}},STAR_NEED=[30,20,40,80,150],STAR_MUL=[1,1,1.2,1.4,1.6,2];
+ nella:{job:'fisher',title:'그물 어부 넬라',lines:['m:넬라|하랄 할배! 또 혼자 허풍 떨면서 다니지? 이번엔 나도 같이 간다!','m:하랄@laugh|허허, 이 녀석 그물 솜씨는 나보다 낫지. 고래만 빼고.','k@flustered:…원정대가 점점 마을 잔치가 되어 가네.','sys:원정대 탭의 어부 자리에서 하랄 대신 출전시킬 수 있어요.'],ok:'잘 부탁해, 넬라'},
+ makrye:{job:'fisher',title:'전설의 해녀 막례',lines:['갈대 강변 끝, 바다가 보이는 갯바위에서 "호오이~" 하는 숨비소리가 길게 울렸다.','m:막례|어이구, 하랄이 너 아직 살아 있었냐? 크라켄이랑 사흘 밤낮 싸웠다며?','m:하랄|그, 그건 진짜라니까! 이만한 촉수가 배를…','m:막례@laugh|그거 우리 말순이가 너랑 놀아 준 거여. 말순아, 하랄 할배한테 인사해라.','k@surprised:…방금 망사리에서 보라색 문어가 손 흔들었어요.','q@proud:마족의 크라켄을 길들인 해녀라… 주인, 이건 귀한 인연이다.','sys:전설 등급 동료! 원정대 탭의 어부 자리에서 출전시킬 수 있어요.','sys:마을 스킬 「물질 대장」: 낚시터 생선 생산 +50%. 출전하지 않아도 늘 적용되고, 별이 오를수록 강해져요(★5에서 +100%).'],ok:'잘 부탁해요, 막례 할머니'}},STAR_NEED=[30,20,40,80,150],STAR_MUL=[1,1,1.2,1.4,1.6,2];
 /* 동료 등급: 이야기 동료는 일반(★3까지), 모집 동료는 희귀 이상 */
-const GRADE={bron:'common',haral:'common',riel:'common',margo:'common',luka:'epic',nella:'epic',brida:'legend',daisy:'rare',gordon:'common'};
+const GRADE={bron:'common',haral:'common',riel:'common',margo:'common',luka:'epic',nella:'epic',brida:'legend',daisy:'rare',gordon:'common',makrye:'legend'};
 const GR={common:{n:'일반',c:'#b8c0cc',max:3,mul:1,w:55,need:[0,15,30],fr:'normal'},rare:{n:'희귀',c:'#5aa8ff',max:4,mul:1.1,w:30,need:[30,20,40,80],fr:'rare'},epic:{n:'영웅',c:'#b07bff',max:5,mul:1.2,w:12,need:[30,30,60,120,200],fr:'epic'},legend:{n:'전설',c:'#ffc23a',max:5,mul:1.35,w:3,need:[30,40,80,160,300],fr:'legendary'}};
 /* 전설 동료의 마을 스킬: 합류만 하면(출전하지 않아도) 늘 적용, 별이 오를수록 강해짐 */
-const VPAS={brida:{n:'여왕의 대장간',d:st=>'광산 광석 생산 +'+vpPct(st)+'%'}};
+const VPAS={brida:{n:'여왕의 대장간',d:st=>'광산 광석 생산 +'+vpPct(st)+'%'},makrye:{n:'물질 대장',d:st=>'낚시터 생선 생산 +'+vpPct(st)+'%'}};
 const vpPct=st=>Math.round(50+(st-1)*12.5);
 const vpBox=id=>VPAS[id]?`<div class="skl vpas"><img src="assets/ui/village_skill.png" alt="" onerror="this.remove()"><div><b>마을 스킬 · ${VPAS[id].n}</b><span>${VPAS[id].d(Math.max(1,recStar(id)))}${owned(id)?' · 출전하지 않아도 늘 적용':' · 합류하면 적용'}</span></div></div>`:'';
 const vpSt=id=>VPAS[id]&&owned(id)?recStar(id):0;
-const vpMine=()=>vpSt('brida')?1+vpPct(vpSt('brida'))/100:1,vpTime=()=>1,vpOre=()=>1;
+const vpMine=()=>vpSt('brida')?1+vpPct(vpSt('brida'))/100:1,vpTime=()=>1,vpOre=()=>1,vpFish=()=>vpSt('makrye')?1+vpPct(vpSt('makrye'))/100:1;
 const gr=id=>GR[GRADE[id]||'common'],CARDIDS=()=>[...Object.values(STORY),...Object.keys(RECRUITS)];
 const isRec=id=>id in RECRUITS,recStar=id=>isRec(id)?((S.rec&&S.rec[id])||0):(S.joined[id]?Math.max(1,(S.rec&&S.rec[id])||0):0);
 const starNeed=id=>isRec(id)&&recStar(id)===0?30:gr(id).need[recStar(id)],starMax=id=>gr(id).max;
@@ -658,7 +660,7 @@ function gainCard(n,minGrade){const ids=CARDIDS().filter(id=>cardOpen(id)&&recSt
  let id;if(S.wish&&ids.includes(S.wish)&&Math.random()<.5)id=S.wish;else{const gs=[...new Set(ids.map(x=>GRADE[x]))],tot=gs.reduce((a,g)=>a+GR[g].w,0);let r=Math.random()*tot,g=gs[0];for(const q of gs){r-=GR[q].w;if(r<0){g=q;break}}const pool=ids.filter(x=>GRADE[x]===g);id=pool[Math.floor(Math.random()*pool.length)]}
  S.cards[id]=(S.cards[id]||0)+n;stat('card',n);partySig='';return id}
 const ORDER=['bron','kael','haral','riel','margo'];
-const HEIGHT={kael:66,bron:54,haral:66,riel:66,margo:64,luka:66,nella:62,brida:56,daisy:62,gordon:60};
+const HEIGHT={kael:66,bron:54,haral:66,riel:66,margo:64,luka:66,nella:62,brida:56,daisy:62,gordon:60,makrye:58};
 const compCost=l=>Math.floor(25*Math.pow(1.16,l-1));
 const UPG=[
  {k:'atk',n:'검 휘두르기',max:99999,cost:l=>10*Math.pow(1.15,l),val:l=>'공격력 +'+(l*3),next:l=>'+'+((l+1)*3)},
@@ -689,7 +691,7 @@ const BLD=[
  {k:'inn',n:'여관',who:'',max:10,base:150,eff:l=>'방치 보상 최대 '+(6+l)+'시간',open:()=>true,lock:''},
  {k:'farm',n:'밭',who:'카엘',max:6,base:120,eff:l=>'밭 '+(2+l)+'칸',open:()=>S.done.marta,lock:'개울 마을을 되찾으면 열려요'},
  {k:'diner',n:'식당',who:'마고',max:10,base:220,eff:l=>'원정대 체력 +'+(l*5)+'%',open:()=>S.joined.margo,lock:'마고가 합류하면 열려요'},
- {k:'dock',n:'낚시터',who:'하랄',max:10,base:350,eff:l=>'생선 '+l+'마리/2분',open:()=>S.joined.haral,lock:'하랄이 합류하면 열려요'},
+ {k:'dock',n:'낚시터',who:'하랄',max:10,base:350,eff:l=>'생선 '+(vpFish()>1?+(l*vpFish()).toFixed(1):l)+'마리/2분'+(vpFish()>1?' (물질 대장)':''),open:()=>S.joined.haral,lock:'하랄이 합류하면 열려요'},
  {k:'apiary',n:'양봉장',who:'리엘',max:10,base:600,eff:l=>'동료 공격력 +'+(l*8)+'% · 꿀 '+l+'병/2분',open:()=>S.joined.riel,lock:'리엘이 합류하면 열려요'},
  {k:'mine',n:'광산',who:'브론',max:10,base:2000,eff:l=>'카엘 장비 +'+(l*6)+'% · 광석 '+(vpMine()>1?+(l*vpMine()).toFixed(1):l)+'개/2분'+(vpMine()>1?' (여왕의 대장간)':''),open:()=>S.joined.bron,lock:'브론이 합류하면 열려요'}
 ];
@@ -887,7 +889,7 @@ function queue(fn){sceneQ.push(fn);pump()}
 let titleOpen=true;
 function pump(){if(!titleOpen&&$('modal').hidden&&!pending&&sceneQ.length)sceneQ.shift()()}
 /* 대화 초상화: 'k@smile:대사', 'q@angry:대사' 처럼 표정을 고를 수 있어요. 없으면 기본 표정 */
-const NPCID={'고든':'gordon','데이지':'daisy','브리다':'brida','넬라':'nella','루카':'luka','브론':'bron','하랄':'haral','리엘':'riel','마고':'margo','마르타':'marta','피트':'pete','토비':'toby','모르바스':'morbas','세릴':'seril','그로마크':'gromak','알도르':'aldor','이그니스':'ignis'};
+const NPCID={'막례':'makrye','고든':'gordon','데이지':'daisy','브리다':'brida','넬라':'nella','루카':'luka','브론':'bron','하랄':'haral','리엘':'riel','마고':'margo','마르타':'marta','피트':'pete','토비':'toby','모르바스':'morbas','세릴':'seril','그로마크':'gromak','알도르':'aldor','이그니스':'ignis'};
 const BOSSID=['morbas','seril','gromak','aldor','ignis'];
 const PORTRAIT={k:{id:'kael',def:'idle',moods:['idle','surprised','smile','flustered']},q:{id:'luminar',def:'proud',moods:['proud','angry','moved']}};
 function guessMood(w,t){if(w==='k'){if(/\?|누구|왜|설마/.test(t))return'surprised';if(/…|못 하|아니고|멀어|싫/.test(t))return'flustered';if(/좋|은퇴|흙|행복/.test(t))return'smile';return'idle'}
@@ -971,7 +973,7 @@ function ensurePlots(){const n=plotCount();while(S.plots.length<n)S.plots.push(n
 function plotState(p){if(!p)return{st:'empty'};const c=CROPS.find(x=>x.k===p.k),left=c.t-(Date.now()-p.at)/1000;return left<=0?{st:'ready',c}:{st:'grow',c,left,ratio:1-left/c.t}}
 function plant(i,k){if(S.seeds[k]<=0||S.plots[i])return;S.seeds[k]--;S.plots[i]={k,at:Date.now()};farmSig='';renderAll()}
 function harvest(i){const ps=plotState(S.plots[i]);if(ps.st!=='ready')return 0;const n=2+(Math.random()<.3?1:0);S.items[ps.c.k]+=n;S.plots[i]=null;dailyAdd('harv',n);stat('harv',n);if(ps.c.k==='pumpkin')stat('pump',n);return n}
-function produce(){checkBuild();const now=Date.now();for(const g of GOODS){const l=S.bld[g.b];if(!l){S.prod[g.b]=now;continue}const iv=120000/l/(g.b==='mine'?vpMine():1);if(!S.prod[g.b])S.prod[g.b]=now;const n=Math.min(2000,Math.floor((now-S.prod[g.b])/iv));if(n>0){S.items[g.k]+=n;S.prod[g.b]+=n*iv}}}
+function produce(){checkBuild();const now=Date.now();for(const g of GOODS){const l=S.bld[g.b];if(!l){S.prod[g.b]=now;continue}const iv=120000/l/(g.b==='mine'?vpMine():g.b==='dock'?vpFish():1);if(!S.prod[g.b])S.prod[g.b]=now;const n=Math.min(2000,Math.floor((now-S.prod[g.b])/iv));if(n>0){S.items[g.k]+=n;S.prod[g.b]+=n*iv}}}
 function chooseSeed(i){const tg=plotTag(i);if(tg){const c=CROPS.find(x=>x.k===tg);if(S.seeds[tg]>0)plant(i,tg);else toast(c.n+' 전용 밭이에요. '+c.n+' 씨앗이 없어요');return}
  $('sheet').innerHTML=`<h2>무엇을 심을까요?</h2>${CROPS.map(c=>`<div class="row" style="background:var(--panel2)">${uiImg('seed_'+c.k)}<div class="info"><b>${c.n}</b><div>자라는 시간 ${mmss(c.t)} · 씨앗 ${S.seeds[c.k]}개</div></div><button class="buy" id="sd-${c.k}" ${S.seeds[c.k]?'':'disabled'}>심기</button></div>`).join('')}<label class="tagchk"><input type="checkbox" id="sdTag"> 이 칸을 고른 작물 전용 밭으로 지정<small>다음부터 '모두 심기'를 해도 이 칸엔 그 작물만 심어져요</small></label><div class="acts one"><button id="mX">닫기</button></div>`;
  $('modal').hidden=false;CROPS.forEach(c=>$('sd-'+c.k).onclick=()=>{if($('sdTag').checked){if(!S.plotTag)S.plotTag=[];S.plotTag[i]=c.k;toast(c.n+' 전용 밭으로 지정했어요')}plant(i,c.k);closeModal()});$('mX').onclick=closeModal;
@@ -1288,6 +1290,7 @@ const SKILLS={
  gordon:{n:'성벽 쌓기',d:'앞의 적에게 공격력 2.5배 피해, 2초 기절. 6초 동안 맞을 때마다 반드시 되받아침 (★3에서 강화)',line:'…쌓는다.',need:20,face:'laugh'},
  daisy:{n:'꽃가루 폭풍',d:'모든 적을 8초 동안 중독시켜 0.5초마다 공격력 40% 피해 (★3·★5에서 강화)',line:'에취! 다들 꽃가루 조심해~!',need:20,face:'laugh'},
  brida:{n:'산맥의 수호',d:'6초 동안 원정대가 받는 피해 70% 감소, 막은 피해의 절반을 되돌려 줌 (★3·★5에서 강화)',line:'이 산맥은 삼백 년 동안 무너진 적이 없다!',need:24,face:'laugh'},
+ makrye:{n:'숨비소리',d:'말순이를 불러 모든 적에게 공격력 3배 피해, 2초 기절 (보스는 1초, ★3·★5에서 강화)',line:'호오이~ 말순아, 나와라!',need:26,face:'laugh'},
  nella:{n:'만선의 그물',d:'모든 적에게 공격력 2배 피해, 4초 동안 묶어서 공격을 못 하게 함 (보스는 2초, ★3·★5에서 강화)',line:'다 걸렸다! 오늘은 만선이야!',need:20,face:'laugh'},
  luka:{n:'아침 빵 배달',d:'원정대 체력 20% 회복, 8초 동안 공격 속도 30% 증가 (★3·★5에서 강화)',line:'가, 갓 구운 빵 왔어요!',need:18,face:'laugh'}};
 const SKIMG={},CUTIMG={};for(const id in SKILLS){const a=new Image();a.onload=()=>{SKIMG[id]=a;prowSig=''};a.src='assets/skills/skill_'+id+'.png';const b=new Image();b.onload=()=>CUTIMG[id]=b;b.src='assets/portraits/portrait_'+id+'_'+SKILLS[id].face+'.png'}
@@ -1315,6 +1318,7 @@ function castSkill(id){const p=P[id];if(!skFull(id)||!engaged)return false;const
  else if(id==='gordon'){const k=skPow(id),tg=alive[0];if(tg){hitMon(tg,t.atk*2.5*k*(SKX.feast>0?1.2:1),true,s,0);tg.bind=Math.max(tg.bind||0,tg.boss?1:2);addFloat(tg.x,tg.y-80*s,'기절!','#ffe27a',13)}SKX.wall=6;shakeT=.25;if(fxOk('skill_gordon'))spawnFx('skill_gordon',pos[id]+30*s,py[id]-40*s,150*s,.8);else if(fxOk('skill_bron'))spawnFx('skill_bron',pos[id]+30*s,py[id]-40*s,120*s,.8)}
  else if(id==='daisy'){const k=skPow(id);for(const m of alive){m.psn=8;m.psnD=t.atk*.4*k;m.psnT=0}if(fxOk('skill_daisy'))spawnFx('skill_daisy',cx,cy-40*s,170*s,.9);else for(const m of alive)spawnFx('bees',m.x,m.y-30*s,50*s,.6)}
  else if(id==='brida'){const k=skPow(id);SKX.mount=6*Math.min(k,1.3);SKX.mountK=k;shakeT=.35;for(const j of members())spawnFx('heal',pos[j],py[j]-24*s,60*s,.5);if(fxOk('skill_brida'))spawnFx('skill_brida',pos[id]+20*s,py[id]-40*s,170*s,.9);else if(fxOk('skill_bron'))spawnFx('skill_bron',pos[id]+30*s,py[id]-40*s,140*s,.9)}
+ else if(id==='makrye'){const k=skPow(id);for(const m of alive){hitMon(m,t.atk*3*k*(SKX.feast>0?1.2:1),true,s,0);m.bind=Math.max(m.bind||0,m.boss?1:2);addFloat(m.x,m.y-80*s,'기절!','#ffe27a',13)}shakeT=.35;if(fxOk('skill_makrye'))spawnFx('skill_makrye',cx,cy-30*s,190*s,.9);else if(fxOk('skill_nella'))spawnFx('skill_nella',cx,cy-40*s,170*s,.8)}
  else if(id==='nella'){const k=skPow(id);for(const m of alive){hitMon(m,t.atk*2*k*(SKX.feast>0?1.2:1),true,s,0);m.bind=(m.boss?2:4)*k;addFloat(m.x,m.y-80*s,'꽁꽁!','#9be3ff',13)}if(fxOk('skill_nella'))spawnFx('skill_nella',cx,cy-40*s,170*s,.8)}
  else if(id==='luka'){const k=skPow(id);for(const j of members()){const q=P[j];if(!q)continue;if(q.down){q.down=false;q.hp=0}q.hp=Math.min(stats(j).hp,q.hp+stats(j).hp*.2*k);spawnFx('heal',pos[j],py[j]-24*s,64*s,.6)}SKX.bake=8*k;{const ids=members(),mx=ids.reduce((a,j)=>a+pos[j],0)/ids.length,my=ids.reduce((a,j)=>a+py[j],0)/ids.length;spawnFx('skill_luka',mx,my-60*s,190*s,.9)}}
  prowSig='';return true}
@@ -1333,7 +1337,7 @@ function drawSkillFx(L){const{pos,py,s,front}=L;
 let flash=0;
 function syncParty(){for(const id of members()){if(!P[id])P[id]={hp:stats(id).hp,cd:Math.random()*.5,swing:0,hit:0,down:false}}}
 /* 원정대 대형: [가로 위치, 깊이] (깊이 0 = 지평선 쪽, 1 = 화면 앞쪽) */
-const FORM={kael:[.46,.34],bron:[.58,.72],haral:[.31,1],riel:[.17,.16],margo:[.10,.58],luka:[.10,.58],nella:[.31,1],brida:[.58,.72],daisy:[.17,.16],gordon:[.58,.72]};
+const FORM={kael:[.46,.34],bron:[.58,.72],haral:[.31,1],riel:[.17,.16],margo:[.10,.58],luka:[.10,.58],nella:[.31,1],brida:[.58,.72],daisy:[.17,.16],gordon:[.58,.72],makrye:[.31,1]};
 function layout(){const ids=members(),s=Math.min(W/300,Ht/380),top=Ht*.43,bot=Math.max(top+60,Ht-118),pos={},py={},dsc={};
  const solo=ids.length===1;
  ids.forEach(id=>{const f=solo?[.42,.55]:FORM[id];pos[id]=W*f[0];py[id]=top+(bot-top)*f[1];dsc[id]=.9+.14*f[1]});
@@ -1391,6 +1395,7 @@ function step(dt){
     if(id==='daisy'){for(const m of alive)if(m.hp>0){hitMon(m,d*.55,cr,s,gy);if(!(m.psn>3)){m.psn=3;m.psnD=t.atk*.15;m.psnT=0}}proj.push({x:pos[id]+10*s,y:py[id]-46*s,tx:tgt.x,ty:tgt.y-30*s,t:0,d:.35,kind:'pollen'})}
     else if(id==='riel'){for(const m of alive)if(m.hp>0)hitMon(m,d*.7,cr,s,gy);proj.push({x:pos.riel+10*s,y:py.riel-46*s,tx:tgt.x,ty:tgt.y-30*s,t:0,d:.35,kind:'bees'})}
     else if(id==='nella'){hitMon(tgt,d,cr,s,gy);tgt.slow=2;proj.push({x:pos[id]+12*s,y:py[id]-40*s,tx:tgt.x,ty:tgt.y-28*s,t:0,d:.3,kind:'net'})}
+    else if(id==='makrye'){hitMon(tgt,d,cr,s,gy);proj.push({x:pos[id]+12*s,y:py[id]-40*s,tx:tgt.x,ty:tgt.y-28*s,t:0,d:.22,kind:'harpoon'})}
     else if(id==='haral'){hitMon(tgt,d,cr,s,gy);proj.push({x:pos.haral+12*s,y:py.haral-40*s,tx:tgt.x,ty:tgt.y-28*s,t:0,d:.2,kind:'harpoon'})}
     else if(JOB[id]==='cook'){hitMon(tgt,d,cr,s,gy);proj.push({x:pos[id]+10*s,y:py[id]-50*s,tx:tgt.x,ty:tgt.y-30*s,t:0,d:.3,kind:'soup'})}
     else hitMon(tgt,d,cr,s,gy)}
@@ -1552,17 +1557,17 @@ function drawMargo(x,y,s,o){
  ctx.fillStyle='#ffffff';rr(x-6*s,top-56*s,14*s,6*s,2*s);ell(x-3*s,top-60*s,5*s,4.5*s,'#fff');ell(x+3*s,top-62*s,5.5*s,5*s,'#fff');ell(x+7*s,top-59*s,4*s,4*s,'#fff');
  const a=o.sw>0?(-1.2+(1-o.sw/.3)*1.8):-.3;ctx.save();ctx.translate(x+11*s,top-26*s);ctx.rotate(a);ctx.fillStyle='#b9c0cf';ctx.fillRect(-1*s,-18*s,2*s,18*s);ell(0,-20*s,4*s,3*s,'#b9c0cf');ctx.restore();
 }
-const DRAW={kael:drawKael,bron:drawBron,haral:drawHaral,riel:drawRiel,margo:drawMargo,luka:(x,y,s,o)=>{ctx.save();ctx.filter='hue-rotate(150deg) saturate(1.3)';drawMargo(x,y,s,o);ctx.restore()},nella:(x,y,s,o)=>{ctx.save();ctx.filter='hue-rotate(200deg) saturate(1.3)';drawHaral(x,y,s,o);ctx.restore()},brida:(x,y,s,o)=>{ctx.save();ctx.filter='hue-rotate(260deg) saturate(1.4) brightness(1.1)';drawBron(x,y,s,o);ctx.restore()},daisy:(x,y,s,o)=>{ctx.save();ctx.filter='hue-rotate(90deg) saturate(1.3)';drawRiel(x,y,s,o);ctx.restore()},gordon:(x,y,s,o)=>{ctx.save();ctx.filter='grayscale(.6) brightness(1.05)';drawBron(x,y,s,o);ctx.restore()}};
+const DRAW={kael:drawKael,bron:drawBron,haral:drawHaral,riel:drawRiel,margo:drawMargo,luka:(x,y,s,o)=>{ctx.save();ctx.filter='hue-rotate(150deg) saturate(1.3)';drawMargo(x,y,s,o);ctx.restore()},nella:(x,y,s,o)=>{ctx.save();ctx.filter='hue-rotate(200deg) saturate(1.3)';drawHaral(x,y,s,o);ctx.restore()},makrye:(x,y,s,o)=>{ctx.save();ctx.filter='hue-rotate(250deg) saturate(1.4)';drawHaral(x,y,s,o);ctx.restore()},brida:(x,y,s,o)=>{ctx.save();ctx.filter='hue-rotate(260deg) saturate(1.4) brightness(1.1)';drawBron(x,y,s,o);ctx.restore()},daisy:(x,y,s,o)=>{ctx.save();ctx.filter='hue-rotate(90deg) saturate(1.3)';drawRiel(x,y,s,o);ctx.restore()},gordon:(x,y,s,o)=>{ctx.save();ctx.filter='grayscale(.6) brightness(1.05)';drawBron(x,y,s,o);ctx.restore()}};
 
 /* ---------- 이미지 에셋 ----------
    assets/characters/<id>_<동작>.png : 256x256 프레임을 가로로 이은 시트, 발끝 y=250, 머리 중심 x=128.
    이미지가 없거나 아직 안 불러졌으면 위의 코드 그림(DRAW)을 그대로 씁니다. 전투 로직은 이미지와 무관합니다. */
-const SPRITES={kael:{idle:4,walk:6,attack:4,hit:2,h:70},bron:{idle:4,walk:6,attack:4,hit:2,h:74},haral:{idle:4,walk:6,attack:4,hit:2,h:72},riel:{idle:4,walk:6,attack:4,hit:2,h:76},margo:{idle:4,walk:6,attack:4,hit:2,h:72},luka:{idle:4,walk:6,attack:4,hit:2,h:72},nella:{idle:4,walk:6,attack:4,hit:2,h:68},brida:{idle:4,walk:6,attack:4,hit:2,h:74},daisy:{idle:4,walk:6,attack:4,hit:2,h:70},gordon:{idle:4,walk:6,attack:4,hit:2,h:74}};
+const SPRITES={kael:{idle:4,walk:6,attack:4,hit:2,h:70},bron:{idle:4,walk:6,attack:4,hit:2,h:74},haral:{idle:4,walk:6,attack:4,hit:2,h:72},riel:{idle:4,walk:6,attack:4,hit:2,h:76},margo:{idle:4,walk:6,attack:4,hit:2,h:72},luka:{idle:4,walk:6,attack:4,hit:2,h:72},nella:{idle:4,walk:6,attack:4,hit:2,h:68},brida:{idle:4,walk:6,attack:4,hit:2,h:74},daisy:{idle:4,walk:6,attack:4,hit:2,h:70},gordon:{idle:4,walk:6,attack:4,hit:2,h:74},makrye:{idle:4,walk:6,attack:4,hit:2,h:70}};
 const SPR_FRAME=256,SPR_FOOT=250,SPR_FIG=171; // SPR_FIG: 프레임 안에서 카엘의 키(px) → 코드 그림 키 66과 맞춤
 const SPR={};
 /* 전투 효과: assets/fx/fx_<이름>.png, 256 칸(작살은 512x256)을 가로로 이은 시트. 없으면 코드 효과 */
 const BANNER=new Image();BANNER.onload=()=>{BANNER.ok=true};
-const FXDEF={hit:4,crit:5,bees:4,heal:5,coin:4,harpoon:1,soup:1,skill_kael:4,skill_bron:4,skill_haral:4,skill_riel:4,skill_margo:4,skill_luka:4,skill_nella:4,skill_brida:4,skill_daisy:4,skill_gordon:4},FXI={};let fxs=[];
+const FXDEF={hit:4,crit:5,bees:4,heal:5,coin:4,harpoon:1,soup:1,skill_kael:4,skill_bron:4,skill_haral:4,skill_riel:4,skill_margo:4,skill_luka:4,skill_nella:4,skill_brida:4,skill_daisy:4,skill_gordon:4,skill_makrye:4},FXI={};let fxs=[];
 function loadFx(){for(const k in FXDEF){const im=new Image();im.onload=()=>{im.ok=true;im.cw=im.width/FXDEF[k]};im.src='assets/fx/fx_'+k+'.png';FXI[k]=im}}
 const fxOk=k=>FXI[k]&&FXI[k].ok;
 function spawnFx(k,x,y,size,d,vy){if(fxOk(k))fxs.push({k,x,y,size,d,t:0,vy:vy||0})}
@@ -1595,7 +1600,7 @@ function monSprite(r,mon){if(mon&&mon.gob)return gobSprite();const ri=REGIONS.in
 function loadSprites(){for(const id in SPRITES){SPR[id]={};for(const a of['idle','walk','attack','hit']){const im=new Image();
  im.onload=()=>{im.ok=true;if(hasSprite(id)){HEIGHT[id]=SPRITES[id].h;partySig='';prowSig='';eqSig='';if(id==='kael')faceTo($('faceCv'),'kael')}};im.onerror=()=>{im.bad=true;const al=SPRITE_ALT[id];if(al&&SPR[al]){SPR[id][a]=SPR[al][a];SPR[id].alt=true;prowSig='';partySig=''}};im.src='assets/characters/'+id+'_'+a+'.png';SPR[id][a]=im}}}
 /* 그림이 오기 전 임시: 같은 직업 동료 그림을 색만 바꿔 씀 */
-const SPRITE_ALT={luka:'margo',nella:'haral',brida:'bron',daisy:'riel',gordon:'bron'};
+const SPRITE_ALT={luka:'margo',nella:'haral',brida:'bron',daisy:'riel',gordon:'bron',makrye:'haral'};
 const hasSprite=id=>!!SPR[id]&&['idle','walk','attack','hit'].every(a=>SPR[id][a].ok);
 function spriteFrame(id,p,walk){const d=SPRITES[id];
  if(!p)return['idle',0];

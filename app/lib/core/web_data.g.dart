@@ -218,6 +218,14 @@ const wComp = {
     'base': {'atk': 9, 'hp': 96, 'aps': 1},
     'per': {'atk': 3, 'hp': 19},
   },
+  'makrye': {
+    'n': '막례',
+    'role': '어부 · 광역',
+    'desc': '칠순의 전설 해녀. 하랄과 같은 마을 동갑내기 앙숙이다. 마족이 바다를 지키라고 풀어 둔 아기 크라켄 「말순이」를 몰래 길들여 키운다. 빗창을 휘두르면 말순이가 촉수로 거든다.',
+    'join': '동료 카드 30장을 모으면 합류',
+    'base': {'atk': 13, 'hp': 115, 'aps': 0.85},
+    'per': {'atk': 3.9, 'hp': 23},
+  },
   'luka': {
     'n': '루카',
     'role': '요리사 · 회복',
@@ -238,6 +246,7 @@ const wJob = {
   'brida': 'miner',
   'daisy': 'keeper',
   'gordon': 'miner',
+  'makrye': 'fisher',
 };
 
 const wJobn = {'miner': '광부', 'fisher': '어부', 'keeper': '양봉가', 'cook': '요리사'};
@@ -259,6 +268,7 @@ const wHeight = {
   'brida': 56,
   'daisy': 62,
   'gordon': 60,
+  'makrye': 58,
 };
 
 const wRecruits = {
@@ -321,6 +331,21 @@ const wRecruits = {
     ],
     'ok': '잘 부탁해, 넬라',
   },
+  'makrye': {
+    'job': 'fisher',
+    'title': '전설의 해녀 막례',
+    'lines': [
+      '갈대 강변 끝, 바다가 보이는 갯바위에서 "호오이~" 하는 숨비소리가 길게 울렸다.',
+      'm:막례|어이구, 하랄이 너 아직 살아 있었냐? 크라켄이랑 사흘 밤낮 싸웠다며?',
+      'm:하랄|그, 그건 진짜라니까! 이만한 촉수가 배를…',
+      'm:막례@laugh|그거 우리 말순이가 너랑 놀아 준 거여. 말순아, 하랄 할배한테 인사해라.',
+      'k@surprised:…방금 망사리에서 보라색 문어가 손 흔들었어요.',
+      'q@proud:마족의 크라켄을 길들인 해녀라… 주인, 이건 귀한 인연이다.',
+      'sys:전설 등급 동료! 원정대 탭의 어부 자리에서 출전시킬 수 있어요.',
+      'sys:마을 스킬 「물질 대장」: 낚시터 생선 생산 +50%. 출전하지 않아도 늘 적용되고, 별이 오를수록 강해져요(★5에서 +100%).',
+    ],
+    'ok': '잘 부탁해요, 막례 할머니',
+  },
 };
 
 const wStarNeed = [30, 20, 40, 80, 150];
@@ -337,6 +362,7 @@ const wGrade = {
   'brida': 'legend',
   'daisy': 'rare',
   'gordon': 'common',
+  'makrye': 'legend',
 };
 
 const wGr = {
@@ -378,7 +404,7 @@ const wGr = {
   },
 };
 
-const wVpas = {'brida': {'n': '여왕의 대장간'}};
+const wVpas = {'brida': {'n': '여왕의 대장간'}, 'makrye': {'n': '물질 대장'}};
 
 const wSkills = {
   'kael': {
@@ -435,6 +461,13 @@ const wSkills = {
     'd': '6초 동안 원정대가 받는 피해 70% 감소, 막은 피해의 절반을 되돌려 줌 (★3·★5에서 강화)',
     'line': '이 산맥은 삼백 년 동안 무너진 적이 없다!',
     'need': 24,
+    'face': 'laugh',
+  },
+  'makrye': {
+    'n': '숨비소리',
+    'd': '말순이를 불러 모든 적에게 공격력 3배 피해, 2초 기절 (보스는 1초, ★3·★5에서 강화)',
+    'line': '호오이~ 말순아, 나와라!',
+    'need': 26,
     'face': 'laugh',
   },
   'nella': {
@@ -726,6 +759,7 @@ const wSprites = {
   'brida': {'idle': 4, 'walk': 6, 'attack': 4, 'hit': 2, 'h': 74},
   'daisy': {'idle': 4, 'walk': 6, 'attack': 4, 'hit': 2, 'h': 70},
   'gordon': {'idle': 4, 'walk': 6, 'attack': 4, 'hit': 2, 'h': 74},
+  'makrye': {'idle': 4, 'walk': 6, 'attack': 4, 'hit': 2, 'h': 70},
 };
 
 const wSprConst = {'frame': 256, 'foot': 250, 'fig': 171};
@@ -857,6 +891,7 @@ const wFxdef = {
   'skill_brida': 4,
   'skill_daisy': 4,
   'skill_gordon': 4,
+  'skill_makrye': 4,
 };
 
 const wForm = {
@@ -870,6 +905,7 @@ const wForm = {
   'brida': [0.58, 0.72],
   'daisy': [0.17, 0.16],
   'gordon': [0.58, 0.72],
+  'makrye': [0.31, 1],
 };
 
 const wGobRare = {'badge': 0.005, 'frame': 0.002};

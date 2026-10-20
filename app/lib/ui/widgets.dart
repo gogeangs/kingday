@@ -265,7 +265,7 @@ class Para extends StatelessWidget {
   final String p;
 
   static const _npc = {
-    '고든': 'gordon', '데이지': 'daisy', '브리다': 'brida', '넬라': 'nella', '루카': 'luka', '브론': 'bron', '하랄': 'haral',
+    '막례': 'makrye', '고든': 'gordon', '데이지': 'daisy', '브리다': 'brida', '넬라': 'nella', '루카': 'luka', '브론': 'bron', '하랄': 'haral',
     '리엘': 'riel', '마고': 'margo', '마르타': 'marta', '피트': 'pete', '토비': 'toby', '모르바스': 'morbas', '세릴': 'seril',
     '그로마크': 'gromak', '알도르': 'aldor', '이그니스': 'ignis',
   };
