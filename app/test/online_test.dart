@@ -67,13 +67,13 @@ class FakeSb {
   }
 
   Future<http.Response> _handle(http.Request r) async {
-    expect(r.headers['apikey'], sbKey);
+    if (r.headers['apikey'] != sbKey) throw StateError('apikey 없음');
     final p = r.url.path;
     if (p == '/auth/v1/signup') {
       return _j({'access_token': 'a1', 'refresh_token': 'r1', 'expires_in': 3600, 'user': {'id': 'u1'}});
     }
     if (p == '/auth/v1/user') return _j({'is_anonymous': true});
-    expect(r.headers['authorization'], 'Bearer a1');
+    if (r.headers['authorization'] != 'Bearer a1') throw StateError('토큰 없음: ${r.headers}');
     final fn = p.replaceFirst('/rest/v1/rpc/', '');
     final a = (jsonDecode(r.body) as Map).cast<String, dynamic>();
     calls.add((fn, a));
@@ -121,6 +121,7 @@ void main() {
       final server = Server(store.prefs, client: MockClient(fake.handle));
       final g = GameController(store: store, state: store.load(DateTime.now().millisecondsSinceEpoch), server: server);
       await tester.pumpWidget(KingdayApp(g: g));
+      addTearDown(() => expect(fake.errors, isEmpty));
 
       Future<void> frames([int n = 6]) async {
         for (var i = 0; i < n; i++) {
