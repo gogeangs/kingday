@@ -1472,7 +1472,7 @@ const SPR_FRAME=256,SPR_FOOT=250,SPR_FIG=171; // SPR_FIG: 프레임 안에서 �
 const SPR={};
 /* 전투 효과: assets/fx/fx_<이름>.png, 256 칸(작살은 512x256)을 가로로 이은 시트. 없으면 코드 효과 */
 const BANNER=new Image();BANNER.onload=()=>{BANNER.ok=true};
-const FXDEF={hit:4,crit:5,bees:4,heal:5,coin:4,harpoon:1,soup:1,skill_kael:4,skill_bron:4,skill_haral:4,skill_riel:4,skill_margo:4,skill_luka:4,skill_nella:4,skill_brida:4,skill_daisy:4},FXI={};let fxs=[];
+const FXDEF={hit:4,crit:5,bees:4,heal:5,coin:4,harpoon:1,soup:1,skill_kael:4,skill_bron:4,skill_haral:4,skill_riel:4,skill_margo:4,skill_luka:4,skill_nella:4,skill_brida:4,skill_daisy:4,skill_gordon:4},FXI={};let fxs=[];
 function loadFx(){for(const k in FXDEF){const im=new Image();im.onload=()=>{im.ok=true;im.cw=im.width/FXDEF[k]};im.src='assets/fx/fx_'+k+'.png';FXI[k]=im}}
 const fxOk=k=>FXI[k]&&FXI[k].ok;
 function spawnFx(k,x,y,size,d,vy){if(fxOk(k))fxs.push({k,x,y,size,d,t:0,vy:vy||0})}
