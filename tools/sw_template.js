@@ -25,7 +25,7 @@ self.addEventListener('fetch',e=>{
   const req=e.request;if(req.method!=='GET')return;const url=new URL(req.url);if(url.origin!==location.origin)return;
   const p=pathOf(req.url);if(p==null)return;
   // 게임 화면: 인터넷이 되면 항상 최신, 안 되면(3초 넘게 걸리면) 저장본
-  if(req.mode==='navigate'||p===''||p==='index.html'){e.respondWith((async()=>{
+  if(p===''||p==='index.html'){e.respondWith((async()=>{
     const pc=await caches.open(PAGE);
     const net=fetch(req,{cache:'no-store'}).then(r=>{if(r.ok)pc.put(base,r.clone());return r});
     const timeout=new Promise(res=>setTimeout(()=>res(null),3000));
