@@ -1,6 +1,6 @@
 # 일반 어부 「모라」 기획 기록
 
-작성일: 2026-10-21 · 상태: **기획·그림 완료, 게임 등록은 보류** (대표님 지시: 기록만)
+작성일: 2026-10-21 · 상태: **게임 등록 완료 (웹·앱)** — 브랜치 `update/backlog-oct21-qa`, main 합치기 전
 
 ## 추가 배경
 - 일반 모집 동료가 고든(광부)뿐이라 어부·양봉가·요리사 일반 모집 동료를 1명씩 추가 기획 (대표님 결정, 2026-10-21). 추천안: 모라(어부)·멜로(양봉가)·포리(요리사).
@@ -35,7 +35,7 @@
   - **생선이 몸 앞뒤로 크게 나와** 프레임마다 그림 폭이 다름 → 몸(발) 기준으로 중심 맞출 것. 공격 2프레임은 생선이 머리 위로 높이 올라감(키 기준 주의).
   - 동작 시트 가장자리에 옅은 번짐이 있어 자를 때 투명도 기준값으로 걸러낼 것.
 
-## 원본 그림 위치 (저장소 `art/source/`, 게임 미반영)
+## 원본 그림 위치 (저장소 `art/source/`)
 | 그림 | 파일 |
 |---|---|
 | ⓪ 참고 시트 | `art/source/mora_ref.png` |
@@ -43,7 +43,18 @@
 | ② 초상화 | `art/source/portraits/portrait_mora_idle.png`, `portrait_mora_laugh.png` (원본 한 장을 덩어리 단위로 좌우 분리, 여백 자름) |
 | ③ 스킬 아이콘 | `art/source/skills/skill_mora.png` |
 | ④ 스킬 효과 | `art/source/fx/fx_skill_mora.png` |
-- `assets/`·`index.html`은 아직 손대지 않음 → 등록 세션에서 COMPANION_GUIDE.md 4장 도구로 처리.
+- 2026-10-21 등록 세션에서 게임 파일로 처리함 (아래 「게임 등록」).
 
 ## 등록할 때 할 일 (COMPANION_GUIDE.md 6장)
 COMP · JOB(`fisher`) · RECRUITS(마고가 소개) · GRADE(`common`) · HEIGHT/SPRITES/FORM · SKILLS · castSkill(앞 적 단일 피해) · FXDEF(`skill_mora:4`) · SPRITE_ALT/DRAW · NPCID(`'모라':'mora'`) · extract_skill_fx.py
+
+## 게임 등록 (2026-10-21) — 브랜치 `update/backlog-oct21-qa`, main 합치기 전
+| 항목 | 값 |
+|---|---|
+| 기본 능력치 | 공격 10 · 체력 95 · 공격 속도 0.85 (레벨당 공격 +3.2, 체력 +19), 일반 배율 ×1 |
+| 일반 공격 | 앞의 적 한 명 (어부 자리, 투사체 없음) |
+| 스킬 「싱싱한 한 방」 | 맨 앞(가장 가까운) 적 하나에 공격력 4배 피해, 게이지 18, ★3 ×1.3 |
+| 합류 대사 | 장터의 「싱싱해요!」 → 마고가 생선 대 주는 모라라고 소개 → 하랄 「그 생선은 또 어디서」 → 카엘 「생선이 무기인 건 처음」 |
+| 키 / 위치 | HEIGHT 60, SPRITES h 70, 어부 자리(하랄과 같은 위치) |
+| 그림 → 게임 파일 | `assets/characters/mora_{idle,walk,attack,hit}.png`, `assets/portraits/portrait_mora_{idle,laugh}.png`, `assets/skills/skill_mora.png`, `assets/fx/fx_skill_mora.png` |
+| 자르기 메모 | 공격 칸이 생선 때문에 넓어 `tools/slice_frames.py` 에 자르는 위치(CUTS)를 따로 넣음(공격 칸 320) |

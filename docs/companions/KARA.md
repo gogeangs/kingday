@@ -1,6 +1,6 @@
 # 희귀 요리사 「카라」 기획 기록
 
-작성일: 2026-10-21 · 상태: **기획·그림 완료, 게임 등록은 보류** (대표님 지시: 기록만)
+작성일: 2026-10-21 · 상태: **게임 등록 완료 (웹·앱)** — 브랜치 `update/backlog-oct21-qa`, main 합치기 전
 
 ## 확정 설정
 | 항목 | 내용 |
@@ -42,7 +42,17 @@
 | ② 초상화 | `art/source/portraits/portrait_kara_idle.png`, `portrait_kara_laugh.png` (원본 한 장을 덩어리 단위로 좌우 분리, 여백 자름) |
 | ③ 스킬 아이콘 | `art/source/skills/skill_kara.png` |
 | ④ 스킬 효과 | `art/source/fx/fx_skill_kara.png` |
-- `assets/`·`index.html`은 아직 손대지 않음 → 등록 세션에서 COMPANION_GUIDE.md 4장 도구로 처리.
+- 2026-10-21 등록 세션에서 게임 파일로 처리함 (아래 「게임 등록」).
 
 ## 등록할 때 할 일 (COMPANION_GUIDE.md 6장)
 COMP · JOB(요리사 기존 값) · RECRUITS(마고와 얽힌 대사) · GRADE(`rare`) · HEIGHT/SPRITES/FORM · SKILLS · castSkill(광역 화상 지속 피해) · FXDEF(`skill_kara:4`) · SPRITE_ALT/DRAW · NPCID(`'카라':'kara'`) · extract_skill_fx.py
+
+## 게임 등록 (2026-10-21) — 브랜치 `update/backlog-oct21-qa`, main 합치기 전
+| 항목 | 값 |
+|---|---|
+| 기본 능력치 | 공격 5 · 체력 80 · 공격 속도 0.85 (레벨당 공격 +1.6, 체력 +16), 희귀 배율 ×1.1 |
+| 일반 공격 | 요리사 공통: 체력이 낮은 동료가 있으면 치료, 없으면 적에게 국물 던지기 |
+| 스킬 「불맛 한 숟갈」 | 모든 적에게 공격력 1.5배 피해 + 5초 동안 화상(0.5초마다 공격력 0.35배), 게이지 24, ★3 ×1.3. 화상 중인 적 발밑에 작은 불길 |
+| 합류 대사 | 마고 식당 불기둥 → 마고 「웍에서 불 좀 그만 올리라고 했잖니!」 → 카라 「불맛 없으면 요리가 아니라니까요!」 → 카엘 「…쫓겨난 거 맞지?」 |
+| 키 / 위치 | HEIGHT 60, SPRITES h 70, 요리사 자리(마고와 같은 위치) |
+| 그림 → 게임 파일 | `assets/characters/kara_*.png`, `assets/portraits/portrait_kara_{idle,laugh}.png`, `assets/skills/skill_kara.png`, `assets/fx/fx_skill_kara.png` |

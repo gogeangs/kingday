@@ -1,6 +1,6 @@
 # 일반 요리사 「포리」 기획 기록
 
-작성일: 2026-10-21 · 상태: **기획·그림 완료, 게임 등록은 보류** (대표님 지시: 기록만)
+작성일: 2026-10-21 · 상태: **게임 등록 완료 (웹·앱)** — 브랜치 `update/backlog-oct21-qa`, main 합치기 전
 
 ## 추가 배경
 - 일반 모집 동료 추가 3명(모라·멜로·포리) 중 세 번째 (대표님 결정, 2026-10-21).
@@ -37,7 +37,7 @@
   - 체구가 작아 다른 동료보다 키를 약간 작게 볼 것(`HEIGHT`).
   - 동작 시트 가장자리에 옅은 번짐이 있어 자를 때 투명도 기준값으로 걸러낼 것.
 
-## 원본 그림 위치 (저장소 `art/source/`, 게임 미반영)
+## 원본 그림 위치 (저장소 `art/source/`)
 | 그림 | 파일 |
 |---|---|
 | ⓪ 참고 시트 | `art/source/pori_ref.png` |
@@ -45,7 +45,18 @@
 | ② 초상화 | `art/source/portraits/portrait_pori_idle.png`, `portrait_pori_laugh.png` (원본 한 장을 덩어리 단위로 좌우 분리, 여백 자름) |
 | ③ 스킬 아이콘 | `art/source/skills/skill_pori.png` |
 | ④ 스킬 효과 | `art/source/fx/fx_skill_pori.png` |
-- `assets/`·`index.html`은 아직 손대지 않음 → 등록 세션에서 COMPANION_GUIDE.md 4장 도구로 처리.
+- 2026-10-21 등록 세션에서 게임 파일로 처리함 (아래 「게임 등록」).
 
 ## 등록할 때 할 일 (COMPANION_GUIDE.md 6장)
 COMP · JOB(요리사 기존 값) · RECRUITS(마고가 소개) · GRADE(`common`) · HEIGHT/SPRITES/FORM · SKILLS · castSkill(최저 체력 아군 단일 회복) · FXDEF(`skill_pori:4`) · SPRITE_ALT/DRAW · NPCID(`'포리':'pori'`) · extract_skill_fx.py
+
+## 게임 등록 (2026-10-21) — 브랜치 `update/backlog-oct21-qa`, main 합치기 전
+| 항목 | 값 |
+|---|---|
+| 기본 능력치 | 공격 4 · 체력 88 · 공격 속도 0.85 (레벨당 공격 +1.4, 체력 +18), 일반 배율 ×1 |
+| 일반 공격 | 요리사 자리 기본 공격 |
+| 스킬 「따끈한 수프 배달」 | 체력 비율이 가장 낮은 동료 하나(쓰러졌으면 일으킴)의 체력 35% 회복, 게이지 18, ★3 ×1.3 |
+| 합류 대사 | 냄비 들고 달려옴 → 마고 「이번엔 안 엎었니?」 → 포리 「거의요!」 → 마고 「제일 지친 손님한테 제일 먼저」 |
+| 키 / 위치 | HEIGHT 52, SPRITES h 62, 요리사 자리(마고와 같은 위치) |
+| 그림 → 게임 파일 | `assets/characters/pori_{idle,walk,attack,hit}.png`, `assets/portraits/portrait_pori_{idle,laugh}.png`, `assets/skills/skill_pori.png`, `assets/fx/fx_skill_pori.png` |
+| 자르기 메모 | 자동 자르기 도구가 프레임을 잘못 나눠 `tools/slice_frames.py` 에 CUTS 를 따로 넣음 |

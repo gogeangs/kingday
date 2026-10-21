@@ -1,0 +1,213 @@
+name: app-build
+# Flutter 네이티브 앱(app/)을 빌드해 안드로이드 APK를 만듭니다.
+# 결과: 이 실행 화면 맨 아래 Artifacts 의 「kingday-apk」 를 내려받아 폰에 설치.
+#
+# 처음 한 번은 android/ ios/ 폴더(플랫폼 뼈대)와 아이콘·시작 화면을 자동으로 만들어
+# 같은 브랜치에 커밋해 둡니다(main 브랜치에는 자동 커밋하지 않음).
+on:
+  push:
+    paths:
+      - 'app/**'
+      - 'assets/**'
+      - 'tools/sync_app_assets.py'
+      - 'tools/parity/**'
+      - 'index.html'
+      - '.github/workflows/app-build.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: app-build-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  android:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    defaults:
+      run:
+        working-directory: app
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: 버전 기록
+        run: flutter --version
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '22'
+
+      - name: 웹과 같은 데이터·공식인지 확인 (index.html → 앱 데이터 표·정답 값)
+        working-directory: .
+        run: |
+          node tools/parity/gen_dart_data.js --check
+          node tools/parity/make_fixtures.js --check
+          node tools/parity/make_battle_fixtures.js --check
+          node tools/parity/make_action_fixtures.js --check
+          node tools/parity/make_soak_fixtures.js --check
+
+      - name: 그림 복사 (assets/ → app/assets/game/)
+        working-directory: .
+        run: |
+          pip install --quiet fonttools brotli
+          python3 tools/sync_app_assets.py
+
+      - name: 플랫폼 뼈대 만들기 (처음 한 번)
+        run: |
+          if [ ! -d android ] || [ ! -d ios ]; then
+            flutter create --org kr.co.project30s --project-name kingday \
+              --platforms android,ios --no-pub .
+            # flutter create 가 넣는 기본 예제 테스트는 우리 앱과 맞지 않아 지움
+            rm -f test/widget_test.dart
+          fi
+
+      - name: 패키지 받기
+        run: flutter pub get
+
+      - name: 아이콘·시작 화면 생성
+        run: |
+          dart run flutter_launcher_icons
+          dart run flutter_native_splash:create
+
+      - name: 앱 이름(한글)·세로 고정 적용
+        run: |
+          M=android/app/src/main/AndroidManifest.xml
+          sed -i 's/android:label="[^"]*"/android:label="왕이 되는 그날까지"/' "$M"
+          # 서버 연결용 인터넷 권한 (릴리스 APK 에 꼭 필요)
+          grep -q 'android.permission.INTERNET' "$M" || \
+            sed -i 's|<application|<uses-permission android:name="android.permission.INTERNET"/>\n    <application|' "$M"
+          grep -q 'android:screenOrientation' "$M" || \
+            sed -i 's/android:name=".MainActivity"/android:name=".MainActivity"\n            android:screenOrientation="portrait"/' "$M"
+          P=ios/Runner/Info.plist
+          /usr/bin/python3 - "$P" <<'PY'
+          import re, sys
+          p = sys.argv[1]; s = open(p, encoding="utf-8").read()
+          s = re.sub(r"(<key>CFBundleDisplayName</key>\s*<string>)[^<]*(</string>)", r"\g<1>왕이 되는 그날까지\g<2>", s)
+          # iPhone 은 세로만
+          s = re.sub(r"(<key>UISupportedInterfaceOrientations</key>\s*<array>)(.*?)(</array>)",
+                     r"\g<1>\n\t\t<string>UIInterfaceOrientationPortrait</string>\n\t\g<3>", s, count=1, flags=re.S)
+          open(p, "w", encoding="utf-8").write(s)
+          PY
+
+      - name: 생성된 파일을 브랜치에 커밋 (main 제외)
+        if: github.ref != 'refs/heads/main'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A .
+          if ! git diff --cached --quiet; then
+            git commit -m "chore(app): 플랫폼 뼈대·아이콘·시작 화면 자동 생성"
+            git push
+          else
+            echo "새로 만든 파일 없음"
+          fi
+
+      # 실패 내용은 실행 화면의 Annotations 에도 보이게 ::error:: 로 다시 적는다
+      - name: 코드 검사
+        run: |
+          set +e
+          flutter analyze --no-fatal-infos > analyze.log 2>&1
+          code=$?
+          cat analyze.log
+          if [ $code -ne 0 ]; then
+            grep -E "^ *(error|warning) " analyze.log | head -40 | sed 's/^ */::error title=analyze::/'
+            exit $code
+          fi
+
+      - name: 테스트 (웹과 공식 비교 포함)
+        run: |
+          set +e
+          flutter test --reporter expanded > test.log 2>&1
+          code=$?
+          cat test.log
+          if [ $code -ne 0 ]; then
+            # 실패 요약을 한 개의 알림(Annotation)에 모아 적는다 (GitHub 는 단계마다 알림 10개까지만 보여 줌)
+            {
+              echo "[실패한 테스트]"
+              grep -E "\[E\]$" test.log | awk '!seen[$0]++' | head -20
+              echo "[웹과 다른 값·기대와 다른 결과]"
+              grep -E "≠|웹에만|앱에만|Expected|Actual|Which:|Reason" test.log | awk '!seen[$0]++' | head -20
+              echo "[Flutter 오류]"
+              awk '/EXCEPTION CAUGHT BY/{c=40} c-->0' test.log \
+                | grep -vE "^ *$|yellow|black striped|Consider applying|to fit within|To see|^ *#|debugPaint|═══|Another exception|rendering library|inspector|════" \
+                | sed 's#file:///home/runner/work/kingday/kingday/app/##' | awk '!seen[$0]++' | head -80
+            } > fail.txt
+            msg=$(sed -e 's/%/%25/g' -e 's/\r//g' fail.txt | awk '{printf "%s%%0A", $0}')
+            echo "::error title=test-fail::$msg"
+            exit $code
+          fi
+
+      - name: QA 화면 캡처 (qa 가 들어간 브랜치만 · 결과는 qa-shots 브랜치)
+        if: contains(github.ref, 'qa')
+        continue-on-error: true
+        run: |
+          set +e
+          flutter test --update-goldens qa/screens_test.dart > shots.log 2>&1
+          code=$?
+          tail -80 shots.log
+          if [ $code -ne 0 ]; then
+            msg=$( { grep -E "\[E\]$|Expected|Actual|Exception|Error" shots.log | awk '!seen[$0]++' | head -40; } | sed -e 's/%/%25/g' | awk '{printf "%s%%0A", $0}')
+            echo "::warning title=qa-shots::$msg"
+          fi
+          ls qa/shots/*.png >/dev/null 2>&1 || exit 0
+          H=$(git config --get http.https://github.com/.extraheader)
+          rm -rf /tmp/shots && mkdir -p /tmp/shots && cp qa/shots/*.png /tmp/shots/ && cp shots.log /tmp/shots/
+          cd /tmp/shots
+          git init -q && git checkout -q -b qa-shots && git add -A
+          git -c user.name="github-actions[bot]" -c user.email="41898282+github-actions[bot]@users.noreply.github.com" commit -qm "QA 화면 ${GITHUB_SHA::7}"
+          git -c http.https://github.com/.extraheader="$H" push -q -f "https://github.com/${{ github.repository }}" qa-shots
+
+      - name: 정식 서명 키 준비 (GitHub 비밀값이 있을 때만)
+        env:
+          KS_B64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          KS_PASS: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          KEY_PASS: ${{ secrets.ANDROID_KEY_PASSWORD }}
+        run: |
+          if [ -z "$KS_B64" ]; then echo "비밀값 없음 → 시험용 키로 서명"; exit 0; fi
+          echo "$KS_B64" | base64 -d > android/app/upload.jks
+          printf "storeFile=upload.jks\nstorePassword=%s\nkeyAlias=%s\nkeyPassword=%s\n" "$KS_PASS" "$KEY_ALIAS" "$KEY_PASS" > android/key.properties
+          # 구글 로그인 설정에 넣을 SHA-1 (공개해도 되는 값)
+          keytool -list -v -keystore android/app/upload.jks -storepass "$KS_PASS" -alias "$KEY_ALIAS" | grep -E "SHA1|SHA-1" | head -1 | sed 's/^ */::notice title=upload-key-sha1::/'
+
+      - name: APK 빌드
+        run: |
+          set +e
+          flutter build apk --release > apk.log 2>&1
+          code=$?
+          tail -60 apk.log
+          if [ $code -ne 0 ]; then
+            msg=$( { grep -E "error|Error|FAILURE|What went wrong|failed|requires|minSdk|Execution failed|Could not" apk.log | grep -v "^\s*at " | awk '!seen[$0]++' | head -40; } | sed -e 's/%/%25/g' | awk '{printf "%s%%0A", $0}')
+            echo "::error title=apk-fail::$msg"
+            exit $code
+          fi
+
+      - name: 스토어용 AAB 빌드 (정식 서명 키가 있을 때만)
+        run: |
+          if [ ! -f android/key.properties ]; then echo "정식 키 없음 → 건너뜀"; exit 0; fi
+          flutter build appbundle --release
+
+      - uses: actions/upload-artifact@v5
+        if: hashFiles('app/build/app/outputs/bundle/release/app-release.aab') != ''
+        with:
+          name: kingday-aab
+          path: app/build/app/outputs/bundle/release/app-release.aab
+          retention-days: 30
+
+      - uses: actions/upload-artifact@v5
+        with:
+          name: kingday-apk
+          path: app/build/app/outputs/flutter-apk/app-release.apk
+          retention-days: 14

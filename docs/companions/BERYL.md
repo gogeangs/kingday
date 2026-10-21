@@ -1,6 +1,6 @@
 # 희귀 광부 「베릴」 기획 기록
 
-작성일: 2026-10-21 · 상태: **기획·그림 완료, 게임 등록은 보류** (대표님 지시: 기록만)
+작성일: 2026-10-21 · 상태: **게임 등록 완료 (웹·앱)** — 브랜치 `update/backlog-oct21-qa`, main 합치기 전
 
 ## 추가 배경
 - 처음 계획한 추가 동료 7명에 희귀 광부가 없어서 빈칸이 생김 → 대표님 결정으로 8번째 추가 동료로 기획 (2026-10-21).
@@ -46,7 +46,18 @@
 | ② 초상화 | `art/source/portraits/portrait_beryl_idle.png`, `portrait_beryl_laugh.png` (원본 한 장을 덩어리 단위로 좌우 분리, 여백 자름) |
 | ③ 스킬 아이콘 | `art/source/skills/skill_beryl.png` |
 | ④ 스킬 효과 | `art/source/fx/fx_skill_beryl.png` |
-- `assets/`·`index.html`은 아직 손대지 않음 → 등록 세션에서 COMPANION_GUIDE.md 4장 도구로 처리.
+- 2026-10-21 등록 세션에서 게임 파일로 처리함 (아래 「게임 등록」).
 
 ## 등록할 때 할 일 (COMPANION_GUIDE.md 6장)
 COMP · JOB(광부 기존 값) · RECRUITS(브론과 값 흥정 티격태격) · GRADE(`rare`) · HEIGHT/SPRITES/FORM · SKILLS · castSkill(적 취약 상태 — 피해 계산부에 받는 피해 배율 추가 필요) · FXDEF(`skill_beryl:4`) · SPRITE_ALT/DRAW · NPCID(`'베릴':'beryl'`) · extract_skill_fx.py
+
+## 게임 등록 (2026-10-21) — 브랜치 `update/backlog-oct21-qa`, main 합치기 전
+| 항목 | 값 |
+|---|---|
+| 기본 능력치 | 공격 8 · 체력 200 · 공격 속도 0.8 (레벨당 공격 +2.4, 체력 +40), 희귀 배율 ×1.1 |
+| 일반 공격 | 앞의 적 한 명 (광부 자리, 적이 광부를 먼저 공격) |
+| 스킬 「약점 감정」 | 모든 적에게 공격력 1배 피해 + 6초 동안 취약(받는 모든 피해 +30%, ★3 +39%), 게이지 20. 취약한 적 몸 가운데에 보라 과녁 표시 |
+| 합류 대사 | 광산 입구에서 광석 감정 → 브론 「내 광석에 또 흠을 잡아?」 → 브리다 「값을 제대로 매기는 유일한 녀석」 |
+| 키 / 위치 | HEIGHT 60, SPRITES h 70, 광부 자리(브론과 같은 위치) |
+| 그림 → 게임 파일 | `assets/characters/beryl_*.png` (동작 시트 줄이 붙어 있어 `tools/slice_frames.py` CUTS 에 `beryl` 추가해 자름, 공격 칸 폭 384), `assets/portraits/portrait_beryl_{idle,laugh}.png`, `assets/skills/skill_beryl.png`, `assets/fx/fx_skill_beryl.png` |
+| 공격 3프레임 수정 파편 | 그대로 사용(타격감) |
