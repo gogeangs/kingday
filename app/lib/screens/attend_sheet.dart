@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 
 import '../core/attendance.dart';
 import '../core/js.dart';
+import '../core/profile_data.dart';
 import '../game/controller.dart';
 import '../ui/theme.dart';
 import '../ui/widgets.dart';
