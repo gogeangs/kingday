@@ -152,17 +152,29 @@ class GameActions {
     }
   }
 
-  /// openBox(auto)
-  void openBox(bool auto) {
+  /// 출석 무료권 수 (S.tickets.box · box10)
+  int ticketN(String k) => orNum(asMap(s.raw['tickets'])?[k], 0).toInt();
+  void _useTicket(String k) {
+    final t = asMap(s.raw['tickets']) ?? (s.raw['tickets'] = <String, dynamic>{'box': 0, 'box10': 0});
+    t[k] = ticketN(k) - 1;
+  }
+
+  /// openBox(auto): 직접 열 때는 출석 무료 개봉권을 골드보다 먼저 씀 (자동 열기·광고 상자 제외)
+  void openBox(bool auto, {bool noTicket = false}) {
     if (!auto) out.add(ActHaptic(const [12]));
-    final cost = c.boxCost();
-    if (s.gold < cost || pending != null) return;
+    final cost = c.boxCost(), tk = !auto && !noTicket && ticketN('box') > 0;
+    if ((!tk && s.gold < cost) || pending != null) return;
     if (!truthy(s.done['pete'])) {
       s.done['pete'] = true;
       out.add(ActPeteIntro());
       return;
     }
-    s.gold = s.gold - cost;
+    if (tk) {
+      _useTicket('box');
+      _toast('상자 무료 개봉권 사용 · 남은 ${ticketN('box')}장');
+    } else {
+      s.gold = s.gold - cost;
+    }
     gainBoxXp();
     dailyAdd('box', 1);
     final it = c.rollItem(rng), cur = c.equipped(it.slot);
@@ -204,7 +216,12 @@ class GameActions {
   /// open10(): 황금 이삭 100개로 10연속, 영웅 이상 1개 확정. 더 좋은 건 바로 끼고 나머지는 판다.
   void open10() {
     if (pending != null) return;
-    if (!spendGem(gem10)) return;
+    if (ticketN('box10') > 0) {
+      _useTicket('box10');
+      _toast('10연속 무료권 사용 · 남은 ${ticketN('box10')}장');
+    } else if (!spendGem(gem10)) {
+      return;
+    }
     final its = <Relic>[];
     for (var i = 0; i < 10; i++) {
       gainBoxXp();
@@ -689,7 +706,7 @@ class GameActions {
   /// 광고 보상: 성유물 상자 1회 무료 (웹 adBox)
   void adBoxGive() {
     s.gold = s.gold + c.boxCost();
-    openBox(false);
+    openBox(false, noTicket: true);
   }
 
   /// 광고 보상: 황금 이삭 +5 (웹 adGem)

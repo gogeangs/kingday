@@ -5,6 +5,7 @@ import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:kingday/core/actions.dart';
+import 'package:kingday/core/attendance.dart';
 import 'package:kingday/core/calc.dart';
 import 'package:kingday/core/data.dart';
 import 'package:kingday/core/rng.dart';
@@ -81,6 +82,16 @@ void main() {
             s.gem = s.gem + 5;
           case 'adcard':
             a.adCardGive();
+          case 'att':
+            a.attDo(o[1]);
+          case 'attad':
+            a.attAdDo(o[1]);
+          case 'attm':
+            a.attA()['ym'] = o[1];
+            a.attA()['m'] = int.parse(o[2]);
+          case 'tk':
+            a.attA();
+            (s.raw['tickets'] as Map)[o[1]] = int.parse(o[2]);
           case 'open10':
             a.open10();
           case 'mul':

@@ -2163,7 +2163,15 @@ let attAutoDay='',attJust=null;const ATTIMG={};
 function attPreload(){for(const n of['hd_attend','ic_attend','att_stamp']){const im=new Image();im.onload=()=>{ATTIMG[n]=1};im.src='assets/ui/'+n+'.png'}}
 function attA(){if(!S.att||typeof S.att!=='object')S.att={};const a=S.att,d=fresh().att;for(const k in d)if(a[k]==null)a[k]=d[k];if(!Array.isArray(a.got))a.got=[];if(!S.tickets||typeof S.tickets!=='object')S.tickets={box:0,box10:0};return a}
 const attEligible=()=>(S.best||1)>=3;
-function attStatus(){const a=attA(),t=today();if(a.last===t)return'done';if(a.last&&dnum(t)<dnum(a.last))return'back';return'ok'}
+function attStatusAt(t){const a=attA();if(a.last===t)return'done';if(a.last&&dnum(t)<dnum(a.last))return'back';return'ok'}
+const attStatus=()=>attStatusAt(today());
+/* 출석 처리(창 없이): 그날 t 에 출석 → 두 판 보상 지급. 앱 core/attendance.dart 와 같은 규칙 */
+function attDo(t){const a=attA(),st=attStatusAt(t);if(st!=='ok')return st;const ym=attYm(t);if(a.ym!==ym){a.ym=ym;a.m=0}
+ const wd=(a.w|0)%7,md=Math.min(31,(a.m|0)+1),rows=[],got=[];
+ for(const r of[...ATT_W[wd],...attM(md)]){const g=attGive(r);got.push(g.it);rows.push(g.row)}
+ a.w=(wd+1)%7;a.m=md;a.last=t;a.got=got;stat('att',1);return{wd,md,rows}}
+/* 광고 2배(창 없이): 그날 받은 보상을 한 번 더, 배지는 빼고 */
+function attAdDo(t){const a=attA();if(attStatusAt(t)!=='done'||a.ad===t)return null;const rows=[];for(const r of a.got){if(r.k==='badge')continue;rows.push(attGive(r,true).row)}a.ad=t;return rows}
 const attMonthN=()=>{const a=attA();return a.ym===attYm(today())?a.m:0};
 function attHud(){const b=$('attBtn');if(!b)return;const on=attEligible();b.hidden=!on;$('attDot').hidden=!on||attStatus()!=='ok';
  if(on&&attAutoDay&&attAutoDay!==today()){attAutoDay=today();if(attStatus()==='ok')queue(attOpen)}}
@@ -2197,17 +2205,13 @@ function attGive(r,again){let it=Object.assign({},r),txt='',sub='';
  return{it,row:attRow(it,txt,sub,again)}}
 const attRow=(r,txt,sub,again)=>`<div class="attrw">${attIc(r)}<span><b>${txt}</b>${sub?`<small>${sub}</small>`:''}</span>${again?'<i class="x2">2배</i>':''}</div>`;
 function attOpen(){const a=attA();if(!a.intro){a.intro=1;save();scene('피트의 출석부','출석부가 생겼어요',['m:피트|어서 와요, 영주님! 오늘부터 출석부를 만들었어요. 하루 한 번 얼굴만 보여 주시면 선물을 챙겨 드릴게요.','k@smile:얼굴만 보여 주면 된다고? 그건 은퇴하고도 할 수 있겠네.','q:주인, 출석도 왕의 덕목이다.'],'출석부 열기',{go:attSheet});return}attSheet()}
-function attClaim(){const a=attA(),st=attStatus();
- if(st==='done')return toast('오늘은 이미 받았어요. 내일 자정에 또 만나요');
- if(st==='back')return toast('날짜가 이상해요. 휴대폰 시간을 확인해 주세요.');
- const t=today(),ym=attYm(t);if(a.ym!==ym){a.ym=ym;a.m=0}
- const wd=(a.w|0)%7,md=Math.min(31,(a.m|0)+1),rows=[],got=[];
- for(const r of[...ATT_W[wd],...attM(md)]){const g=attGive(r);got.push(g.it);rows.push(g.row)}
- a.w=(wd+1)%7;a.m=md;a.last=t;a.got=got;attJust={wd,md,rows};
- haptic([30,40,70]);stat('att',1);shopSig='';eqSig='';partySig='';pfCheck();save();renderAll();
- toast('출석 완료! 7일 판 '+(wd+1)+'일째 · 이번 달 '+md+'회째');attSheet()}
+function attClaim(){const r=attDo(today());
+ if(r==='done')return toast('오늘은 이미 받았어요. 내일 자정에 또 만나요');
+ if(r==='back')return toast('날짜가 이상해요. 휴대폰 시간을 확인해 주세요.');
+ attJust=r;haptic([30,40,70]);shopSig='';eqSig='';partySig='';pfCheck();save();renderAll();
+ toast('출석 완료! 7일 판 '+(r.wd+1)+'일째 · 이번 달 '+r.md+'회째');attSheet()}
 function attAd(){const a=attA();if(attStatus()!=='done')return;if(a.ad===today())return toast('오늘은 다 봤어요. 내일 다시 받을 수 있어요');
- watchAd('att',()=>{const rows=[];for(const r of a.got){if(r.k==='badge')continue;rows.push(attGive(r,true).row)}a.ad=today();attJust={ad:1,rows};pfCheck();toast('피트가 한 번 더 챙겨 줬어요');setTimeout(attSheet,30)})}
+ watchAd('att',()=>{const rows=attAdDo(today());if(!rows)return;attJust={ad:1,rows};pfCheck();toast('피트가 한 번 더 챙겨 줬어요');setTimeout(attSheet,30)})}
 function attSheet(tab){const a=attA();if(tab){a.tab=tab;save()}const tb=a.tab==='m'?'m':'w',t=today(),st=attStatus(),done=st==='done',mc=attMonthN(),dim=attDim(t),mo=+t.split('-')[1];
  const stp=n=>`<i class="stp${n?' in':''}"><img src="assets/ui/att_stamp.png" alt="" onerror="this.parentNode.classList.add('nf');this.remove()"></i>`;
  const jw=attJust&&attJust.wd!=null?attJust.wd:-1,jm=attJust&&attJust.md!=null?attJust.md:-1;

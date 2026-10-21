@@ -1,6 +1,7 @@
 /// 프로필 꾸미기 — 테두리 11종·배지 14종 (웹 PFRAMES · BADGES · pfCheck)
 library;
 
+import 'attendance.dart';
 import 'calc.dart';
 import 'data.dart';
 import 'js.dart';
@@ -53,7 +54,13 @@ final List<Deco> badges = [
 Deco? frameOf(String k) => pframes.where((f) => f.k == k).firstOrNull;
 Deco? badgeOf(String k) => badges.where((b) => b.k == k).firstOrNull;
 String frameName(String k) => frameOf(k)?.n ?? k;
-String badgeName(String k) => badgeOf(k)?.n ?? k;
+String badgeName(String k) => isAttBadge(k) ? attBadgeName(k) : badgeOf(k)?.n ?? k;
+
+/// 출석 배지 att_YYYYMM (그달 28회 출석)
+bool isAttBadge(String k) => RegExp(r'^att_\d{6}$').hasMatch(k);
+
+/// 배지 그림 경로 (출석 배지는 월별 그림 → 공용 그림)
+String badgeAsset(String k) => isAttBadge(k) ? attBadgeAsset(k) : 'assets/game/profile/badge_$k.png';
 bool isTallFrame(String k) => frameOf(k)?.tall ?? false;
 
 extension ProfileCalc on GameCalc {
@@ -87,6 +94,12 @@ extension ProfileCalc on GameCalc {
         if (started) nw()['b_${b.k}'] = 1;
       }
     }
+  }
+
+  /// 얻은 출석 배지 (오래된 달부터)
+  List<Deco> attBadges() {
+    final ks = (asMap(s.raw['bdUnl'])?.keys ?? const <String>[]).where(isAttBadge).toList()..sort();
+    return [for (final k in ks) Deco(k, attBadgeName(k), '그달 28회 출석', _no, rare: true)];
   }
 
   /// 얼굴 위 표시: 처음엔 「꾸미기」, 그 뒤엔 새로 얻은 게 있으면 빨간 점

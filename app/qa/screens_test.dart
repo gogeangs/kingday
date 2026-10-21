@@ -30,7 +30,7 @@ Map<String, Object> _late() => {
         'up': {'atk': 300, 'hp': 280, 'spd': 30, 'crit': 40}, 'boxLv': 8, 'retires': 2, 'memory': 14,
         'seeds': {'wheat': 5, 'carrot': 2, 'pumpkin': 1}, 'items': {'wheat': 40, 'carrot': 9, 'pumpkin': 4, 'fish': 120, 'honey': 80, 'ore': 999},
         'plots': [{'k': 'wheat', 'at': 0}, {'k': 'carrot', 'at': 9999999999999}, null], 'gemPlots': 2,
-        'bdUnl': {'chest': 1, 'rebuild': 1}, 'pfUnl': {'gold': 1, 'silver': 1, 'straw': 1},
+        'bdUnl': {'chest': 1, 'rebuild': 1, 'att_202611': 1}, 'att': {'intro': 1, 'w': 2, 'ym': '', 'm': 0}, 'tickets': {'box': 2, 'box10': 1}, 'pfUnl': {'gold': 1, 'silver': 1, 'straw': 1},
         'last': DateTime.now().millisecondsSinceEpoch - 5 * 3600 * 1000, 'v': 3,
       }),
     };
@@ -136,6 +136,16 @@ void main() {
         await close();
       } else {
         await shot('offline_reward');
+        await close();
+        // 출석체크: 방치 보상 다음에 자동으로 뜸 → 출석하기 → 한달 판
+        await frames(6);
+        await shot('attend');
+        await tester.tap(find.text('출석하기'));
+        await frames(8);
+        await shot('attend_claimed');
+        await tester.tap(find.text('한달'));
+        await frames(4);
+        await shot('attend_month');
         await close();
       }
       // 밀린 이야기 창들을 모두 닫음

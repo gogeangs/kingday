@@ -58,7 +58,8 @@ class EqPage extends StatelessWidget {
   // ── 성유물 상자 (웹 .box: 레벨·경험치·확률·자동·열기·10연속) ──
   Widget _box() {
     final s = g.state, c = g.calc, maxed = s.boxLv >= 10, odds = c.odds(), cost = c.boxCost();
-    final can = s.gold >= cost && g.acts.pending == null;
+    final tb = g.acts.ticketN('box'), t10 = g.acts.ticketN('box10');
+    final can = (s.gold >= cost || tb > 0) && g.acts.pending == null;
     return KdBox(children: [
       Row(crossAxisAlignment: CrossAxisAlignment.baseline, textBaseline: TextBaseline.alphabetic, children: [
         Expanded(child: Text('성유물 상자 Lv.${s.boxLv}${maxed ? ' (최대)' : ''}', style: KdText.display(16))),
@@ -75,12 +76,16 @@ class EqPage extends StatelessWidget {
       ]),
       _openBtn(
         '상자 열기',
-        iconNum(goldIcon, fmt(cost), size: 20, style: KdText.figure(14, color: can ? KdColors.goldInk.withValues(alpha: .75) : KdColors.muted)),
+        tb > 0
+            ? Text('무료권 $tb장', style: KdText.body(14, weight: FontWeight.w700, color: KdColors.goldInk.withValues(alpha: .75)))
+            : iconNum(goldIcon, fmt(cost), size: 20, style: KdText.figure(14, color: can ? KdColors.goldInk.withValues(alpha: .75) : KdColors.muted)),
         can ? () => g.openBox() : null,
       ),
       _openBtn(
         '10연속 열기',
-        iconNum(gemIcon, '$gem10', size: 20, style: KdText.figure(14, color: const Color(0xBFFFE08A))),
+        t10 > 0
+            ? Text('무료권 $t10장', style: KdText.body(14, weight: FontWeight.w700, color: const Color(0xBFFFE08A)))
+            : iconNum(gemIcon, '$gem10', size: 20, style: KdText.figure(14, color: const Color(0xBFFFE08A))),
         g.acts.pending == null ? () => g.act((a) => a.open10()) : null,
         gem: true,
       ),

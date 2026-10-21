@@ -70,6 +70,10 @@ function op(o) {
     case 'adbox': return w.run('(()=>{S.gold+=boxCost();openBox(false)})()');
     case 'adgem': return w.run('(()=>{S.gem=(S.gem||0)+5})()');
     case 'adcard': return w.run("(()=>{gainCards(3,'shop',1)})()");
+    case 'att': return F('attDo')(a);
+    case 'attad': return F('attAdDo')(a);
+    case 'attm': return w.run(`(()=>{const x=attA();x.ym=${q(a)};x.m=${+b}})()`);
+    case 'tk': return w.run(`S.tickets[${q(a)}]=${+b}`);
     default: throw new Error('모르는 조작 ' + o);
   }
 }
@@ -108,6 +112,14 @@ const CASES = {
     'set:keeper:malbong', 'set:cook:deokbae', 'set:miner:peppy', 'time:' + 20 * M, 'items:wheat:30', 'items:fish:30', 'cook:bread', 'cook:stew',
     'card:malbong:9999', 'rec:malbong', 'rec:malbong', 'rec:malbong', 'rec:malbong', 'card:deokbae:9999', 'rec:deokbae', 'rec:deokbae', 'time:' + 30 * M, 'cook:bread',
     'set:keeper:andante', 'auto', 'card:andante:200', 'rec:andante', 'rec:andante', 'lv:peppy', 'cw:malbong', 'time:' + 2 * H]],
+  // 출석체크: 7일 판 반복·한달 판 초기화·건너뛰기·같은 날·날짜 되돌리기·광고 2배·큰 보상(7·14·21·28)·배지·무료권 사용
+  attend: [base.mid, ['att:2026-10-21', 'att:2026-10-22', 'att:2026-10-23', 'att:2026-10-24', 'att:2026-10-25', 'att:2026-10-26', 'att:2026-10-27',
+    'attad:2026-10-27', 'attad:2026-10-27', 'att:2026-10-27', 'att:2026-10-29', 'att:2026-10-28', 'att:2026-11-1', 'att:2026-11-2',
+    'attm:2026-11:6', 'att:2026-11-3', 'attad:2026-11-3', 'attm:2026-11:13', 'att:2026-11-4', 'attm:2026-11:20', 'att:2026-11-5', 'attad:2026-11-5',
+    'attm:2026-11:27', 'att:2026-11-6', 'attad:2026-11-6', 'att:2026-11-7', 'att:2026-11-30', 'att:2026-12-1', 'att:2026-1-5',
+    'tk:box:2', 'box', 'sell', 'box', 'sell', 'box', 'sell', 'tk:box10:1', 'gem:0', 'open10', 'open10']],
+  // 출석체크: 카드 받을 동료가 없을 때 이삭으로 대체 (7일 판 6칸, 한달 판 7회)
+  attendFresh: [base.fresh, ['att:2026-10-21', 'att:2026-10-22', 'att:2026-10-23', 'att:2026-10-24', 'att:2026-10-25', 'att:2026-10-26', 'att:2026-10-27', 'attad:2026-10-27']],
   // 카드 동료가 아직 없을 때 카드 묶음
   shopEarly: [base.fresh, ['gem:999', 'cp:0', 'cp:1', 'adcard', 'mis:all']],
 };
