@@ -129,7 +129,7 @@ body{word-break:keep-all;overflow-wrap:break-word;line-break:strict;background:#
 @media (max-width:375px){.attbtn{width:30px;height:30px}.attbtn img{width:24px;height:24px}}
 @media (max-width:360px){.upr .upv{white-space:normal}.upr .info{min-width:0}}
 @media (max-width:340px){.face:has(.pfr){width:44px;height:44px}.pow{font-size:11.5px;white-space:nowrap}.pow::before{display:none}}
-@media (max-width:340px){.hud{gap:4px!important}.gplus{display:none}.attbtn{width:26px;height:26px;border-radius:8px}.attbtn img{width:22px;height:22px}.attbtn span{font-size:15px}}
+@media (max-width:340px){.hud{gap:4px!important}.gplus{display:none}.who .nm{font-size:13px}.hbadge{width:16px;height:16px}.attbtn{width:26px;height:26px;border-radius:8px}.attbtn img{width:22px;height:22px}.attbtn span{font-size:15px}}
 .hdban.nohd{box-sizing:border-box;background:linear-gradient(#7a4f22,#5a3815);border:2px solid #c99a4a;border-radius:12px;aspect-ratio:auto;padding:10px 0;width:min(100%,260px)}
 .atthd{display:flex;justify-content:space-between;align-items:baseline;gap:6px;font-size:13px;margin:-2px 2px 4px}.atthd b{font-family:var(--f-title);font-size:15px}.atthd small{color:var(--muted);font-size:12px}.atthd i{font-style:normal;color:var(--gold);font-weight:700}
 .attw{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px}.attm{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:4px}
@@ -171,7 +171,11 @@ body{word-break:keep-all;overflow-wrap:break-word;line-break:strict;background:#
 .who .nm{font-family:var(--f-display);font-weight:700;font-size:16px;display:flex;align-items:center;gap:6px;white-space:nowrap;min-width:0;overflow:hidden}
 .who .nm .rank{flex:0 0 auto}
 @media (max-width:420px){.who .nm .rankimg{display:none}.who .nm{gap:5px}}
-@media (max-width:375px){.hud{gap:6px!important}.gempill,.goldpill{padding-left:7px!important;padding-right:9px!important;gap:3px!important}.gplus{width:14px;height:14px;font-size:11px;margin-left:2px}.who .nm{font-size:15px}}
+/* 상단 바: 이름·배지는 늘 보이게(칭호 띠가 먼저 줄어듦), 전투력은 한 줄 */
+.who .nm>*{flex:0 0 auto}.pow{white-space:nowrap}
+@media (max-width:430px){.hud{gap:6px!important}.gempill,.goldpill{padding-left:6px!important;padding-right:9px!important;gap:3px!important}.gplus{width:14px;height:14px;font-size:11px;margin-left:2px}.who .nm{font-size:15px;gap:4px}.goldpill{font-size:15px}.gempill{font-size:13.5px}.pow{font-size:12.5px;gap:2px}.who .nm .rank{display:none}}
+@media (max-width:365px){.who .nm{font-size:14px;gap:3px}.hbadge{width:18px;height:18px;margin-right:0}.pow{font-size:12px}}
+@media (max-width:340px){.who .nm{font-size:13px;gap:1px}.hbadge{width:16px;height:16px}.pow{font-size:11.5px}}
 .rank{font-family:var(--f-body);font-size:11px;font-weight:600;color:var(--gold-ink);background:var(--gold);border-radius:999px;padding:1px 7px}
 .pow{font-size:13px;color:var(--gold);font-variant-numeric:tabular-nums;display:flex;align-items:center;gap:4px}
 .pow::before{content:"⚔";font-size:12px}
@@ -480,7 +484,7 @@ button:focus-visible,input:focus-visible{outline:2px solid var(--gold);outline-o
 <div class="app">
   <header class="hud">
     <button class="face" id="faceBtn" aria-label="프로필 열기"><canvas id="faceCv"></canvas><img class="pfr" id="hFrame" src="assets/profile/frame_wood.png" alt="" onerror="this.remove()"></button>
-    <div class="who"><span class="nm">카엘 <img class="hbadge" id="hBadge" alt="" hidden onerror="bdErr(this)"><img class="rankimg" id="hRankImg" src="assets/ui/rank_farmer.png" alt="" onerror="this.remove()"><span class="rank" id="hRank">농부</span></span><span class="pow" id="hPow">0</span></div>
+    <div class="who"><span class="nm">카엘<img class="hbadge" id="hBadge" alt="" hidden onerror="bdErr(this)"><img class="rankimg" id="hRankImg" src="assets/ui/rank_farmer.png" alt="" onerror="this.remove()"><span class="rank" id="hRank">농부</span></span><span class="pow" id="hPow">0</span></div>
     <button class="attbtn" id="attBtn" aria-label="피트의 출석부" hidden><img src="assets/ui/ic_attend.png" alt="" onerror="this.outerHTML='<span>📅</span>'"><i class="dot" id="attDot" hidden></i></button>
     <button class="gempill" id="gemBtn" aria-label="황금 이삭과 오늘의 할 일"><img class="gemimg" src="assets/gem/ui_gem.png" alt="" onerror="this.remove()"><span id="gem">0</span><b class="gplus">+</b><i class="dot" id="gemDot" hidden></i></button>
     <div class="goldpill"><img class="coinimg" src="assets/ui/ui_gold.png" alt="" onerror="this.outerHTML='<i class=&quot;coin&quot;></i>'"><span id="gold">0</span></div>
