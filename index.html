@@ -1362,9 +1362,11 @@ function renderPartyRow(){
  ids.forEach(id=>{const p=P[id];if(!p)return;const el=$('php-'+id);if(el)el.style.width=Math.max(0,p.hp/stats(id).hp*100)+'%';const c=$('pc-'+id);if(c){c.classList.toggle('down',!!p.down);c.classList.toggle('ready',skFull(id));c.classList.toggle('manual',S.autoSkill===false)}const g=$('prg-'+id);if(g)g.style.setProperty('--g',Math.min(100,(p.sg||0)/SKILLS[id].need*100).toFixed(0))});
 }
 /* 얼굴 확대 그림 (초상화 줄, 상단 바) */
-const PFIMG={};function pfImg(id){if(!(id in PFIMG)){const im=new Image();im.onload=()=>{im.ok=true;prowSig='';partySig=''};im.src='assets/portraits/portrait_'+id+'_idle.png';PFIMG[id]=im}return PFIMG[id].ok?PFIMG[id]:null}
-function faceTo(c,id){if(!c)return;const r=c.getBoundingClientRect(),w=r.width||48,h=r.height||48,d=Math.min(2,window.devicePixelRatio||1);c.width=w*d;c.height=h*d;const pc=c.getContext('2d');pc.setTransform(d,0,0,d,0,0);
+const PFIMG={};function pfImg(id){if(!(id in PFIMG)){const im=new Image();im.onload=()=>{im.ok=true;prowSig='';partySig=''};im.onerror=()=>{im.bad=true};im.src='assets/portraits/portrait_'+id+'_idle.png';PFIMG[id]=im}return PFIMG[id].ok?PFIMG[id]:null}
+/* 초상화 얼굴. 크기는 화면 배치 크기(clientWidth)로 재서 등장 애니메이션(회전·축소) 중에도 바르게. 초상화가 아직 안 불러졌으면 전투 그림 대신 비워 두고, 불러지면 다시 그림 */
+function faceTo(c,id){if(!c)return;const w=c.clientWidth||c.getBoundingClientRect().width||48,h=c.clientHeight||c.getBoundingClientRect().height||48,d=Math.min(2,window.devicePixelRatio||1);c.width=w*d;c.height=h*d;const pc=c.getContext('2d');pc.setTransform(d,0,0,d,0,0);
  const pim=pfImg(id);if(pim){pc.drawImage(pim,0,0,512,512,-w*.12,-h*.02,w*1.24,h*1.24);return}
+ const raw=PFIMG[id];if(raw&&!raw.bad){raw.addEventListener('load',()=>{if(c.isConnected)faceTo(c,id)},{once:true});raw.addEventListener('error',()=>{if(c.isConnected)faceTo(c,id)},{once:true});return}
  const prev=ctx;ctx=pc;const z=w/48;
  if(hasSprite(id))drawSprite(id,w*.5,(id==='bron'?84:90)*z,1.3*z,'idle',0);else DRAW[id](w*.44,(id==='margo'?104:id==='bron'?86:97)*z,1.5*z,pose(null,false));ctx=prev}
 $('openBtn').onclick=()=>openBox(false);$('open10').onclick=open10;
@@ -1828,7 +1830,7 @@ function draw(){
   ctx.font=`600 12px "IBM Plex Sans KR",sans-serif`;ctx.lineWidth=3;ctx.strokeStyle='rgba(0,0,0,.7)';const sy=BANNER.ok?cy+Math.min(W*.98,460)/4*.62:cy+21;ctx.strokeText(banner.sub,W/2,sy);ctx.fillStyle='#f4ead0';ctx.fillText(banner.sub,W/2,sy);ctx.globalAlpha=1}
 }
 function portrait(id){
- const c=$('pf-'+id);if(!c)return;{const pim=pfImg(id),has=owned(id);if(pim){const d=Math.min(2,window.devicePixelRatio||1);c.width=56*d;c.height=68*d;const x=c.getContext('2d');x.setTransform(d,0,0,d,0,0);x.drawImage(pim,40,0,432,512,0,0,56,68);if(!has){x.globalCompositeOperation='source-atop';x.fillStyle='#0d1220';x.fillRect(0,0,56,68)}return}}const d=Math.min(2,window.devicePixelRatio||1),w=56,h=68;c.width=w*d;c.height=h*d;const pc=c.getContext('2d');pc.setTransform(d,0,0,d,0,0);
+ const c=$('pf-'+id);if(!c)return;{const pim=pfImg(id),has=owned(id);if(pim){const d=Math.min(2,window.devicePixelRatio||1);c.width=56*d;c.height=68*d;const x=c.getContext('2d');x.setTransform(d,0,0,d,0,0);x.drawImage(pim,40,0,432,512,0,0,56,68);if(!has){x.globalCompositeOperation='source-atop';x.fillStyle='#0d1220';x.fillRect(0,0,56,68)}return}const raw=PFIMG[id];if(raw&&!raw.bad){raw.addEventListener('load',()=>portrait(id),{once:true});raw.addEventListener('error',()=>portrait(id),{once:true});return}}const d=Math.min(2,window.devicePixelRatio||1),w=56,h=68;c.width=w*d;c.height=h*d;const pc=c.getContext('2d');pc.setTransform(d,0,0,d,0,0);
  const prev=ctx;ctx=pc;const has=owned(id);if(hasSprite(id))drawSprite(id,w*.5,h-3,.78,'idle',0);else DRAW[id](w*.42,h-4,.8,pose(null,false));ctx=prev;
  if(!has){pc.globalCompositeOperation='source-atop';pc.fillStyle='#0d1220';pc.fillRect(0,0,w,h);pc.globalCompositeOperation='source-over'}
 }
