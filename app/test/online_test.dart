@@ -113,6 +113,8 @@ void main() {
           'gold': 50000, 'stage': 23, 'best': 23, 'gem': 10, 'started': true, 'pfSeen': 1,
           'done': {'marta': true, 'margo': true, 'haral': true},
           'joined': {'margo': true, 'haral': true},
+          // 오늘 출석은 이미 함 (출석부가 자동으로 뜨지 않게)
+          'att': {'intro': 1, 'last': '${DateTime.now().year}-${DateTime.now().month}-${DateTime.now().day}'},
           'last': DateTime.now().millisecondsSinceEpoch, 'v': 3,
         }),
       });
