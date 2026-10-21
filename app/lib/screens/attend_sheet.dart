@@ -104,11 +104,15 @@ class _AttendSheetState extends State<AttendSheet> {
           opacity: got ? .45 : 1,
           child: Padding(
             padding: EdgeInsets.symmetric(vertical: small ? 2 : 5, horizontal: 2),
-            child: Column(mainAxisAlignment: MainAxisAlignment.center, mainAxisSize: MainAxisSize.min, children: [
-              Text(top, style: KdText.body(small ? 9 : 10, color: KdColors.muted, weight: FontWeight.w700)),
-              _icon(r['k'] as String, icon),
-              if (!small) Text(label, maxLines: 1, overflow: TextOverflow.ellipsis, style: KdText.body(10.5, weight: FontWeight.w700)),
-            ]),
+            // 한달 판 칸은 작아서 내용이 넘치지 않게 줄여 맞춤
+            child: FittedBox(
+              fit: BoxFit.scaleDown,
+              child: Column(mainAxisAlignment: MainAxisAlignment.center, mainAxisSize: MainAxisSize.min, children: [
+                Text(top, style: KdText.body(small ? 9 : 10, color: KdColors.muted, weight: FontWeight.w700)),
+                _icon(r['k'] as String, icon),
+                if (!small) Text(label, maxLines: 1, overflow: TextOverflow.ellipsis, style: KdText.body(10.5, weight: FontWeight.w700)),
+              ]),
+            ),
           ),
         ),
         if (got) Positioned.fill(child: Center(child: _stamp(small ? icon * 1.3 : 46, fresh))),
