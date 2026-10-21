@@ -385,6 +385,10 @@ class BattleGame extends FlameGame {
     _drawSprite(id, x, y, s, a, i, alpha: p.down ? .35 : 1.0);
     final mx = sim.c.stats(id).hp;
     _bar(x, y - (heightOf(id) - 2) * s, 26 * s, p.hp / mx, p.down ? const ui.Color(0xFF666666) : const ui.Color(0xFF7BE08F));
+    // 버치 「벌통 방패」 표시
+    if (p.bsh > 0 && !p.down && sim.fxOk('skill_birch')) {
+      _fxFrame('skill_birch', 3, x + 18 * s, y - 20 * s, 40 * s, alpha: math.min(1, p.bsh) * .85);
+    }
   }
 
   // ── 마물 (웹 drawMon) ──

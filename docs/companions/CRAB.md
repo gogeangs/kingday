@@ -1,6 +1,6 @@
 # 일반 어부 「크랩」 기획 기록
 
-작성일: 2026-10-21 · 상태: **기획·그림 완료, 게임 등록은 보류** (대표님 지시: 기록만)
+작성일: 2026-10-21 · 상태: **게임 등록 완료 (웹·앱)** — 2026-10-21
 
 ## 추가 배경
 - 일반 모집 동료 2차 추가 4명(롤로·크랩·버치·그램) 중 두 번째 (대표님 결정, 2026-10-21).
@@ -38,7 +38,7 @@
   - 초상화 원본은 두 그림이 바닥 쪽에서 붙어 있어, 가장 빈 세로줄(가운데)에서 잘라 나눔.
   - 동작 시트 가장자리에 옅은 번짐이 있어 자를 때 투명도 기준값으로 걸러낼 것.
 
-## 원본 그림 위치 (저장소 `art/source/`, 게임 미반영)
+## 원본 그림 위치 (저장소 `art/source/`)
 | 그림 | 파일 |
 |---|---|
 | ⓪ 참고 시트 | `art/source/crab_ref.png` |
@@ -46,7 +46,18 @@
 | ② 초상화 | `art/source/portraits/portrait_crab_idle.png`, `portrait_crab_laugh.png` (원본 한 장을 가운데에서 좌우 분리, 여백 자름) |
 | ③ 스킬 아이콘 | `art/source/skills/skill_crab.png` |
 | ④ 스킬 효과 | `art/source/fx/fx_skill_crab.png` |
-- `assets/`·`index.html`은 아직 손대지 않음 → 등록 세션에서 COMPANION_GUIDE.md 4장 도구로 처리.
+- 2026-10-21 등록 세션에서 게임 파일로 처리함 (아래 「게임 등록」).
 
 ## 등록할 때 할 일 (COMPANION_GUIDE.md 6장)
 COMP · JOB(`fisher`) · RECRUITS(하랄 허풍 무시) · GRADE(`common`) · HEIGHT/SPRITES/FORM · SKILLS · castSkill(단일 적 공속↓) · FXDEF(`skill_crab:4`) · SPRITE_ALT/DRAW · NPCID(`'크랩':'crab'`) · extract_skill_fx.py
+
+## 게임 등록 (2026-10-21)
+| 항목 | 값 |
+|---|---|
+| 기본 능력치 | 공격 9 · 체력 100 · 공격 속도 0.9 (레벨당 공격 +2.9, 체력 +20), 일반 배율 ×1 |
+| 일반 공격 | 어부 자리 기본 공격 |
+| 스킬 「집게 물기」 | 가장 강한 적(보스 먼저, 없으면 체력 가장 많은 적)에 공격력 2배 피해 + 6초 동안 공격이 느려짐, 게이지 18, ★3 ×1.3 |
+| 합류 대사 | 하랄의 고래 허풍 → 「…그럼 그 고래 어딨나」 → 「게는 거짓말을 안 해. 얘 이름은 집게다」 |
+| 키 / 위치 | HEIGHT 60, SPRITES h 70, 어부 자리(하랄과 같은 위치) |
+| 그림 → 게임 파일 | `assets/characters/crab_{idle,walk,attack,hit}.png`, `assets/portraits/portrait_crab_{idle,laugh}.png`, `assets/skills/skill_crab.png`, `assets/fx/fx_skill_crab.png` |
+| 자르기 메모 | 공격 칸 512 (집게가 길게 뻗음), CUTS |

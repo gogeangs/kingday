@@ -12,13 +12,19 @@ import 'package:kingday/screens/pt_page.dart';
 import 'package:kingday/screens/settings_sheet.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+/// 오늘 출석을 이미 한 것으로 (출석부가 자동으로 뜨지 않게)
+String _today() {
+  final t = DateTime.now();
+  return '${t.year}-${t.month}-${t.day}';
+}
+
 /// 후반 저장 (긴 칭호·큰 숫자·5명 원정대)
 Map<String, Object> _lateSave() => {
       'acorn-idle-v1': '{"gold":9.87e14,"stage":51,"best":51,"gem":123456,"started":true,'
           '"joined":{"margo":true,"haral":true,"riel":true,"bron":true},'
           '"done":{"marta":true,"margo":true,"haral":true,"riel":true,"bron":true,"tutSkill":true},'
           '"lv":{"bron":60,"haral":61,"riel":58,"margo":55},"bld":{"inn":10,"farm":6,"diner":10,"dock":10,"apiary":9,"mine":10},'
-          '"rec":{"brida":3},"party":{"miner":"brida"},"seeds":{"wheat":5,"carrot":2,"pumpkin":1},"items":{"wheat":40,"carrot":9,"pumpkin":4,"fish":120,"honey":80,"ore":999},"plots":[{"k":"wheat","at":0},{"k":"carrot","at":9999999999999},null],"plotTag":[null,"carrot"],"build":{"k":"dock","end":9999999999999,"dur":3600},"bq":["apiary"],"gemPlots":2,"buffs":{"atk":9999999999999,"gold":9999999999999},"v":3}',
+          '"rec":{"brida":3},"party":{"miner":"brida"},"seeds":{"wheat":5,"carrot":2,"pumpkin":1},"items":{"wheat":40,"carrot":9,"pumpkin":4,"fish":120,"honey":80,"ore":999},"plots":[{"k":"wheat","at":0},{"k":"carrot","at":9999999999999},null],"plotTag":[null,"carrot"],"build":{"k":"dock","end":9999999999999,"dur":3600},"bq":["apiary"],"gemPlots":2,"buffs":{"atk":9999999999999,"gold":9999999999999},"att":{"intro":1,"last":"${_today()}"},"v":3}',
     };
 
 void main() {
@@ -215,7 +221,7 @@ void main() {
       addTearDown(tester.view.reset);
       final away = DateTime.now().millisecondsSinceEpoch - 3 * 3600 * 1000;
       SharedPreferences.setMockInitialValues({
-        'acorn-idle-v1': '{"gold":5000,"stage":12,"best":12,"gem":40,"started":true,"done":{"marta":true},"bld":{"inn":2,"farm":1},"last":$away,"v":3}',
+        'acorn-idle-v1': '{"gold":5000,"stage":12,"best":12,"gem":40,"started":true,"done":{"marta":true},"bld":{"inn":2,"farm":1},"att":{"intro":1,"last":"${_today()}"},"last":$away,"v":3}',
       });
       final store = await SaveStore.open();
       final g = GameController(store: store, state: store.load(DateTime.now().millisecondsSinceEpoch));

@@ -1,6 +1,6 @@
 # 일반 양봉가 「버치」 기획 기록
 
-작성일: 2026-10-21 · 상태: **기획·그림 완료, 게임 등록은 보류** (대표님 지시: 기록만)
+작성일: 2026-10-21 · 상태: **게임 등록 완료 (웹·앱)** — 2026-10-21
 
 ## 추가 배경
 - 일반 모집 동료 2차 추가 4명(롤로·크랩·버치·그램) 중 세 번째 (대표님 결정, 2026-10-21).
@@ -38,7 +38,7 @@
   - 스킬 효과 1프레임은 벌통이 공중에 떠 있음 → 바닥 높이 기준은 2~4프레임으로 맞출 것.
   - 초상화 원본은 두 그림이 붙어 있어 덩어리 단위로 좌우 분리함.
 
-## 원본 그림 위치 (저장소 `art/source/`, 게임 미반영)
+## 원본 그림 위치 (저장소 `art/source/`)
 | 그림 | 파일 |
 |---|---|
 | ⓪ 참고 시트 | `art/source/birch_ref.png` |
@@ -46,7 +46,18 @@
 | ② 초상화 | `art/source/portraits/portrait_birch_idle.png`, `portrait_birch_laugh.png` (원본 한 장을 덩어리 단위로 좌우 분리, 여백 자름) |
 | ③ 스킬 아이콘 | `art/source/skills/skill_birch.png` |
 | ④ 스킬 효과 | `art/source/fx/fx_skill_birch.png` |
-- `assets/`·`index.html`은 아직 손대지 않음 → 등록 세션에서 COMPANION_GUIDE.md 4장 도구로 처리.
+- 2026-10-21 등록 세션에서 게임 파일로 처리함 (아래 「게임 등록」).
 
 ## 등록할 때 할 일 (COMPANION_GUIDE.md 6장)
 COMP · JOB(양봉가 기존 값) · RECRUITS(멜로가 소개) · GRADE(`common`) · HEIGHT/SPRITES/FORM · SKILLS · castSkill(최저 체력 아군 받는 피해↓) · FXDEF(`skill_birch:4`) · SPRITE_ALT/DRAW · NPCID(`'버치':'birch'`) · extract_skill_fx.py
+
+## 게임 등록 (2026-10-21)
+| 항목 | 값 |
+|---|---|
+| 기본 능력치 | 공격 7 · 체력 90 · 공격 속도 0.75 (레벨당 공격 +2.6, 체력 +18), 일반 배율 ×1 |
+| 일반 공격 | 양봉가 자리 기본 공격 |
+| 스킬 「벌통 방패」 | 체력 비율이 가장 낮은 동료(쓰러진 동료 제외)가 6초 동안 받는 피해 40% 감소(★3 52%), 그 동료 옆에 작은 벌통 표시, 게이지 20 |
+| 합류 대사 | 멜로가 소개 → 「튼튼한 집이 있어야… 벌도 꿀을 모으죠」 → 리엘 「말은 느려도 손은 빨라」 |
+| 키 / 위치 | HEIGHT 60, SPRITES h 70, 양봉가 자리(리엘과 같은 위치) |
+| 그림 → 게임 파일 | `assets/characters/birch_{idle,walk,attack,hit}.png`, `assets/portraits/portrait_birch_{idle,laugh}.png`, `assets/skills/skill_birch.png`, `assets/fx/fx_skill_birch.png` |
+| 자르기 메모 | 공격 칸 576 (타격 효과가 넓음), CUTS |

@@ -292,7 +292,7 @@ class StageBottom extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final ids = g.calc.members(), manual = g.state.raw['autoSkill'] == false;
-    final cost = g.calc.boxCost(), canBox = g.state.gold >= cost;
+    final cost = g.calc.boxCost(), tb = g.acts.ticketN('box'), canBox = g.state.gold >= cost || tb > 0;
     final x2 = g.game.speed == 2;
     return Container(
       padding: const EdgeInsets.fromLTRB(12, 24, 12, 8),
@@ -321,7 +321,7 @@ class StageBottom extends StatelessWidget {
           _QBtn(
             round: true,
             img: 'relic_chest',
-            label: fmt(cost),
+            label: tb > 0 ? '무료 $tb' : fmt(cost),
             dim: !canBox,
             hint: DateTime.now().millisecondsSinceEpoch - g.hintBoxAt < 2500,
             onTap: () => g.openBox(),

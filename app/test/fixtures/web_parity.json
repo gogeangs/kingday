@@ -956,6 +956,78 @@
      "cwLv": 0,
      "cwMul": 1
     },
+    "rollo": {
+     "stats": {
+      "atk": 8,
+      "hp": 210,
+      "aps": 0.75,
+      "crit": 0.05
+     },
+     "cPow": 203.175,
+     "owned": false,
+     "recStar": 0,
+     "starMul": 1,
+     "skPow": 1,
+     "cardOpen": false,
+     "starNeed": 30,
+     "starMax": 3,
+     "cwLv": 0,
+     "cwMul": 1
+    },
+    "crab": {
+     "stats": {
+      "atk": 9,
+      "hp": 100,
+      "aps": 0.9,
+      "crit": 0.05
+     },
+     "cPow": 145.53000000000003,
+     "owned": false,
+     "recStar": 0,
+     "starMul": 1,
+     "skPow": 1,
+     "cardOpen": false,
+     "starNeed": 30,
+     "starMax": 3,
+     "cwLv": 0,
+     "cwMul": 1
+    },
+    "birch": {
+     "stats": {
+      "atk": 7,
+      "hp": 90,
+      "aps": 0.75,
+      "crit": 0.05
+     },
+     "cPow": 145.52999999999997,
+     "owned": false,
+     "recStar": 0,
+     "starMul": 1,
+     "skPow": 1,
+     "cardOpen": false,
+     "starNeed": 30,
+     "starMax": 3,
+     "cwLv": 0,
+     "cwMul": 1
+    },
+    "gram": {
+     "stats": {
+      "atk": 4,
+      "hp": 92,
+      "aps": 0.8,
+      "crit": 0.05
+     },
+     "cPow": 97.44000000000001,
+     "owned": false,
+     "recStar": 0,
+     "starMul": 1,
+     "skPow": 1,
+     "cardOpen": false,
+     "starNeed": 30,
+     "starMax": 3,
+     "cwLv": 0,
+     "cwMul": 1
+    },
     "luka": {
      "stats": {
       "atk": 6,
@@ -3090,6 +3162,78 @@
      "cwLv": 1,
      "cwMul": 1.08
     },
+    "rollo": {
+     "stats": {
+      "atk": 924.3850489036801,
+      "hp": 2783.0228159999997,
+      "aps": 0.75,
+      "crit": 0.05
+     },
+     "cPow": 6559.349823669889,
+     "owned": false,
+     "recStar": 0,
+     "starMul": 1,
+     "skPow": 1,
+     "cardOpen": true,
+     "starNeed": 30,
+     "starMax": 3,
+     "cwLv": 2,
+     "cwMul": 1.16
+    },
+    "crab": {
+     "stats": {
+      "atk": 1054.4162730393602,
+      "hp": 2933.1160320000004,
+      "aps": 0.9,
+      "crit": 0.05
+     },
+     "cPow": 8750.334918373173,
+     "owned": false,
+     "recStar": 0,
+     "starMul": 1,
+     "skPow": 1,
+     "cardOpen": true,
+     "starNeed": 30,
+     "starMax": 3,
+     "cwLv": 4,
+     "cwMul": 1.32
+    },
+    "birch": {
+     "stats": {
+      "atk": 794.9671188480003,
+      "hp": 2205.9576,
+      "aps": 0.75,
+      "crit": 0.05
+     },
+     "cPow": 7690.775745179521,
+     "owned": false,
+     "recStar": 0,
+     "starMul": 1,
+     "skPow": 1,
+     "cardOpen": true,
+     "starNeed": 30,
+     "starMax": 3,
+     "cwLv": 0,
+     "cwMul": 1
+    },
+    "gram": {
+     "stats": {
+      "atk": 852.3548857958401,
+      "hp": 2385.9118080000003,
+      "aps": 0.8,
+      "crit": 0.05
+     },
+     "cPow": 6300.034543131035,
+     "owned": false,
+     "recStar": 0,
+     "starMul": 1,
+     "skPow": 1,
+     "cardOpen": true,
+     "starNeed": 30,
+     "starMax": 3,
+     "cwLv": 1,
+     "cwMul": 1.08
+    },
     "luka": {
      "stats": {
       "atk": 1025.3097039790082,
@@ -4494,54 +4638,54 @@
      "gordon",
      "gordon",
      "gordon",
-     "kara",
      "melo",
-     "toby",
-     "bron",
-     "pori",
+     "crab",
+     "mora",
+     "haral",
+     "gram",
      "gordon",
      "andante",
-     "beryl",
+     "pori",
      "peppy",
      "nella",
      "gordon",
      "luka",
      "gordon",
      "gordon",
-     "kara",
-     "pori",
-     "haral",
-     "riel",
-     "gordon",
-     "riel",
-     "gordon",
      "melo",
+     "gram",
+     "riel",
+     "margo",
+     "gordon",
+     "margo",
+     "gordon",
+     "birch",
      "gordon",
      "gordon",
-     "beryl",
-     "mora",
-     "mora",
-     "mora",
+     "pori",
+     "rollo",
+     "rollo",
+     "rollo",
      "haral",
-     "daisy",
+     "beryl",
      "gordon",
      "bron",
      "gordon",
      "gordon",
-     "bron",
-     "toby",
-     "gordon",
-     "daisy",
-     "gordon",
+     "haral",
      "mora",
+     "gordon",
+     "kara",
+     "gordon",
+     "rollo",
      "peppy",
-     "bron",
-     "daisy",
+     "haral",
+     "kara",
      "gordon",
      "gordon",
      "andante",
      "gordon",
-     "riel"
+     "margo"
     ],
     "chunks": {
      "got": [
@@ -4573,21 +4717,25 @@
      "gold": 0
     },
     "cardsAfter": {
-     "daisy": 17,
+     "daisy": 11,
      "gordon": 54,
      "luka": 9,
-     "haral": 12,
-     "kara": 2,
+     "haral": 16,
      "melo": 2,
-     "toby": 3,
-     "bron": 12,
-     "pori": 2,
+     "crab": 1,
+     "mora": 3,
+     "gram": 2,
      "andante": 3,
-     "beryl": 2,
+     "pori": 2,
      "peppy": 3,
      "nella": 1,
-     "riel": 4,
-     "mora": 34
+     "riel": 1,
+     "margo": 4,
+     "birch": 1,
+     "rollo": 34,
+     "beryl": 2,
+     "bron": 7,
+     "kara": 4
     },
     "goldAfter": 123456.7
    },
@@ -5380,6 +5528,78 @@
       "crit": 0.15000000000000002
      },
      "cPow": 5480952.148301413,
+     "owned": false,
+     "recStar": 0,
+     "starMul": 1,
+     "skPow": 1,
+     "cardOpen": true,
+     "starNeed": 30,
+     "starMax": 3,
+     "cwLv": 12,
+     "cwMul": 1.96
+    },
+    "rollo": {
+     "stats": {
+      "atk": 437318.07436800003,
+      "hp": 3003329.2032,
+      "aps": 0.8999999999999999,
+      "crit": 0.15000000000000002
+     },
+     "cPow": 5824190.967137278,
+     "owned": false,
+     "recStar": 0,
+     "starMul": 1,
+     "skPow": 1,
+     "cardOpen": true,
+     "starNeed": 30,
+     "starMax": 3,
+     "cwLv": 17,
+     "cwMul": 2.3600000000000003
+    },
+    "crab": {
+     "stats": {
+      "atk": 481801.402368,
+      "hp": 3307928.832,
+      "aps": 1.08,
+      "crit": 0.15000000000000002
+     },
+     "cPow": 7698831.659790336,
+     "owned": false,
+     "recStar": 0,
+     "starMul": 1,
+     "skPow": 1,
+     "cardOpen": true,
+     "starNeed": 30,
+     "starMax": 3,
+     "cwLv": 20,
+     "cwMul": 2.6
+    },
+    "birch": {
+     "stats": {
+      "atk": 407660.67302399996,
+      "hp": 2798953.344,
+      "aps": 0.8999999999999999,
+      "crit": 0.15000000000000002
+     },
+     "cPow": 7599885.2867266545,
+     "owned": false,
+     "recStar": 0,
+     "starMul": 1,
+     "skPow": 1,
+     "cardOpen": true,
+     "starNeed": 30,
+     "starMax": 3,
+     "cwLv": 15,
+     "cwMul": 2.2
+    },
+    "gram": {
+     "stats": {
+      "atk": 363165.29786879994,
+      "hp": 2493624.2687999997,
+      "aps": 0.96,
+      "crit": 0.15000000000000002
+     },
+     "cPow": 5158568.125838131,
      "owned": false,
      "recStar": 0,
      "starMul": 1,
@@ -6767,64 +6987,60 @@
     "cards": [
      "bron",
      "haral",
-     "gordon",
-     "mora",
-     "mora",
-     "melo",
-     "beryl",
+     "toby",
+     "rollo",
+     "rollo",
+     "crab",
      "pori",
-     "bron",
-     "mora",
+     "birch",
+     "haral",
+     "pori",
      "haral",
      "bron",
-     "toby",
-     "beryl",
+     "mora",
+     "pori",
      "peppy",
      "luka",
-     "",
+     "kara",
      "luka",
-     "gordon",
-     "gordon",
-     "pori",
-     "haral",
-     "pori",
-     "pori",
-     "pori",
-     "riel",
-     "margo",
-     "melo",
-     "margo",
-     "kara",
-     "melo",
      "",
-     "haral",
      "kara",
-     "gordon",
-     "mora",
-     "pori",
-     "kara",
-     "mora",
-     "toby",
+     "gram",
      "riel",
+     "gram",
+     "gram",
+     "gram",
+     "margo",
+     "gordon",
+     "crab",
+     "gordon",
+     "melo",
+     "birch",
+     "beryl",
+     "haral",
+     "mora",
      "",
+     "rollo",
+     "gram",
+     "melo",
+     "rollo",
+     "mora",
      "margo",
      "beryl",
+     "gordon",
+     "pori",
      "andante",
-     "mora",
-     "melo",
-     "bron",
-     "mora",
-     "margo",
-     "beryl"
+     "pori",
+     "birch",
+     "haral",
+     "rollo",
+     "gordon",
+     "pori"
     ],
     "chunks": {
      "got": [
       [
-       "haral",
-       5
-      ],
-      [
-       "melo",
+       "kara",
        5
       ],
       [
@@ -6832,36 +7048,48 @@
        5
       ],
       [
-       "margo",
+       "birch",
        5
       ],
       [
-       "bron",
+       "haral",
+       5
+      ],
+      [
+       "gordon",
+       5
+      ],
+      [
+       "haral",
        5
       ]
      ],
-     "gold": 30857
+     "gold": 0
     },
     "cardsAfter": {
      "brida": 70,
      "luka": 31,
      "nella": 0,
-     "gordon": 20,
+     "gordon": 26,
      "daisy": 79,
-     "bron": 13,
-     "haral": 15,
-     "mora": 11,
-     "melo": 39,
-     "beryl": 6,
-     "pori": 7,
-     "toby": 3,
+     "bron": 5,
+     "haral": 22,
+     "toby": 1,
+     "rollo": 8,
+     "crab": 2,
+     "pori": 9,
+     "birch": 38,
+     "mora": 5,
      "peppy": 1,
-     "riel": 3,
-     "margo": 11,
-     "kara": 5,
+     "kara": 7,
+     "gram": 6,
+     "riel": 1,
+     "margo": 3,
+     "melo": 3,
+     "beryl": 4,
      "andante": 2
     },
-    "goldAfter": 987000000061714
+    "goldAfter": 987000000018514
    },
    "retired": {
     "gold": 60,
@@ -7538,6 +7766,78 @@
       "crit": 0.05
      },
      "cPow": 110.64144,
+     "owned": false,
+     "recStar": 0,
+     "starMul": 1,
+     "skPow": 1,
+     "cardOpen": false,
+     "starNeed": 30,
+     "starMax": 3,
+     "cwLv": 0,
+     "cwMul": 1
+    },
+    "rollo": {
+     "stats": {
+      "atk": 9.568,
+      "hp": 218.4,
+      "aps": 0.75,
+      "crit": 0.05
+     },
+     "cPow": 217.1988,
+     "owned": false,
+     "recStar": 0,
+     "starMul": 1,
+     "skPow": 1,
+     "cardOpen": false,
+     "starNeed": 30,
+     "starMax": 3,
+     "cwLv": 0,
+     "cwMul": 1
+    },
+    "crab": {
+     "stats": {
+      "atk": 10.607999999999999,
+      "hp": 104,
+      "aps": 0.9,
+      "crit": 0.05
+     },
+     "cPow": 158.42736000000002,
+     "owned": false,
+     "recStar": 0,
+     "starMul": 1,
+     "skPow": 1,
+     "cardOpen": false,
+     "starNeed": 30,
+     "starMax": 3,
+     "cwLv": 0,
+     "cwMul": 1
+    },
+    "birch": {
+     "stats": {
+      "atk": 8.527999999999999,
+      "hp": 93.60000000000001,
+      "aps": 0.75,
+      "crit": 0.05
+     },
+     "cPow": 159.60672000000002,
+     "owned": false,
+     "recStar": 0,
+     "starMul": 1,
+     "skPow": 1,
+     "cardOpen": false,
+     "starNeed": 30,
+     "starMax": 3,
+     "cwLv": 0,
+     "cwMul": 1
+    },
+    "gram": {
+     "stats": {
+      "atk": 5.408,
+      "hp": 95.68,
+      "aps": 0.8,
+      "crit": 0.05
+     },
+     "cPow": 107.62752000000003,
      "owned": false,
      "recStar": 0,
      "starMul": 1,
@@ -9574,6 +9874,78 @@
      "cwLv": 0,
      "cwMul": 1
     },
+    "rollo": {
+     "stats": {
+      "atk": 9.568,
+      "hp": 218.4,
+      "aps": 0.75,
+      "crit": 0.05
+     },
+     "cPow": 217.1988,
+     "owned": false,
+     "recStar": 0,
+     "starMul": 1,
+     "skPow": 1,
+     "cardOpen": false,
+     "starNeed": 30,
+     "starMax": 3,
+     "cwLv": 0,
+     "cwMul": 1
+    },
+    "crab": {
+     "stats": {
+      "atk": 10.607999999999999,
+      "hp": 104,
+      "aps": 0.9,
+      "crit": 0.05
+     },
+     "cPow": 158.42736000000002,
+     "owned": false,
+     "recStar": 0,
+     "starMul": 1,
+     "skPow": 1,
+     "cardOpen": false,
+     "starNeed": 30,
+     "starMax": 3,
+     "cwLv": 0,
+     "cwMul": 1
+    },
+    "birch": {
+     "stats": {
+      "atk": 8.527999999999999,
+      "hp": 93.60000000000001,
+      "aps": 0.75,
+      "crit": 0.05
+     },
+     "cPow": 159.60672000000002,
+     "owned": false,
+     "recStar": 0,
+     "starMul": 1,
+     "skPow": 1,
+     "cardOpen": false,
+     "starNeed": 30,
+     "starMax": 3,
+     "cwLv": 0,
+     "cwMul": 1
+    },
+    "gram": {
+     "stats": {
+      "atk": 5.408,
+      "hp": 95.68,
+      "aps": 0.8,
+      "crit": 0.05
+     },
+     "cPow": 107.62752000000003,
+     "owned": false,
+     "recStar": 0,
+     "starMul": 1,
+     "skPow": 1,
+     "cardOpen": true,
+     "starNeed": 30,
+     "starMax": 3,
+     "cwLv": 0,
+     "cwMul": 1
+    },
     "luka": {
      "stats": {
       "atk": 7.7376000000000005,
@@ -10939,16 +11311,16 @@
      "margo",
      "margo",
      "kara",
+     "gram",
+     "gram",
+     "gram",
      "pori",
-     "pori",
-     "pori",
-     "pori",
-     "pori",
+     "gram",
      "margo",
      "pori",
      "margo",
      "margo",
-     "kara",
+     "pori",
      "pori",
      "luka",
      "luka",
@@ -10956,48 +11328,40 @@
      "luka",
      "kara",
      "kara",
+     "gram",
+     "margo",
+     "gram",
+     "gram",
+     "gram",
+     "margo",
+     "kara",
+     "gram",
+     "kara",
+     "pori",
+     "gram",
      "pori",
      "margo",
      "pori",
+     "kara",
+     "gram",
+     "gram",
      "pori",
+     "gram",
      "pori",
      "margo",
-     "margo",
-     "pori",
-     "margo",
-     "kara",
      "pori",
      "kara",
-     "margo",
-     "kara",
-     "kara",
-     "pori",
-     "pori",
-     "kara",
-     "pori",
-     "kara",
-     "margo",
-     "kara",
-     "margo",
      "pori",
      "luka",
      "pori",
-     "pori",
+     "gram",
      "margo",
-     "pori",
-     "margo",
+     "gram",
+     "kara",
      "pori"
     ],
     "chunks": {
      "got": [
-      [
-       "kara",
-       5
-      ],
-      [
-       "margo",
-       5
-      ],
       [
        "pori",
        5
@@ -11007,7 +11371,15 @@
        5
       ],
       [
+       "gram",
+       5
+      ],
+      [
        "margo",
+       5
+      ],
+      [
+       "kara",
        5
       ],
       [
@@ -11018,9 +11390,10 @@
      "gold": 0
     },
     "cardsAfter": {
-     "margo": 39,
-     "kara": 23,
-     "pori": 63,
+     "margo": 28,
+     "kara": 17,
+     "gram": 54,
+     "pori": 26,
      "luka": 5
     },
     "goldAfter": 100
@@ -11623,6 +11996,78 @@
       "crit": 0.05
      },
      "cPow": 107.9568,
+     "owned": false,
+     "recStar": 0,
+     "starMul": 1,
+     "skPow": 1,
+     "cardOpen": true,
+     "starNeed": 30,
+     "starMax": 3,
+     "cwLv": 0,
+     "cwMul": 1
+    },
+    "rollo": {
+     "stats": {
+      "atk": 8.64,
+      "hp": 226.8,
+      "aps": 0.75,
+      "crit": 0.05
+     },
+     "cPow": 219.429,
+     "owned": false,
+     "recStar": 0,
+     "starMul": 1,
+     "skPow": 1,
+     "cardOpen": false,
+     "starNeed": 30,
+     "starMax": 3,
+     "cwLv": 0,
+     "cwMul": 1
+    },
+    "crab": {
+     "stats": {
+      "atk": 9.72,
+      "hp": 108,
+      "aps": 0.9,
+      "crit": 0.05
+     },
+     "cPow": 157.1724,
+     "owned": false,
+     "recStar": 0,
+     "starMul": 1,
+     "skPow": 1,
+     "cardOpen": false,
+     "starNeed": 30,
+     "starMax": 3,
+     "cwLv": 0,
+     "cwMul": 1
+    },
+    "birch": {
+     "stats": {
+      "atk": 7.5600000000000005,
+      "hp": 97.2,
+      "aps": 0.75,
+      "crit": 0.05
+     },
+     "cPow": 157.1724,
+     "owned": false,
+     "recStar": 0,
+     "starMul": 1,
+     "skPow": 1,
+     "cardOpen": false,
+     "starNeed": 30,
+     "starMax": 3,
+     "cwLv": 0,
+     "cwMul": 1
+    },
+    "gram": {
+     "stats": {
+      "atk": 4.32,
+      "hp": 99.36000000000001,
+      "aps": 0.8,
+      "crit": 0.05
+     },
+     "cPow": 105.23520000000002,
      "owned": false,
      "recStar": 0,
      "starMul": 1,
@@ -12998,16 +13443,16 @@
      "margo",
      "margo",
      "kara",
+     "gram",
+     "gram",
+     "gram",
      "pori",
-     "pori",
-     "pori",
-     "pori",
-     "pori",
+     "gram",
      "margo",
      "pori",
      "margo",
      "margo",
-     "kara",
+     "pori",
      "pori",
      "luka",
      "luka",
@@ -13015,48 +13460,40 @@
      "luka",
      "kara",
      "kara",
+     "gram",
+     "margo",
+     "gram",
+     "gram",
+     "gram",
+     "margo",
+     "kara",
+     "gram",
+     "kara",
+     "pori",
+     "gram",
      "pori",
      "margo",
      "pori",
+     "kara",
+     "gram",
+     "gram",
      "pori",
+     "gram",
      "pori",
      "margo",
-     "margo",
-     "pori",
-     "margo",
-     "kara",
      "pori",
      "kara",
-     "margo",
-     "kara",
-     "kara",
-     "pori",
-     "pori",
-     "kara",
-     "pori",
-     "kara",
-     "margo",
-     "kara",
-     "margo",
      "pori",
      "luka",
      "pori",
-     "pori",
+     "gram",
      "margo",
-     "pori",
-     "margo",
+     "gram",
+     "kara",
      "pori"
     ],
     "chunks": {
      "got": [
-      [
-       "kara",
-       5
-      ],
-      [
-       "margo",
-       5
-      ],
       [
        "pori",
        5
@@ -13066,7 +13503,15 @@
        5
       ],
       [
+       "gram",
+       5
+      ],
+      [
        "margo",
+       5
+      ],
+      [
+       "kara",
        5
       ],
       [
@@ -13077,9 +13522,10 @@
      "gold": 0
     },
     "cardsAfter": {
-     "margo": 39,
-     "kara": 23,
-     "pori": 63,
+     "margo": 28,
+     "kara": 17,
+     "gram": 54,
+     "pori": 26,
      "luka": 5
     },
     "goldAfter": 100
@@ -13688,6 +14134,78 @@
       "crit": 0.05
      },
      "cPow": 111.95519999999999,
+     "owned": false,
+     "recStar": 0,
+     "starMul": 1,
+     "skPow": 1,
+     "cardOpen": true,
+     "starNeed": 30,
+     "starMax": 3,
+     "cwLv": 0,
+     "cwMul": 1
+    },
+    "rollo": {
+     "stats": {
+      "atk": 8.96,
+      "hp": 235.20000000000002,
+      "aps": 0.75,
+      "crit": 0.05
+     },
+     "cPow": 227.55600000000004,
+     "owned": false,
+     "recStar": 0,
+     "starMul": 1,
+     "skPow": 1,
+     "cardOpen": false,
+     "starNeed": 30,
+     "starMax": 3,
+     "cwLv": 0,
+     "cwMul": 1
+    },
+    "crab": {
+     "stats": {
+      "atk": 10.080000000000002,
+      "hp": 112.00000000000001,
+      "aps": 0.9,
+      "crit": 0.05
+     },
+     "cPow": 162.99360000000001,
+     "owned": false,
+     "recStar": 0,
+     "starMul": 1,
+     "skPow": 1,
+     "cardOpen": false,
+     "starNeed": 30,
+     "starMax": 3,
+     "cwLv": 0,
+     "cwMul": 1
+    },
+    "birch": {
+     "stats": {
+      "atk": 7.840000000000001,
+      "hp": 100.80000000000001,
+      "aps": 0.75,
+      "crit": 0.05
+     },
+     "cPow": 162.99360000000001,
+     "owned": false,
+     "recStar": 0,
+     "starMul": 1,
+     "skPow": 1,
+     "cardOpen": false,
+     "starNeed": 30,
+     "starMax": 3,
+     "cwLv": 0,
+     "cwMul": 1
+    },
+    "gram": {
+     "stats": {
+      "atk": 4.48,
+      "hp": 103.04,
+      "aps": 0.8,
+      "crit": 0.05
+     },
+     "cPow": 109.13280000000003,
      "owned": false,
      "recStar": 0,
      "starMul": 1,
@@ -15063,16 +15581,16 @@
      "margo",
      "margo",
      "kara",
+     "gram",
+     "gram",
+     "gram",
      "pori",
-     "pori",
-     "pori",
-     "pori",
-     "pori",
+     "gram",
      "margo",
      "pori",
      "margo",
      "margo",
-     "kara",
+     "pori",
      "pori",
      "luka",
      "luka",
@@ -15080,48 +15598,40 @@
      "luka",
      "kara",
      "kara",
+     "gram",
+     "margo",
+     "gram",
+     "gram",
+     "gram",
+     "margo",
+     "kara",
+     "gram",
+     "kara",
+     "pori",
+     "gram",
      "pori",
      "margo",
      "pori",
+     "kara",
+     "gram",
+     "gram",
      "pori",
+     "gram",
      "pori",
      "margo",
-     "margo",
-     "pori",
-     "margo",
-     "kara",
      "pori",
      "kara",
-     "margo",
-     "kara",
-     "kara",
-     "pori",
-     "pori",
-     "kara",
-     "pori",
-     "kara",
-     "margo",
-     "kara",
-     "margo",
      "pori",
      "luka",
      "pori",
-     "pori",
+     "gram",
      "margo",
-     "pori",
-     "margo",
+     "gram",
+     "kara",
      "pori"
     ],
     "chunks": {
      "got": [
-      [
-       "kara",
-       5
-      ],
-      [
-       "margo",
-       5
-      ],
       [
        "pori",
        5
@@ -15131,7 +15641,15 @@
        5
       ],
       [
+       "gram",
+       5
+      ],
+      [
        "margo",
+       5
+      ],
+      [
+       "kara",
        5
       ],
       [
@@ -15142,9 +15660,10 @@
      "gold": 0
     },
     "cardsAfter": {
-     "margo": 39,
-     "kara": 23,
-     "pori": 63,
+     "margo": 28,
+     "kara": 17,
+     "gram": 54,
+     "pori": 26,
      "luka": 5
     },
     "goldAfter": 100
@@ -15749,6 +16268,78 @@
       "crit": 0.05
      },
      "cPow": 107.9568,
+     "owned": false,
+     "recStar": 0,
+     "starMul": 1,
+     "skPow": 1,
+     "cardOpen": true,
+     "starNeed": 30,
+     "starMax": 3,
+     "cwLv": 0,
+     "cwMul": 1
+    },
+    "rollo": {
+     "stats": {
+      "atk": 8.64,
+      "hp": 226.8,
+      "aps": 0.75,
+      "crit": 0.05
+     },
+     "cPow": 219.429,
+     "owned": false,
+     "recStar": 0,
+     "starMul": 1,
+     "skPow": 1,
+     "cardOpen": false,
+     "starNeed": 30,
+     "starMax": 3,
+     "cwLv": 0,
+     "cwMul": 1
+    },
+    "crab": {
+     "stats": {
+      "atk": 9.72,
+      "hp": 108,
+      "aps": 0.9,
+      "crit": 0.05
+     },
+     "cPow": 157.1724,
+     "owned": false,
+     "recStar": 0,
+     "starMul": 1,
+     "skPow": 1,
+     "cardOpen": false,
+     "starNeed": 30,
+     "starMax": 3,
+     "cwLv": 0,
+     "cwMul": 1
+    },
+    "birch": {
+     "stats": {
+      "atk": 7.5600000000000005,
+      "hp": 97.2,
+      "aps": 0.75,
+      "crit": 0.05
+     },
+     "cPow": 157.1724,
+     "owned": false,
+     "recStar": 0,
+     "starMul": 1,
+     "skPow": 1,
+     "cardOpen": false,
+     "starNeed": 30,
+     "starMax": 3,
+     "cwLv": 0,
+     "cwMul": 1
+    },
+    "gram": {
+     "stats": {
+      "atk": 4.32,
+      "hp": 99.36000000000001,
+      "aps": 0.8,
+      "crit": 0.05
+     },
+     "cPow": 105.23520000000002,
      "owned": false,
      "recStar": 0,
      "starMul": 1,
@@ -17124,16 +17715,16 @@
      "margo",
      "margo",
      "kara",
+     "gram",
+     "gram",
+     "gram",
      "pori",
-     "pori",
-     "pori",
-     "pori",
-     "pori",
+     "gram",
      "margo",
      "pori",
      "margo",
      "margo",
-     "kara",
+     "pori",
      "pori",
      "luka",
      "luka",
@@ -17141,48 +17732,40 @@
      "luka",
      "kara",
      "kara",
+     "gram",
+     "margo",
+     "gram",
+     "gram",
+     "gram",
+     "margo",
+     "kara",
+     "gram",
+     "kara",
+     "pori",
+     "gram",
      "pori",
      "margo",
      "pori",
+     "kara",
+     "gram",
+     "gram",
      "pori",
+     "gram",
      "pori",
      "margo",
-     "margo",
-     "pori",
-     "margo",
-     "kara",
      "pori",
      "kara",
-     "margo",
-     "kara",
-     "kara",
-     "pori",
-     "pori",
-     "kara",
-     "pori",
-     "kara",
-     "margo",
-     "kara",
-     "margo",
      "pori",
      "luka",
      "pori",
-     "pori",
+     "gram",
      "margo",
-     "pori",
-     "margo",
+     "gram",
+     "kara",
      "pori"
     ],
     "chunks": {
      "got": [
-      [
-       "kara",
-       5
-      ],
-      [
-       "margo",
-       5
-      ],
       [
        "pori",
        5
@@ -17192,7 +17775,15 @@
        5
       ],
       [
+       "gram",
+       5
+      ],
+      [
        "margo",
+       5
+      ],
+      [
+       "kara",
        5
       ],
       [
@@ -17203,9 +17794,10 @@
      "gold": 0
     },
     "cardsAfter": {
-     "margo": 39,
-     "kara": 23,
-     "pori": 63,
+     "margo": 28,
+     "kara": 17,
+     "gram": 54,
+     "pori": 26,
      "luka": 5
     },
     "goldAfter": 500
@@ -18306,7 +18898,11 @@
    "beryl",
    "mora",
    "melo",
-   "pori"
+   "pori",
+   "rollo",
+   "crab",
+   "birch",
+   "gram"
   ],
   "stgName": [
    [
@@ -18365,6 +18961,10 @@
    "mora",
    "melo",
    "pori",
+   "rollo",
+   "crab",
+   "birch",
+   "gram",
    "luka"
   ]
  },

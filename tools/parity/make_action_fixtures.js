@@ -70,6 +70,10 @@ function op(o) {
     case 'adbox': return w.run('(()=>{S.gold+=boxCost();openBox(false)})()');
     case 'adgem': return w.run('(()=>{S.gem=(S.gem||0)+5})()');
     case 'adcard': return w.run("(()=>{gainCards(3,'shop',1)})()");
+    case 'att': return F('attDo')(a);
+    case 'attad': return F('attAdDo')(a);
+    case 'attm': return w.run(`(()=>{const x=attA();x.ym=${q(a)};x.m=${+b}})()`);
+    case 'tk': return w.run(`S.tickets[${q(a)}]=${+b}`);
     default: throw new Error('모르는 조작 ' + o);
   }
 }
@@ -95,6 +99,7 @@ const CASES = {
   // 희귀 동료 3명(토비·카라·베릴) 맞이하기·별·편성 + 카드 묶음 나눠 받기
   rares: [base.mid, ['card:toby:30', 'rec:toby', 'card:kara:30', 'rec:kara', 'card:beryl:45', 'rec:beryl', 'rec:beryl', 'set:fisher:toby', 'set:cook:kara', 'set:miner:beryl', 'gem:2000', 'cp:1', 'cp:1', 'wish:kara', 'cp:1', 'cp:0', 'adcard', 'en:weapon', 'cw:haral']],
   commons: [base.mid, ['card:mora:30', 'rec:mora', 'card:melo:30', 'rec:melo', 'card:pori:50', 'rec:pori', 'rec:pori', 'set:fisher:mora', 'set:keeper:melo', 'set:cook:pori', 'cp:1', 'wish:pori', 'cp:1']],
+  commons2: [base.mid, ['card:rollo:30', 'rec:rollo', 'card:crab:30', 'rec:crab', 'card:birch:30', 'rec:birch', 'card:gram:50', 'rec:gram', 'rec:gram', 'set:miner:rollo', 'set:fisher:crab', 'set:keeper:birch', 'set:cook:gram', 'cp:1', 'wish:gram', 'cp:1']],
   // 피트의 상점: 할 일 보상·무료 선물·골드 바꾸기·카드 묶음·꾸러미·첫 거래·정기 배송 (결제는 시험용 바로 지급)
   shop: [base.mid, ['mis:kill', 'daily:kill:150', 'mis:kill', 'mis:kill', 'daily:box:10', 'daily:harv:12', 'mis:all', 'mis:box', 'mis:harv', 'mis:all', 'mis:all',
     'gem:20', 'gx:g1', 'gx:g2', 'gem:5000', 'gx:g1', 'gx:g2', 'gx:g3', 'cp:0', 'cp:1', 'cp:1', 'cp:0',
@@ -107,6 +112,14 @@ const CASES = {
     'set:keeper:malbong', 'set:cook:deokbae', 'set:miner:peppy', 'time:' + 20 * M, 'items:wheat:30', 'items:fish:30', 'cook:bread', 'cook:stew',
     'card:malbong:9999', 'rec:malbong', 'rec:malbong', 'rec:malbong', 'rec:malbong', 'card:deokbae:9999', 'rec:deokbae', 'rec:deokbae', 'time:' + 30 * M, 'cook:bread',
     'set:keeper:andante', 'auto', 'card:andante:200', 'rec:andante', 'rec:andante', 'lv:peppy', 'cw:malbong', 'time:' + 2 * H]],
+  // 출석체크: 7일 판 반복·한달 판 초기화·건너뛰기·같은 날·날짜 되돌리기·광고 2배·큰 보상(7·14·21·28)·배지·무료권 사용
+  attend: [base.mid, ['att:2026-10-21', 'att:2026-10-22', 'att:2026-10-23', 'att:2026-10-24', 'att:2026-10-25', 'att:2026-10-26', 'att:2026-10-27',
+    'attad:2026-10-27', 'attad:2026-10-27', 'att:2026-10-27', 'att:2026-10-29', 'att:2026-10-28', 'att:2026-11-1', 'att:2026-11-2',
+    'attm:2026-11:6', 'att:2026-11-3', 'attad:2026-11-3', 'attm:2026-11:13', 'att:2026-11-4', 'attm:2026-11:20', 'att:2026-11-5', 'attad:2026-11-5',
+    'attm:2026-11:27', 'att:2026-11-6', 'attad:2026-11-6', 'att:2026-11-7', 'att:2026-11-30', 'att:2026-12-1', 'att:2026-1-5',
+    'tk:box:2', 'box', 'sell', 'box', 'sell', 'box', 'sell', 'tk:box10:1', 'gem:0', 'open10', 'open10']],
+  // 출석체크: 카드 받을 동료가 없을 때 이삭으로 대체 (7일 판 6칸, 한달 판 7회)
+  attendFresh: [base.fresh, ['att:2026-10-21', 'att:2026-10-22', 'att:2026-10-23', 'att:2026-10-24', 'att:2026-10-25', 'att:2026-10-26', 'att:2026-10-27', 'attad:2026-10-27']],
   // 카드 동료가 아직 없을 때 카드 묶음
   shopEarly: [base.fresh, ['gem:999', 'cp:0', 'cp:1', 'adcard', 'mis:all']],
 };

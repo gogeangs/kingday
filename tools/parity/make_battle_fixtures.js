@@ -42,6 +42,7 @@ const CASES = [
   // 희귀 동료 3명: 토비(밀치기)·카라(화상)·베릴(약점)
   ['rares', withTut(base.late, { stage: 66, best: 68, wave: 2, rec: Object.assign({}, base.late.rec || {}, { toby: 3, kara: 3, beryl: 4 }), lv: Object.assign({}, base.late.lv || {}, { toby: 60, kara: 60, beryl: 60 }), party: { miner: 'beryl', fisher: 'toby', keeper: 'riel', cook: 'kara' } }), 200, 240],
   ['commons', withTut(base.late, { stage: 66, best: 68, wave: 2, rec: Object.assign({}, base.late.rec || {}, { mora: 3, melo: 3, pori: 3 }), lv: Object.assign({}, base.late.lv || {}, { mora: 60, melo: 60, pori: 60 }), party: { miner: 'bron', fisher: 'mora', keeper: 'melo', cook: 'pori' } }), 200, 240],
+  ['commons2', withTut(base.late, { stage: 66, best: 68, wave: 2, rec: Object.assign({}, base.late.rec || {}, { rollo: 3, crab: 3, birch: 3, gram: 3 }), lv: Object.assign({}, base.late.lv || {}, { rollo: 60, crab: 60, birch: 60, gram: 60 }), party: { miner: 'rollo', fisher: 'crab', keeper: 'birch', cook: 'gram' } }), 200, 240],
 ];
 
 const out = { now: NOW, w: W, ht: HT, dt: DT, snap: SNAP, cases: {} };

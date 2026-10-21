@@ -73,7 +73,7 @@ class FramedFace extends StatelessWidget {
   }
 }
 
-Widget _badgeImg(String k, double s) => kdImg('assets/game/profile/badge_$k.png', w: s, h: s);
+Widget _badgeImg(String k, double s) => kdImg(badgeAsset(k), w: s, h: s);
 
 TextStyle _muted([double size = 13]) => KdText.body(size, color: KdColors.muted);
 
@@ -308,8 +308,8 @@ class _ProfileState extends State<_Profile> {
         ]),
         KdSec('테두리', small: '${pframes.where((f) => c.pfHas(f.k)).length} / ${pframes.length}'),
         _grid(pframes, true),
-        KdSec('대표 배지', small: '${badges.where((b) => c.bdHas(b.k)).length} / ${badges.length}'),
-        _grid(badges, false),
+        KdSec('대표 배지', small: '${badges.where((b) => c.bdHas(b.k)).length + c.attBadges().length} / ${badges.length + c.attBadges().length}'),
+        _grid([...c.attBadges(), ...badges], false),
       ],
       acts: KdActs(buttons: [
         KdAct('⚙ 설정', onTap: () => g.chainSheet(widget.sheet, () => openSettings(g))),
@@ -492,7 +492,7 @@ class _RankState extends State<_Rank> {
   Widget _nick(Map<String, dynamic> x, double size, {TextAlign align = TextAlign.left}) {
     final b = x['badge'];
     return Row(mainAxisSize: MainAxisSize.min, children: [
-      if (b is String && badgeOf(b) != null) ...[_badgeImg(b, 16), const SizedBox(width: 2)],
+      if (b is String && (badgeOf(b) != null || isAttBadge(b))) ...[_badgeImg(b, 16), const SizedBox(width: 2)],
       Flexible(child: Text('${x['nick'] ?? ''}', maxLines: 1, overflow: TextOverflow.ellipsis, textAlign: align, style: KdText.body(size, weight: FontWeight.w600))),
     ]);
   }
@@ -743,7 +743,7 @@ class _MailState extends State<_Mail> {
         if (asNum(r['gem']) > 0) _chip(gemIcon, fmt(asNum(r['gem']))),
         if (asNum(r['cards']) > 0) _chip('assets/game/ui/card_pack30.png', '동료 카드 ${fmt(asNum(r['cards']))}장'),
         if (r['frame'] is String) _chip('assets/game/profile/frame_${r['frame']}.png', '${frameName(r['frame'])} 테두리'),
-        if (r['badge'] is String) _chip('assets/game/profile/badge_${r['badge']}.png', '${badgeName(r['badge'])} 배지'),
+        if (r['badge'] is String) _chip(badgeAsset(r['badge'] as String), '${badgeName(r['badge'])} 배지'),
       ];
 
   @override

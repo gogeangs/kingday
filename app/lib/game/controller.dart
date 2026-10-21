@@ -12,6 +12,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../battle/battle_game.dart';
 import '../battle/sim.dart';
 import '../core/actions.dart';
+import '../core/attendance.dart';
 import '../core/calc.dart';
 import '../core/data.dart';
 import '../core/fmt.dart';
@@ -20,6 +21,7 @@ import '../core/profile_data.dart';
 import '../core/save_store.dart';
 import '../core/server.dart';
 import '../core/state.dart';
+import '../screens/attend_sheet.dart';
 import '../screens/social_sheets.dart';
 import '../ui/game_widgets.dart';
 import '../ui/theme.dart';
@@ -73,6 +75,7 @@ class GameController extends ChangeNotifier {
       _intro();
     } else {
       offline();
+      attAuto();
     }
     calc.pfCheck();
     // 웹 start() 끝의 events(): 옛 기록·다른 곳에서 가져온 기록이면 밀린 이야기·칭호를 바로 보여 줌
@@ -174,6 +177,7 @@ class GameController extends ChangeNotifier {
     backgrounded = false;
     _builtToast(calc.produce());
     offline();
+    attAuto();
     refresh();
     // 웹 'online' 이벤트처럼: 돌아오면 계정·우편 다시 확인
     if (online.on) online.ensure();
@@ -194,6 +198,15 @@ class GameController extends ChangeNotifier {
     noSave = true;
     await store.clear();
     onRestart?.call(store.load(DateTime.now().millisecondsSinceEpoch));
+  }
+
+  // ── 출석체크 (웹: 그날 처음 들어오면 방치 보상 다음에 출석 창) ──
+  String _attShown = '';
+  void attAuto() {
+    final t = calc.today();
+    if (_attShown == t || !attEligible(this) || acts.attStatusAt(t) != 'ok') return;
+    _attShown = t;
+    openAttend(this, queued: true);
   }
 
   // ── 방치 보상 (웹 offline()) ──

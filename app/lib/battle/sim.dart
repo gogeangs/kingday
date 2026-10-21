@@ -26,6 +26,9 @@ class Member {
 
   /// 덕배 「보양 수라상」: 쓰러질 피해를 한 번 버팀 (웹 P[id].guts)
   bool guts = false;
+
+  /// 버치 「벌통 방패」: 남은 시간·세기 (웹 P[id].bsh·bshK)
+  num bsh = 0, bshK = 1;
 }
 
 /// 마물 한 마리 (웹 mons[] 원소)
@@ -471,6 +474,76 @@ class BattleSim {
           addFloat(pos[tj]!, py[tj]! - 70 * sc, '따끈!', 0xFF9CF08A, 13);
           if (fxOk('skill_pori')) spawnFx('skill_pori', pos[tj]!, py[tj]! - 50 * sc, 150 * sc, .8);
         }
+      case 'rollo':
+        // 광차 굴리기: 모든 적을 꿰뚫어 2.5배 피해 (앞쪽부터)
+        final k = c.skPow(id);
+        final idx = [for (var i = 0; i < alive.length; i++) i]..sort((a, b) {
+            final d = alive[a].x.compareTo(alive[b].x);
+            return d != 0 ? d : a.compareTo(b);
+          });
+        for (final i in idx) {
+          hitMon(alive[i], t.atk * 2.5 * k * feast, true, sc);
+        }
+        shakeT = .3;
+        if (fxOk('skill_rollo')) spawnFx('skill_rollo', cx, cy - 30 * sc, 180 * sc, .8);
+      case 'crab':
+        // 집게 물기: 가장 강한 적(보스 먼저) 2배 피해 + 6초 느려짐
+        final k = c.skPow(id);
+        Mon? tg;
+        for (final m in alive) {
+          if (m.boss) {
+            tg = m;
+            break;
+          }
+        }
+        if (tg == null) {
+          for (final m in alive) {
+            if (tg == null || m.hp > tg.hp) tg = m;
+          }
+        }
+        final g = tg!;
+        hitMon(g, t.atk * 2 * k * feast, true, sc);
+        g.slow = math.max(g.slow, 6);
+        addFloat(g.x, g.y - 80 * sc, '꽉!', 0xFFFF9A7A, 13);
+        if (fxOk('skill_crab')) spawnFx('skill_crab', g.x, g.y - 40 * sc, 150 * sc, .8);
+      case 'birch':
+        // 벌통 방패: 체력 비율이 가장 낮은 동료 6초 동안 받는 피해 40% 감소
+        final k = c.skPow(id);
+        String? tj;
+        num tr = 2;
+        for (final j in c.members()) {
+          final q = party[j];
+          if (q == null || q.down) continue;
+          final r = q.hp / c.stats(j).hp;
+          if (r < tr) {
+            tr = r;
+            tj = j;
+          }
+        }
+        if (tj != null) {
+          party[tj]!.bsh = 6;
+          party[tj]!.bshK = k;
+          addFloat(pos[tj]!, py[tj]! - 70 * sc, '벌통 방패!', 0xFFFFD36B, 13);
+          if (fxOk('skill_birch')) spawnFx('skill_birch', pos[tj]! + 16 * sc, py[tj]! - 40 * sc, 130 * sc, .8);
+        }
+      case 'gram':
+        // 군감자 한 알: 쓰러지지 않은 동료 모두 15% 회복
+        final k = c.skPow(id);
+        for (final j in c.members()) {
+          final q = party[j];
+          if (q == null || q.down) continue;
+          q.hp = math.min(c.stats(j).hp, q.hp + c.stats(j).hp * .15 * k);
+          spawnFx('heal', pos[j]!, py[j]! - 24 * sc, 56 * sc, .6);
+        }
+        if (fxOk('skill_gram')) {
+          final ids = c.members();
+          num mx = 0, my = 0;
+          for (final j in ids) {
+            mx = mx + pos[j]!;
+            my = my + py[j]!;
+          }
+          spawnFx('skill_gram', mx / ids.length, my / ids.length - 50 * sc, 150 * sc, .9);
+        }
       case 'andante':
         skx.sym = 6;
         skx.symK = c.skPow(id);
@@ -771,6 +844,7 @@ class BattleSim {
       final p = party[id]!;
       p.swing = math.max(0, p.swing - dt);
       p.hit = math.max(0, p.hit - dt);
+      if (p.bsh > 0) p.bsh -= dt;
     }
     gobT -= dt;
     for (final m in mons) {
@@ -999,7 +1073,7 @@ class BattleSim {
       }
       if (tid == null) continue;
       final q = party[tid]!;
-      final dm = m.atk * (skx.shield > 0 ? .5 : 1) * (skx.mount > 0 ? .3 : 1);
+      final dm = m.atk * (skx.shield > 0 ? .5 : 1) * (skx.mount > 0 ? .3 : 1) * (q.bsh > 0 ? 1 - .4 * q.bshK : 1);
       if (skx.mount > 0 && party.containsKey('brida')) {
         final rf = m.atk * .7 * .5 * skx.mountK;
         hitMon(m, rf, false, sc);

@@ -1,6 +1,6 @@
 # 일반 요리사 「그램」 기획 기록
 
-작성일: 2026-10-21 · 상태: **기획·그림 완료, 게임 등록은 보류** (대표님 지시: 기록만)
+작성일: 2026-10-21 · 상태: **게임 등록 완료 (웹·앱)** — 2026-10-21
 
 ## 추가 배경
 - 일반 모집 동료 2차 추가 4명(롤로·크랩·버치·그램) 중 네 번째 (대표님 결정, 2026-10-21).
@@ -38,7 +38,7 @@
   - 효과 시트는 빛 번짐(노랑·연두)이 넓고 반투명 → 아군 위에 겹칠 때 크기를 작게, 어두운 배경에서 확인.
   - 동작 시트 가장자리에 옅은 번짐이 있어 자를 때 투명도 기준값으로 걸러낼 것.
 
-## 원본 그림 위치 (저장소 `art/source/`, 게임 미반영)
+## 원본 그림 위치 (저장소 `art/source/`)
 | 그림 | 파일 |
 |---|---|
 | ⓪ 참고 시트 | `art/source/gram_ref.png` |
@@ -46,7 +46,18 @@
 | ② 초상화 | `art/source/portraits/portrait_gram_idle.png`, `portrait_gram_laugh.png` (원본 한 장을 덩어리 단위로 좌우 분리, 여백 자름) |
 | ③ 스킬 아이콘 | `art/source/skills/skill_gram.png` |
 | ④ 스킬 효과 | `art/source/fx/fx_skill_gram.png` |
-- `assets/`·`index.html`은 아직 손대지 않음 → 등록 세션에서 COMPANION_GUIDE.md 4장 도구로 처리.
+- 2026-10-21 등록 세션에서 게임 파일로 처리함 (아래 「게임 등록」).
 
 ## 등록할 때 할 일 (COMPANION_GUIDE.md 6장)
 COMP · JOB(요리사 기존 값) · RECRUITS(마고와 감자 말다툼) · GRADE(`common`) · HEIGHT/SPRITES/FORM · SKILLS · castSkill(아군 전체 소량 회복) · FXDEF(`skill_gram:4`) · SPRITE_ALT/DRAW · NPCID(`'그램':'gram'`) · extract_skill_fx.py
+
+## 게임 등록 (2026-10-21)
+| 항목 | 값 |
+|---|---|
+| 기본 능력치 | 공격 4 · 체력 92 · 공격 속도 0.8 (레벨당 공격 +1.4, 체력 +18), 일반 배율 ×1 |
+| 일반 공격 | 요리사 자리 기본 공격(가장 다친 동료 회복) |
+| 스킬 「군감자 한 알」 | 쓰러지지 않은 동료 모두 체력 15% 회복(쓰러진 동료는 일으키지 않음, 마고보다 작게), 게이지 20, ★3 ×1.3 |
+| 합류 대사 | 군감자 냄새 → 마고 「감자는 삶아야 제맛」 ↔ 그램 「굽는 게 최고여」 → 카엘 「…둘 다 맛있어요」 |
+| 키 / 위치 | HEIGHT 54, SPRITES h 64, 요리사 자리(마고와 같은 위치) |
+| 그림 → 게임 파일 | `assets/characters/gram_{idle,walk,attack,hit}.png`, `assets/portraits/portrait_gram_{idle,laugh}.png`, `assets/skills/skill_gram.png`, `assets/fx/fx_skill_gram.png` |
+| 자르기 메모 | 공격 칸 320, 걷기 줄 아래 공격 줄 부젓가락 조각이 섞여 작은 조각 지움, CUTS |
