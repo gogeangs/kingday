@@ -31,6 +31,9 @@ class GameState {
         'buys': <String, dynamic>{}, 'sub': {'until': 0, 'last': ''}, 'gem': 0, 'gemRank': 0,
         'gemLord': <String, dynamic>{},
         'daily': {'d': '', 'kill': 0, 'box': 0, 'harv': 0, 'claim': <String, dynamic>{}},
+        // 출석체크 (docs/content/ATTENDANCE.md) — 웹과 같은 필드명
+        'att': {'last': '', 'w': 0, 'ym': '', 'm': 0, 'ad': '', 'got': <dynamic>[], 'intro': 0, 'tab': 'w'},
+        'tickets': {'box': 0, 'box10': 0},
         'v': 3,
       };
 
