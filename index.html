@@ -425,32 +425,33 @@ canvas{display:block;width:100%;height:100%}
 button:focus-visible,input:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
 .modal{position:fixed;inset:0;background:rgba(6,9,18,.75);display:flex;align-items:center;justify-content:center;padding:max(16px,env(safe-area-inset-left,0px));z-index:20}
 .sheet{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:18px 16px 16px;width:100%;max-width:400px;max-height:90%;overflow-y:auto;display:flex;flex-direction:column;gap:12px}
-.sheet h2{margin:0;font-family:var(--f-display);font-weight:700;font-size:22px;text-align:center;text-wrap:balance}
-.sheet .eyebrow{text-align:center;font-size:12px;letter-spacing:.2em;color:var(--gold);margin-bottom:-6px}
-.lore{margin:0;font-family:var(--f-display);font-weight:500;font-size:15px;line-height:1.85;color:var(--fg);text-wrap:pretty}
+.sheet h2{margin:0;font-family:var(--f-display);font-weight:700;font-size:20px;text-align:center;text-wrap:balance}
+.sheet .eyebrow{text-align:center;font-size:12px;letter-spacing:.2em;color:var(--gold);margin-bottom:-4px}
+.lore{margin:0;font-family:var(--f-display);font-weight:500;font-size:14.5px;line-height:1.6;color:var(--fg);text-wrap:pretty}
 .lore.q{color:var(--gold)}
 .lore.k{color:#a8e6b0}
 .lore .who{display:block;font-family:var(--f-body);font-size:11px;letter-spacing:.08em;opacity:.75}
-.talk{display:flex;gap:10px;align-items:flex-end;margin:0}
-.talk .pface{width:64px;height:64px;flex:0 0 auto;border-radius:12px;background:radial-gradient(circle at 50% 40%,#2c4a7a,#141a29);border:2px solid #c9952a;object-fit:cover;object-position:50% 20%}
+.talk{display:flex;gap:8px;align-items:center;margin:0}
+.talk .pface{width:44px;height:44px;flex:0 0 auto;border-radius:12px;background:radial-gradient(circle at 50% 40%,#2c4a7a,#141a29);border:2px solid #c9952a;object-fit:cover;object-position:50% 20%}
 .talk.m .pface{border-color:#ffd9a8;object-position:50% 30%}
 .talk.q .pface{background:radial-gradient(circle at 50% 50%,#203a66,#0d1220);border-color:#5ab4ff;object-position:50% 40%}
-.talk .lore{flex:1;min-width:0;background:rgba(0,0,0,.22);border-radius:12px;padding:8px 12px}
+.talk .lore{flex:1;min-width:0;background:rgba(0,0,0,.22);border-radius:12px;padding:6px 10px;font-size:14px;line-height:1.5}.talk .lore .who{display:inline;margin-right:6px;font-size:11.5px;letter-spacing:0;opacity:.7}
 .rowic{width:52px;height:52px;flex:0 0 auto;object-fit:contain;filter:drop-shadow(0 2px 3px rgba(0,0,0,.4))}
 .row.locked .rowic,.row.ruin .rowic{filter:grayscale(1) brightness(.6)}.row.ruin .rowic.art{filter:none}.row.locked .rowic.art{filter:brightness(.6)}
 .chipic{width:18px;height:18px;margin:-3px 0;vertical-align:middle}
 .rankimg{width:28px;height:28px;margin:-6px -2px}
-.rankbig{display:block;width:96px;height:96px;margin:0 auto 4px}
-.sheet{border:22px solid transparent;border-image:url(assets/ui/frame_popup.png) 70 fill / 22px stretch;background:var(--panel) padding-box;border-radius:0;padding:10px 6px 8px}
-.bossportrait{display:block;width:120px;height:120px;margin:0 auto 6px;object-fit:contain;filter:drop-shadow(0 4px 10px rgba(255,60,60,.35))}
+.rankbig{display:block;width:76px;height:76px;margin:0 auto 2px}
+.sheet{border:22px solid transparent;border-image:url(assets/ui/frame_popup.png) 70 fill / 22px stretch;background:var(--panel) padding-box;border-radius:0;padding:10px 6px 8px;gap:9px}
+.bossportrait{display:block;width:96px;height:96px;margin:0 auto 4px;object-fit:contain;filter:drop-shadow(0 4px 10px rgba(255,60,60,.35))}
 .bossface{width:34px;height:34px;margin:-10px 0 -10px -4px;object-fit:cover;object-position:50% 15%;border-radius:50%;border:2px solid var(--bad);background:#2a0e14}
-.illust{display:block;width:calc(100% + 12px);margin:-10px -6px 4px;aspect-ratio:16/10;object-fit:cover;object-position:50% 45%;border-radius:4px}
+.illust{display:block;width:calc(100% + 12px);margin:-10px -6px 2px;aspect-ratio:2/1;max-height:30vh;object-fit:cover;object-position:50% 45%;border-radius:4px}
 .illust.il-prologue{object-position:50% 34%}
 .ilwrap{position:relative;margin:-10px -6px 4px}.ilwrap .illust{margin:0;width:100%}.joinpf{position:absolute;left:12%;bottom:4%;width:38%;aspect-ratio:1;object-fit:contain;filter:drop-shadow(0 0 10px rgba(255,230,140,.95)) drop-shadow(0 0 3px var(--g));animation:joinpf .9s ease-out both .2s}@keyframes joinpf{0%{opacity:0;transform:translateY(20px) scale(.7)}100%{opacity:1;transform:none}}
-.illust.il-join{object-position:50% 55%}
+.illust.il-join{object-position:50% 55%;aspect-ratio:12/5}
 .illust.il-retire{object-position:50% 48%}
 .illust.il-offline{object-position:42% 50%}
-.lore.sys{font-family:var(--f-body);font-size:13px;color:var(--muted);border-top:1px solid var(--line);padding-top:10px}
+@media (max-height:700px){.illust{max-height:22vh}.sheet{gap:7px;max-height:100%}.modal{padding-top:4px;padding-bottom:4px}.bossportrait{width:76px;height:76px}.rankbig{width:60px;height:60px}}
+.lore.sys{font-family:var(--f-body);font-size:13px;line-height:1.5;color:var(--muted);border-top:1px solid var(--line);padding-top:8px}
 .cmp{display:grid;grid-template-columns:1fr 1fr;gap:8px}
 .card{border:2px solid var(--c,var(--line));border-radius:12px;padding:10px;display:flex;flex-direction:column;align-items:center;gap:4px;min-width:0;background:var(--panel2)}
 .card svg{width:40px;height:40px;color:var(--c)}
@@ -648,26 +649,26 @@ const COMP={
 const JOB={bron:'miner',haral:'fisher',riel:'keeper',margo:'cook',luka:'cook',nella:'fisher',brida:'miner',daisy:'keeper',gordon:'miner',makrye:'fisher',malbong:'keeper',deokbae:'cook',peppy:'miner',andante:'keeper',toby:'fisher',kara:'cook',beryl:'miner',mora:'fisher',melo:'keeper',pori:'cook',rollo:'miner',crab:'fisher',birch:'keeper',gram:'cook'},JOBN={miner:'광부',fisher:'어부',keeper:'양봉가',cook:'요리사'};
 const JSLOT=['miner','kael','fisher','keeper','cook'],STORY={miner:'bron',fisher:'haral',keeper:'riel',cook:'margo'};
 const RECRUITS={
- luka:{job:'cook',title:'제빵사 루카',lines:['m:루카|저, 저기… 카엘 씨 밭의 밀로 빵을 구워 보고 싶어서 따라왔어요.','k@surprised:내 밀로? …은퇴하면 빵집 옆에 밭 하나 더 일궈야겠네.','q@proud:흥, 또 식객이 늘었군. 뭐, 빵 냄새는 나쁘지 않다.','sys:원정대 탭의 요리사 자리에서 마고 대신 출전시킬 수 있어요.'],ok:'잘 부탁해, 루카'},
- gordon:{job:'miner',title:'석공 고든',lines:['무너진 성벽 앞에서 거구의 사내가 묵묵히 돌을 쌓고 있었다. 마물이 덤비자, 정 망치 한 번에 날려 버렸다.','m:고든|…성벽은 다시 쌓으면 된다. 사람은 다시 못 쌓지.','m:브론|말수 적은 놈이 마음에 드는군. 같이 가자.','k@smile:든든하다… 은퇴하면 우리 집 담장도 부탁해도 될까?','sys:원정대 탭의 광부 자리에서 브론 대신 출전시킬 수 있어요.'],ok:'잘 부탁해, 고든'},
- daisy:{job:'keeper',title:'정원사 데이지',lines:['m:데이지|안녕! 리엘 언니 벌들이 우리 꽃밭에 놀러 오거든. 그래서 따라와 봤어!','m:리엘|이 아이 꽃밭 꿀이 제일 달아. 400년 동안 먹어 본 것 중에.','k@smile:꽃밭이라… 은퇴하면 우리 밭 옆에도 좀 심어 줄래?','sys:원정대 탭의 양봉가 자리에서 리엘 대신 출전시킬 수 있어요.'],ok:'환영해, 데이지'},
- brida:{job:'miner',title:'전설의 대장장이 여왕 브리다',lines:['협곡이 울렸다. 바위 문이 열리고, 은빛 수염을 땋은 늙은 드워프가 모루 망치를 끌며 걸어 나왔다.','m:브리다|브론! 이 할미를 두고 원정을 떠나? 망치질 삼백 년, 아직 손목은 멀쩡하다.','m:브론|…할머니. 갱도에 계시라고 했잖아요.','q@moved:브리다 여왕… 내가 첫 주인을 모시던 시절에 이미 전설이었지.','k@surprised:성검이 존댓말 쓰는 거 처음 봐.','sys:전설 등급 동료! 원정대 탭의 광부 자리에서 출전시킬 수 있어요.','sys:마을 스킬 「여왕의 대장간」: 광산 광석 생산 +50%. 출전하지 않아도 늘 적용되고, 별이 오를수록 강해져요(★5에서 +100%).'],ok:'모시겠습니다, 여왕님'},
- nella:{job:'fisher',title:'그물 어부 넬라',lines:['m:넬라|하랄 할배! 또 혼자 허풍 떨면서 다니지? 이번엔 나도 같이 간다!','m:하랄@laugh|허허, 이 녀석 그물 솜씨는 나보다 낫지. 고래만 빼고.','k@flustered:…원정대가 점점 마을 잔치가 되어 가네.','sys:원정대 탭의 어부 자리에서 하랄 대신 출전시킬 수 있어요.'],ok:'잘 부탁해, 넬라'},
- makrye:{job:'fisher',title:'전설의 해녀 막례',lines:['갈대 강변 끝, 바다가 보이는 갯바위에서 "호오이~" 하는 숨비소리가 길게 울렸다.','m:막례|어이구, 하랄이 너 아직 살아 있었냐? 크라켄이랑 사흘 밤낮 싸웠다며?','m:하랄|그, 그건 진짜라니까! 이만한 촉수가 배를…','m:막례@laugh|그거 우리 말순이가 너랑 놀아 준 거여. 말순아, 하랄 할배한테 인사해라.','k@surprised:…방금 망사리에서 보라색 문어가 손 흔들었어요.','q@proud:마족의 크라켄을 길들인 해녀라… 주인, 이건 귀한 인연이다.','sys:전설 등급 동료! 원정대 탭의 어부 자리에서 출전시킬 수 있어요.','sys:마을 스킬 「물질 대장」: 낚시터 생선 생산 +50%. 출전하지 않아도 늘 적용되고, 별이 오를수록 강해져요(★5에서 +100%).'],ok:'잘 부탁해요, 막례 할머니'},
- malbong:{job:'keeper',title:'전설의 말벌 사냥꾼 말봉',lines:['양봉장 뒤편에서 우르릉 하는 날갯소리가 났다. 보호복도 없이 맨손으로 말벌을 한 마리씩 잡아 자루에 넣는 사내가 있었다.','m:데이지@laugh|아빠! 이쪽이 카엘 아저씨예요! 우리 아빠 진짜 착해요!','m:말봉|…말벌만 잡는다. 사람은 안 잡아.','k@surprised:말봉… 데이지랑 이름이 하나도 안 닮았네요.','m:데이지|엄마가 제 이름을 지었거든요!','m:말봉@laugh|…우리 딸, 이쁘지.','sys:전설 등급 동료! 원정대 탭의 양봉가 자리에서 출전시킬 수 있어요.','sys:마을 스킬 「말벌 퇴치반」: 양봉장 꿀 생산 +50%. 출전하지 않아도 늘 적용되고, 별이 오를수록 강해져요(★5에서 +100%).'],ok:'잘 부탁드려요, 말봉 아저씨'},
- deokbae:{job:'cook',title:'전설의 수라간 숙수 덕배',lines:['식당 문이 벌컥 열리더니, 흰 상투에 망건을 쓴 노인이 놋쇠 국자를 들고 들어섰다.','m:덕배|마고야! 국물이 이게 뭐냐. 내가 그리 가르치더냐!','m:마고|스, 스승님?! 왕도가 무너진 뒤로 소식이 끊기셔서…','m:덕배|수라간에서 쫓겨나 시골에서 국밥이나 말고 있었다. …허나 이 녀석이 왕이 된다지?','k@flustered:아니요, 저는 은퇴를…','m:덕배@laugh|네가 왕이 되면 내 수라상을 다시 차려 주마. 그때까지 굶기진 않으마!','q@proud:수라간 최고 숙수라… 왕의 밥상이 다시 차려지겠군.','sys:전설 등급 동료! 원정대 탭의 요리사 자리에서 출전시킬 수 있어요.','sys:마을 스킬 「수라간의 손맛」: 요리 버프 시간 +50%. 출전하지 않아도 늘 적용되고, 별이 오를수록 강해져요(★5에서 +100%).'],ok:'잘 부탁드립니다, 덕배 어르신'},
- peppy:{job:'miner',title:'덜렁이 발파공 페피',lines:['협곡 저편에서 콰광! 하고 바위가 무너졌다. 먼지 속에서 머리끝이 그을린 소녀가 헤헤 웃으며 걸어 나왔다.','m:브론|…또 너냐!','m:페피@laugh|브론 아저씨! 이번 건 일부러 그런 거예요. 아마도요!','m:브론|갱도를 세 개나 무너뜨려 놓고!','k@flustered:…원정대에 폭탄이 들어와도 괜찮은 걸까요.','q@proud:하하! 마물 소굴째 날려 버리면 되지 않나!','sys:원정대 탭의 광부 자리에서 브론 대신 출전시킬 수 있어요.'],ok:'조심해서 잘 부탁해, 페피'},
- andante:{job:'keeper',title:'벌떼 지휘자 안단테',lines:['어스름 숲에 난데없이 우아한 선율이 울려 퍼졌다. 연미복을 입은 청년이 지휘봉을 휘두르자 벌떼가 박자에 맞춰 춤을 췄다.','m:안단테@laugh|브라보! 들리십니까? 이 날갯짓의 교향곡이!','m:리엘|…그냥 붕붕 소리인데.','m:안단테|숙녀분, 그건 4분의 3박자 왈츠랍니다.','k@surprised:벌이 정말 줄을 맞춰서 날고 있어요.','sys:원정대 탭의 양봉가 자리에서 리엘 대신 출전시킬 수 있어요.'],ok:'멋진 연주 부탁해요, 안단테'},
- toby:{job:'fisher',title:'뱃사공 소년 토비',lines:['강가 나루터에서 작은 쪽배 하나가 원정대 뒤를 몰래 따라오고 있었다.','m:넬라|…토비! 너 집에 가라 했지!','m:토비@laugh|누나 혼자 가면 심심하잖아! 나도 노 저을 줄 안다고!','m:하랄|허허, 녀석 팔뚝 좀 보게. 노질 하나는 내 젊을 적 같구먼.','m:넬라|할배까지 왜 그래요!','k@flustered:…애들이 자꾸 원정대에 들어오네.','q@proud:하하! 파도를 가르는 자라면 환영이다!','sys:원정대 탭의 어부 자리에서 하랄 대신 출전시킬 수 있어요.'],ok:'잘 부탁해, 토비'},
- kara:{job:'cook',title:'매운맛 요리사 카라',lines:['마고 식당 쪽에서 불기둥이 치솟았다. 사람들이 물동이를 들고 뛰어갔다.','m:마고|카라! 웍에서 불 좀 그만 올리라고 했잖니!','m:카라@laugh|아주머니, 불맛 없으면 요리가 아니라니까요!','m:마고|…그 불맛으로 마물이나 구워 오렴. 우리 부엌은 이제 그만!','m:카라|좋아요! 마물한테 제대로 매운맛을 보여 줄게요!','k@flustered:…쫓겨난 거 맞지?','q@proud:하하! 불을 다루는 자는 언제나 환영이다!','sys:원정대 탭의 요리사 자리에서 마고 대신 출전시킬 수 있어요.'],ok:'매운맛 잘 부탁해, 카라'},
- beryl:{job:'miner',title:'보석 감정사 베릴',lines:['광산 입구에서 누군가 브론이 캐 온 광석을 확대경으로 들여다보고 있었다.','m:베릴|흠. 금 갔네. 이것도 금 갔고. 이건… 그냥 돌이고.','m:브론|이 녀석이! 내 광석에 또 흠을 잡아?','m:베릴@laugh|흠 찾는 게 제 일이거든요. 마물한테도 금 간 데가 있을걸요?','m:브리다|흐흥, 내 대장간 물건 값을 제대로 매기는 유일한 녀석이지.','k:…약점을 찾아 준다면 든든하겠네.','q@proud:하하! 적의 약점을 꿰뚫는 눈이로군!','sys:원정대 탭의 광부 자리에서 브론 대신 출전시킬 수 있어요.'],ok:'잘 부탁해, 베릴'},
- mora:{job:'fisher',title:'생선 장수 모라',lines:['장터 쪽에서 "싱싱해요, 싱싱해!" 하는 목청이 마을 끝까지 울렸다.','m:마고|카엘, 우리 식당에 생선 대 주는 모라야. 목소리 큰 건 이해해 주렴.','m:모라@laugh|아이고, 이 총각이 그 카엘이구나! 생선 한 마리 들고 가. 공짜는 아니고!','m:하랄|모라, 그 생선은 또 어디서 그렇게 큰 걸 낚았나?','m:모라|흥정으로 낚았지요! 마물도 이걸로 한 대면 싱싱하게 뻗을걸?','k@flustered:…생선이 무기인 건 처음 봐요.','sys:원정대 탭의 어부 자리에서 하랄 대신 출전시킬 수 있어요.'],ok:'잘 부탁드려요, 모라 아주머니'},
- melo:{job:'keeper',title:'꿀 행상 멜로',lines:['등에 꿀단지를 산더미처럼 진 소년이 "달콤한 꿀 있어요~" 하며 걸어왔다.','m:리엘|멜로! 꿀값은 언제 줄 거니?','m:멜로@laugh|헤헤, 리엘 누나! 다 팔면 드린다니까요. 이번엔 진짜로요!','m:리엘|…지난번에도 그 말 했잖아.','m:멜로|그래서 원정대 따라가서 마물한테도 팔아 보려고요! 끈적해서 한번 맞으면 못 도망가요!','k@flustered:…꿀을 던지는 거야, 파는 거야?','sys:원정대 탭의 양봉가 자리에서 리엘 대신 출전시킬 수 있어요.'],ok:'잘 부탁해, 멜로'},
- pori:{job:'cook',title:'수프 배달부 포리',lines:['구리 냄비를 든 소녀가 길모퉁이를 돌아 전속력으로 달려왔다.','m:마고|포리야, 천천히! …이번엔 안 엎었니?','m:포리@laugh|안 엎었어요! 거의요! 따끈할 때 드세요!','m:마고|우리 식당 배달 아이야. 덜렁대도 제일 지친 손님한테 제일 먼저 달려간단다.','m:포리|원정대 아저씨들 배고프면 제가 바로 갖다드릴게요!','k@smile:…따끈한 수프라니, 든든하네.','sys:원정대 탭의 요리사 자리에서 마고 대신 출전시킬 수 있어요.'],ok:'잘 부탁해, 포리'},
- rollo:{job:'miner',title:'광차꾼 롤로',lines:['갱도 깊은 곳에서 덜컹덜컹 광차 굴러가는 소리가 들려왔다.','m:롤로|어이, 꼬맹이! 아직도 곡괭이를 그렇게 쥐냐?','m:브론|…롤로 영감. 저 이제 백 살 넘었습니다.','m:롤로@laugh|내 눈엔 아직 꼬맹이여. 수레는 밀어야 굴러가는 법이여.','k@surprised:브론을 꼬맹이라고 부르는 사람이 있다니…','sys:원정대 탭의 광부 자리에서 브론 대신 출전시킬 수 있어요.'],ok:'잘 부탁드려요, 롤로 할아버지'},
- crab:{job:'fisher',title:'게잡이 크랩',lines:['갈대 강변에서 하랄이 또 고래 이야기를 늘어놓고 있었다.','m:하랄|내가 젊을 때 이만한 고래를 맨손으로…','m:크랩|…그럼 그 고래 어딨나.','m:하랄|그, 그건…','m:크랩@laugh|…게는 거짓말을 안 해. 얘 이름은 집게다.','k@smile:방금 모자 위의 게가 손을 흔들었어요.','sys:원정대 탭의 어부 자리에서 하랄 대신 출전시킬 수 있어요.'],ok:'잘 부탁해요, 크랩 아저씨'},
- birch:{job:'keeper',title:'벌통 목수 버치',lines:['m:멜로|형! 이쪽이 카엘 영주님이에요. 제 지게 고쳐 주는 버치 형!','m:버치@laugh|…반가워요. 튼튼한 집이 있어야… 벌도 꿀을 모으죠.','m:리엘|우리 벌통도 다 이 애가 짰어. 말은 느려도 손은 빨라.','k@smile:은퇴하면 우리 밭 울타리도 부탁해도 될까?','sys:원정대 탭의 양봉가 자리에서 리엘 대신 출전시킬 수 있어요.'],ok:'잘 부탁해, 버치'},
- gram:{job:'cook',title:'군감자 장수 그램',lines:['마을 어귀에서 군감자 굽는 냄새가 솔솔 풍겨 왔다.','m:그램|뜨끈할 때 하나씩 들어. 오늘도 공짜여.','m:마고|그램 영감님, 감자는 삶아야 제맛이라니까요!','m:그램@laugh|허허, 감자는 굽는 게 최고여.','m:마고|…원정대 가서도 그 소리 하시려고요?','k@smile:…둘 다 맛있어요.','sys:원정대 탭의 요리사 자리에서 마고 대신 출전시킬 수 있어요.'],ok:'잘 부탁드려요, 그램 할아버지'}},STAR_NEED=[30,20,40,80,150],STAR_MUL=[1,1,1.2,1.4,1.6,2];
+ luka:{job:'cook',title:'제빵사 루카',lines:['m:루카|저, 저기… 카엘 씨 밭의 밀로 빵을 구워 보고 싶어서 따라왔어요.','k@surprised:내 밀로? …은퇴하면 빵집 옆에 밭 하나 더 일궈야겠네.','q@proud:흥, 또 식객이 늘었군.','sys:요리사 자리에서 마고 대신 출전할 수 있어요.'],ok:'잘 부탁해, 루카'},
+ gordon:{job:'miner',title:'석공 고든',lines:['무너진 성벽 앞, 거구의 사내가 정 망치 한 번에 마물을 날려 버렸다.','m:고든|…성벽은 다시 쌓으면 된다. 사람은 다시 못 쌓지.','k@smile:든든하다… 은퇴하면 우리 집 담장도 부탁해도 될까?','sys:광부 자리에서 브론 대신 출전할 수 있어요.'],ok:'잘 부탁해, 고든'},
+ daisy:{job:'keeper',title:'정원사 데이지',lines:['m:데이지|안녕! 리엘 언니 벌들이 우리 꽃밭에 놀러 오거든. 그래서 따라와 봤어!','m:리엘|이 아이 꽃밭 꿀이 제일 달아. 400년 동안 먹어 본 것 중에.','k@smile:은퇴하면 우리 밭 옆에도 꽃 좀 심어 줄래?','sys:양봉가 자리에서 리엘 대신 출전할 수 있어요.'],ok:'환영해, 데이지'},
+ brida:{job:'miner',title:'전설의 대장장이 여왕 브리다',lines:['협곡의 바위 문이 열리고, 은빛 수염을 땋은 늙은 드워프가 걸어 나왔다.','m:브리다|브론! 이 할미를 두고 원정을 떠나? 망치질 삼백 년, 손목은 멀쩡하다.','m:브론|…할머니. 갱도에 계시라고 했잖아요.','q@moved:브리다 여왕… 내 첫 주인 시절에도 이미 전설이었지.','sys:전설 동료 · 마을 스킬 「여왕의 대장간」 광석 생산 +50% (출전 안 해도 적용)'],ok:'모시겠습니다, 여왕님'},
+ nella:{job:'fisher',title:'그물 어부 넬라',lines:['m:넬라|하랄 할배! 또 혼자 허풍 떨면서 다니지? 이번엔 나도 같이 간다!','m:하랄@laugh|허허, 이 녀석 그물 솜씨는 나보다 낫지. 고래만 빼고.','k@flustered:…원정대가 점점 마을 잔치가 되어 가네.','sys:어부 자리에서 하랄 대신 출전할 수 있어요.'],ok:'잘 부탁해, 넬라'},
+ makrye:{job:'fisher',title:'전설의 해녀 막례',lines:['갯바위에서 \'호오이~\' 하는 숨비소리가 길게 울렸다.','m:막례|어이구, 하랄이 너 아직 살아 있었냐? 크라켄이랑 사흘 싸웠다며?','m:막례@laugh|그거 우리 말순이가 너랑 놀아 준 거여. 말순아, 인사해라.','k@surprised:…방금 망사리에서 보라색 문어가 손 흔들었어요.','sys:전설 동료 · 마을 스킬 「물질 대장」 생선 생산 +50% (출전 안 해도 적용)'],ok:'잘 부탁해요, 막례 할머니'},
+ malbong:{job:'keeper',title:'전설의 말벌 사냥꾼 말봉',lines:['보호복도 없이 맨손으로 말벌을 잡아 자루에 넣는 사내가 있었다.','m:데이지@laugh|아빠! 이쪽이 카엘 아저씨예요!','m:말봉|…말벌만 잡는다. 사람은 안 잡아.','m:말봉@laugh|…우리 딸, 이쁘지.','sys:전설 동료 · 마을 스킬 「말벌 퇴치반」 꿀 생산 +50% (출전 안 해도 적용)'],ok:'잘 부탁드려요, 말봉 아저씨'},
+ deokbae:{job:'cook',title:'전설의 수라간 숙수 덕배',lines:['식당 문이 벌컥 열리고, 흰 상투의 노인이 놋쇠 국자를 들고 들어섰다.','m:덕배|마고야! 국물이 이게 뭐냐. 내가 그리 가르치더냐!','m:마고|스, 스승님?! 수라간 최고 숙수께서 여길…','m:덕배@laugh|이 녀석이 왕이 된다지? 그때까지 굶기진 않으마!','sys:전설 동료 · 마을 스킬 「수라간의 손맛」 요리 버프 시간 +50% (출전 안 해도 적용)'],ok:'잘 부탁드립니다, 덕배 어르신'},
+ peppy:{job:'miner',title:'덜렁이 발파공 페피',lines:['콰광! 먼지 속에서 머리끝이 그을린 소녀가 헤헤 웃으며 걸어 나왔다.','m:브론|…또 너냐! 갱도를 세 개나 무너뜨려 놓고!','m:페피@laugh|이번 건 일부러 그런 거예요. 아마도요!','k@flustered:…원정대에 폭탄이 들어와도 괜찮은 걸까요.','sys:광부 자리에서 브론 대신 출전할 수 있어요.'],ok:'조심해서 잘 부탁해, 페피'},
+ andante:{job:'keeper',title:'벌떼 지휘자 안단테',lines:['연미복을 입은 청년이 지휘봉을 휘두르자 벌떼가 박자에 맞춰 춤을 췄다.','m:안단테@laugh|브라보! 들리십니까? 이 날갯짓의 교향곡이!','m:리엘|…그냥 붕붕 소리인데.','k@surprised:벌이 정말 줄을 맞춰서 날고 있어요.','sys:양봉가 자리에서 리엘 대신 출전할 수 있어요.'],ok:'멋진 연주 부탁해요, 안단테'},
+ toby:{job:'fisher',title:'뱃사공 소년 토비',lines:['작은 쪽배 하나가 원정대 뒤를 몰래 따라오고 있었다.','m:넬라|…토비! 너 집에 가라 했지!','m:토비@laugh|누나 혼자 가면 심심하잖아! 나도 노 저을 줄 안다고!','k@flustered:…애들이 자꾸 원정대에 들어오네.','sys:어부 자리에서 하랄 대신 출전할 수 있어요.'],ok:'잘 부탁해, 토비'},
+ kara:{job:'cook',title:'매운맛 요리사 카라',lines:['마고 식당 쪽에서 불기둥이 치솟았다.','m:마고|카라! 웍에서 불 좀 그만 올리라고 했잖니! …그 불맛으로 마물이나 구워 오렴.','m:카라@laugh|좋아요! 마물한테 제대로 매운맛을 보여 줄게요!','k@flustered:…쫓겨난 거 맞지?','sys:요리사 자리에서 마고 대신 출전할 수 있어요.'],ok:'매운맛 잘 부탁해, 카라'},
+ beryl:{job:'miner',title:'보석 감정사 베릴',lines:['m:베릴|흠. 금 갔네. 이것도 금 갔고. 이건… 그냥 돌이고.','m:브론|이 녀석이! 내 광석에 또 흠을 잡아?','m:베릴@laugh|흠 찾는 게 제 일이거든요. 마물한테도 금 간 데가 있을걸요?','k:…약점을 찾아 준다면 든든하겠네.','sys:광부 자리에서 브론 대신 출전할 수 있어요.'],ok:'잘 부탁해, 베릴'},
+ mora:{job:'fisher',title:'생선 장수 모라',lines:['장터 쪽에서 \'싱싱해요, 싱싱해!\' 하는 목청이 울렸다.','m:모라@laugh|아이고, 이 총각이 그 카엘이구나! 생선 한 마리 들고 가. 공짜는 아니고!','m:모라|마물도 이걸로 한 대면 싱싱하게 뻗을걸?','k@flustered:…생선이 무기인 건 처음 봐요.','sys:어부 자리에서 하랄 대신 출전할 수 있어요.'],ok:'잘 부탁드려요, 모라 아주머니'},
+ melo:{job:'keeper',title:'꿀 행상 멜로',lines:['m:리엘|멜로! 꿀값은 언제 줄 거니?','m:멜로@laugh|헤헤, 다 팔면 드린다니까요! 그래서 마물한테도 팔아 보려고요!','m:멜로|끈적해서 한번 맞으면 못 도망가요!','k@flustered:…꿀을 던지는 거야, 파는 거야?','sys:양봉가 자리에서 리엘 대신 출전할 수 있어요.'],ok:'잘 부탁해, 멜로'},
+ pori:{job:'cook',title:'수프 배달부 포리',lines:['구리 냄비를 든 소녀가 길모퉁이를 돌아 전속력으로 달려왔다.','m:마고|포리야, 천천히! …이번엔 안 엎었니?','m:포리@laugh|안 엎었어요! 거의요! 원정대 아저씨들 배고프면 바로 갖다드릴게요!','k@smile:…따끈한 수프라니, 든든하네.','sys:요리사 자리에서 마고 대신 출전할 수 있어요.'],ok:'잘 부탁해, 포리'},
+ rollo:{job:'miner',title:'광차꾼 롤로',lines:['갱도 깊은 곳에서 덜컹덜컹 광차 소리가 들려왔다.','m:롤로|어이, 꼬맹이! 아직도 곡괭이를 그렇게 쥐냐?','m:브론|…롤로 영감. 저 이제 백 살 넘었습니다.','k@surprised:브론을 꼬맹이라고 부르는 사람이 있다니…','sys:광부 자리에서 브론 대신 출전할 수 있어요.'],ok:'잘 부탁드려요, 롤로 할아버지'},
+ crab:{job:'fisher',title:'게잡이 크랩',lines:['m:하랄|내가 젊을 때 이만한 고래를 맨손으로…','m:크랩|…그럼 그 고래 어딨나.','m:크랩@laugh|…게는 거짓말을 안 해. 얘 이름은 집게다.','k@smile:방금 모자 위의 게가 손을 흔들었어요.','sys:어부 자리에서 하랄 대신 출전할 수 있어요.'],ok:'잘 부탁해요, 크랩 아저씨'},
+ birch:{job:'keeper',title:'벌통 목수 버치',lines:['m:멜로|형! 이쪽이 카엘 영주님이에요. 제 지게 고쳐 주는 버치 형!','m:버치@laugh|…반가워요. 튼튼한 집이 있어야… 벌도 꿀을 모으죠.','k@smile:은퇴하면 우리 밭 울타리도 부탁해도 될까?','sys:양봉가 자리에서 리엘 대신 출전할 수 있어요.'],ok:'잘 부탁해, 버치'},
+ gram:{job:'cook',title:'군감자 장수 그램',lines:['마을 어귀에서 군감자 굽는 냄새가 솔솔 풍겨 왔다.','m:그램|뜨끈할 때 하나씩 들어. 오늘도 공짜여.','m:마고|그램 영감님, 감자는 삶아야 제맛이라니까요!','k@smile:…둘 다 맛있어요.','sys:요리사 자리에서 마고 대신 출전할 수 있어요.'],ok:'잘 부탁드려요, 그램 할아버지'}},STAR_NEED=[30,20,40,80,150],STAR_MUL=[1,1,1.2,1.4,1.6,2];
 /* 동료 등급: 이야기 동료는 일반(★3까지), 모집 동료는 희귀 이상 */
 const GRADE={bron:'common',haral:'common',riel:'common',margo:'common',luka:'epic',nella:'epic',brida:'legend',daisy:'rare',gordon:'common',makrye:'legend',malbong:'legend',deokbae:'legend',peppy:'epic',andante:'epic',toby:'rare',kara:'rare',beryl:'rare',mora:'common',melo:'common',pori:'common',rollo:'common',crab:'common',birch:'common',gram:'common'};
 const GR={common:{n:'일반',c:'#b8c0cc',max:3,mul:1,w:55,need:[0,15,30],fr:'normal'},rare:{n:'희귀',c:'#5aa8ff',max:4,mul:1.1,w:30,need:[30,20,40,80],fr:'rare'},epic:{n:'영웅',c:'#b07bff',max:5,mul:1.2,w:12,need:[30,30,60,120,200],fr:'epic'},legend:{n:'전설',c:'#ffc23a',max:5,mul:1.35,w:3,need:[30,40,80,160,300],fr:'legendary'}};
@@ -993,11 +994,10 @@ function events(){for(const e of EVENTS)if(S.stage>=e.at&&!S.done[e.id]){S.done[
  const ri=rankIdx();if(ri>S.rankSeen){S.rankSeen=ri;const r=RANKS[ri],gg=ri>(S.gemRank||0);if(gg){S.gemRank=ri;S.gem=(S.gem||0)+RANK_GEM};if(quietStory())toast('칭호 상승: '+r.n+' · 능력치 +4%'+(gg?' · 황금 이삭 +'+RANK_GEM:''));else queue(()=>scene('칭호 상승',uiImg(RANKIMG[ri],'rankbig')+r.n+' 카엘',['되찾은 영지가 '+r.at+'곳에 이르자, 사람들이 카엘을 '+r.n+'(이)라고 부르기 시작했다.','k@flustered:'+r.k,'q@proud:하하! 한 걸음 더 왕좌에 가까워졌다!','sys:모든 원정대 능력치 +4%'+(gg?' · 황금 이삭 +'+RANK_GEM:'')],'…알겠어요'))}
  renderAll()}
 function intro(){queue(()=>scene('왕이 되는 그날까지 · 프롤로그','밭에 박힌 쇠막대',[
- '300년 전 봉인되었던 마계의 문이 열렸다. 마왕군은 하룻밤 만에 에르단 왕국을 집어삼켰고, 왕은 전사했다.',
- '변두리 마을의 농부 카엘은 그날도 밭을 갈고 있었다. 마물이 마을로 쏟아지자, 그는 밭에 박혀 있던 녹슨 쇠막대를 뽑아 휘둘렀다.',
+ '마계의 문이 열려 왕국이 무너진 날, 농부 카엘은 밭에 박힌 녹슨 쇠막대를 뽑아 마물을 막아 냈다.',
  'q@moved:…드디어 나를 뽑는 자가 나타났군. 300년 기다렸다, 주인. 이제 왕이 되러 가자.',
  'k@surprised:누구세요? 그리고 전 농부인데요.',
- 'sys:마족에게 빼앗긴 영지를 하나씩 되찾고, 동료를 모아 폐허가 된 마을을 다시 세우세요.'],'일단 마을부터 지키자',null,'prologue'));chapter()}
+ 'sys:빼앗긴 영지를 되찾고, 동료를 모아 마을을 다시 세우세요.'],'일단 마을부터 지키자',null,'prologue'));chapter()}
 
 /* ---------- 장비 ---------- */
 function rollItem(fg){
@@ -2147,7 +2147,7 @@ function offline(){
  const cap=(6+S.bld.inn)*3600,sec=Math.min(cap,(Date.now()-S.last)/1000);if(sec<60)return;
  const dps=members().reduce((a,id)=>{const t=stats(id);return a+t.atk*t.aps*(1+t.crit)},0),tpk=monHp(S.stage,false)/dps+1.2,g=Math.floor(sec/tpk*reward(S.stage,false)*.5*memMul()*(subOn()?1.5:1));if(g<=0)return;
  S.gold+=g;const hr=Math.floor(sec/3600),mn=Math.floor(sec%3600/60);
- queue(()=>{$('sheet').innerHTML=`<img class="illust il-offline" src="assets/illust/illust_offline.jpg" alt="" onerror="this.remove()"><div class="eyebrow">돌아온 카엘</div><h2>영지에서 세금이 걷혔어요</h2><div class="card" style="--c:var(--gold)"><span class="cap">${hr?hr+'시간 ':''}${mn}분 동안</span><div class="t" style="font-size:28px;color:var(--gold)">+${fmt(g)}</div><span class="s">되찾은 영지의 백성들이 보낸 골드예요${S.bld.farm?' · 밭의 작물도 자랐어요':''}</span><span class="s ofcap">${sec>=cap?'⏳ 최대 '+(cap/3600)+'시간이 가득 찼어요! ':'최대 '+(cap/3600)+'시간까지 쌓여요 · '}여관 레벨을 올리면 1시간씩 늘어나요</span></div>${para('k:…이 돈, 은퇴 자금으로 모아 둬도 되죠?')}${adLeft('offline')?`<button class="buy ad" id="mAd" style="width:100%;padding:10px">▶ 광고 보고 2배 받기 · 오늘 ${adLeft('offline')}회</button>`:''}<div class="acts"><button id="mDbl" style="background:linear-gradient(#2c4a8c,#1d3366);color:#ffe08a;border-color:#5a7ac8">2배 받기 · ${GEMIMG.replace('alt=""','alt="" style="width:16px;height:16px;vertical-align:-3px"')}${GEM_OFFLINE}</button><button class="pri" id="mGo">받기</button></div>`;$('modal').hidden=false;$('mGo').onclick=closeModal;$('mDbl').onclick=()=>{if(!spendGem(GEM_OFFLINE))return;S.gold+=g;toast('세금 2배! 골드 +'+fmt(g));closeModal()};const ab=$('mAd');if(ab)ab.onclick=()=>watchAd('offline',()=>{S.gold+=g;toast('세금 2배! 골드 +'+fmt(g));closeModal()});$('mGo').focus({preventScroll:true})});
+ queue(()=>{$('sheet').innerHTML=`<img class="illust il-offline" src="assets/illust/illust_offline.jpg" alt="" onerror="this.remove()"><div class="eyebrow">돌아온 카엘</div><h2>영지에서 세금이 걷혔어요</h2><div class="card" style="--c:var(--gold)"><span class="cap">${hr?hr+'시간 ':''}${mn}분 동안</span><div class="t" style="font-size:28px;color:var(--gold)">+${fmt(g)}</div><span class="s">백성들이 보낸 골드${S.bld.farm?' · 밭 작물도 자랐어요':''}</span><span class="s ofcap">${sec>=cap?'⏳ 가득 참! ':''}최대 ${cap/3600}시간 · 여관 레벨마다 +1시간</span></div>${adLeft('offline')?`<button class="buy ad" id="mAd" style="width:100%;padding:10px">▶ 광고 보고 2배 · 오늘 ${adLeft('offline')}회</button>`:''}<div class="acts"><button id="mDbl" style="background:linear-gradient(#2c4a8c,#1d3366);color:#ffe08a;border-color:#5a7ac8;white-space:nowrap">2배 받기 ${GEMIMG.replace('alt=""','alt="" style="width:16px;height:16px;vertical-align:-3px"')}${GEM_OFFLINE}</button><button class="pri" id="mGo">받기</button></div>`;$('modal').hidden=false;$('mGo').onclick=closeModal;$('mDbl').onclick=()=>{if(!spendGem(GEM_OFFLINE))return;S.gold+=g;toast('세금 2배! 골드 +'+fmt(g));closeModal()};const ab=$('mAd');if(ab)ab.onclick=()=>watchAd('offline',()=>{S.gold+=g;toast('세금 2배! 골드 +'+fmt(g));closeModal()});$('mGo').focus({preventScroll:true})});
 }
 
 /* ---------- 출석체크: 피트의 출석부 (docs/content/ATTENDANCE.md) ---------- */

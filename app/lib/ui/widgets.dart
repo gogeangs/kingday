@@ -284,21 +284,21 @@ class Para extends StatelessWidget {
     return 'proud';
   }
 
-  static const _lore = 15.0;
+  static const _lore = 14.5;
 
   Widget _talk(String face, Color border, Gradient bg, Widget line, {Alignment pos = const Alignment(0, -.6)}) => Row(
-        crossAxisAlignment: CrossAxisAlignment.end,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Container(
-            width: 64,
-            height: 64,
+            width: 44,
+            height: 44,
             decoration: BoxDecoration(borderRadius: BorderRadius.circular(12), border: Border.all(color: border, width: 2), gradient: bg),
             child: ClipRRect(borderRadius: BorderRadius.circular(10), child: kdImg(face, fit: BoxFit.cover, align: pos)),
           ),
-          const SizedBox(width: 10),
+          const SizedBox(width: 8),
           Expanded(
             child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
               decoration: BoxDecoration(color: const Color(0x38000000), borderRadius: BorderRadius.circular(12)),
               child: line,
             ),
@@ -306,10 +306,11 @@ class Para extends StatelessWidget {
         ],
       );
 
-  Widget _line(String who, String t, Color c) => Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        Text(who, style: KdText.body(11, color: c.withValues(alpha: .75)).copyWith(letterSpacing: .9)),
-        Text(t, style: KdText.display(_lore, color: c, weight: FontWeight.w500).copyWith(height: 1.85)),
-      ]);
+  /// 이름은 대사 앞에 작게 붙임 (웹 .talk .who inline)
+  Widget _line(String who, String t, Color c) => Text.rich(TextSpan(children: [
+        TextSpan(text: '$who  ', style: KdText.body(11.5, color: c.withValues(alpha: .7))),
+        TextSpan(text: t, style: KdText.display(14, color: c, weight: FontWeight.w500).copyWith(height: 1.5)),
+      ]));
 
   @override
   Widget build(BuildContext context) {
@@ -352,12 +353,12 @@ class Para extends StatelessWidget {
     }
     if (p.startsWith('sys:')) {
       return Container(
-        padding: const EdgeInsets.only(top: 10),
+        padding: const EdgeInsets.only(top: 8),
         decoration: const BoxDecoration(border: Border(top: BorderSide(color: KdColors.line))),
-        child: Text(p.substring(4), style: KdText.body(13, color: KdColors.muted, height: 1.7)),
+        child: Text(p.substring(4), style: KdText.body(13, color: KdColors.muted, height: 1.5)),
       );
     }
-    return Text(p, style: KdText.display(_lore, weight: FontWeight.w500).copyWith(height: 1.85));
+    return Text(p, style: KdText.display(_lore, weight: FontWeight.w500).copyWith(height: 1.6));
   }
 }
 
@@ -432,8 +433,11 @@ class KdSheetBody extends StatelessWidget {
           if (illust != null)
             ClipRRect(
               borderRadius: BorderRadius.circular(4),
-              child: AspectRatio(
-                aspectRatio: 16 / 10,
+              // 웹 .illust: 2:1 (합류 장면 12:5), 화면 높이의 30%(작은 화면 22%)를 넘지 않게
+              child: ConstrainedBox(
+                constraints: BoxConstraints(maxHeight: MediaQuery.sizeOf(context).height * (MediaQuery.sizeOf(context).height <= 700 ? .22 : .30)),
+                child: AspectRatio(
+                aspectRatio: illust == 'join' ? 12 / 5 : 2,
                 child: LayoutBuilder(
                   builder: (_, c) => Stack(fit: StackFit.expand, children: [
                     kdImg('assets/game/illust/illust_$illust.jpg', fit: BoxFit.cover, align: _illPos[illust] ?? const Alignment(0, -.1)),
@@ -454,14 +458,15 @@ class KdSheetBody extends StatelessWidget {
                   ]),
                 ),
               ),
+              ),
             ),
           if (eyebrow != null)
             Text(eyebrow!, textAlign: TextAlign.center, style: KdText.body(12, color: eyebrowColor ?? KdColors.gold).copyWith(letterSpacing: 2.4)),
           if (titleWidget != null) titleWidget!,
-          if (title != null) Text(title!, textAlign: TextAlign.center, style: KdText.display(22)),
+          if (title != null) Text(title!, textAlign: TextAlign.center, style: KdText.display(20)),
           ...children,
           if (acts != null) acts!,
-        ], 12),
+        ], MediaQuery.sizeOf(context).height <= 700 ? 7 : 9),
       );
 }
 

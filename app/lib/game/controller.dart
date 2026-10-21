@@ -243,19 +243,18 @@ class GameController extends ChangeNotifier {
               child: Column(children: [
                 Text('${hr > 0 ? '$hr시간 ' : ''}$mn분 동안', style: KdText.body(12, color: const Color(0xFF97A2C3)).copyWith(letterSpacing: .7)),
                 Text('+${fmt(g)}', style: KdText.display(28, color: const Color(0xFFFFC94A))),
-                Text('되찾은 영지의 백성들이 보낸 골드예요${truthy(state.bld['farm']) ? ' · 밭의 작물도 자랐어요' : ''}',
+                Text('백성들이 보낸 골드${truthy(state.bld['farm']) ? ' · 밭 작물도 자랐어요' : ''}',
                     textAlign: TextAlign.center, style: KdText.body(12, color: const Color(0xFF97A2C3))),
                 const SizedBox(height: 4),
-                Text('${full ? '⏳ 최대 $capH시간이 가득 찼어요! ' : '최대 $capH시간까지 쌓여요 · '}여관 레벨을 올리면 1시간씩 늘어나요',
+                Text('${full ? '⏳ 가득 참! ' : ''}최대 $capH시간 · 여관 레벨마다 +1시간',
                     textAlign: TextAlign.center, style: KdText.body(12, color: const Color(0xFFFFC94A))),
               ]),
             ),
-            const Para('k:…이 돈, 은퇴 자금으로 모아 둬도 되죠?'),
             if (adN > 0)
               KdBuy(
                 kind: BuyKind.ad,
                 minWidth: 0,
-                text: '▶ 광고 보고 2배 받기 · 오늘 $adN회',
+                text: '▶ 광고 보고 2배 · 오늘 $adN회',
                 // 창을 닫고 「닫힌 다음」 광고를 띄움 (바로 부르면 창이 아직 열린 것으로 보여 광고가 안 뜸)
                 onTap: () => chainSheet(c, () => watchAd('offline', twice)),
               ),
@@ -767,11 +766,10 @@ class GameController extends ChangeNotifier {
   /// 웹 intro(): 새 게임 프롤로그 → 첫 지역 소개
   void _intro() {
     scene('왕이 되는 그날까지 · 프롤로그', '밭에 박힌 쇠막대', const [
-      '300년 전 봉인되었던 마계의 문이 열렸다. 마왕군은 하룻밤 만에 에르단 왕국을 집어삼켰고, 왕은 전사했다.',
-      '변두리 마을의 농부 카엘은 그날도 밭을 갈고 있었다. 마물이 마을로 쏟아지자, 그는 밭에 박혀 있던 녹슨 쇠막대를 뽑아 휘둘렀다.',
+      '마계의 문이 열려 왕국이 무너진 날, 농부 카엘은 밭에 박힌 녹슨 쇠막대를 뽑아 마물을 막아 냈다.',
       'q@moved:…드디어 나를 뽑는 자가 나타났군. 300년 기다렸다, 주인. 이제 왕이 되러 가자.',
       'k@surprised:누구세요? 그리고 전 농부인데요.',
-      'sys:마족에게 빼앗긴 영지를 하나씩 되찾고, 동료를 모아 폐허가 된 마을을 다시 세우세요.',
+      'sys:빼앗긴 영지를 되찾고, 동료를 모아 마을을 다시 세우세요.',
     ], '일단 마을부터 지키자', illust: 'prologue');
     _chapter();
   }
