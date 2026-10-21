@@ -64,6 +64,12 @@ String badgeAsset(String k) => isAttBadge(k) ? attBadgeAsset(k) : 'assets/game/p
 bool isTallFrame(String k) => frameOf(k)?.tall ?? false;
 
 extension ProfileCalc on GameCalc {
+  /// 웹 pubFace(): 다른 영주에게 보이는 얼굴 (카엘 또는 합류한 동료)
+  String pubFace() {
+    final f = s.raw['face'];
+    return f is String && comps.containsKey(f) && owned(f) ? f : 'kael';
+  }
+
   bool bdHas(String k) => truthy(asMap(s.raw['bdUnl'])?[k]);
   bool pfHas(String k) => k == 'wood' || truthy(asMap(s.raw['pfUnl'])?[k]);
 

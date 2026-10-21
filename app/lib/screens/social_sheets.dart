@@ -3,7 +3,9 @@
 library;
 
 import 'dart:math' as math;
+import 'dart:typed_data';
 
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 
 import '../core/calc.dart';
@@ -24,8 +26,12 @@ import 'settings_sheet.dart';
 
 /// 얼굴 + 프로필 테두리 (웹 .face/.pfbig/.rkf). 큰 테두리(tall)는 위로 솟음
 class FramedFace extends StatelessWidget {
-  const FramedFace({super.key, required this.frame, required this.size, this.dim = false, this.portrait = false, this.face = true});
+  const FramedFace({super.key, required this.frame, required this.size, this.dim = false, this.portrait = false, this.face = true, this.faceId = 'kael', this.photo});
   final String frame;
+
+  /// 얼굴 주인 (카엘·동료 id), [photo] 가 있으면 내 사진
+  final String faceId;
+  final Uint8List? photo;
   final double size;
   final bool dim;
 
@@ -55,9 +61,11 @@ class FramedFace extends StatelessWidget {
               decoration: const BoxDecoration(gradient: RadialGradient(center: Alignment(0, -.3), colors: [Color(0xFF3B5A8A), Color(0xFF1A2440)])),
               child: !face
                   ? null
-                  : portrait
-                      ? kdImg('assets/game/portraits/portrait_kael_idle.png', fit: BoxFit.cover, align: const Alignment(0, -.8))
-                      : const FaceImg('kael'),
+                  : photo != null
+                      ? Image.memory(photo!, fit: BoxFit.cover, gaplessPlayback: true)
+                      : portrait
+                          ? kdImg('assets/game/portraits/portrait_${faceId}_idle.png', fit: BoxFit.cover, align: const Alignment(0, -.8))
+                          : FaceImg(faceId),
             ),
           ),
         ),
@@ -194,6 +202,71 @@ class _ProfileState extends State<_Profile> {
     setState(() {});
   }
 
+  Future<void> _newPhoto() async {
+    if (await g.pickPhoto() && mounted) setState(() {});
+  }
+
+  void _delPhoto() {
+    g.clearPhoto();
+    if (mounted) setState(() {});
+  }
+
+  void _pickFace(String id) {
+    if (id == 'photo') {
+      if (g.photoBytes == null) {
+        _newPhoto();
+        return;
+      }
+      g.state.raw['facePhoto'] = true;
+    } else {
+      g.state.raw['face'] = id == 'kael' ? null : id;
+      g.state.raw['facePhoto'] = false;
+      g.online.faceSync();
+    }
+    g.save();
+    g.refresh();
+    setState(() {});
+  }
+
+  /// 웹 .fcgrid: 내 사진 + 카엘 + 합류한 동료
+  Widget _faceGrid() => LayoutBuilder(builder: (_, box) {
+        final w = (box.maxWidth - 3 * 8) / 4, pv = math.min(52.0, w - 6);
+        final c = g.calc, ph = g.photoOn, pub = c.pubFace(), bytes = g.photoBytes;
+        final ids = ['kael', for (final id in comps.keys) if (id != 'kael' && c.owned(id)) id];
+        Widget cell(String key, String name, Widget face, bool on, String sub) => GestureDetector(
+              onTap: () => _pickFace(key),
+              child: Container(
+                width: w,
+                padding: const EdgeInsets.fromLTRB(2, 6, 2, 7),
+                decoration: BoxDecoration(
+                  color: KdColors.panel2,
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: on ? KdColors.gold : Colors.transparent, width: 2),
+                ),
+                child: Column(mainAxisSize: MainAxisSize.min, children: [
+                  Container(
+                    width: pv,
+                    height: pv,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(14),
+                      border: Border.all(color: on ? KdColors.gold : const Color(0xFF3A4568), width: 2),
+                      gradient: const RadialGradient(center: Alignment(0, -.3), colors: [Color(0xFF3B5A8A), Color(0xFF1A2440)]),
+                    ),
+                    child: ClipRRect(borderRadius: BorderRadius.circular(12), child: face),
+                  ),
+                  const SizedBox(height: 3),
+                  Text(name, maxLines: 1, overflow: TextOverflow.ellipsis, style: KdText.body(12, weight: FontWeight.w600, height: 1.2)),
+                  Text(sub, style: KdText.body(11.5, color: on ? KdColors.gold : KdColors.muted, height: 1.2)),
+                ]),
+              ),
+            );
+        return Wrap(spacing: 8, runSpacing: 8, children: [
+          cell('photo', '내 사진', bytes != null ? Image.memory(bytes, fit: BoxFit.cover, gaplessPlayback: true) : const Center(child: Text('📷', style: TextStyle(fontSize: 24))), ph,
+              ph ? '사용 중' : bytes != null ? '쓰기' : '올리기'),
+          for (final id in ids) cell(id, id == 'kael' ? '카엘' : comps[id]!.n, FaceImg(id), !ph && pub == id, !ph && pub == id ? '사용 중' : '바꾸기'),
+        ]);
+      });
+
   Widget _grid(List<Deco> list, bool frame) => LayoutBuilder(builder: (_, box) {
         final w = (box.maxWidth - 3 * 8) / 4, pv = math.min(56.0, w - 6);
         final c = g.calc, cur = c.curFrame();
@@ -268,7 +341,7 @@ class _ProfileState extends State<_Profile> {
       titleWidget: const HdBanner('hd_profile', '프로필'),
       children: [
         Row(children: [
-          FramedFace(frame: cur, size: 104),
+          FramedFace(frame: cur, size: 104, faceId: c.pubFace(), photo: g.photoOn ? g.photoBytes : null),
           const SizedBox(width: 12),
           Expanded(
             child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
@@ -306,6 +379,19 @@ class _ProfileState extends State<_Profile> {
             ]),
           ),
         ]),
+        KdSec('얼굴', small: '합류한 동료 · 내 사진'),
+        _faceGrid(),
+        if (g.photoBytes != null)
+          Text.rich(
+            TextSpan(style: _muted(12), children: [
+              const TextSpan(text: '내 사진은 이 기기에서만 보여요. 다른 영주에게는 '),
+              TextSpan(text: c.pubFace() == 'kael' ? '카엘' : comps[c.pubFace()]!.n, style: KdText.body(12, weight: FontWeight.w600)),
+              const TextSpan(text: ' 얼굴이 보여요.  '),
+              TextSpan(text: '다른 사진', style: KdText.body(12, color: KdColors.gold).copyWith(decoration: TextDecoration.underline), recognizer: TapGestureRecognizer()..onTap = _newPhoto),
+              const TextSpan(text: ' · '),
+              TextSpan(text: '사진 지우기', style: KdText.body(12, color: KdColors.gold).copyWith(decoration: TextDecoration.underline), recognizer: TapGestureRecognizer()..onTap = _delPhoto),
+            ]),
+          ),
         KdSec('테두리', small: '${pframes.where((f) => c.pfHas(f.k)).length} / ${pframes.length}'),
         _grid(pframes, true),
         KdSec('대표 배지', small: '${badges.where((b) => c.bdHas(b.k)).length + c.attBadges().length} / ${badges.length + c.attBadges().length}'),
@@ -487,7 +573,17 @@ class _RankState extends State<_Rank> {
 
   String _score(Map<String, dynamic> x) => _rkTab == 'goblin' ? '${fmt(asNum(x['kills']))}마리' : stgName(asNum(x['stage']));
 
-  Widget _face(Map<String, dynamic> x, double size) => FramedFace(frame: x['frame'] is String && frameOf(x['frame']) != null ? x['frame'] : 'wood', size: size, portrait: true);
+  /// 랭킹 얼굴: 나는 내가 고른 얼굴(사진은 내 화면에서만), 다른 영주는 서버가 준 동료 id
+  Widget _face(Map<String, dynamic> x, double size) {
+    final me = x['me'] == true, f = x['face'];
+    return FramedFace(
+      frame: x['frame'] is String && frameOf(x['frame']) != null ? x['frame'] : 'wood',
+      size: size,
+      portrait: true,
+      faceId: me ? g.calc.pubFace() : (f is String && comps.containsKey(f) ? f : 'kael'),
+      photo: me && g.photoOn ? g.photoBytes : null,
+    );
+  }
 
   Widget _nick(Map<String, dynamic> x, double size, {TextAlign align = TextAlign.left}) {
     final b = x['badge'];

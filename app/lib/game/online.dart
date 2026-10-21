@@ -163,6 +163,22 @@ class Online {
     } finally {
       _rkBusy = false;
     }
+    faceSync();
+  }
+
+  String? _faceSent;
+
+  /// 고른 동료 얼굴을 서버에 알림 (supabase/stage5_face.sql 실행 전이면 조용히 무시)
+  Future<void> faceSync() async {
+    if (!on || nick == null) return;
+    final f = c.pubFace();
+    if (f == _faceSent) return;
+    try {
+      final r = await rpc('kd_set_face', {'p_face': f});
+      if (r == 'ok') _faceSent = f;
+    } catch (_) {
+      _faceSent = f;
+    }
   }
 
   bool gobDirty = true;

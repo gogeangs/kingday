@@ -71,5 +71,7 @@
 		<!-- AdMob 앱 ID: 지금은 구글 공식 시험용 -->
 		<key>GADApplicationIdentifier</key>
 		<string>ca-app-pub-3940256099942544~1458002511</string>
-	</dict>
+		<key>NSPhotoLibraryUsageDescription</key>
+	<string>프로필 얼굴로 쓸 사진을 고를 때 사진첩을 열어요. 사진은 이 기기에만 저장돼요.</string>
+</dict>
 </plist>
