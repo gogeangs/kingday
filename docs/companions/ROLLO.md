@@ -1,6 +1,6 @@
 # 일반 광부 「롤로」 기획 기록
 
-작성일: 2026-10-21 · 상태: **기획·그림 완료, 게임 등록은 보류** (대표님 지시: 기록만)
+작성일: 2026-10-21 · 상태: **게임 등록 완료 (웹·앱)** — 2026-10-21
 
 ## 추가 배경
 - 일반 모집 동료 2차 추가 4명(롤로·크랩·버치·그램)을 한 명씩 진행 (대표님 결정, 2026-10-21). 그 첫 번째.
@@ -39,7 +39,7 @@
   - 스킬 효과는 광차가 오른쪽으로 이동하는 연출이라 4프레임을 앞쪽으로 조금씩 옮기며 재생하면 관통 느낌이 남.
   - 동작 시트 가장자리에 옅은 번짐이 있어 자를 때 투명도 기준값으로 걸러낼 것.
 
-## 원본 그림 위치 (저장소 `art/source/`, 게임 미반영)
+## 원본 그림 위치 (저장소 `art/source/`)
 | 그림 | 파일 |
 |---|---|
 | ⓪ 참고 시트 | `art/source/rollo_ref.png` |
@@ -47,7 +47,18 @@
 | ② 초상화 | `art/source/portraits/portrait_rollo_idle.png`, `portrait_rollo_laugh.png` (원본 한 장을 덩어리 단위로 좌우 분리, 여백 자름) |
 | ③ 스킬 아이콘 | `art/source/skills/skill_rollo.png` |
 | ④ 스킬 효과 | `art/source/fx/fx_skill_rollo.png` |
-- `assets/`·`index.html`은 아직 손대지 않음 → 등록 세션에서 COMPANION_GUIDE.md 4장 도구로 처리.
+- 2026-10-21 등록 세션에서 게임 파일로 처리함 (아래 「게임 등록」).
 
 ## 등록할 때 할 일 (COMPANION_GUIDE.md 6장)
 COMP · JOB(광부 기존 값) · RECRUITS(브론을 꼬맹이라 부름) · GRADE(`common`) · HEIGHT/SPRITES/FORM · SKILLS · castSkill(앞줄 관통 피해) · FXDEF(`skill_rollo:4`) · SPRITE_ALT/DRAW · NPCID(`'롤로':'rollo'`) · extract_skill_fx.py
+
+## 게임 등록 (2026-10-21)
+| 항목 | 값 |
+|---|---|
+| 기본 능력치 | 공격 8 · 체력 210 · 공격 속도 0.75 (레벨당 공격 +2.4, 체력 +42), 일반 배율 ×1 |
+| 일반 공격 | 광부 자리 기본 공격(앞에서 막기) |
+| 스킬 「광차 굴리기」 | 모든 적을 앞쪽부터 꿰뚫어 공격력 2.5배 피해, 게이지 20, ★3 ×1.3 |
+| 합류 대사 | 갱도 광차 소리 → 「어이, 꼬맹이!」 → 브론 「저 이제 백 살 넘었습니다」 → 카엘 「브론을 꼬맹이라고…」 |
+| 키 / 위치 | HEIGHT 58, SPRITES h 70, 광부 자리(브론과 같은 위치) |
+| 그림 → 게임 파일 | `assets/characters/rollo_{idle,walk,attack,hit}.png`, `assets/portraits/portrait_rollo_{idle,laugh}.png`, `assets/skills/skill_rollo.png`, `assets/fx/fx_skill_rollo.png` |
+| 자르기 메모 | 공격 칸 384 (지렛대가 길게 뻗음), `tools/slice_frames.py` CUTS |
