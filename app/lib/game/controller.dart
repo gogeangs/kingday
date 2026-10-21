@@ -4,10 +4,13 @@
 library;
 
 import 'dart:async';
+import 'dart:convert';
+import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:image_picker/image_picker.dart';
 
 import '../battle/battle_game.dart';
 import '../battle/sim.dart';
@@ -295,6 +298,55 @@ class GameController extends ChangeNotifier {
   }
 
   // ── 알림·진동 ──
+  // ── 내 사진 (웹 PHOTO_KEY): 저장(state)·클라우드·저장 코드에 넣지 않고 이 기기에만 ──
+  static const photoKey = 'kd-photo';
+  String? _photoSrc;
+  Uint8List? _photoBytes;
+
+  /// 이 기기에 둔 내 사진 (없으면 null)
+  Uint8List? get photoBytes {
+    final d = store.prefs.getString(photoKey);
+    if (d == null || d.isEmpty) return null;
+    if (d != _photoSrc) {
+      _photoSrc = d;
+      try {
+        _photoBytes = base64Decode(d.substring(d.indexOf(',') + 1));
+      } catch (_) {
+        _photoBytes = null;
+      }
+    }
+    return _photoBytes;
+  }
+
+  /// 지금 내 사진을 얼굴로 쓰는 중인지
+  bool get photoOn => truthy(state.raw['facePhoto']) && photoBytes != null;
+
+  /// 휴대폰 사진첩에서 한 장 골라 작게(384px) 줄여 이 기기에 저장
+  Future<bool> pickPhoto() async {
+    try {
+      final x = await ImagePicker().pickImage(source: ImageSource.gallery, maxWidth: 384, maxHeight: 384, imageQuality: 85);
+      if (x == null) return false;
+      final b = await x.readAsBytes();
+      await store.prefs.setString(photoKey, 'data:image/jpeg;base64,${base64Encode(b)}');
+      state.raw['facePhoto'] = true;
+      save();
+      refresh();
+      toast('내 사진으로 바꿨어요 · 이 기기에서만 보여요');
+      return true;
+    } catch (_) {
+      toast('사진을 열 수 없어요');
+      return false;
+    }
+  }
+
+  void clearPhoto() {
+    store.prefs.remove(photoKey);
+    state.raw['facePhoto'] = false;
+    save();
+    refresh();
+    toast('사진을 지웠어요');
+  }
+
   void toast(String m) {
     toastMsg.value = m;
     _toastTimer?.cancel();

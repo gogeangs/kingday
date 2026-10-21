@@ -94,9 +94,9 @@ class _Hud extends StatelessWidget {
                 bottom: 52 * .11,
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(52 * .78 * .16),
-                  child: const DecoratedBox(
-                    decoration: BoxDecoration(gradient: RadialGradient(center: Alignment(0, -.3), colors: [Color(0xFF3B5A8A), Color(0xFF1A2440)])),
-                    child: FaceImg('kael'),
+                  child: DecoratedBox(
+                    decoration: const BoxDecoration(gradient: RadialGradient(center: Alignment(0, -.3), colors: [Color(0xFF3B5A8A), Color(0xFF1A2440)])),
+                    child: g.photoOn ? Image.memory(g.photoBytes!, fit: BoxFit.cover, gaplessPlayback: true) : FaceImg(g.calc.pubFace()),
                   ),
                 ),
               ),
