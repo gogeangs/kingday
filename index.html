@@ -125,6 +125,26 @@ body{word-break:keep-all;overflow-wrap:break-word;line-break:strict;background:#
 .cpk img{width:64px;height:64px;object-fit:contain}.cpk{position:relative}.cpk b{position:absolute;right:-6px;bottom:2px;font-size:14px;color:#fff;text-shadow:0 1px 3px #000}
 .crc{overflow:hidden}.cbk{position:absolute;inset:0;z-index:5;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#1b2246,#121833);border-radius:14px;animation:cbkout .45s ease-in forwards;pointer-events:none}.cbk img{height:88%;filter:drop-shadow(0 0 8px rgba(255,210,60,.5))}@keyframes cbkout{0%{transform:none;opacity:1}60%{transform:rotateY(90deg);opacity:1}100%{transform:rotateY(90deg);opacity:0;visibility:hidden}}
 .jobi{width:16px;height:16px;vertical-align:-3px;margin-right:3px}.seat b .jobi{width:14px;height:14px;vertical-align:-2px;margin-right:2px}.jobq{width:40px;height:40px;opacity:.45;filter:grayscale(.7)}
+.attbtn{position:relative;flex:0 0 auto;width:34px;height:34px;padding:0;border-radius:10px;background:#1a1406;border:1px solid #8a6a1a;display:grid;place-items:center;cursor:pointer;font-size:18px}.attbtn[hidden]{display:none}.attbtn img{width:28px;height:28px;object-fit:contain}.attbtn .dot{position:absolute;top:-3px;right:-3px;width:10px;height:10px;border-radius:50%;background:#ffd23a;border:1px solid #fff;box-shadow:0 0 6px #ffd23a}
+@media (max-width:375px){.attbtn{width:30px;height:30px}.attbtn img{width:24px;height:24px}}
+@media (max-width:340px){.hud{gap:4px!important}.gplus{display:none}.attbtn{width:26px;height:26px;border-radius:8px}.attbtn img{width:22px;height:22px}.attbtn span{font-size:15px}}
+.hdban.nohd{box-sizing:border-box;background:linear-gradient(#7a4f22,#5a3815);border:2px solid #c99a4a;border-radius:12px;aspect-ratio:auto;padding:10px 0;width:min(100%,260px)}
+.atthd{display:flex;justify-content:space-between;align-items:baseline;gap:6px;font-size:13px;margin:-2px 2px 4px}.atthd b{font-family:var(--f-title);font-size:15px}.atthd small{color:var(--muted);font-size:12px}.atthd i{font-style:normal;color:var(--gold);font-weight:700}
+.attw{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px}.attm{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:4px}
+.attc{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:5px 2px 4px;min-width:0;font-size:11px;font-weight:700;text-align:center;line-height:1.15}
+.attc>em{font-style:normal;color:var(--muted);font-size:10px}.attc>img,.attc>.attic{width:30px;height:30px;object-fit:contain}.attc>span{font-size:10.5px;word-break:keep-all}
+.attw .attc.big{grid-column:span 2;border-color:var(--gold);background:linear-gradient(#3a2c0c,#241a07)}.attw .attc.big>img{width:40px;height:40px}
+.attm .attc{aspect-ratio:1;padding:2px 1px;border-radius:7px}.attm .attc>img{width:18px;height:18px}.attm .attc>em{font-size:9px}.attm .attc>span{display:none}.attm .attc.big{border:2px solid var(--gold);background:linear-gradient(#3a2c0c,#241a07)}.attm .attc.big>img{width:22px;height:22px}
+.attc.now{border-color:#ffd23a;box-shadow:0 0 0 2px rgba(255,210,58,.55),0 0 12px rgba(255,210,58,.6);animation:attglow 1.2s ease-in-out infinite}@keyframes attglow{50%{box-shadow:0 0 0 2px rgba(255,210,58,.25),0 0 4px rgba(255,210,58,.2)}}
+.attc.off{opacity:.35}
+.attc .stp{position:absolute;inset:0;display:grid;place-items:center;pointer-events:none}.attc .stp img{width:78%;max-width:56px;aspect-ratio:1;object-fit:contain;opacity:.92}
+.attc .stp.nf::after{content:'출석';display:grid;place-items:center;width:30px;height:30px;border:2.5px solid #e0413a;border-radius:50%;color:#e0413a;font-size:10px;font-weight:800;transform:rotate(-14deg);background:rgba(224,65,58,.12)}
+.attm .attc .stp.nf::after{width:22px;height:22px;font-size:8px;border-width:2px}
+.attc .stp.in{animation:attstp .45s cubic-bezier(.2,1.6,.4,1)}@keyframes attstp{0%{transform:scale(2.4);opacity:0}60%{opacity:1}100%{transform:none}}
+.attgot{display:flex;flex-direction:column;gap:5px;background:#10162a;border:1px solid var(--line);border-radius:12px;padding:8px 10px}.attgot>b{font-size:12px;color:var(--muted)}
+.attrw{display:flex;align-items:center;gap:8px;font-size:13px}.attrw img,.attrw .attic{width:24px;height:24px;object-fit:contain;flex:0 0 auto}.attrw small{display:block;color:var(--muted);font-size:11px}.attrw .x2{margin-left:auto;color:var(--gold);font-size:11px;font-weight:800}
+.attic{display:inline-grid;place-items:center;font-style:normal;font-size:18px}
+.tkfb{position:relative;display:inline-block;width:30px;height:30px;flex:0 0 auto}.tkfb img{width:100%!important;height:100%!important;object-fit:contain}.attw .attc.big .tkfb{width:40px;height:40px}.attm .tkfb{width:18px;height:18px}.attm .attc.big .tkfb{width:22px;height:22px}.attrw .tkfb{width:24px;height:24px}.attm .tkfb>i{display:none}.tkfb>i{position:absolute;right:-4px;bottom:-3px;font-style:normal;font-size:9px;font-weight:800;background:#ffd23a;color:#3a2a00;border-radius:6px;padding:0 3px;line-height:12px}
 .hdban{position:relative;width:min(100%,330px);aspect-ratio:720/225;margin:-6px auto 2px;background:var(--hb) center/contain no-repeat;display:flex;align-items:center;justify-content:center;padding-top:var(--hp,1%)}.hdban span{line-height:1;font-family:var(--f-display);font-weight:700;font-size:var(--hs,20px);color:#ffe7a6;text-shadow:0 2px 3px rgba(0,0,0,.6);letter-spacing:.04em}
 .acts.three{grid-template-columns:1fr 1fr 1fr}.rkbtn{width:100%;padding:11px 0;font-size:15px}
 .nickin{width:100%;box-sizing:border-box;font:inherit;font-size:17px;padding:10px 12px;border-radius:10px;border:1px solid var(--line);background:var(--panel2);color:var(--fg);text-align:center}.nickerr{color:#ff8a7a;text-align:center;min-height:1.2em;margin:0}
@@ -457,7 +477,8 @@ button:focus-visible,input:focus-visible{outline:2px solid var(--gold);outline-o
 <div class="app">
   <header class="hud">
     <button class="face" id="faceBtn" aria-label="프로필 열기"><canvas id="faceCv"></canvas><img class="pfr" id="hFrame" src="assets/profile/frame_wood.png" alt="" onerror="this.remove()"></button>
-    <div class="who"><span class="nm">카엘 <img class="hbadge" id="hBadge" alt="" hidden onerror="this.hidden=true"><img class="rankimg" id="hRankImg" src="assets/ui/rank_farmer.png" alt="" onerror="this.remove()"><span class="rank" id="hRank">농부</span></span><span class="pow" id="hPow">0</span></div>
+    <div class="who"><span class="nm">카엘 <img class="hbadge" id="hBadge" alt="" hidden onerror="bdErr(this)"><img class="rankimg" id="hRankImg" src="assets/ui/rank_farmer.png" alt="" onerror="this.remove()"><span class="rank" id="hRank">농부</span></span><span class="pow" id="hPow">0</span></div>
+    <button class="attbtn" id="attBtn" aria-label="피트의 출석부" hidden><img src="assets/ui/ic_attend.png" alt="" onerror="this.outerHTML='<span>📅</span>'"><i class="dot" id="attDot" hidden></i></button>
     <button class="gempill" id="gemBtn" aria-label="황금 이삭과 오늘의 할 일"><img class="gemimg" src="assets/gem/ui_gem.png" alt="" onerror="this.remove()"><span id="gem">0</span><b class="gplus">+</b><i class="dot" id="gemDot" hidden></i></button>
     <div class="goldpill"><img class="coinimg" src="assets/ui/ui_gold.png" alt="" onerror="this.outerHTML='<i class=&quot;coin&quot;></i>'"><span id="gold">0</span></div>
   </header>
@@ -495,7 +516,7 @@ button:focus-visible,input:focus-visible{outline:2px solid var(--gold);outline-o
           <label class="tg"><input type="checkbox" id="autoOpen"> 자동 열기</label>
         </div>
         <button class="open" id="openBtn">상자 열기 <small><img src="assets/ui/ui_gold.png" alt="" style="width:20px;height:20px" onerror="this.remove()"><span id="openCost">20</span></small></button>
-        <button class="open gemopen" id="open10">10연속 열기 <small><img src="assets/gem/ui_gem.png" alt="" style="width:20px;height:20px" onerror="this.remove()">100</small></button>
+        <button class="open gemopen" id="open10">10연속 열기 <small id="open10c"><img src="assets/gem/ui_gem.png" alt="" style="width:20px;height:20px" onerror="this.remove()">100</small></button>
         <p class="note" style="margin-top:-4px">10연속은 영웅 등급 이상 1개 확정이에요. 등급별 확률은 위와 같아요. 더 좋은 장비는 바로 장착하고 나머지는 팔아요.</p>
         <p class="note">행상인 피트의 성유물은 카엘만 착용해요.</p>
       </div>
@@ -788,7 +809,7 @@ const KEY='acorn-idle-v1';
 let S;
 function fresh(){return{gold:0,stage:1,wave:0,boxLv:1,boxXp:0,up:{atk:0,hp:0,spd:0,crit:0},eq:{},autoSell:false,autoOpen:false,last:Date.now(),best:1,started:false,
  joined:{},done:{},lv:{bron:1,haral:1,riel:1,margo:1},bld:{inn:0,farm:0,diner:0,dock:0,apiary:0,mine:0},plots:[],seeds:{wheat:0,carrot:0,pumpkin:0},
- items:{wheat:0,carrot:0,pumpkin:0,fish:0,honey:0,ore:0},prod:{},buffs:{},rankSeen:0,memory:0,retires:0,buys:{},sub:{until:0,last:''},gem:0,gemRank:0,gemLord:{},daily:{d:'',kill:0,box:0,harv:0,claim:{}},v:3}}
+ items:{wheat:0,carrot:0,pumpkin:0,fish:0,honey:0,ore:0},prod:{},buffs:{},rankSeen:0,memory:0,retires:0,buys:{},sub:{until:0,last:''},gem:0,gemRank:0,gemLord:{},daily:{d:'',kill:0,box:0,harv:0,claim:{}},att:{last:'',w:0,ym:'',m:0,ad:'',got:[],intro:0,tab:'w'},tickets:{box:0,box10:0},v:3}}
 function hydrate(d){const f=fresh();for(const k in d){if(f[k]&&typeof f[k]==='object'&&!Array.isArray(f[k])&&d[k]&&typeof d[k]==='object')f[k]=Object.assign(f[k],d[k]);else f[k]=d[k]}
  if(d&&d.crops){for(const k in d.crops)f.items[k]=(f.items[k]||0)+d.crops[k];delete f.crops}
  if((d&&d.v||0)<3){f.rankSeen=rankIdx(f)}return f}
@@ -796,11 +817,11 @@ const MISSIONS=[{k:'kill',n:'마물 100마리 처치',goal:100,r:10},{k:'box',n:
 function today(){const t=new Date();return t.getFullYear()+'-'+(t.getMonth()+1)+'-'+t.getDate()}
 function daily(){if(!S.daily||S.daily.d!==today())S.daily={d:today(),kill:0,box:0,harv:0,claim:{},ad:{}};if(!S.daily.ad)S.daily.ad={};return S.daily}
 /* 광고 보상 자리: AD_TEST 동안은 3초짜리 가짜 광고 화면 뒤에 보상. 실제 광고 SDK를 붙일 때 playAd만 바꾸면 됨 */
-const AD_TEST=true,ADS={card:{n:1,t:'동료 카드 3장'},box:{n:3,t:'성유물 상자 1회 무료'},gem:{n:3,t:'황금 이삭 +5'},farm:{n:2,t:'자라는 작물 바로 키우기'},offline:{n:2,t:'방치 보상 2배'}};
+const AD_TEST=true,ADS={card:{n:1,t:'동료 카드 3장'},box:{n:3,t:'성유물 상자 1회 무료'},gem:{n:3,t:'황금 이삭 +5'},farm:{n:2,t:'자라는 작물 바로 키우기'},offline:{n:2,t:'방치 보상 2배'},att:{n:1,t:'출석 보상 2배'}};
 const adLeft=k=>Math.max(0,ADS[k].n-(daily().ad[k]||0));
 function playAd(done){const o=$('adOv');let n=3;o.hidden=false;$('adTxt').textContent=n;const it=setInterval(()=>{n--;if(n>0){$('adTxt').textContent=n;return}clearInterval(it);o.hidden=true;done()},1000)}
 function watchAd(k,give){if(adLeft(k)<=0)return toast('오늘은 다 봤어요. 내일 다시 받을 수 있어요');playAd(()=>{daily().ad[k]=(daily().ad[k]||0)+1;give();shopSig='';farmSig='';save();renderAll()})}
-function adBox(){watchAd('box',()=>{S.gold+=boxCost();openBox(false)})}
+function adBox(){watchAd('box',()=>{S.gold+=boxCost();openBox(false,true)})}
 function adCard(){watchAd('card',()=>{const r=gainCards(3,'shop',1);if(!r)return toast('아직 모을 수 있는 동료 카드가 없어요');setTimeout(()=>cardReveal(r.got,'피트의 선물',r.gold),50)})}
 const adKeys=()=>['box','gem',...(CARDIDS().some(cardOpen)?['card']:[])];
 function adGem(){watchAd('gem',()=>{S.gem=(S.gem||0)+5;toast('피트의 선물! 황금 이삭 +5')})}
@@ -876,7 +897,7 @@ const GEMIMG='<img src="assets/gem/ui_gem.png" alt="" onerror="this.remove()">';
 function spendGem(n){if((S.gem||0)<n){toast('황금 이삭이 부족해요. 피트의 상점에서 구할 수 있어요');return false}S.gem-=n;return true}
 const gemGold=()=>reward(S.stage,false)*20;/* 이삭 1개 ≈ 마물 20마리 골드 */
 const bldGem=c=>Math.max(5,Math.ceil(c/gemGold()));
-function open10(){if(pending||!$('modal').hidden)return;if(!spendGem(GEM10))return;
+function open10(){if(pending||!$('modal').hidden)return;if(tkN('box10')>0){S.tickets.box10--;toast('10연속 무료권 사용 · 남은 '+S.tickets.box10+'장')}else if(!spendGem(GEM10))return;
  const its=[];for(let i=0;i<10;i++){gainBoxXp();dailyAdd('box',1);its.push(rollItem())}
  if(!its.some(x=>x.g>=3))its[9]=rollItem(3);
  let sold=0;const eq=[];for(const it of its){const cur=S.eq[it.slot];if(score(it)>score(cur)){if(cur)sold+=cur.price;S.eq[it.slot]=it;eq.push(it)}else sold+=it.price}
@@ -984,10 +1005,10 @@ function gainBoxXp(){if(S.boxLv>=10)return;S.boxXp++;if(S.boxXp>=xpNeed()){S.box
 let pending=null;
 let touched=false;addEventListener('pointerdown',()=>{touched=true},{once:true,capture:true});
 const haptic=p=>{try{if(touched&&S.vib!==false&&navigator.vibrate&&(!navigator.userActivation||navigator.userActivation.hasBeenActive))navigator.vibrate(p)}catch(e){}};
-function openBox(auto){if(!auto)haptic(12);
- const c=boxCost();if(S.gold<c||pending)return;
+function openBox(auto,noTk){if(!auto)haptic(12);
+ const c=boxCost(),tk=!auto&&!noTk&&tkN('box')>0;if((!tk&&S.gold<c)||pending)return;
  if(!S.done.pete){S.done.pete=true;queue(()=>scene('수상한 행상인','행상인 피트',['마을 어귀에 낯선 마차가 서 있었다. 짐칸 가득 녹슨 상자가 실려 있었다.','m:피트|어이, 거기 성검 든 형씨! 성유물 상자 하나 어때? 마왕군이 흘리고 간 진품이야. …아마도.','k@surprised:아마도요?','q@angry:주인, 저자 눈빛이 수상하다.','m:피트|수상하긴! 열어 보면 알아. 환불은 안 되지만.','sys:상자를 열면 카엘의 장비가 나와요. 많이 열수록 피트가 더 좋은 물건을 들여와요.'],'한번 열어 본다',{go:()=>openBox(auto)}));return}
- S.gold-=c;gainBoxXp();dailyAdd('box',1);const it=rollItem(),cur=S.eq[it.slot];
+ if(tk){S.tickets.box--;toast('상자 무료 개봉권 사용 · 남은 '+S.tickets.box+'장')}else S.gold-=c;gainBoxXp();dailyAdd('box',1);const it=rollItem(),cur=S.eq[it.slot];
  if(auto){if(score(it)>score(cur)){if(cur)S.gold+=cur.price;S.eq[it.slot]=it;flashSlot(it.slot)}else S.gold+=it.price;renderAll();return}
  if(S.autoSell&&cur&&score(it)<=score(cur)){S.gold+=it.price;toast(GRADES[it.g].n+' '+slotName(it.slot)+' 판매 +'+fmt(it.price));renderAll();return}
  pending=it;showItem(it,cur);renderAll();
@@ -1281,11 +1302,11 @@ function renderBox(){
 }
 function renderAll(){
  if(!S)return;const r=region(S.stage);
- numFlash('gold',S.gold,true);$('gem').textContent=fmt(S.gem||0);$('gemDot').hidden=!(MISSIONS.some(misCan)||misCan(null)||(subOn()&&S.sub.last!==today()));
+ numFlash('gold',S.gold,true);$('gem').textContent=fmt(S.gem||0);$('gemDot').hidden=!(MISSIONS.some(misCan)||misCan(null)||(subOn()&&S.sub.last!==today()));attHud();
  $('stLabel').textContent=S.stage>MAXLAND?'왕도 진격로':(Math.floor((S.stage-1)/10)+1)+'-'+((S.stage-1)%10+1)+' '+r.n;
  $('stRegion').textContent=S.stage>MAXLAND?'':terrName(S.stage)+' 탈환전';
  pfCheck();renderGuide();numFlash('hPow',power());$('hRank').textContent=RANKS[rankIdx()].n;{const ri=$('hRankImg'),src='assets/ui/'+RANKIMG[rankIdx()]+'.png';if(ri&&!ri.src.endsWith(src))ri.src=src}
- const c=boxCost();$('openCost').textContent=fmt(c);$('openBtn').disabled=S.gold<c||!!pending;$('quickCost').textContent=fmt(c);$('quickBox').disabled=S.gold<c||!!pending;
+ const c=boxCost(),tb=tkN('box');$('openCost').textContent=tb?'무료권 '+tb+'장':fmt(c);$('openBtn').disabled=(S.gold<c&&!tb)||!!pending;$('quickCost').textContent=tb?'무료 '+tb:fmt(c);$('quickBox').disabled=(S.gold<c&&!tb)||!!pending;{const t10=tkN('box10'),e=$('open10c'),h=t10?'무료권 '+t10+'장':'<img src="assets/gem/ui_gem.png" alt="" style="width:20px;height:20px" onerror="this.remove()">'+GEM10;if(e&&e.dataset.h!==h){e.dataset.h=h;e.innerHTML=h}}
  renderPartyRow();if(curTab==='eq')drawEqHero();
  const es=JSON.stringify(S.eq)+JSON.stringify(S.slotEn||{});if(es!==eqSig){eqSig=es;renderSlots()}renderForge();
  const bs=S.boxLv+':'+S.boxXp;if(bs!==boxSig){boxSig=bs;renderBox()}
@@ -1315,7 +1336,7 @@ $('modal').addEventListener('click',e=>{if(e.target!==$('modal'))return;const t=
 
 $('mapRank').onclick=()=>rankSheet();
 $('mailBtn').onclick=()=>{if($('modal').hidden)mailSheet()};$('rankBtn').onclick=()=>{if($('modal').hidden)rankSheet()};setInterval(rankFab,600000);
-$('faceBtn').onclick=()=>{if($('modal').hidden)profileSheet()};$('gemBtn').onclick=()=>setTab('sh');
+$('faceBtn').onclick=()=>{if($('modal').hidden)profileSheet()};$('attBtn').onclick=()=>{if($('modal').hidden)attOpen()};$('gemBtn').onclick=()=>setTab('sh');
 $('quickBox').onclick=()=>openBox(false);
 $('speedBtn').onclick=()=>{S.speed=S.speed===2?1:2;renderSpeed()};
 $('autoBtn').onclick=()=>{S.autoSkill=S.autoSkill===false;renderAuto();toast(S.autoSkill===false?'스킬 자동 사용 꺼짐 · 빛나는 초상화를 눌러 쓰세요':'스킬 자동 사용 켜짐');prowSig=''};
@@ -1936,7 +1957,7 @@ async function rankSheet(tab){if(tab)rkTab=tab;
  const me=rows.find(x=>x.me),tot=rows.length?rows[0].total:0,top=rows.filter(x=>x.rank<=100);
  const sc=x=>rkTab==='goblin'?GOBI+fmt(x.kills)+'마리':stgName(x.stage);
  const face=x=>`<span class="rkf"><img class="pt" src="assets/portraits/portrait_kael_idle.png" alt=""><img class="fr" src="assets/profile/frame_${x.frame||'wood'}.png" alt="" onerror="this.remove()"></span>`;
- const bd=x=>x.badge?`<img class="rkb" src="assets/profile/badge_${x.badge}.png" alt="" onerror="this.remove()">`:'';
+ const bd=x=>x.badge?`<img class="rkb" data-k="${esc(x.badge)}" src="${esc(bdSrc(String(x.badge)))}" alt="" onerror="bdErr(this)">`:'';
  const line=x=>`<div class="rkrow${x.me?' me':''}"><b class="rkn">${x.rank}</b>${face(x)}<div class="info"><b>${bd(x)}${esc(x.nick)}</b><small>${x.title||''}</small></div><span class="rks">${sc(x)}</span></div>`;
  let info='';if(rkTab==='season'&&rows.length){const left=Math.max(0,(new Date(rows[0].season_end)-Date.now())/1000);info=`<div class="rkinfo"><b>${rows[0].season}시즌</b> · ${left>86400?Math.ceil(left/86400)+'일':Math.ceil(left/3600)+'시간'} 남음 · ${tot}명 참여<details><summary>시즌 보상 보기</summary>${RKREW.map(([a,b])=>`<div class="kv"><span>${a}</span><b>${b}</b></div>`).join('')}</details></div>`}
  else if(rkTab==='hall')info=`<div class="rkinfo">지금까지 도달한 최고 기록이에요 · ${tot}명</div>`;
@@ -1966,7 +1987,7 @@ function resultPop(){for(const m of mails){let t=m.title.match(/^(\d+)시즌 랭
 function mailDot(){rankFab();const b=$('mailBtn');if(!b)return;b.hidden=!mailOn();const d=$('mailDot');if(d){d.hidden=!mails.length;d.textContent=mails.length>9?'9+':mails.length}}
 async function mailFetch(){if(!mailOn()||!S.nick)return mailDot();try{mails=await sbRpc('kd_mail_list',{})||[]}catch(e){}mailDot();try{resultPop()}catch(e){}return mails}
 setInterval(()=>{if(!document.hidden)mailFetch()},300000);
-const PFN=k=>(PFRAMES.find(f=>f.k===k)||{}).n||k,BDN=k=>(BADGES.find(b=>b.k===k)||{}).n||k;
+const PFN=k=>(PFRAMES.find(f=>f.k===k)||{}).n||k,BDN=k=>/^att_\d{6}$/.test(k)?k.slice(4,8)+'년 '+(+k.slice(8))+'월 출석':(BADGES.find(b=>b.k===k)||{}).n||k;
 function rewChips(r){const c=[];if(r.gem)c.push(`<span class="mrw"><img src="assets/gem/ui_gem.png" alt="">${fmt(r.gem)}</span>`);if(r.cards)c.push(`<span class="mrw"><img src="assets/ui/card_pack30.png" alt="">동료 카드 ${r.cards}장</span>`);
  if(r.frame)c.push(`<span class="mrw"><img src="assets/profile/frame_${esc(r.frame)}.png" alt="">${esc(PFN(r.frame))} 테두리</span>`);if(r.badge)c.push(`<span class="mrw"><img src="assets/profile/badge_${esc(r.badge)}.png" alt="">${esc(BDN(r.badge))} 배지</span>`);return c.join('')}
 function mailApply(list){let gem=0,cgold=0;const got=[],items=[];
@@ -2063,15 +2084,15 @@ const bdHas=k=>!!(S.bdUnl&&S.bdUnl[k]);
 const pfHas=k=>k==='wood'||!!(S.pfUnl&&S.pfUnl[k]);
 function pfCheck(){if(!S.pfUnl)S.pfUnl={};for(const f of PFRAMES){if(!S.pfUnl[f.k]&&f.ok()){S.pfUnl[f.k]=1;if(f.k!=='wood'&&S.started){S.pfNew=S.pfNew||{};S.pfNew['f_'+f.k]=1}}}
  if(!S.bdUnl)S.bdUnl={};for(const b of BADGES){if(!S.bdUnl[b.k]&&b.ok()){S.bdUnl[b.k]=1;if(S.started){S.pfNew=S.pfNew||{};S.pfNew['b_'+b.k]=1}}}
- const hb=$('hBadge');if(hb){const bs=S.badge&&bdHas(S.badge)?'assets/profile/badge_'+S.badge+'.png':'';if(!bs)hb.hidden=true;else{hb.hidden=false;if(!hb.src.endsWith(bs))hb.src=bs}}
+ const hb=$('hBadge');if(hb){const k=S.badge&&bdHas(S.badge)?S.badge:'';if(!k){hb.hidden=true;hb.dataset.k=''}else if(hb.dataset.k!==k){hb.dataset.k=k;delete hb.dataset.f;hb.hidden=false;hb.src=bdSrc(k)}}
  {const fb=$('faceBtn');if(fb){fb.classList.toggle('newpf',!S.pfSeen);fb.classList.toggle('pfdot',!!S.pfSeen&&!!S.pfNew&&Object.keys(S.pfNew).length>0)}}
  const im=$('hFrame'),src='assets/profile/frame_'+(S.pf||'wood')+'.png';if(im&&!im.src.endsWith(src)){im.src=src;im.className='pfr'+pfTall(S.pf||'wood')}}
 function profileSheet(){S.pfSeen=1;const nw=S.pfNew||{};S.pfNew={};pfCheck();const cur=S.pf||'wood',ri=rankIdx();
- $('sheet').innerHTML=`<div class="hdban" style="--hb:url(assets/ui/hd_profile.png)"><span>프로필</span></div><div class="pfhead"><div class="pfbig"><canvas id="pfCv"></canvas><img class="pfr${pfTall(cur)}" src="assets/profile/frame_${cur}.png" alt=""></div><div class="pfinfo"><b>카엘${S.badge&&bdHas(S.badge)?`<img class="pfbd" src="assets/profile/badge_${S.badge}.png" alt="">`:''}</b><small class="pfnick">닉네임 <b>${esc(S.nick||'준비 중')}</b>${S.nickTemp?' <i>임시</i>':''}${sbOn()?'<button class="buy" id="pfNick">'+(S.nickTemp||!S.nick?'정하기':'바꾸기')+'</button>':''}</small><small>${RANKS[ri].n} · 전투력 ${fmt(power())}</small><small>최고 영지 ${Math.min(S.best,MAXLAND)} · 은퇴 ${S.retires||0}번 · 은퇴의 추억 ${S.memory||0}개</small></div></div>
+ $('sheet').innerHTML=`<div class="hdban" style="--hb:url(assets/ui/hd_profile.png)"><span>프로필</span></div><div class="pfhead"><div class="pfbig"><canvas id="pfCv"></canvas><img class="pfr${pfTall(cur)}" src="assets/profile/frame_${cur}.png" alt=""></div><div class="pfinfo"><b>카엘${S.badge&&bdHas(S.badge)?`<img class="pfbd" data-k="${S.badge}" src="${bdSrc(S.badge)}" alt="" onerror="bdErr(this)">`:''}</b><small class="pfnick">닉네임 <b>${esc(S.nick||'준비 중')}</b>${S.nickTemp?' <i>임시</i>':''}${sbOn()?'<button class="buy" id="pfNick">'+(S.nickTemp||!S.nick?'정하기':'바꾸기')+'</button>':''}</small><small>${RANKS[ri].n} · 전투력 ${fmt(power())}</small><small>최고 영지 ${Math.min(S.best,MAXLAND)} · 은퇴 ${S.retires||0}번 · 은퇴의 추억 ${S.memory||0}개</small></div></div>
  <div class="sec">테두리 <small>${PFRAMES.filter(f=>pfHas(f.k)).length} / ${PFRAMES.length}</small></div>
  <div class="pfgrid">${PFRAMES.map(f=>{const has=pfHas(f.k);return`<button class="pfc${f.k===cur?' on':''}${has?'':' lock'}${f.rare||f.rk?' rare':''}" data-pf="${f.k}"><span class="pv"><i></i><img class="pfr${pfTall(f.k)}" src="assets/profile/frame_${f.k}.png" alt="">${has?'':'<img class="lk" src="assets/ui/icon_lock.png" alt="잠김">'}${f.rk?'<em class="rkt">랭킹</em>':''}</span><b>${f.n}</b>${nw['f_'+f.k]?'<i class="nwb">NEW</i>':''}<small>${f.k===cur?'사용 중':has?'바꾸기':'🔒 '+f.d}</small></button>`}).join('')}</div>
- <div class="sec">대표 배지 <small>${BADGES.filter(b=>bdHas(b.k)).length} / ${BADGES.length}</small></div>
- <div class="pfgrid">${BADGES.map(b=>{const has=bdHas(b.k),on=S.badge===b.k;return`<button class="pfc bd${on?' on':''}${has?'':' lock'}${b.rare||b.rk?' rare':''}" data-bd="${b.k}"><span class="pv"><img class="pfr" src="assets/profile/badge_${b.k}.png" alt="">${has?'':'<img class="lk" src="assets/ui/icon_lock.png" alt="잠김">'}${b.rk?'<em class="rkt">랭킹</em>':''}</span><b>${b.n}</b>${nw['b_'+b.k]?'<i class="nwb">NEW</i>':''}<small>${on?'다는 중':has?'달기':'🔒 '+b.d}</small></button>`}).join('')}</div>
+ <div class="sec">대표 배지 <small>${BADGES.filter(b=>bdHas(b.k)).length+attBds().length} / ${BADGES.length+attBds().length}</small></div>
+ <div class="pfgrid">${attBds().map(k=>{const on=S.badge===k;return`<button class="pfc bd${on?' on':''} rare" data-bd="${k}"><span class="pv"><img class="pfr" data-k="${k}" src="${bdSrc(k)}" alt="" onerror="bdErr(this)"></span><b>${BDN(k)}</b>${nw['b_'+k]?'<i class="nwb">NEW</i>':''}<small>${on?'다는 중':'달기'}</small></button>`}).join('')}${BADGES.map(b=>{const has=bdHas(b.k),on=S.badge===b.k;return`<button class="pfc bd${on?' on':''}${has?'':' lock'}${b.rare||b.rk?' rare':''}" data-bd="${b.k}"><span class="pv"><img class="pfr" src="assets/profile/badge_${b.k}.png" alt="">${has?'':'<img class="lk" src="assets/ui/icon_lock.png" alt="잠김">'}${b.rk?'<em class="rkt">랭킹</em>':''}</span><b>${b.n}</b>${nw['b_'+b.k]?'<i class="nwb">NEW</i>':''}<small>${on?'다는 중':has?'달기':'🔒 '+b.d}</small></button>`}).join('')}</div>
  <div class="acts three"><button id="pfSet">⚙ 설정</button><button id="pfRank">🏆 랭킹</button><button class="pri" id="mGo">닫기</button></div>`;
  $('modal').hidden=false;faceTo($('pfCv'),'kael');$('mGo').onclick=closeModal;$('pfSet').onclick=()=>settingsSheet();$('pfRank').onclick=()=>rankSheet();if($('pfNick'))$('pfNick').onclick=async()=>{if(!S.nick)await sbEnsure();nickSheet(()=>profileSheet())};
  document.querySelectorAll('[data-bd]').forEach(b=>b.onclick=()=>{const k=b.dataset.bd,f=BADGES.find(x=>x.k===k);if(!bdHas(k))return toast(f.rk?f.d+'로 우편함에 도착해요':f.rare?'황금 고블린을 잡으면 아주 드물게 얻어요':f.d+' 달성 시 얻어요');S.badge=S.badge===k?null:k;pfCheck();save();profileSheet()});
@@ -2108,6 +2129,94 @@ function offline(){
  queue(()=>{$('sheet').innerHTML=`<img class="illust il-offline" src="assets/illust/illust_offline.jpg" alt="" onerror="this.remove()"><div class="eyebrow">돌아온 카엘</div><h2>영지에서 세금이 걷혔어요</h2><div class="card" style="--c:var(--gold)"><span class="cap">${hr?hr+'시간 ':''}${mn}분 동안</span><div class="t" style="font-size:28px;color:var(--gold)">+${fmt(g)}</div><span class="s">되찾은 영지의 백성들이 보낸 골드예요${S.bld.farm?' · 밭의 작물도 자랐어요':''}</span><span class="s ofcap">${sec>=cap?'⏳ 최대 '+(cap/3600)+'시간이 가득 찼어요! ':'최대 '+(cap/3600)+'시간까지 쌓여요 · '}여관 레벨을 올리면 1시간씩 늘어나요</span></div>${para('k:…이 돈, 은퇴 자금으로 모아 둬도 되죠?')}${adLeft('offline')?`<button class="buy ad" id="mAd" style="width:100%;padding:10px">▶ 광고 보고 2배 받기 · 오늘 ${adLeft('offline')}회</button>`:''}<div class="acts"><button id="mDbl" style="background:linear-gradient(#2c4a8c,#1d3366);color:#ffe08a;border-color:#5a7ac8">2배 받기 · ${GEMIMG.replace('alt=""','alt="" style="width:16px;height:16px;vertical-align:-3px"')}${GEM_OFFLINE}</button><button class="pri" id="mGo">받기</button></div>`;$('modal').hidden=false;$('mGo').onclick=closeModal;$('mDbl').onclick=()=>{if(!spendGem(GEM_OFFLINE))return;S.gold+=g;toast('세금 2배! 골드 +'+fmt(g));closeModal()};const ab=$('mAd');if(ab)ab.onclick=()=>watchAd('offline',()=>{S.gold+=g;toast('세금 2배! 골드 +'+fmt(g));closeModal()});$('mGo').focus({preventScroll:true})});
 }
 
+/* ---------- 출석체크: 피트의 출석부 (docs/content/ATTENDANCE.md) ---------- */
+/* 하루 한 번 → 7일 판(7칸 반복)·한달 판(매달 1일 새로, 최대 31칸)에 동시에 도장. 빠진 날이 있어도 다음 칸으로 이어짐 */
+const ATT_W=[[{k:'gold',h:1}],[{k:'gem',n:10}],[{k:'tbox',n:3}],[{k:'ore',n:20}],[{k:'gem',n:10}],[{k:'card',n:3,alt:30}],[{k:'gem',n:30},{k:'tbox10',n:1}]];
+const ATT_BIG={7:[{k:'card',n:10,alt:100}],14:[{k:'gem',n:100}],21:[{k:'ecard',n:10,alt:100}],28:[{k:'gem',n:100},{k:'badge'}]};
+const ATT_G=[1,4,10,13,17,20,24,27],ATT_S=[2,5,9,12,16,19,23,26];
+const attM=n=>ATT_BIG[n]||(n>=29?[{k:'gold',h:1}]:ATT_G.includes(n)?[{k:'gold',h:.5}]:ATT_S.includes(n)?[{k:'seed'}]:[{k:'ore',n:10}]);
+/* today()는 0을 붙이지 않는 'Y-M-D' → 숫자로 바꿔 비교 */
+const dnum=t=>{const p=String(t||'').split('-').map(Number);return p.length===3&&p.every(x=>Number.isFinite(x)&&x>=0)?p[0]*10000+p[1]*100+p[2]:0};
+const attYm=t=>{const p=String(t).split('-');return p[0]+'-'+String(p[1]).padStart(2,'0')};
+const attDim=t=>{const p=String(t).split('-').map(Number);return new Date(p[0],p[1],0).getDate()};
+const tkN=k=>(S.tickets&&S.tickets[k])||0;
+let attAutoDay='',attJust=null;const ATTIMG={};
+function attPreload(){for(const n of['hd_attend','ic_attend','att_stamp']){const im=new Image();im.onload=()=>{ATTIMG[n]=1};im.src='assets/ui/'+n+'.png'}}
+function attA(){if(!S.att||typeof S.att!=='object')S.att={};const a=S.att,d=fresh().att;for(const k in d)if(a[k]==null)a[k]=d[k];if(!Array.isArray(a.got))a.got=[];if(!S.tickets||typeof S.tickets!=='object')S.tickets={box:0,box10:0};return a}
+const attEligible=()=>(S.best||1)>=3;
+function attStatus(){const a=attA(),t=today();if(a.last===t)return'done';if(a.last&&dnum(t)<dnum(a.last))return'back';return'ok'}
+const attMonthN=()=>{const a=attA();return a.ym===attYm(today())?a.m:0};
+function attHud(){const b=$('attBtn');if(!b)return;const on=attEligible();b.hidden=!on;$('attDot').hidden=!on||attStatus()!=='ok';
+ if(on&&attAutoDay&&attAutoDay!==today()){attAutoDay=today();if(attStatus()==='ok')queue(attOpen)}}
+/* 보상 아이콘·이름 */
+const tkImg=(k,c)=>`<span class="tkfb"><img class="${c||''}" src="assets/ui/item_${k==='tbox'?'boxticket':'box10ticket'}.png" alt="" onerror="this.onerror=null;this.src='assets/ui/relic_chest.png';this.parentNode.insertAdjacentHTML('beforeend','<i>${k==='tbox'?'무료':'10연'}</i>')"></span>`;
+function attIc(r,c){c=c||'';switch(r.k){case'gold':return`<img class="${c}" src="assets/ui/ui_gold.png" alt="">`;case'gem':return`<img class="${c}" src="assets/gem/ui_gem.png" alt="">`;case'ore':return`<img class="${c}" src="assets/ui/item_ore.png" alt="">`;case'seed':return`<img class="${c}" src="assets/ui/seed_wheat.png" alt="">`;
+ case'tbox':case'tbox10':return tkImg(r.k,c);case'card':case'ecard':return`<img class="${c}" src="assets/ui/card_back.png" alt="">`;case'badge':return`<img class="${c}" data-k="att" src="assets/profile/badge_att.png" alt="" onerror="bdErr(this)">`}return''}
+function attNm(r){switch(r.k){case'gold':return r.g!=null?'골드 +'+fmt(r.g):'골드 '+(r.h<1?'30분':r.h+'시간')+'치';case'gem':return'이삭 '+r.n;case'ore':return'광석 '+r.n;case'seed':return'씨앗 묶음';case'tbox':return'무료 개봉권 '+r.n+'장';case'tbox10':return'10연속 무료권';case'card':return'동료 카드 '+r.n+'장';case'ecard':return'영웅↑ 카드 '+r.n+'장';case'badge':return'출석 배지'}return''}
+const attShort=r=>({gold:r.h<1?'골드½':'골드',gem:'이삭 '+r.n,ore:'광석 '+r.n,seed:'씨앗',tbox:'개봉권 '+r.n,tbox10:'10연권',card:'카드 '+r.n,ecard:'영웅 '+r.n,badge:'배지'})[r.k]||'';
+/* 카드: 받을 카드가 없으면(합류 전·모두 별 가득) 이삭으로 대체. 영웅↑ 카드는 영웅·전설 중에서, 없으면 일반 규칙 → 그것도 없으면 이삭 */
+function attCards(n,epic){
+ if(epic){const pool=CARDIDS().filter(x=>cardCan(x)&&(GRADE[x]==='epic'||GRADE[x]==='legend'));
+  if(pool.length){const got=[],E=pool.filter(x=>GRADE[x]==='epic'),L=pool.filter(x=>GRADE[x]==='legend'),wish=S.wish&&pool.includes(S.wish)?S.wish:null;if(!S.cards)S.cards={};
+   for(const c of cardChunks(n,5)){let id;if(wish&&Math.random()<.5)id=wish;else{const g=L.length&&(!E.length||Math.random()<1/11)?L:E;id=g[Math.floor(Math.random()*g.length)]}S.cards[id]=(S.cards[id]||0)+c;stat('card',c);got.push([id,c])}
+   partySig='';return{got,gold:0}}}
+ if(!CARDIDS().some(cardCan))return null;return gainCards(n,'shop',n>=10?5:1)}
+/* 보상 하나 지급 → 저장용 항목(2배 때 다시 지급)과 화면용 한 줄 */
+function attGive(r,again){let it=Object.assign({},r),txt='',sub='';
+ switch(r.k){
+  case'gold':{const g=r.g!=null?r.g:Math.max(100,Math.floor(goldRate()*3600*r.h));S.gold+=g;it={k:'gold',g,h:r.h};txt='골드 +'+fmt(g);sub='방치 보상 '+(r.h<1?'30분':r.h+'시간')+'치';break}
+  case'gem':S.gem=(S.gem||0)+r.n;txt='황금 이삭 +'+r.n;break;
+  case'ore':S.items.ore=(S.items.ore||0)+r.n;txt='광석 +'+r.n;break;
+  case'seed':S.seeds.wheat=(S.seeds.wheat||0)+5;S.seeds.carrot=(S.seeds.carrot||0)+3;S.seeds.pumpkin=(S.seeds.pumpkin||0)+1;txt='씨앗 묶음';sub='밀 5 · 은빛 당근 3 · 달빛 호박 1';farmSig='';break;
+  case'tbox':S.tickets.box=tkN('box')+r.n;txt='상자 무료 개봉권 +'+r.n+'장';sub='장비 탭 「상자 열기」에서 골드 대신 먼저 써요';break;
+  case'tbox10':S.tickets.box10=tkN('box10')+r.n;txt='상자 10연속 무료권 +'+r.n+'장';sub='영웅 등급 이상 1개 확정';break;
+  case'card':case'ecard':{const res=attCards(r.n,r.k==='ecard');
+   if(!res||(!res.got.length&&!res.gold)){S.gem=(S.gem||0)+r.alt;txt='황금 이삭 +'+r.alt;sub='받을 동료 카드가 없어서 이삭으로 대신 드려요';return{it,row:attRow({k:'gem'},txt,sub,again)}}
+   txt=(r.k==='ecard'?'영웅 이상 동료 카드 ':'동료 카드 ')+r.n+'장';sub=res.got.map(([id,c])=>COMP[id].n+' +'+c).join(' · ')+(res.gold?(res.got.length?' · ':'')+'별 다 채운 몫 골드 +'+fmt(res.gold):'');break}
+  case'badge':{const k='att_'+attA().ym.replace('-','');if(!S.bdUnl)S.bdUnl={};if(!S.bdUnl[k]){S.bdUnl[k]=1;S.pfNew=S.pfNew||{};S.pfNew['b_'+k]=1}it={k:'badge',id:k};
+   return{it,row:`<div class="attrw"><img data-k="${k}" src="${bdSrc(k)}" alt="" onerror="bdErr(this)"><span><b>${BDN(k)} 배지</b><small>프로필에서 대표 배지로 달 수 있어요</small></span></div>`}}}
+ return{it,row:attRow(it,txt,sub,again)}}
+const attRow=(r,txt,sub,again)=>`<div class="attrw">${attIc(r)}<span><b>${txt}</b>${sub?`<small>${sub}</small>`:''}</span>${again?'<i class="x2">2배</i>':''}</div>`;
+function attOpen(){const a=attA();if(!a.intro){a.intro=1;save();scene('피트의 출석부','출석부가 생겼어요',['m:피트|어서 와요, 영주님! 오늘부터 출석부를 만들었어요. 하루 한 번 얼굴만 보여 주시면 선물을 챙겨 드릴게요.','k@smile:얼굴만 보여 주면 된다고? 그건 은퇴하고도 할 수 있겠네.','q:주인, 출석도 왕의 덕목이다.'],'출석부 열기',{go:attSheet});return}attSheet()}
+function attClaim(){const a=attA(),st=attStatus();
+ if(st==='done')return toast('오늘은 이미 받았어요. 내일 자정에 또 만나요');
+ if(st==='back')return toast('날짜가 이상해요. 휴대폰 시간을 확인해 주세요.');
+ const t=today(),ym=attYm(t);if(a.ym!==ym){a.ym=ym;a.m=0}
+ const wd=(a.w|0)%7,md=Math.min(31,(a.m|0)+1),rows=[],got=[];
+ for(const r of[...ATT_W[wd],...attM(md)]){const g=attGive(r);got.push(g.it);rows.push(g.row)}
+ a.w=(wd+1)%7;a.m=md;a.last=t;a.got=got;attJust={wd,md,rows};
+ haptic([30,40,70]);stat('att',1);shopSig='';eqSig='';partySig='';pfCheck();save();renderAll();
+ toast('출석 완료! 7일 판 '+(wd+1)+'일째 · 이번 달 '+md+'회째');attSheet()}
+function attAd(){const a=attA();if(attStatus()!=='done')return;if(a.ad===today())return toast('오늘은 다 봤어요. 내일 다시 받을 수 있어요');
+ watchAd('att',()=>{const rows=[];for(const r of a.got){if(r.k==='badge')continue;rows.push(attGive(r,true).row)}a.ad=today();attJust={ad:1,rows};pfCheck();toast('피트가 한 번 더 챙겨 줬어요');setTimeout(attSheet,30)})}
+function attSheet(tab){const a=attA();if(tab){a.tab=tab;save()}const tb=a.tab==='m'?'m':'w',t=today(),st=attStatus(),done=st==='done',mc=attMonthN(),dim=attDim(t),mo=+t.split('-')[1];
+ const stp=n=>`<i class="stp${n?' in':''}"><img src="assets/ui/att_stamp.png" alt="" onerror="this.parentNode.classList.add('nf');this.remove()"></i>`;
+ const jw=attJust&&attJust.wd!=null?attJust.wd:-1,jm=attJust&&attJust.md!=null?attJust.md:-1;
+ let board='';
+ if(tb==='w'){const nx=a.w|0,full=done&&nx===0;
+  board=`<div class="attw">${ATT_W.map((rs,i)=>{const got=full||i<nx,now=!done&&i===nx;return`<div class="attc${i===6?' big':''}${now?' now':''}"><em>${i+1}일</em>${attIc(rs[0])}<span>${rs.map(attShort).join(' + ')}</span>${got?stp(i===jw):''}</div>`}).join('')}</div>
+  <p class="note">7칸을 다 채우면 1일부터 다시 시작해요. 빠진 날이 있어도 다음 칸으로 이어서 찍혀요.</p>`}
+ else{const nb=[7,14,21,28].find(n=>n>mc);
+  board=`<div class="atthd"><b>${mo}월 · 이번 달 ${mc}회 출석</b>${nb?`<small>다음 큰 보상까지 <i>${nb-mc}회</i></small>`:'<small>큰 보상을 모두 받았어요</small>'}</div>
+  <div class="attm">${Array.from({length:dim},(_,j)=>{const n=j+1,rs=attM(n),big=!!ATT_BIG[n],got=n<=mc,now=!done&&n===mc+1;return`<div class="attc${big?' big':''}${now?' now':''}" title="${n}회 · ${rs.map(attNm).join(' + ')}"><em>${n}</em>${attIc(rs[0])}${got?stp(n===jm):''}</div>`}).join('')}</div>
+  <p class="note">큰 보상 · 7회 동료 카드 10장 · 14회 이삭 100 · 21회 영웅 이상 카드 10장 · 28회 이삭 100 + ${mo}월 출석 배지. 매달 1일에 새로 시작해요.</p>`}
+ const adOk=done&&a.ad!==t&&adLeft('att')>0;
+ const gotHtml=attJust&&attJust.rows?`<div class="attgot"><b>${attJust.ad?'광고 보상 · 한 번 더':'오늘 받은 선물'}</b>${attJust.rows.join('')}</div>`:done&&a.got.length?`<div class="attgot"><b>오늘 받은 선물</b>${a.got.map(r=>attRow(r.k==='badge'?{k:'badge'}:r,r.k==='badge'?BDN(r.id)+' 배지':attNm(r),'')).join('')}</div>`:'';
+ const line=attJust&&!attJust.ad?(attJust.md===28?'m:피트|이번 달 출석부를 다 채우셨네요! 이 배지는 아무나 못 받아요.':attJust.wd===6?'m:피트|일주일 개근! 특별히 상자 10번 여는 표를 넣었어요.':''):'';
+ const btn=st==='back'?`<button class="pri" disabled>날짜를 확인해 주세요</button>`:!done?`<button class="pri" id="attGo">출석하기</button>`:adOk?`<button class="pri ad" id="attAdB" style="font-size:14px">▶ 광고 보고 한 번 더 받기</button>`:`<button class="pri" disabled>내일 또 만나요</button>`;
+ $('sheet').innerHTML=`<div class="hdban${ATTIMG.hd_attend?'':' nohd'}" style="--hb:url(assets/ui/hd_attend.png)"><span>피트의 출석부</span></div>
+ <div class="fgtabs"><button data-at="w" class="${tb==='w'?'on':''}">7일</button><button data-at="m" class="${tb==='m'?'on':''}">한달</button></div>
+ ${board}${st==='back'?'<p class="lore sys">날짜가 이상해요. 휴대폰 시간을 확인해 주세요.</p>':''}${line?para(line):''}${gotHtml}
+ <div class="acts"><button id="mX">닫기</button>${btn}</div>`;
+ $('modal').hidden=false;attJust=null;$('mX').onclick=closeModal;
+ document.querySelectorAll('[data-at]').forEach(b=>b.onclick=()=>attSheet(b.dataset.at));
+ if($('attGo'))$('attGo').onclick=attClaim;if($('attAdB'))$('attAdB').onclick=attAd}
+/* 배지 그림: 출석 배지는 월별 그림 → 공용 그림 → 그림이 없으면 그려 둔 메달 */
+const bdSrc=k=>/^att_\d{6}$/.test(k)?'assets/profile/badge_att_'+k.slice(8)+'.png':'assets/profile/badge_'+k+'.png';
+const ATT_MEDAL='data:image/svg+xml,'+encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><path d="M22 40l-6 20 10-5 6 7 4-22zM42 40l6 20-10-5-6 7-4-22z" fill="#c0392b"/><circle cx="32" cy="27" r="22" fill="#f1c24b" stroke="#8a5a12" stroke-width="3"/><circle cx="32" cy="27" r="15" fill="none" stroke="#c0392b" stroke-width="3"/><path d="M32 16v22M27 21l5 4 5-4M26 28l6 4 6-4" stroke="#c0392b" stroke-width="2.6" fill="none" stroke-linecap="round"/></svg>');
+function bdErr(el){const k=el.dataset.k||'';if(/^att/.test(k)){const f=+(el.dataset.f||0);if(f===0&&k!=='att'){el.dataset.f=1;el.src='assets/profile/badge_att.png';return}if(f<2){el.dataset.f=2;el.src=ATT_MEDAL;return}}if(el.id==='hBadge')el.hidden=true;else el.remove()}
+const attBds=()=>Object.keys(S.bdUnl||{}).filter(k=>/^att_\d{6}$/.test(k)).sort();
+
 /* ---------- 시작 ---------- */
 let last=0,autoT=0,saveT=0,uiT=0;
 function loop(ts){const dt=Math.min(.1,(ts-(last||ts))/1000);last=ts;step(dt*(S.speed===2?2:1));
@@ -2124,6 +2233,7 @@ function start(data){
  $('autoSell').checked=S.autoSell;$('autoOpen').checked=S.autoOpen;
  const isNew=!S.started;S.started=true;setTimeout(sbBoot,1500);S.v=3;syncParty();resize();produce();renderSpeed();
  if(isNew)intro();else offline();
+ attAutoDay=today();attPreload();if(!isNew&&attEligible()&&attStatus()==='ok')queue(attOpen);
  faceTo($('faceCv'),'kael');
  $('startBtn').onclick=()=>{$('title').hidden=true;titleOpen=false;faceTo($('faceCv'),'kael');pump()};
  events();renderAll();requestAnimationFrame(loop);
