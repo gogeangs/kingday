@@ -137,7 +137,7 @@ body{word-break:keep-all;overflow-wrap:break-word;line-break:strict;background:#
 .attm .attc{aspect-ratio:1;padding:2px 1px;border-radius:7px}.attm .attc>img{width:18px;height:18px}.attm .attc>em{font-size:9px}.attm .attc>span{display:none}.attm .attc.big{border:2px solid var(--gold);background:linear-gradient(#3a2c0c,#241a07)}.attm .attc.big>img{width:22px;height:22px}
 .attc.now{border-color:#ffd23a;box-shadow:0 0 0 2px rgba(255,210,58,.55),0 0 12px rgba(255,210,58,.6);animation:attglow 1.2s ease-in-out infinite}@keyframes attglow{50%{box-shadow:0 0 0 2px rgba(255,210,58,.25),0 0 4px rgba(255,210,58,.2)}}
 .attc.off{opacity:.35}
-.attc .stp{position:absolute;inset:0;display:grid;place-items:center;pointer-events:none}.attc .stp img{width:78%;max-width:56px;aspect-ratio:1;object-fit:contain;opacity:.92}
+.attc .stp{position:absolute;inset:0;display:grid;place-items:center;pointer-events:none}.attc .stp img{width:66%;max-width:46px;aspect-ratio:1;object-fit:contain;opacity:.85;transform:rotate(-12deg)}.attc.got>*:not(.stp){opacity:.45}.attm .attc .stp img{width:80%}
 .attc .stp.nf::after{content:'출석';display:grid;place-items:center;width:30px;height:30px;border:2.5px solid #e0413a;border-radius:50%;color:#e0413a;font-size:10px;font-weight:800;transform:rotate(-14deg);background:rgba(224,65,58,.12)}
 .attm .attc .stp.nf::after{width:22px;height:22px;font-size:8px;border-width:2px}
 .attc .stp.in{animation:attstp .45s cubic-bezier(.2,1.6,.4,1)}@keyframes attstp{0%{transform:scale(2.4);opacity:0}60%{opacity:1}100%{transform:none}}
@@ -2194,11 +2194,11 @@ function attSheet(tab){const a=attA();if(tab){a.tab=tab;save()}const tb=a.tab===
  const jw=attJust&&attJust.wd!=null?attJust.wd:-1,jm=attJust&&attJust.md!=null?attJust.md:-1;
  let board='';
  if(tb==='w'){const nx=a.w|0,full=done&&nx===0;
-  board=`<div class="attw">${ATT_W.map((rs,i)=>{const got=full||i<nx,now=!done&&i===nx;return`<div class="attc${i===6?' big':''}${now?' now':''}"><em>${i+1}일</em>${attIc(rs[0])}<span>${rs.map(attShort).join(' + ')}</span>${got?stp(i===jw):''}</div>`}).join('')}</div>
+  board=`<div class="attw">${ATT_W.map((rs,i)=>{const got=full||i<nx,now=!done&&i===nx;return`<div class="attc${i===6?' big':''}${now?' now':''}${got?' got':''}"><em>${i+1}일</em>${attIc(rs[0])}<span>${rs.map(attShort).join(' + ')}</span>${got?stp(i===jw):''}</div>`}).join('')}</div>
   <p class="note">7칸을 다 채우면 1일부터 다시 시작해요. 빠진 날이 있어도 다음 칸으로 이어서 찍혀요.</p>`}
  else{const nb=[7,14,21,28].find(n=>n>mc);
   board=`<div class="atthd"><b>${mo}월 · 이번 달 ${mc}회 출석</b>${nb?`<small>다음 큰 보상까지 <i>${nb-mc}회</i></small>`:'<small>큰 보상을 모두 받았어요</small>'}</div>
-  <div class="attm">${Array.from({length:dim},(_,j)=>{const n=j+1,rs=attM(n),big=!!ATT_BIG[n],got=n<=mc,now=!done&&n===mc+1;return`<div class="attc${big?' big':''}${now?' now':''}" title="${n}회 · ${rs.map(attNm).join(' + ')}"><em>${n}</em>${attIc(rs[0])}${got?stp(n===jm):''}</div>`}).join('')}</div>
+  <div class="attm">${Array.from({length:dim},(_,j)=>{const n=j+1,rs=attM(n),big=!!ATT_BIG[n],got=n<=mc,now=!done&&n===mc+1;return`<div class="attc${big?' big':''}${now?' now':''}${got?' got':''}" title="${n}회 · ${rs.map(attNm).join(' + ')}"><em>${n}</em>${attIc(rs[0])}${got?stp(n===jm):''}</div>`}).join('')}</div>
   <p class="note">큰 보상 · 7회 동료 카드 10장 · 14회 이삭 100 · 21회 영웅 이상 카드 10장 · 28회 이삭 100 + ${mo}월 출석 배지. 매달 1일에 새로 시작해요.</p>`}
  const adOk=done&&a.ad!==t&&adLeft('att')>0;
  const gotHtml=attJust&&attJust.rows?`<div class="attgot"><b>${attJust.ad?'광고 보상 · 한 번 더':'오늘 받은 선물'}</b>${attJust.rows.join('')}</div>`:done&&a.got.length?`<div class="attgot"><b>오늘 받은 선물</b>${a.got.map(r=>attRow(r.k==='badge'?{k:'badge'}:r,r.k==='badge'?BDN(r.id)+' 배지':attNm(r),'')).join('')}</div>`:'';
@@ -2212,7 +2212,8 @@ function attSheet(tab){const a=attA();if(tab){a.tab=tab;save()}const tb=a.tab===
  document.querySelectorAll('[data-at]').forEach(b=>b.onclick=()=>attSheet(b.dataset.at));
  if($('attGo'))$('attGo').onclick=attClaim;if($('attAdB'))$('attAdB').onclick=attAd}
 /* 배지 그림: 출석 배지는 월별 그림 → 공용 그림 → 그림이 없으면 그려 둔 메달 */
-const bdSrc=k=>/^att_\d{6}$/.test(k)?'assets/profile/badge_att_'+k.slice(8)+'.png':'assets/profile/badge_'+k+'.png';
+const ATT_BDM=['11','12','01'];/* 월별 배지 그림이 있는 달. 없는 달은 공용 그림 */
+const bdSrc=k=>/^att_\d{6}$/.test(k)?'assets/profile/badge_att'+(ATT_BDM.includes(k.slice(8))?'_'+k.slice(8):'')+'.png':'assets/profile/badge_'+k+'.png';
 const ATT_MEDAL='data:image/svg+xml,'+encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><path d="M22 40l-6 20 10-5 6 7 4-22zM42 40l6 20-10-5-6 7-4-22z" fill="#c0392b"/><circle cx="32" cy="27" r="22" fill="#f1c24b" stroke="#8a5a12" stroke-width="3"/><circle cx="32" cy="27" r="15" fill="none" stroke="#c0392b" stroke-width="3"/><path d="M32 16v22M27 21l5 4 5-4M26 28l6 4 6-4" stroke="#c0392b" stroke-width="2.6" fill="none" stroke-linecap="round"/></svg>');
 function bdErr(el){const k=el.dataset.k||'';if(/^att/.test(k)){const f=+(el.dataset.f||0);if(f===0&&k!=='att'){el.dataset.f=1;el.src='assets/profile/badge_att.png';return}if(f<2){el.dataset.f=2;el.src=ATT_MEDAL;return}}if(el.id==='hBadge')el.hidden=true;else el.remove()}
 const attBds=()=>Object.keys(S.bdUnl||{}).filter(k=>/^att_\d{6}$/.test(k)).sort();
