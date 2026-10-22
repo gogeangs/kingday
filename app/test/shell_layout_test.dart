@@ -219,6 +219,13 @@ void main() {
         final kills = g.sim.ch?.kills;
         g.chExitTap();
         await frames();
+        // 앞서 대기열에 있던 창(칭호 상승 등)이 먼저 뜨면 닫고 결과 창까지 감
+        for (var i = 0; i < 5 && find.text('한 마리도 못 잡았어요').evaluate().isEmpty; i++) {
+          final nav = g.navKey.currentState!;
+          if (!nav.canPop()) break;
+          nav.pop();
+          await frames();
+        }
         final open = tester.widgetList<Text>(find.descendant(of: find.byType(KdSheetFrame), matching: find.byType(Text))).map((t) => t.data).take(8).toList();
         expect(g.sim.ch, isNull);
         expect(g.calc.dunLeft(), 2, reason: '★0 이면 입장권 환불 (처치 $kills)');
