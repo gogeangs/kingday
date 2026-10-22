@@ -2437,7 +2437,7 @@ function drawVillage(){
   if(im){const bb=vBB(b,t),sc=w/(bb[1]-bb[0])*k,cx=(bb[0]+bb[1])/2;ctx.save();ctx.translate(x*k,0);if(fl)ctx.scale(-1,1);ctx.drawImage(im,(fl?-(512-cx):-cx)*sc,y*k-506*sc,512*sc,512*sc);ctx.restore()}
   if(b===vlSel){const r=vRect(b);ctx.save();ctx.globalAlpha=.5+.3*Math.sin(T*4);ctx.strokeStyle='#ffc94a';ctx.lineWidth=2.5;ctx.beginPath();ctx.ellipse(x*k,(y-12)*k,w*.46*k,w*.12*k,0,0,Math.PI*2);ctx.stroke();ctx.restore()}
   lab.push([b,x,y,lv,open])}
- if(night){ctx.fillStyle='rgba(10,16,48,.36)';ctx.fillRect(0,0,VW,VH);ctx.save();ctx.globalCompositeOperation='lighter';for(const b of VORD){if(!S.bld[b])continue;const r=vRect(b);for(let i=0;i<2;i++){const gx=(r.cx+(i?.18:-.16)*(r.x1-r.x0))*k,gy=(r.y1-(r.y1-r.y0)*(.32+i*.08))*k,g=ctx.createRadialGradient(gx,gy,0,gx,gy,9*k*3);g.addColorStop(0,'rgba(255,200,110,.55)');g.addColorStop(1,'rgba(255,200,110,0)');ctx.fillStyle=g;ctx.fillRect(gx-30*k*3,gy-30*k*3,60*k*3,60*k*3)}}ctx.restore()}
+ if(night){ctx.fillStyle='rgba(10,16,48,.44)';ctx.fillRect(0,0,VW,VH);ctx.save();ctx.globalCompositeOperation='lighter';for(const b of VORD){if(!S.bld[b])continue;const r=vRect(b);for(let i=0;i<2;i++){const gx=(r.cx+(i?.18:-.16)*(r.x1-r.x0))*k,gy=(r.y1-(r.y1-r.y0)*(.32+i*.08))*k,g=ctx.createRadialGradient(gx,gy,0,gx,gy,9*k*3);g.addColorStop(0,'rgba(255,200,110,.55)');g.addColorStop(1,'rgba(255,200,110,0)');ctx.fillStyle=g;ctx.fillRect(gx-30*k*3,gy-30*k*3,60*k*3,60*k*3)}}ctx.restore()}
  /* 길 위 사람들 (건물 앞에 서지 않게 길 자리에만) */
  const fr=Math.floor(T*4)%4;for(const p of vWalkers().sort((a,b)=>a.y-b.y)){const px=p.x*k,py=p.y*k+Math.sin(T*2+p.x)*1.2;
   ell(px,py,11*k*2.2,3.5*k*2.2,'rgba(0,0,0,.28)');

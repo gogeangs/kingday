@@ -8,6 +8,7 @@ import 'package:kingday/core/actions.dart';
 import 'package:kingday/core/attendance.dart';
 import 'package:kingday/core/calc.dart';
 import 'package:kingday/core/data.dart';
+import 'package:kingday/core/profile_data.dart';
 import 'package:kingday/core/rng.dart';
 import 'package:kingday/core/state.dart';
 import 'package:kingday/core/village.dart';

@@ -14,7 +14,7 @@ import 'rng.dart';
 import 'web_data.g.dart';
 
 /// 일꾼과 잘 맞는 직업 (건물 → 직업)
-final Map<String, String> wJob = wWjob.cast<String, String>();
+final Map<String, String> workJob = wWjob.cast<String, String>();
 final Map<String, num> wBase = wWbase.cast<String, num>();
 final Map<String, String> wEffName = wWeff.cast<String, String>();
 final Map<String, String> villagePeople = wVppl.cast<String, String>();
@@ -75,7 +75,7 @@ extension VillageCalc on GameCalc {
     return l <= 0 ? 0 : l >= 5 ? 2 : 1;
   }
 
-  bool wkMatch(String k, String id) => wJob[k] != null && jobOf[id] == wJob[k];
+  bool wkMatch(String k, String id) => workJob[k] != null && jobOf[id] == workJob[k];
   num wkOne(String k, String id) => (wBase[gradeOf[id] ?? 'common']! + .02 * recStar(id)) * (wkMatch(k, id) ? 2 : 1);
 
   /// 그 건물 일꾼 (가진 동료만, 칸 수까지)

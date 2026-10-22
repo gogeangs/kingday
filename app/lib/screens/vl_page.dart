@@ -306,7 +306,7 @@ class _MapPainter extends CustomPainter {
     }
     final hr = DateTime.now().hour;
     if (hr >= 19 || hr < 6) {
-      c.drawRect(Offset.zero & size, Paint()..color = const Color(0x5C0A1030));
+      c.drawRect(Offset.zero & size, Paint()..color = const Color(0x700A1030));
       for (final b in vOrder) {
         if (s.bldLv(b) == 0) continue;
         final r = vRect(b);
@@ -710,7 +710,7 @@ class _WorkTab extends StatelessWidget {
           ),
         ],
       ]),
-      KdNote('${wJob[k] != null ? '잘 맞는 직업: ${jobName[wJob[k]]} (효과 2배)' : '누구나 같은 효과예요'}${k == 'inn' || k == 'forge' || k == 'market' ? ' · 이 건물은 효과의 절반이 적용돼요' : ''}. 효과 = 등급(일반 10·희귀 15·영웅 20·전설 30%) + 별마다 2%. 출전하지 않는 동료만 일할 수 있어요.'),
+      KdNote('${workJob[k] != null ? '잘 맞는 직업: ${jobName[workJob[k]]} (효과 2배)' : '누구나 같은 효과예요'}${k == 'inn' || k == 'forge' || k == 'market' ? ' · 이 건물은 효과의 절반이 적용돼요' : ''}. 효과 = 등급(일반 10·희귀 15·영웅 20·전설 30%) + 별마다 2%. 출전하지 않는 동료만 일할 수 있어요.'),
     ]);
   }
 }
