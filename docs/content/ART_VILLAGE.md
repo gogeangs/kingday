@@ -199,7 +199,7 @@
 - 장식이 테두리 밖으로 너무 넓게 퍼지지 않게
 ```
 
-## 새 건물 4종 (2026-10-23 다시 작성: 완성 마을 그림 속 건물을 떼어 그리기)
+## 새 건물 4종 (2026-10-23 다시 작성: 완성 마을 그림 속 건물을 떼어 그리기) — **4종 모두 받음·반영 완료** (`assets/village/{forge,market,ranch,chapel}_{ruin,built}.png`, 원본 `art/source/village/building_*.png`·`*_sheet.png`). 메모: 대장간 완성 그림 지붕에 작은 구멍이 있음(작게 보여 그대로 사용)
 - 첨부 3장: `art/source/village/village_full_ref.png`, `assets/village/inn_built.png`, `assets/village/inn_ruin.png`. 한 대화창에서 4장을 이어서 만들기.
 
 ### V-15 브론의 대장간 (폐허 + 완성) → `assets/village/forge_{ruin,built}.png`
