@@ -1806,14 +1806,14 @@ const MON_SPRITES={0:{id:'slime_plague',walk:4,attack:4,hit:2,fig:150,h:54,boss:
  3:{id:'wraith_frost',walk:4,attack:4,hit:2,fig:185,h:50,lift:18,boss:{id:'boss_aldor',walk:4,attack:4,hit:2,fig:195,h:74}},
  4:{id:'slime_ash',walk:4,attack:4,hit:2,fig:150,h:52,boss:{id:'boss_ignis',walk:4,attack:4,hit:2,fig:200,h:78}}};
 /* 왕도(5): 전용 그림이 오기 전에는 기존 그림을 물들여 씀 (tint). 흑철 근위병 ← 강철 골렘(검보라), 근위대장 ← 강철 골렘(검은 청동) */
-MON_SPRITES[5]={id:'guard_black',walk:4,attack:4,hit:2,fig:190,h:58,tint:{src:MON_SPRITES[2],ops:[['multiply','#4b3f6a']]},
- boss:{id:'boss_guardcap',walk:4,attack:4,hit:2,fig:200,h:76,tint:{src:MON_SPRITES[2],ops:[['multiply','#7a5a2e'],['multiply','#9a8ab8']]}}};
+MON_SPRITES[5]={id:'guard_black',walk:4,attack:4,hit:2,fig:150,h:58,tint:{src:MON_SPRITES[2],ops:[['multiply','#4b3f6a']]},
+ boss:{id:'boss_guardcap',walk:4,attack:4,hit:2,fig:150,h:76,tint:{src:MON_SPRITES[2],ops:[['multiply','#7a5a2e'],['multiply','#9a8ab8']]}}};
 /* 마왕 발타사르: 전용 그림(boss_baltasar·boss_baltasar2)이 없으면 알도르 그림을 크게·어둡게(1단계) / 보랏빛 은색(2단계) */
 const BALT=[{id:'boss_baltasar',walk:4,attack:4,hit:2,fig:200,h:78},{id:'boss_baltasar2',walk:4,attack:4,hit:2,fig:200,h:78}];
 /* 지역별 두 번째 마물: 그림이 들어온 것만 등장. trait: 체력·공격·이동·공격간격 배수 */
 const TRAITS={tank:{hp:1.6,atk:.9,mv:.6,cd:1.15,n:'단단함'},swift:{hp:.7,atk:1.1,mv:1.7,cd:.8,n:'빠름'},swarm:{hp:.55,atk:.6,mv:1.2,cd:1,n:'떼'},guard:{hp:1.4,atk:.85,mv:.8,cd:1.1,n:'방패'},flier:{hp:.8,atk:1.05,mv:1.5,cd:.9,n:'비행'}};
 const MON_ALT={0:{id:'scarecrow_cursed',walk:4,attack:4,hit:2,fig:150,h:46,trait:'tank'},1:{id:'wolf_shadow',walk:4,attack:4,hit:2,fig:150,h:40,trait:'swift'},2:{id:'goblin_pick',walk:4,attack:4,hit:2,fig:150,h:40,trait:'swarm'},3:{id:'skeleton_frost',walk:4,attack:4,hit:2,fig:150,h:46,trait:'guard'},4:{id:'imp_flame',walk:4,attack:4,hit:2,fig:150,h:40,lift:26,trait:'flier'},
- 5:{id:'gargoyle_wall',walk:4,attack:4,hit:2,fig:180,h:44,lift:30,trait:'flier',tint:{src:null,ops:[['color','#9c9aa8']]}}};/* 성벽 가고일 ← 그림자 박쥐(회색 석상) */
+ 5:{id:'gargoyle_wall',walk:4,attack:4,hit:2,fig:165,h:44,lift:30,trait:'flier',tint:{src:null,ops:[['color','#9c9aa8']]}}};/* 성벽 가고일 ← 그림자 박쥐(회색 석상) */
 MON_ALT[5].tint.src=MON_SPRITES[1];
 const MSPR={},TINT={};
 /* 물들인 그림 만들기: 원본 시트가 다 불러지면 한 번만 캔버스로 만들어 둠. ops = [['multiply'|'color', 색]...] */

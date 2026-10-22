@@ -1283,7 +1283,7 @@ const wMonSprites = {
     'walk': 4,
     'attack': 4,
     'hit': 2,
-    'fig': 190,
+    'fig': 150,
     'h': 58,
     'tint': {
       'src': {
@@ -1302,7 +1302,7 @@ const wMonSprites = {
       'walk': 4,
       'attack': 4,
       'hit': 2,
-      'fig': 200,
+      'fig': 150,
       'h': 76,
       'tint': {
         'src': {
@@ -1372,7 +1372,7 @@ const wMonAlt = {
     'walk': 4,
     'attack': 4,
     'hit': 2,
-    'fig': 180,
+    'fig': 165,
     'h': 44,
     'lift': 30,
     'trait': 'flier',

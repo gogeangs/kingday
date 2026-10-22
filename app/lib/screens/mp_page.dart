@@ -13,7 +13,7 @@ import '../ui/theme.dart';
 import '../ui/widgets.dart';
 import 'social_sheets.dart';
 
-const _rNode = ['erdan', 'dusk', 'canyon', 'frost', 'ash']; // 왕도 아이콘(capital_*)은 그림이 들어오면 추가
+const _rNode = ['erdan', 'dusk', 'canyon', 'frost', 'ash', 'capital'];
 
 class MpPage extends StatelessWidget {
   const MpPage(this.g, {super.key});
