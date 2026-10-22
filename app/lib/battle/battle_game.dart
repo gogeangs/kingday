@@ -481,7 +481,7 @@ class BattleGame extends FlameGame {
     final md = art?.sheet;
     double top = y - 40 * ss, bot = y;
     if (md != null) {
-      final sk = art!.lordArt ? ss * .8 * art!.scale : ss;
+      final sk = art!.lordArt ? ss * .8 * art.scale : ss;
       final ly = (md.lift != null ? y - md.lift! * sk * (1 + .08 * math.sin(_t * 5 + ph)) : y).toDouble();
       final kk = (md.h * sk / md.fig).toDouble(), moving = m.tx != null && m.x > m.tx! + 1;
       var a = 'walk';
@@ -515,7 +515,7 @@ class BattleGame extends FlameGame {
         final pt = ui.Paint()
           ..filterQuality = ui.FilterQuality.medium
           ..color = ui.Color.fromRGBO(0, 0, 0, _cl(fade));
-        if (art!.tint != null) pt.colorFilter = art!.tint;
+        if (art.tint != null) pt.colorFilter = art.tint;
         _c.drawImageRect(im, src, dst, pt);
         if (m.hit > 0) {
           _c.drawImageRect(im, src, dst, ui.Paint()
