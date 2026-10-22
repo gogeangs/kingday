@@ -10,6 +10,7 @@ import '../core/calc.dart';
 import '../core/data.dart';
 import '../core/fmt.dart';
 import '../core/js.dart';
+import '../core/retire.dart';
 import '../game/controller.dart';
 import '../ui/game_widgets.dart';
 import '../ui/theme.dart';
@@ -141,7 +142,7 @@ class _UpRowState extends State<_UpRow> {
       s.up[u.k] = l;
     }
     final plan = g.acts.upPlan(u);
-    final can = !mx && s.gold >= GameCalc.upgradeCost(u.k, l);
+    final can = !mx && s.gold >= g.calc.upgradeCost(u.k, l);
     final age = DateTime.now().millisecondsSinceEpoch - _flash;
     final flash = age < 350 ? 1 - age / 350 : 0.0;
     return Stack(clipBehavior: Clip.none, children: [
@@ -214,17 +215,29 @@ class _UpRowState extends State<_UpRow> {
   }
 }
 
-/// 카엘의 은퇴 계획 (웹 renderRetire)
+/// 카엘의 은퇴 계획 (웹 renderRetire): 요약 + 「은퇴 일기」·「은퇴하기」
 class _RetireBox extends StatelessWidget {
   const _RetireBox(this.g);
   final GameController g;
 
   @override
   Widget build(BuildContext context) {
-    final s = g.state, c = g.calc, t = c.retireTarget(), pts = c.retirePts(), can = s.stage >= 20;
+    final s = g.state, c = g.calc, t = c.retireTarget(), pts = c.retirePts(), can = c.retCan(), mp = c.memPts(), dot = c.trCanAny();
+    final need = s.stage < 20 ? '영지 19곳을 되찾으면 은퇴할 수 있어요' : '이번 회차에 영지 ${10 - c.retRun()}곳을 더 되찾으면 은퇴할 수 있어요';
     return KdBox(children: [
       const KdSec('카엘의 은퇴 계획'),
-      KdKv('은퇴의 추억 ${fmt(s.memory)}개', '모든 능력치·골드 +${fmt(s.memory * 5)}%'),
+      Text.rich(
+        TextSpan(children: [
+          const TextSpan(text: '은퇴의 추억 '),
+          TextSpan(text: '${fmt(s.memory)}개', style: const TextStyle(color: KdColors.fg, fontWeight: FontWeight.w700)),
+          const TextSpan(text: ' · 모든 능력치·골드 '),
+          TextSpan(text: '+${fmt(s.memory * 5)}%', style: const TextStyle(color: KdColors.fg, fontWeight: FontWeight.w700)),
+          const TextSpan(text: ' · 쓸 수 있는 포인트 '),
+          TextSpan(text: '$mp', style: TextStyle(color: mp > 0 ? const Color(0xFFFFD34A) : KdColors.fg, fontWeight: FontWeight.w700)),
+        ]),
+        key: const ValueKey('rtSum'),
+        style: KdText.body(13, color: KdColors.muted, height: 1.5),
+      ),
       if (can)
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
@@ -235,10 +248,12 @@ class _RetireBox extends StatelessWidget {
           ),
           child: Text.rich(
             TextSpan(children: [
-              const TextSpan(text: '지금 은퇴하면 '),
-              TextSpan(text: '+${pts * 5}%', style: const TextStyle(color: KdColors.gold, fontSize: 15, fontWeight: FontWeight.w700)),
+              const TextSpan(text: '지금 은퇴하면 추억 '),
+              TextSpan(text: '+$pts', style: const TextStyle(color: KdColors.gold, fontSize: 15, fontWeight: FontWeight.w700)),
               const TextSpan(text: ' → 모든 능력치·골드 '),
               TextSpan(text: '+${fmt((s.memory + pts) * 5)}%', style: const TextStyle(color: KdColors.gold, fontSize: 15, fontWeight: FontWeight.w700)),
+              const TextSpan(text: ' · 포인트 '),
+              TextSpan(text: '+$pts', style: const TextStyle(color: KdColors.gold, fontSize: 15, fontWeight: FontWeight.w700)),
             ]),
             textAlign: TextAlign.center,
             style: KdText.body(13),
@@ -249,11 +264,36 @@ class _RetireBox extends StatelessWidget {
       const KdNote('영지를 되찾을수록 목표 금액이 올라가요. 카엘은 아직 이 사실을 몰라요.'),
       if (orNum(s.raw['capClears'], 0) > 0)
         Text('👑 왕도 재탈환 보너스: 다음 회차에 왕도를 되찾으면 은퇴의 추억 +$capMem', style: KdText.body(12, color: const Color(0xFFFFD77A))),
-      KdBuy(
-        text: can ? '은퇴하기 · 추억 +$pts' : '영지 19곳을 되찾으면 은퇴할 수 있어요',
-        minWidth: 0,
-        onTap: can ? g.askRetire : null,
-      ),
+      Row(children: [
+        Stack(clipBehavior: Clip.none, children: [
+          KdBuy(
+            key: const ValueKey('diaryBtn'),
+            text: '은퇴 일기',
+            kind: BuyKind.ghost,
+            minWidth: 0,
+            onTap: g.openDiary,
+          ),
+          if (dot)
+            Positioned(
+              top: -3,
+              right: -3,
+              child: Container(
+                width: 10,
+                height: 10,
+                decoration: BoxDecoration(color: KdColors.gold, shape: BoxShape.circle, border: Border.all(color: Colors.white)),
+              ),
+            ),
+        ]),
+        const SizedBox(width: 6),
+        Expanded(
+          child: KdBuy(
+            key: const ValueKey('retireBtn'),
+            text: can ? '은퇴하기 · 추억 +$pts' : need,
+            minWidth: 0,
+            onTap: can ? g.askRetire : null,
+          ),
+        ),
+      ]),
     ]);
   }
 }

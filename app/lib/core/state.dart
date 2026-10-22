@@ -41,6 +41,8 @@ class GameState {
         'chOpen': 0,
         'tower': {'top': 0, 'day': ''},
         'dun': {'d': '', 'used': 0, 'ad': 0, 'star': {'mine': <String, dynamic>{}, 'field': <String, dynamic>{}, 'vault': <String, dynamic>{}}, 'seen': <String, dynamic>{}},
+        // 은퇴 일기 (docs/content/RETIRE.md 7장) — trait·trReset·retRw 는 은퇴해도 유지, runStart 는 이번 회차 시작 영지
+        'trait': <String, dynamic>{}, 'trReset': 0, 'runStart': 1, 'retRw': <String, dynamic>{}, 'diaryIntro': 0,
         'v': 3,
       };
 

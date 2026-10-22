@@ -11,6 +11,7 @@ import 'dart:math' as math;
 
 import 'data.dart';
 import 'js.dart';
+import 'retire.dart';
 import 'rng.dart';
 import 'state.dart';
 import 'web_data.g.dart';
@@ -126,6 +127,33 @@ class GameCalc {
   /// buff(k): 요리 버프가 켜져 있는지
   bool buff(String k) => orNum(s.buffs[k], 0) > now;
   num memMul() => 1 + .05 * s.memory;
+
+  // ───────────── 은퇴 일기 특성 (웹 tl·trAtk… , core/retire.dart) ─────────────
+  /// tl(k): 특성 단계 (0 ~ 최대)
+  int tl(String k) {
+    final t = memT(k);
+    if (t == null) return 0;
+    final v = orNum(asMap(s.raw['trait'])?[k], 0).toInt();
+    return math.max(0, math.min(t.max, v));
+  }
+
+  num trAtk() => 1 + .04 * tl('sharp');
+  num trHp() => 1 + .04 * tl('hat');
+
+  /// 치명타 배수 (기본 ×2, 급소의 기억)
+  num crX() => 2 + .1 * tl('critd');
+
+  /// 치명타 기대 배수 (전투력·방치 골드 계산용, 웹 critE)
+  num critE(Stats t) => 1 + t.crit * (crX() - 1);
+  num cropT(CropDef c) => c.t * (1 - .05 * tl('soil'));
+  num trProd() => 1 + .06 * tl('hands');
+  num trBld() => 1 - .05 * tl('carpenter');
+  num trCook() => .1 * tl('stew');
+  num offCapH() => 6 + s.bldLv('inn') + tl('inn');
+  num trUp() => 1 - .04 * tl('knack');
+
+  /// 보스 제한 시간 (+끈질긴 농부) — 웹 bossLim
+  int bossLimT(int st) => bossLim(st) + 2 * tl('stubborn');
   num allMul() => (1 + .04 * rankIdx()) * memMul();
   bool subOn() {
     final sub = asMap(s.raw['sub']);
@@ -223,8 +251,8 @@ class GameCalc {
     }
     final fm = 1 + .06 * s.bldLv('mine'), m = allMul();
     return Stats(
-      (10 + s.upLv('atk') * 3 + ga * fm) * (buff('atk') ? 1.2 : 1) * m,
-      (100 + s.upLv('hp') * 20 + gh * fm) * (1 + .05 * s.bldLv('diner')) * m,
+      (10 + s.upLv('atk') * 3 + ga * fm) * (buff('atk') ? 1.2 : 1) * m * trAtk(),
+      (100 + s.upLv('hp') * 20 + gh * fm) * (1 + .05 * s.bldLv('diner')) * m * trHp(),
       (1 + s.upLv('spd') * .05) * (buff('spd') ? 1.2 : 1),
       (5 + s.upLv('crit')) / 100 + (buff('crit') ? .1 : 0),
     );
@@ -260,8 +288,8 @@ class GameCalc {
     final l = orNum(s.lv[id], 1);
     final m = allMul() * cwMul(id) * starMul(id), g = math.pow(compGrow, l - 1), gs = gearSum();
     return Stats(
-      (base.atk * g + gs.a * bless) * (1 + .08 * s.bldLv('apiary')) * (buff('atk') ? 1.2 : 1) * m,
-      (base.hp * g + gs.h * bless) * (1 + .05 * s.bldLv('diner')) * m,
+      (base.atk * g + gs.a * bless) * (1 + .08 * s.bldLv('apiary')) * (buff('atk') ? 1.2 : 1) * m * trAtk(),
+      (base.hp * g + gs.h * bless) * (1 + .05 * s.bldLv('diner')) * m * trHp(),
       base.aps! * (buff('spd') ? 1.2 : 1) * (_bake ? 1.3 : 1),
       .05 + (buff('crit') ? .1 : 0),
     );
@@ -272,7 +300,7 @@ class GameCalc {
   /// cPow(id): 동료 한 명 전투력 (편성 추천에 씀)
   num cPow(String id) {
     final t = stats(id);
-    return (t.atk * 6 + t.hp) * (1 + t.crit) * t.aps * (jobOf[id] == 'keeper' ? 1.4 : 1);
+    return (t.atk * 6 + t.hp) * critE(t) * t.aps * (jobOf[id] == 'keeper' ? 1.4 : 1);
   }
 
   /// power(): 원정대 전투력
@@ -280,7 +308,7 @@ class GameCalc {
     num a = 0;
     for (final id in members()) {
       final t = stats(id);
-      a = a + (t.atk * 6 + t.hp) * (1 + t.crit) * t.aps * (jobOf[id] == 'keeper' ? 1.4 : 1);
+      a = a + (t.atk * 6 + t.hp) * critE(t) * t.aps * (jobOf[id] == 'keeper' ? 1.4 : 1);
     }
     return jsRound(a);
   }
@@ -297,11 +325,11 @@ class GameCalc {
   /// compCost(l): 동료 레벨업 골드
   static num compCost(num l) => jsFloor(25 * math.pow(1.16, l - 1));
 
-  /// UPG[k].cost(l): 단련 비용 (화면에서 내림해서 씀)
-  static num upgradeCost(String k, num l) => switch (k) {
-        'atk' || 'hp' => 10 * math.pow(1.15, l),
-        'spd' => 50 * math.pow(1.4, l),
-        'crit' => 40 * math.pow(1.35, l),
+  /// UPG[k].cost(l): 단련 비용 (화면에서 내림해서 씀, 단련의 요령 −4%/단계)
+  num upgradeCost(String k, num l) => switch (k) {
+        'atk' || 'hp' => 10 * math.pow(1.15, l) * trUp(),
+        'spd' => 50 * math.pow(1.4, l) * trUp(),
+        'crit' => 40 * math.pow(1.35, l) * trUp(),
         _ => throw ArgumentError(k),
       };
 
@@ -315,7 +343,7 @@ class GameCalc {
 
   /// bldTime(b,l): 공사 시간(초), 최대 12시간
   num bldTime(BuildingDef b, num l) =>
-      math.min(12 * 3600, jsRound(60 * math.sqrt(b.base / 120) * math.pow(2, l) * vpTime()));
+      math.min(12 * 3600, jsRound(60 * math.sqrt(b.base / 120) * math.pow(2, l) * vpTime() * trBld()));
 
   /// timeGem(sec): 남은 3분당 황금 이삭 1
   static num timeGem(num sec) => math.max(1, jsCeil(sec / 180));
@@ -368,8 +396,11 @@ class GameCalc {
   /// retireTarget(): 은퇴 자금 목표
   num retireTarget() => jsFloor(reward(s.stage, false) * 400);
 
-  /// retirePts(): 은퇴하면 얻는 추억
-  int retirePts() => math.max(0, ((s.stage - 10) / 5).floor());
+  /// retirePts(): 은퇴하면 얻는 추억 — 건너뛴 구간 보정(retireBase) + 회고록 +10%/단계(올림). 표시와 지급이 같은 함수
+  int retirePts() {
+    final b = this.retireBase(), m = tl('memoir');
+    return m != 0 ? (b * (1 + .1 * m)).ceil() : b;
+  }
 
   // ───────────── 골드 수입 ─────────────
   /// 원정대 초당 피해 합(치명 포함)
@@ -377,7 +408,7 @@ class GameCalc {
     num a = 0;
     for (final id in members()) {
       final t = stats(id);
-      a = a + t.atk * t.aps * (1 + t.crit);
+      a = a + t.atk * t.aps * critE(t);
     }
     return a;
   }
@@ -401,7 +432,7 @@ class GameCalc {
 
   /// offline(): 게임을 꺼 둔 동안 쌓인 골드. 60초 미만이면 0.
   ({num sec, num cap, num gold}) offlineReward() {
-    final cap = (6 + s.bldLv('inn')) * 3600;
+    final cap = offCapH() * 3600;
     final sec = math.min(cap, (now - s.last) / 1000);
     if (sec < 60) return (sec: sec, cap: cap, gold: 0);
     final g = jsFloor(idleGold(sec));
@@ -620,10 +651,10 @@ class GameCalc {
     final m = asMap(p);
     if (m == null) return (st: 'empty', c: null, left: null, ratio: null);
     final c = crops.firstWhere((x) => x.k == m['k']);
-    final left = c.t - (now - asNum(m['at'])) / 1000;
+    final tt = cropT(c), left = tt - (now - asNum(m['at'])) / 1000;
     return left <= 0
         ? (st: 'ready', c: c, left: null, ratio: null)
-        : (st: 'grow', c: c, left: left, ratio: 1 - left / c.t);
+        : (st: 'grow', c: c, left: left, ratio: 1 - left / tt);
   }
 
   Map<String, dynamic>? building() {
@@ -676,7 +707,7 @@ class GameCalc {
         s.prod[g.b] = t;
         continue;
       }
-      final iv = 120000 / l / (g.b == 'mine' ? vpMine() : g.b == 'dock' ? vpFish() : g.b == 'apiary' ? vpHoney() : 1);
+      final iv = 120000 / l / (g.b == 'mine' ? vpMine() : g.b == 'dock' ? vpFish() : g.b == 'apiary' ? vpHoney() : 1) / trProd();
       if (!truthy(s.prod[g.b])) s.prod[g.b] = t;
       final n = math.min(2000, ((t - asNum(s.prod[g.b])) / iv).floor());
       if (n > 0) {
@@ -722,13 +753,16 @@ class GameCalc {
   }
 
   // ───────────── 은퇴 ─────────────
-  /// retire(p): 처음부터 다시(추억 +p). 전투 화면 정리는 화면 쪽에서.
-  void retire(int p) {
+  /// retire(p, one): 처음부터 다시(추억 +p). one = 「영지 1부터 시작」. 전투 화면 정리·장면은 화면 쪽에서.
+  /// 특성(trait)·초기화 횟수·은퇴 횟수 보상 기록은 유지. 지름길·비상금·씨앗 주머니 적용 (웹 retire)
+  void retire(int p, [bool one = false]) {
+    final st = this.retStart(one), pg = this.retPurse(st), sb = tl('seedbag');
     s.memory = s.memory + p;
     s.retires = s.retires + 1;
     s.raw['capBonus'] = 0; // 왕도 재탈환 보너스: 회차마다 1번
-    s.gold = 60;
-    s.stage = 1;
+    s.gold = 60 + pg;
+    s.stage = st;
+    s.raw['runStart'] = st;
     s.wave = 0;
     s.raw['eq'] = <String, dynamic>{};
     s.raw['up'] = <String, dynamic>{'atk': 0, 'hp': 0, 'spd': 0, 'crit': 0};
@@ -736,5 +770,10 @@ class GameCalc {
       s.lv[k] = 1;
     }
     s.raw['rankSeen'] = 0;
+    if (sb != 0) {
+      s.seeds['wheat'] = orNum(s.seeds['wheat'], 0) + 10 * sb;
+      s.seeds['carrot'] = orNum(s.seeds['carrot'], 0) + 5 * sb;
+      s.seeds['pumpkin'] = orNum(s.seeds['pumpkin'], 0) + 2 * sb;
+    }
   }
 }
