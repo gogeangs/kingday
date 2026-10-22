@@ -81,7 +81,7 @@ class BattleGame extends FlameGame {
         }
       }
       // 왕도(5): 전용 그림이 오기 전에는 물들일 원본(군단장 5명·골렘·박쥐)도 받음
-      final capSrc = r == regions.length - 1 ? [for (var j = 0; j < 5; j++) ...[monSheets[j], monSheets[j]?.boss], ...balthasarSheets] : const <MonSheet?>[];
+      final capSrc = r == regions.length - 1 ? [for (var j = 0; j < 5; j++) ...[monSheets[j], monSheets[j]?.boss], ...baltasarSheets] : const <MonSheet?>[];
       for (final m in [monSheets[r], monSheets[r]?.boss, monAlt[r], ...capSrc]) {
         if (m == null) continue;
         for (final a in ['walk', 'attack', 'hit']) {
@@ -446,7 +446,7 @@ class BattleGame extends FlameGame {
   ({MonSheet sheet, ui.ColorFilter? tint, double alpha, double scale, bool lordArt})? _monArt(int ri, Mon m) {
     if (m.gob) return (sheet: goblinSheet, tint: null, alpha: 1.0, scale: 1.0, lordArt: false);
     if (m.dem) {
-      final own = balthasarSheets[m.ph2 ? 1 : 0];
+      final own = baltasarSheets[m.ph2 ? 1 : 0];
       if (_has(own)) return (sheet: own, tint: null, alpha: 1.0, scale: 1.3, lordArt: true);
       final src = monSheets[3]?.boss; // 알도르
       if (!_has(src)) return null;

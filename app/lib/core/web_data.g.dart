@@ -1279,7 +1279,7 @@ const wMonSprites = {
     'boss': {'id': 'boss_ignis', 'walk': 4, 'attack': 4, 'hit': 2, 'fig': 200, 'h': 78},
   },
   '5': {
-    'id': 'guard_iron',
+    'id': 'guard_black',
     'walk': 4,
     'attack': 4,
     'hit': 2,

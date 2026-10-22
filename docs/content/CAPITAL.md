@@ -133,17 +133,19 @@
 - 처리: 동작 시트는 `tools/extract_sprites.py`(몬스터 방향 확인), 일러스트는 `assets/illust/`에 jpg.
 
 ### 6-1. 그림이 오기 전 대체 (구현됨) · 들어올 파일 이름
+- **실제 생성용 프롬프트는 프로젝트 문서 `claude/ART_CAPITAL.md`(17장, 규격 반영)를 쓴다. 파일 이름도 그 문서와 같게 맞춤.**
 | 그림 | 대체 (지금) | 들어올 파일 |
 |---|---|---|
 | 왕도 배경 4겹 | 코드로 그린 보랏빛 하늘·언덕·첨탑 | `assets/bg/capital_{sky,far,mid,ground}.png` (넣으면 바로 쓰임) |
-| 흑철 근위병 | 강철 골렘 그림을 검보라로 물들임 | `assets/monsters/guard_iron_{walk,attack,hit}.png` |
+| 흑철 근위병 | 강철 골렘 그림을 검보라로 물들임 | `assets/monsters/guard_black_{walk,attack,hit}.png` |
 | 성벽 가고일 | 그림자 박쥐 그림을 회색 석상 색으로 | `assets/monsters/gargoyle_wall_{walk,attack,hit}.png` |
 | 마왕 근위대장 | 강철 골렘을 검은 청동색으로, 크게 | `assets/monsters/boss_guardcap_{walk,attack,hit}.png` |
 | 잔영 5명 | 군단장 그림을 보랏빛 + 반투명(72%) | (새 그림 없음) |
-| 발타사르 1·2단계 | 알도르 그림을 1.3배 크게 + 어둡게(1단계) / 보랏빛 은색(2단계) | `assets/monsters/boss_balthasar{,2}_{walk,attack,hit}.png` — 시전 줄은 추출 때 맞춤 |
-| 발타사르 초상화 | 알도르 초상화를 어둡게 | `assets/portraits/portrait_balthasar_idle.png` (+ 2단계용) |
-| 봉인의 파동 | 코드로 그린 금색 점선 원 + 「봉인의 파동!」 글자 | 효과 시트 (추후 연결) |
-| 엔딩 일러스트 2장 | 없으면 건너뜀 | `assets/illust/illust_throne.jpg`, `assets/illust/illust_garden.jpg` |
+| 발타사르 1·2단계 | 알도르 그림을 1.3배 크게 + 어둡게(1단계) / 보랏빛 은색(2단계) | `assets/monsters/boss_baltasar{,2}_{walk,attack,hit}.png` — 시전 줄은 추출 때 맞춤 |
+| 발타사르 초상화 | 알도르 초상화를 어둡게 | `assets/portraits/portrait_baltasar_idle.png` (+ 2단계용) |
+| 봉인의 파동 | 코드로 그린 금색 점선 원 + 「봉인의 파동!」 글자 | `assets/fx/fx_boss_seal.png` (들어오면 연결) |
+| 지도 아이콘 | 공용 노드 | `assets/map/capital_{enemy,boss}.png` (넣으면 바로 쓰임) |
+| 엔딩 일러스트 2장 | 없으면 건너뜀 | `assets/illust/illust_ending1.jpg`, `assets/illust/illust_ending2.jpg` |
 | 테두리·배지 | 붉은 왕관 테두리·농부 왕 배지를 금보라로 물들인 **임시 파일** | 같은 이름으로 덮어쓰기 |
 
 ## 7. 저장 데이터·서버
