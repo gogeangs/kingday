@@ -8,12 +8,17 @@ Artifact 한 개에는 파일을 512개까지만 올릴 수 있어서, 미리보
 
 올릴 때는 출력 파일을 페이지로, INLINE·DROP 의 파일은 Artifact 에서 빼고(null), 나머지 assets 는 그대로 둔다.
 INLINE 에는 'assets/ui/'+이름 처럼 코드로 경로를 만들어 부르는 그림을 넣으면 안 된다(그 경로는 바뀌지 않음).
+코드로 경로를 만드는 그림 묶음은 DYN 에 (코드 속 경로 글자, 그림 파일 모양) 으로 넣으면 HTML 안의 표(data URI)로 바꿔 부른다.
 """
 import base64, os, re, sys
 
 INLINE = ['assets/fonts/hahmlet-500.woff2', 'assets/fonts/hahmlet-700.woff2', 'assets/fonts/plexkr-400.woff2', 'assets/fonts/plexkr-600.woff2'] + \
     ['assets/ui/%s.png' % n for n in ('btn_auto btn_close icon_goblin icon_lock icon_mail icon_rank relic_chest tab_party village_skill '
-                                      'hd_challenge hd_goblin hd_mail hd_profile hd_rank hd_settings icon_challenge tab_equipment tab_map tab_training tab_village').split()]
+                                      'hd_challenge hd_goblin hd_mail hd_profile hd_rank hd_settings icon_challenge tab_equipment tab_map tab_training tab_village '
+                                      'hd_retire trait_branch_travel').split()]
+# 은퇴 일기 특성 아이콘(18)·갈래 문장(3): 코드가 trait_${t.k} 처럼 경로를 만들어 부름 → 표로 넣음
+DYN = [('assets/ui/trait_branch_${b.k}.png', 'assets/ui/trait_branch_*.png', 'b.k'),
+       ('assets/ui/trait_${t.k}.png', 'assets/ui/trait_*.png', 't.k')]
 DROP = ['assets/icon/apple-touch-icon.png', 'assets/icon/favicon-16.png', 'assets/icon/favicon-32.png', 'assets/icon/icon-192.png', 'assets/icon/icon-512.png', 'favicon.ico', 'manifest.webmanifest']
 MIME = {'.png': 'image/png', '.woff2': 'font/woff2'}
 
@@ -23,6 +28,20 @@ for p in INLINE:
     assert p in s, p
     data = base64.b64encode(open(os.path.join(root, p), 'rb').read()).decode()
     s = s.replace(p, 'data:%s;base64,%s' % (MIME[os.path.splitext(p)[1]], data))
+import glob, json
+dyn_files = []
+for i, (code, pat, key) in enumerate(DYN):
+    assert code in s, code
+    pre = os.path.basename(pat).split('*')[0]
+    tbl = {}
+    for f in sorted(glob.glob(os.path.join(root, pat))):
+        k = os.path.basename(f)[len(pre):-4]
+        if '_' in k and i == len(DYN) - 1 and k.startswith('branch'):
+            continue
+        tbl[k] = 'data:image/png;base64,' + base64.b64encode(open(f, 'rb').read()).decode()
+        dyn_files.append(os.path.relpath(f, root))
+    s = s.replace(code, '${PVIMG%d[%s]}' % (i, key))
+    s = s.replace('<script>', '<script>const PVIMG%d=%s;' % (i, json.dumps(tbl)), 1)
 s = re.sub(r'<link[^>]+(?:manifest|apple-touch-icon|rel="icon")[^>]*>', '', s)
 open(sys.argv[1], 'w', encoding='utf-8').write(s)
-print(sys.argv[1], round(len(s) / 1e6, 2), 'MB · 빼는 파일', len(INLINE) + len(DROP))
+print(sys.argv[1], round(len(s) / 1e6, 2), 'MB · 빼는 파일', len(INLINE) + len(DROP) + len(set(dyn_files)))
