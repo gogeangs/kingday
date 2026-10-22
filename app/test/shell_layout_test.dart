@@ -13,6 +13,7 @@ import 'package:kingday/main.dart';
 import 'package:kingday/screens/challenge_sheet.dart';
 import 'package:kingday/screens/pt_page.dart';
 import 'package:kingday/screens/settings_sheet.dart';
+import 'package:kingday/screens/vl_page.dart';
 import 'package:kingday/ui/widgets.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -27,7 +28,9 @@ Map<String, Object> _lateSave() => {
       'acorn-idle-v1': '{"gold":9.87e14,"stage":51,"best":51,"gem":123456,"started":true,"chOpen":1,"tower":{"top":14,"day":""},'
           '"joined":{"margo":true,"haral":true,"riel":true,"bron":true},'
           '"done":{"marta":true,"margo":true,"haral":true,"riel":true,"bron":true,"tutSkill":true,"toby":true,"toby2":true,"capRoad":true,"cap56":true,"cap57":true},'
-          '"lv":{"bron":60,"haral":61,"riel":58,"margo":55},"bld":{"inn":10,"farm":6,"diner":10,"dock":10,"apiary":9,"mine":10},'
+          '"lv":{"bron":60,"haral":61,"riel":58,"margo":55},"bld":{"inn":10,"farm":6,"diner":10,"dock":10,"apiary":9,"mine":10,"forge":3,"market":4,"ranch":2,"chapel":5},'
+          '"work":{"dock":["bron"]},"orders":[{"who":"pete","need":{"fish":40,"egg":10},"gold":0,"extra":{"k":"gem","n":4},"at":0},{"at":9999999999999},{"who":"nella","need":{"honey":30},"gold":0,"extra":{"k":"card","n":2},"at":0}],'
+          '"bless":{"d":"","used":0,"ad":0,"k":"gold","until":9999999999999,"opts":[]},"vlv":2,'
           '"rec":{"brida":3},"party":{"miner":"brida"},"seeds":{"wheat":5,"carrot":2,"pumpkin":1},"items":{"wheat":40,"carrot":9,"pumpkin":4,"fish":120,"honey":80,"ore":999},"plots":[{"k":"wheat","at":0},{"k":"carrot","at":9999999999999},null],"plotTag":[null,"carrot"],"build":{"k":"dock","end":9999999999999,"dur":3600},"bq":["apiary"],"gemPlots":2,"buffs":{"atk":9999999999999,"gold":9999999999999},"att":{"intro":1,"last":"${_today()}"},"v":3}',
     };
 
@@ -145,10 +148,28 @@ void main() {
 
         // 5단계: 마을(건물 6곳·밭·식당)·지도
         g.setTab(GameTab.vl);
-        for (final k in ['farm', 'inn', 'diner', 'dock', 'apiary', 'mine']) {
+        for (final k in ['farm', 'inn', 'diner', 'dock', 'apiary', 'mine', 'forge', 'market', 'ranch', 'chapel']) {
           g.vlSelect(k);
           await frames(2);
+          // 건물 창 탭(기능·정보·일꾼)과 크게 보기
+          for (final t in g.vbTabs(k)) {
+            g.vbTabSet(k, t);
+            await frames(1);
+          }
         }
+        g.vbFull = true;
+        g.vlSelect('market', tab: 'order');
+        await frames(2);
+        g.vbFull = false;
+        g.vbClose();
+        await frames(1);
+        // 일꾼 관리 창 · 마을 레벨 창
+        showWorkSheet(g);
+        await frames(2);
+        await closeTop();
+        showVlSheet(g);
+        await frames(2);
+        await closeTop();
         if (g.calc.plotCount() > 0) {
           g.vlSelect('farm');
           g.state.seeds['wheat'] = 3;

@@ -117,10 +117,20 @@ class _PageSheetState extends State<PageSheet> {
           Expanded(
             child: ValueListenableBuilder<int>(
               valueListenable: g.ui,
-              builder: (_, __, ___) => ListView(
-                padding: const EdgeInsets.fromLTRB(16, 12, 16, 28),
-                children: [pageBody(g, t)],
-              ),
+              builder: (_, __, ___) {
+                final list = ListView(
+                  padding: const EdgeInsets.fromLTRB(16, 12, 16, 28),
+                  children: [pageBody(g, t)],
+                );
+                // 마을: 건물을 누르면 아래에서 올라오는 건물 창 (웹 #p-vb, ⤢ 로 크게)
+                if (t != GameTab.vl || !g.vbOpen) return list;
+                return LayoutBuilder(
+                  builder: (_, cs) => Stack(children: [
+                    list,
+                    Positioned(left: 0, right: 0, bottom: 0, height: g.vbFull ? cs.maxHeight : cs.maxHeight * .58, child: VbWindow(g)),
+                  ]),
+                );
+              },
             ),
           ),
         ]),

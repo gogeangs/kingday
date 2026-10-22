@@ -19,7 +19,7 @@ const TABLES = [
   ['RECRUITS', 'RECRUITS'], ['STAR_NEED', 'STAR_NEED'], ['STAR_MUL', 'STAR_MUL'], ['GRADE', 'GRADE'], ['GR', 'GR'],
   ['VPAS', 'Object.fromEntries(Object.entries(VPAS).map(([k,v])=>[k,{n:v.n}]))'],
   ['SKILLS', 'SKILLS'],
-  ['BAL', 'BAL'], ['COMP_GROW', 'COMP_GROW'], ['BLESS', 'BLESS'], ['EN_MAX', 'EN_MAX'], ['CW', 'CW'], ['CW_MAX', 'CW_MAX'],
+  ['BAL', 'BAL'], ['COMP_GROW', 'COMP_GROW'], ['BLESS', 'BLESS'], ['EN_MAX', 'enMaxL(0)'], ['CW', 'CW'], ['CW_MAX', 'enMaxL(0)'],
   ['UPG', 'UPG.map(u=>({k:u.k,n:u.n,max:u.max}))'],
   ['CROPS', 'CROPS'], ['GOODS', 'GOODS'], ['RECIPES', 'RECIPES'], ['BUFFN', 'BUFFN'],
   ['BLD', 'BLD.map(b=>({k:b.k,n:b.n,who:b.who,max:b.max,base:b.base,lock:b.lock}))'], ['BQ_MAX', 'BQ_MAX'], ['TUT_GEM', 'TUT_GEM'],
@@ -36,6 +36,11 @@ const TABLES = [
   ['DECO', 'DECO'],
   // ── 2026-10-21 카드 확률·고블린 밭 ──
   ['CARD_FIX', 'CARD_FIX'], ['CARD_W', 'CARD_W'], ['GOB_PLOT', '({n:GOB_PLOT,gem:GOB_PLOT_GEM})'],
+  // ── 2026-10-23 마을 확장 (docs/content/VILLAGE.md) ──
+  ['VLV', 'VLV'], ['VLV_GEM', 'VLV_GEM'], ['WJOB', 'WJOB'], ['WBASE', 'WBASE'], ['WEFF', 'WEFF'], ['VPPL', 'VPPL'], ['LIKE', 'LIKE'],
+  ['ORD', '({gem:ORD_GEM,wait:ORD_WAIT,mul:ORD_MUL,lv:ORD_LV})'], ['BLS', 'BLS'], ['VTALK', 'VTALK'], ['WLINE', 'WLINE'],
+  ['VEP', 'VEP'], ['VOPEN', 'VOPEN'], ['VMOVE', 'VMOVE'], ['VNOTE', 'VNOTE'], ['VPOS', 'VPOS'], ['VBB', 'VBB'], ['WSPOT', 'WSPOT'],
+  ['VTABN', 'VTABN'], ['VFN', 'VFN'],
 ];
 
 function dartStr(s) {

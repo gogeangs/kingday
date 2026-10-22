@@ -10,10 +10,12 @@ library;
 import 'dart:math' as math;
 
 import 'data.dart';
+import 'fmt.dart';
 import 'js.dart';
 import 'retire.dart';
 import 'rng.dart';
 import 'state.dart';
+import 'village.dart';
 import 'web_data.g.dart';
 
 /// 공격·체력·공속·치명
@@ -152,7 +154,8 @@ class GameCalc {
 
   /// 치명타 기대 배수 (전투력·방치 골드 계산용, 웹 critE)
   num critE(Stats t) => 1 + t.crit * (crX() - 1);
-  num cropT(CropDef c) => c.t * (1 - .05 * tl('soil'));
+  /// 작물 자라는 시간: 은퇴 특성 · 밭 일꾼 · 대지의 축복(2배 빠름)
+  num cropT(CropDef c) => c.t * (1 - .05 * tl('soil')) / (1 + this.workBonus('farm')) / (this.blOn('earth') ? 2 : 1);
   num trProd() => 1 + .06 * tl('hands');
   num trBld() => 1 - .05 * tl('carpenter');
   num trCook() => .1 * tl('stew');
@@ -239,7 +242,7 @@ class GameCalc {
   num enMul(String k) => 1 + .1 * enLv(k);
 
   /// enCost(l): 브론의 대장간 부위 강화 광석
-  num enCost(int l) => jsCeil(5 * math.pow(1.35, l) * vpOre());
+  num enCost(int l) => jsCeil(5 * math.pow(1.35, l) * vpOre() * this.forgeCut());
 
   Relic? equipped(String k) {
     final m = asMap(s.eq[k]);
@@ -258,8 +261,8 @@ class GameCalc {
     }
     final fm = 1 + .06 * s.bldLv('mine'), m = allMul();
     return Stats(
-      (10 + s.upLv('atk') * 3 + ga * fm) * (buff('atk') ? 1.2 : 1) * m * trAtk(),
-      (100 + s.upLv('hp') * 20 + gh * fm) * (1 + .05 * s.bldLv('diner')) * m * trHp(),
+      (10 + s.upLv('atk') * 3 + ga * fm) * (buff('atk') ? 1.2 : 1) * m * trAtk() * this.vBrave(),
+      (100 + s.upLv('hp') * 20 + gh * fm) * (1 + .05 * s.bldLv('diner')) * m * trHp() * this.vHp(),
       (1 + s.upLv('spd') * .05) * (buff('spd') ? 1.2 : 1),
       (5 + s.upLv('crit')) / 100 + (buff('crit') ? .1 : 0),
     );
@@ -286,7 +289,7 @@ class GameCalc {
   }
 
   num cwMul(String id) => 1 + .08 * cwLv(id);
-  num cwOre(int l) => jsCeil(8 * math.pow(1.35, l) * vpOre());
+  num cwOre(int l) => jsCeil(8 * math.pow(1.35, l) * vpOre() * this.forgeCut());
   num cwGold(int l) => jsCeil(reward(math.max(1, s.best), false) * 12 * (l + 1));
 
   /// cStats(id): 동료 능력치
@@ -295,8 +298,8 @@ class GameCalc {
     final l = orNum(s.lv[id], 1);
     final m = allMul() * cwMul(id) * starMul(id), g = math.pow(compGrow, l - 1), gs = gearSum();
     return Stats(
-      (base.atk * g + gs.a * bless) * (1 + .08 * s.bldLv('apiary')) * (buff('atk') ? 1.2 : 1) * m * trAtk(),
-      (base.hp * g + gs.h * bless) * (1 + .05 * s.bldLv('diner')) * m * trHp(),
+      (base.atk * g + gs.a * bless) * (1 + .08 * s.bldLv('apiary')) * (buff('atk') ? 1.2 : 1) * m * trAtk() * this.vBrave(),
+      (base.hp * g + gs.h * bless) * (1 + .05 * s.bldLv('diner')) * m * trHp() * this.vHp(),
       base.aps! * (buff('spd') ? 1.2 : 1) * (_bake ? 1.3 : 1),
       .05 + (buff('crit') ? .1 : 0),
     );
@@ -345,7 +348,7 @@ class GameCalc {
 
   /// bldOre(b,l): 광산 재건 후, 광산 외 건물 Lv.6 이상에 필요한 광석
   num bldOre(BuildingDef b, num l) =>
-      truthy(s.bld['mine']) && b.k != 'mine' && l >= 5 ? jsCeil(15 * math.pow(1.5, l - 5)) : 0;
+      truthy(s.bld['mine']) && b.k != 'mine' && b.k != 'forge' && l >= 5 ? jsCeil(15 * math.pow(1.5, l - 5)) : 0;
   bool oreOk(BuildingDef b, num l) => orNum(s.items['ore'], 0) >= bldOre(b, l);
 
   /// bldTime(b,l): 공사 시간(초), 최대 12시간
@@ -367,6 +370,10 @@ class GameCalc {
         'dock' => s.isJoined('haral'),
         'apiary' => s.isJoined('riel'),
         'mine' => s.isJoined('bron'),
+        'forge' => s.bldLv('mine') > 0,
+        'market' => s.best > 12,
+        'ranch' => s.best > 18 && s.bldLv('farm') >= 3,
+        'chapel' => s.best > 25,
         _ => false,
       };
 
@@ -391,6 +398,14 @@ class GameCalc {
         final vm = vpMine();
         final n = vm > 1 ? _jsNumStr(num.parse((l * vm).toStringAsFixed(1))) : _jsNumStr(l);
         return '카엘 장비 +${l * 6}% · 광석 $n개/2분${vm > 1 ? ' (여왕의 대장간)' : ''}';
+      case 'forge':
+        return '강화 최대 +${enMaxL(l)}${l > 1 ? ' · 강화 광석 −${3 * (l - 1)}%' : ''}';
+      case 'market':
+        return '주문 ${ordN(l)}칸 · 주문 골드 +${_jsNumStr(l * 3)}%';
+      case 'ranch':
+        return '달걀 $l개/3분 · 우유 $l병/6분 · 원정대 체력 +${l * 3}%';
+      case 'chapel':
+        return '축복 ${fmtT(blessSec(l))} · 고르기 ${l >= 5 ? 4 : 3}개';
     }
     throw ArgumentError(k);
   }
@@ -432,7 +447,7 @@ class GameCalc {
   /// 방치 보상: sec초 동안의 골드 (방치 보상·탑 보급·고블린 금고가 같이 씀, 웹 idleGold)
   num idleGold(num sec) {
     final tpk = monHp(fightSt(), false) / _dps() + 1.2;
-    return sec / tpk * reward(fightSt(), false) * .5 * memMul() * (subOn() ? 1.5 : 1);
+    return sec / tpk * reward(fightSt(), false) * .5 * memMul() * (subOn() ? 1.5 : 1) * this.vIdle();
   }
 
   num idleGoldPerSec() => idleGold(1);
@@ -709,17 +724,17 @@ class GameCalc {
     final done = checkBuild();
     final t = now;
     for (final g in goods) {
-      final l = s.bldLv(g.b);
+      final l = s.bldLv(g.b), pk = g.prodKey;
       if (l == 0) {
-        s.prod[g.b] = t;
+        s.prod[pk] = t;
         continue;
       }
-      final iv = 120000 / l / (g.b == 'mine' ? vpMine() : g.b == 'dock' ? vpFish() : g.b == 'apiary' ? vpHoney() : 1) / trProd();
-      if (!truthy(s.prod[g.b])) s.prod[g.b] = t;
-      final n = math.min(2000, ((t - asNum(s.prod[g.b])) / iv).floor());
+      final iv = g.m * 60000 / l / this.prodMul(g.b);
+      if (!truthy(s.prod[pk])) s.prod[pk] = t;
+      final n = math.min(2000, ((t - asNum(s.prod[pk])) / iv).floor());
       if (n > 0) {
         s.items[g.k] = asNum(s.items[g.k]) + n;
-        s.prod[g.b] = asNum(s.prod[g.b]) + n * iv;
+        s.prod[pk] = asNum(s.prod[pk]) + n * iv;
       }
     }
     return done;

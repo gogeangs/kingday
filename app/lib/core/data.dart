@@ -150,8 +150,6 @@ class Balance {
 
 const num compGrow = wCompGrow;
 const num bless = wBless;
-const int enMax = wEnMax;
-const int cwMax = wCwMax;
 final Map<String, String> compWeapon = wCw.cast<String, String>();
 
 // ── 단련 ──
@@ -172,16 +170,25 @@ class CropDef {
 }
 
 class GoodDef {
-  GoodDef._(Map<String, dynamic> m) : k = m['k'], n = m['n'], color = m['c'], sell = _n(m['sell']), b = m['b'];
+  GoodDef._(Map<String, dynamic> m) : k = m['k'], n = m['n'], color = m['c'], sell = _n(m['sell']), b = m['b'], m = _n(m['m']);
   final String k, n, color, b;
   final num sell;
+
+  /// 레벨당 1개를 만드는 데 걸리는 분 (생선·꿀·광석 2분, 달걀 3분, 우유 6분)
+  final num m;
+
+  /// 생산 기록 키 (웹 prodKey): 목장은 달걀·우유를 따로 셈
+  String get prodKey => b == 'ranch' ? k : b;
 }
 
 class RecipeDef {
   RecipeDef._(Map<String, dynamic> m)
-      : k = m['k'], n = m['n'], need = _m(m['need']).cast<String, num>(), buff = m['buff'], desc = m['desc'];
+      : k = m['k'], n = m['n'], need = _m(m['need']).cast<String, num>(), buff = m['buff'], desc = m['desc'], ranch = m['ranch'] == 1;
   final String k, n, buff, desc;
   final Map<String, num> need;
+
+  /// 목장 재료 요리(우유 수프·달걀 호박전): 목장을 지어야 보임
+  final bool ranch;
 }
 
 final crops = [for (final x in wCrops) CropDef._(_m(x))];

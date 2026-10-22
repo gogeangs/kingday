@@ -11,6 +11,7 @@ import '../core/challenge.dart';
 import '../core/data.dart';
 import '../core/fmt.dart';
 import '../core/js.dart';
+import '../core/village.dart';
 import '../game/controller.dart';
 import '../ui/fx.dart';
 import '../ui/theme.dart';
@@ -332,6 +333,13 @@ class _Buffs extends StatelessWidget {
         '${buffName[b]} ${mmss((asNum(g.state.buffs[b]) - now) / 1000)}',
         false,
       ));
+    }
+    // 예배당 축복 (요리 버프와 따로, 함께 적용)
+    final bk = g.calc.blessK();
+    if (bk.isNotEmpty) {
+      final left = ((orNum(asMap(g.state.raw['bless'])?['until'], 0) - now) / 1000).ceil();
+      final h = left ~/ 3600, hm = h > 0 ? '$h:${'${left % 3600 ~/ 60}'.padLeft(2, '0')}:${'${left % 60}'.padLeft(2, '0')}' : mmss(left);
+      chips.add(_chip(kdImg('assets/game/ui/bless_$bk.png', w: 26, h: 26), '${blessDef(bk).s} $hm', false));
     }
     final sk = g.sim.skx;
     for (final (v, id) in [(sk.shield, 'bron'), (sk.honey, 'riel'), (sk.feast, 'margo')]) {

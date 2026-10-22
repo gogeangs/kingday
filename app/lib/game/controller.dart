@@ -5,6 +5,7 @@ library;
 
 import 'dart:async';
 import 'dart:convert';
+import 'dart:math' as math;
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
@@ -27,6 +28,7 @@ import '../core/retire.dart';
 import '../core/save_store.dart';
 import '../core/server.dart';
 import '../core/state.dart';
+import '../core/village.dart';
 import '../screens/attend_sheet.dart';
 import '../screens/challenge_sheet.dart';
 import '../screens/retire_sheet.dart';
@@ -136,6 +138,7 @@ class GameController extends ChangeNotifier {
   void setTab(GameTab? t) {
     if (t == tab) t = null;
     if (t == GameTab.pt) dotSeen();
+    if (t == GameTab.vl) state.raw['workDot'] = calc.today();
     tab = t;
     notifyListeners();
     refresh();
@@ -176,6 +179,7 @@ class GameController extends ChangeNotifier {
   /// 시간이 다 돼 끝난 공사 알림 (웹 checkBuild → finishBuild: 첫 번째만 알림)
   void _builtToast(List<String> done) {
     if (done.isEmpty) return;
+    vNewDone.addAll(done);
     final k = done.first, b = buildingDef(k);
     final after = state.bldLv(k) - done.skip(1).where((x) => x == k).length;
     toast('${b.n}${after - 1 > 0 ? ' 확장' : ' 재건'} 완료! ${calc.bldEff(k, after)}');
@@ -492,6 +496,7 @@ class GameController extends ChangeNotifier {
       _uiT = 0;
       _builtToast(calc.produce());
       calc.pkCheck();
+      _vlTick();
       calc.pfCheck();
       chCheck();
       refresh();
@@ -608,12 +613,137 @@ class GameController extends ChangeNotifier {
   /// 마을에서 고른 건물 (웹 vlSel)
   String vlSel = 'farm';
 
+  /// 건물 창(아래 반 창)이 열려 있는지 · 크게 보기 · 건물마다 마지막에 본 탭 (웹 vbOpen·vbFull·vbTabM)
+  bool vbOpen = false, vbFull = false;
+  final Map<String, String> vbTabM = {};
+
+  /// 방금 공사가 끝난 건물 (할 일 줄 「🏗 공사 완료」, 고르면 꺼짐)
+  final Set<String> vNewDone = {};
+
+  /// 길 위 사람을 눌렀을 때 한마디 (id, 대사, 지도 x·y, 끝나는 시각)
+  ({String id, String line, double x, double y, int end})? vTalk;
+
   /// 밭 지정 모드 (웹 plotEdit)
   bool plotEdit = false;
 
-  void vlSelect(String k) {
+  static const _vFn = {'farm': 'farm', 'forge': 'forge', 'market': 'order', 'chapel': 'bless', 'diner': 'kitchen'};
+
+  /// 건물 창 탭 (웹 vbTabs): 기능 탭 → 정보 → 일꾼
+  List<String> vbTabs(String k) {
+    final l = state.bldLv(k), fn = _vFn[k];
+    return [
+      if (fn != null && (k == 'diner' ? truthy(state.bld['farm']) : l > 0)) fn,
+      'info',
+      if (l > 0 && calc.wkOpen()) 'work',
+    ];
+  }
+
+  String vbTab(String k) {
+    final t = vbTabs(k), m = vbTabM[k];
+    return m != null && t.contains(m) ? m : t.first;
+  }
+
+  /// 건물 고르기: 마을 탭으로 가서 아래 건물 창을 연다 (웹 vlSelect)
+  void vlSelect(String k, {String? tab}) {
     vlSel = k;
+    vbOpen = true;
+    if (tab != null) vbTabM[k] = tab;
+    vNewDone.remove(k);
+    if (this.tab != GameTab.vl) setTab(GameTab.vl);
     refresh();
+  }
+
+  void vbClose() {
+    vbOpen = false;
+    refresh();
+  }
+
+  void vbTabSet(String k, String t) {
+    vbTabM[k] = t;
+    refresh();
+  }
+
+  /// 마을 할 일 (웹 vTodos): (키, 글자, 누르면)
+  List<(String, String, VoidCallback)> vTodos() {
+    final s = state, c = calc, t = <(String, String, VoidCallback)>[];
+    final ready = truthy(s.bld['farm']) ? s.plots.where((p) => c.plotState(p).st == 'ready').length : 0;
+    if (c.vlRw()) t.add(('lv', '🎁 마을 Lv 보상', vlClaimUi));
+    if (ready > 0) t.add(('farm', '🌾 수확 $ready', () => vlSelect('farm', tab: 'farm')));
+    if (c.ordReady() > 0) t.add(('market', '📋 납품 ${c.ordReady()}', () => vlSelect('market', tab: 'order')));
+    if (c.blessLeft() > 0) t.add(('chapel', '✨ 축복 받기', () => vlSelect('chapel', tab: 'bless')));
+    for (final b in vNewDone) {
+      t.add((b, '🏗 공사 완료 · ${buildingDef(b).n}', () => vlSelect(b, tab: 'info')));
+    }
+    if (c.wkOpen() && c.idleIds().isNotEmpty) {
+      final h = buildings.fold<int>(0, (a, b) => a + math.max(0, c.wkSlots(b.k) - c.wkIds(b.k).length));
+      if (h > 0) t.add(('work', '🔨 일꾼 빈칸 $h', () => onWorkSheet?.call()));
+    }
+    if (truthy(s.bld['forge']) && (onForgeCan?.call() ?? false)) t.add(('forge', '⚒ 강화 가능', () => vlSelect('forge', tab: 'forge')));
+    return t;
+  }
+
+  /// 화면 쪽에서 채워 넣는 것 (일꾼 관리 창 열기 · 강화 가능 판단)
+  VoidCallback? onWorkSheet;
+  bool Function()? onForgeCan;
+
+  /// 마을 레벨 보상 받기 → 보상 창 · 처음 보는 동료 마을 에피소드
+  void vlClaimUi() {
+    final got = act((a) => a.vlClaim());
+    for (final (l, ep) in got) {
+      final g = vlvGem[l];
+      scene('마을 Lv.$l', '마을이 살아나요', [
+        'sys:마을 Lv.$l! 방치 골드 +${2 * l}%',
+        'sys:황금 이삭 +$g${l == 5 ? ' · 배지 「마을의 영웅」' : l == 10 ? ' · 테두리 「에르단 마을」' : ''}',
+      ], '좋아요');
+      if (ep) {
+        final e = villageEpisodes[l]!;
+        scene('동료 마을 이야기', e.$1, e.$2, '마을로');
+      }
+    }
+    if (got.isNotEmpty) {
+      calc.pfCheck();
+      save();
+    }
+  }
+
+  /// 0.4초마다: 주문 채우기 · 편성으로 빠진 일꾼 · 건물 열림 이야기 · 일꾼 처음 열림 (웹 vlTick)
+  void _vlTick() {
+    calc.ordTick(acts.rng);
+    final back = calc.wkClean();
+    if (back.isNotEmpty && tab != GameTab.pt) {
+      for (final id in back) {
+        toast('${comps[id]!.n}이(가) 원정대로 돌아갔어요');
+      }
+    }
+    final done = state.done;
+    for (final k in const ['forge', 'market', 'ranch', 'chapel']) {
+      if (truthy(done['vo_$k']) || !calc.bldOpen(k)) continue;
+      done['vo_$k'] = 1;
+      final b = buildingDef(k), mv = k == 'forge' && state.bldLv('forge') > 0;
+      scene(
+        mv ? '마을 · 이사' : '마을 · 새 빈터',
+        mv ? '브론의 대장간 이사' : b.n,
+        mv
+            ? forgeMoveLines
+            : [
+                ...villageOpenLines[k]!,
+                'sys:마을에 ${b.n} 빈터가 열렸어요. ${k == 'forge' ? '재건하면 성유물·동료 무기를 강화할 수 있어요.' : '마을 탭에서 재건해요.'}',
+              ],
+        '마을에서 보기',
+        altLabel: '나중에',
+        onGo: () => vlSelect(k),
+      );
+    }
+    if (!truthy(state.raw['workIntro']) && calc.restIds().isNotEmpty && state.bldLv('inn') > 0) {
+      state.raw['workIntro'] = 1;
+      scene('마을 일꾼', '쉬는 동료에게 일을', const [
+        'm:마르타|원정 안 나가는 동료들, 마을에서 놀고먹기만 할 거냐? 일 좀 시켜.',
+        'k:다들 쉬고 싶을 텐데…',
+        'q:주인이 쉬고 싶은 거겠지.',
+        'k@flustered:…들켰네.',
+        'sys:출전하지 않는 동료를 건물 일꾼으로 넣으면 건물 효과가 올라요. 직업이 맞으면 2배!',
+      ], '추천 일꾼 넣기', altLabel: '나중에', onGo: () => act((a) => a.wkAuto(false)));
+    }
   }
 
   // ── 광고 보상 (AdMob 보상형 광고 · 시험용 ID. 광고가 없으면 3초 가짜 광고로 대신) ──
@@ -1047,14 +1177,12 @@ class GameController extends ChangeNotifier {
       case 2:
         toast('원정대가 자동으로 싸워요. 막히면 장비와 단련을 올려요');
       case 3:
-        vlSel = 'inn';
-        setTab(GameTab.vl);
+        vlSelect('inn');
       case 4:
         state.raw['ptTab'] = 'list';
         setTab(GameTab.pt);
       case 5 || 6:
-        vlSel = 'farm';
-        setTab(GameTab.vl);
+        vlSelect('farm');
       case 7:
         setTab(GameTab.sh);
     }
@@ -1378,8 +1506,14 @@ class GameController extends ChangeNotifier {
     return a.isNotEmpty && a != state.raw['dotSeen'];
   }
 
-  /// 마을 탭 점: 수확할 작물이 있을 때
-  bool get vlDot => truthy(state.bld['farm']) && state.plots.any((p) => calc.plotState(p).st == 'ready');
+  /// 마을 탭 점 (웹 vDot): 수확 · 납품 · 축복 · 공사 완료 · 마을 레벨 보상 · 강화 가능 · 일꾼 빈칸(하루 한 번)
+  bool get vlDot {
+    final s = state, c = calc;
+    if (truthy(s.bld['farm']) && s.plots.any((p) => c.plotState(p).st == 'ready')) return true;
+    if (c.ordReady() > 0 || c.blessLeft() > 0 || vNewDone.isNotEmpty || c.vlRw()) return true;
+    if (truthy(s.bld['forge']) && (onForgeCan?.call() ?? false)) return true;
+    return s.raw['workDot'] != c.today() && c.wkOpen() && c.idleIds().isNotEmpty && buildings.any((b) => c.wkSlots(b.k) > c.wkIds(b.k).length);
+  }
 
   /// 이삭 점: 받을 수 있는 할 일 보상이나 정기 배송이 있을 때 (웹 gemDot)
   bool get gemDot {

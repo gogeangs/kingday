@@ -7,14 +7,17 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
+import 'package:kingday/core/actions.dart';
 import 'package:kingday/core/calc.dart';
 import 'package:kingday/core/data.dart';
 import 'package:kingday/core/profile_data.dart';
 import 'package:kingday/core/retire.dart';
 import 'package:kingday/core/fmt.dart';
+import 'package:kingday/core/js.dart';
 import 'package:kingday/core/rng.dart';
 import 'package:kingday/core/save_code.dart';
 import 'package:kingday/core/state.dart';
+import 'package:kingday/core/village.dart';
 import 'package:kingday/game/online.dart';
 
 late Map<String, dynamic> fx;
@@ -256,6 +259,65 @@ void main() {
         same({for (final k in ads.keys) k: c.adLeft(k)}, e['adLeft'], 'adLeft');
         same(c.cardReady(), e['cardReady'], 'cardReady');
         same(c.nextGoal(), e['nextGoal'], 'nextGoal');
+      });
+
+      test('마을 확장 공식 (일꾼·생산·주문·축복·마을 레벨)', () {
+        final c = calcFor(name), v = sc['village'] as Map<String, dynamic>;
+        // 웹과 같은 순서로 부름 (blessLeft 는 날짜가 바뀌면 S.bless 를 새로 씀)
+        final m = <String, dynamic>{};
+        m['enMax'] = c.enMax();
+        m['forgeCut'] = c.forgeCut();
+        m['bldSum'] = c.bldSum();
+        m['vLv'] = c.vLv();
+        m['vlRw'] = c.vlRw();
+        m['work'] = {for (final b in buildings) b.k: {'slots': c.wkSlots(b.k), 'ids': c.wkIds(b.k), 'bonus': c.workBonus(b.k), 'prodMul': c.prodMul(b.k)}};
+        m['rest'] = c.restIds();
+        m['idle'] = c.idleIds();
+        m['working'] = c.working();
+        m['wkOpen'] = c.wkOpen();
+        m['wkOne'] = {for (final id in GameCalc.cardIds()) id: [for (final b in buildings) c.wkOne(b.k, id)]};
+        m['cookMs'] = c.cookMs();
+        m['vHp'] = c.vHp();
+        m['vBrave'] = c.vBrave();
+        m['vIdle'] = c.vIdle();
+        m['idle1h'] = c.idleGold(3600);
+        m['ordN'] = ordN(orNum(c.s.bld['market'], 0));
+        m['ordMats'] = c.ordMats();
+        m['per2'] = [for (final k in c.ordMats()) c.per2(k)];
+        m['ordGold'] = [
+          for (final o in c.orders) asMap(o) != null && truthy(asMap(o)!['need']) ? c.ordGold(asMap(o)!) : null
+        ];
+        m['ordCan'] = [for (final o in c.orders) c.ordCan(o)];
+        m['ordReady'] = c.ordReady();
+        m['ordKeep'] = c.ordKeep();
+        m['blessK'] = c.blessK();
+        m['blessMs'] = c.blessMs();
+        m['blessLeft'] = c.blessLeft();
+        m['blessSec'] = [for (final l in [0, 5, 10]) blessSec(l)];
+        m['bless'] = jsonDecode(jsonEncode(c.s.raw['bless']));
+        same(m, v, 'village');
+      });
+
+      test('마을 난수 (주문·축복 고르기·길 위 동료·다른 주문)', () {
+        final c = calcFor(name), r = sc['vrand'] as Map<String, dynamic>, rng = Mulberry32(5151);
+        final a = GameActions(c, rng: rng);
+        c.s.raw['orders'] = <dynamic>[];
+        c.ordTick(rng);
+        final o = jsonDecode(jsonEncode(c.orders));
+        c.s.raw['bless'] = <String, dynamic>{'d': '', 'used': 0, 'ad': 0, 'k': '', 'until': 0, 'opts': <dynamic>[]};
+        final opts = c.blessOpts(rng);
+        c.s.raw['walkers'] = <String, dynamic>{'d': '', 'ids': <dynamic>[]};
+        final wk = c.walkersToday(rng);
+        final sk = <dynamic>[];
+        for (var i = 0; i < c.orders.length; i++) {
+          final x = asMap(c.orders[i]);
+          if (x != null && truthy(x['need'])) {
+            a.ordSkip(i);
+            a.ordSkip(i);
+            sk.add(jsonDecode(jsonEncode(c.orders[i])));
+          }
+        }
+        same({'orders': o, 'opts': opts, 'walkers': wk, 'skip': sk, 'day': jsonDecode(jsonEncode(c.s.raw['ordDay']))}, r, 'vrand');
       });
 
       test('방치 보상', () {

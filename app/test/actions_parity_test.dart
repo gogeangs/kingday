@@ -10,6 +10,7 @@ import 'package:kingday/core/calc.dart';
 import 'package:kingday/core/data.dart';
 import 'package:kingday/core/rng.dart';
 import 'package:kingday/core/state.dart';
+import 'package:kingday/core/village.dart';
 
 void same(Object? a, Object? e, String where) {
   if (e is num && a is num) {
@@ -163,6 +164,38 @@ void main() {
             s.seeds[o[1]] = num.parse(o[2]);
           case 'items':
             s.items[o[1]] = num.parse(o[2]);
+          // ── 마을 확장 ──
+          case 'bld':
+            s.bld[o[1]] = int.parse(o[2]);
+          case 'otick':
+            c.ordTick(a.rng);
+          case 'odeliver':
+            a.ordDeliver(int.parse(o[1]));
+          case 'oskip':
+            a.ordSkip(int.parse(o[1]));
+          case 'keep':
+            s.raw['keepOrder'] = int.parse(o[1]);
+          case 'blessfirst':
+            final opts = c.blessOpts(a.rng);
+            if (opts.isNotEmpty) a.blessPick(opts.first);
+          case 'blessad':
+            a.blessAdGrant();
+          case 'wkput':
+            a.wkPut(o[1], int.parse(o[2]), o[3]);
+          case 'wkout':
+            c.work[o[1]] = c.wkIds(o[1]).where((x) => x != o[2]).toList();
+          case 'wkauto':
+            a.wkAuto(o[1] == '1');
+          case 'wkclear':
+            s.raw['work'] = <String, dynamic>{};
+          case 'vlclaim':
+            // 웹 vlClaim: 보상 → pfCheck → save()(마지막 접속 시각)
+            if (a.vlClaim().isNotEmpty) {
+              c.pfCheck();
+              s.last = c.now;
+            }
+          case 'harvre':
+            a.harvestReplant();
           default:
             fail('모르는 조작 ${st['op']}');
         }

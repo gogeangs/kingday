@@ -17,6 +17,7 @@ import '../core/js.dart';
 import '../core/profile_data.dart';
 import '../core/rng.dart';
 import '../core/state.dart';
+import '../core/village.dart';
 import 'battle_data.dart';
 
 /// 원정대 한 명의 전투 상태 (웹 P[id])
@@ -577,7 +578,7 @@ class BattleSim {
   void chargeSkill(String id) {
     final p = party[id];
     if (p == null) return;
-    p.sg = math.min(skills[id]!.need, p.sg + 1);
+    p.sg = math.min(skills[id]!.need, p.sg + (c.buff('sk') ? 1.2 : 1));
     if (p.sg >= skills[id]!.need && !truthy(s.done['tutSkill'])) {
       s.done['tutSkill'] = true;
       events.add(SkillTutorialEvent());
@@ -1028,7 +1029,7 @@ class BattleSim {
         )
     ];
     if (st >= 3 && gobT <= 0) {
-      gobT = (360 + rng.next() * 360) * (1 - .1 * c.tl('goblin'));
+      gobT = (360 + rng.next() * 360) * (1 - .1 * c.tl('goblin')) * (c.blOn('luck') ? .7 : 1);
       final gh = GameCalc.monHp(st, false) * 5;
       mons.insert(0, Mon(x: w + 30, lane: .3, hp: gh, max: gh, atk: 0, cd: 1e9, gob: true, mv: 1.4, life: 12));
       banner = StageBanner('황금 고블린 출현!', '12초 안에 잡으면 보물을 떨군다');
@@ -1051,7 +1052,7 @@ class BattleSim {
   bool noSave = false;
 
   void _gobDrop(Mon m, num sc) {
-    final g = jsFloor(GameCalc.reward(c.fightSt(), false) * 30 * (c.buff('gold') ? 1.5 : 1) * c.memMul());
+    final g = jsFloor(GameCalc.reward(c.fightSt(), false) * 30 * (c.buff('gold') ? 1.5 : 1) * (c.blOn('gold') ? 1.3 : 1) * c.memMul());
     final gem = 5 + (rng.next() * 6).floor();
     s.gold = s.gold + g;
     c.stat('gob', 1);
@@ -1466,7 +1467,7 @@ class BattleSim {
 
   void _kill(Mon m, num sc) {
     spawnFx('coin', m.x, m.y - 26 * sc, 34 * sc, .6, -60 * sc);
-    final g = GameCalc.reward(c.fightSt(), m.boss) * (c.buff('gold') ? 1.5 : 1) * c.memMul();
+    final g = GameCalc.reward(c.fightSt(), m.boss) * (c.buff('gold') ? 1.5 : 1) * (c.blOn('gold') ? 1.3 : 1) * c.memMul();
     s.gold = s.gold + g;
     final d = c.daily();
     d['kill'] = orNum(d['kill'], 0) + 1;
