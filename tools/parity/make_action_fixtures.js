@@ -18,7 +18,7 @@ const q = (x) => JSON.stringify(x);
 
 // 조작 하나를 웹 코드로 실행. 앱 테스트도 같은 이름의 조작을 한다.
 function op(o) {
-  const [k, a, b] = o.split(':');
+  const [k, a, b, c] = o.split(':');
   switch (k) {
     case 'box': return F('openBox')(a === 'auto');
     case 'equip': return w.run('(()=>{if(!pending)return;const it=pending;const c=S.eq[it.slot];if(c)S.gold+=c.price;S.eq[it.slot]=it;closeModal()})()');
@@ -30,8 +30,8 @@ function op(o) {
     case 'rec': return F('recruitUp')(a);
     case 'set': return F('setMember')(a, b);
     case 'auto': return F('autoForm')();
-    case 'en': return w.run(`(()=>{const k=${q(a)},l=enLv(k),c=enCost(l);if(l>=EN_MAX||(S.items.ore||0)<c)return;S.items.ore-=c;if(!S.slotEn)S.slotEn={};S.slotEn[k]=l+1})()`);
-    case 'cw': return w.run(`(()=>{const id=${q(a)},l=cwLv(id),o=cwOre(l),g=cwGold(l);if(!S.joined[id]||l>=CW_MAX||(S.items.ore||0)<o||S.gold<g)return;S.items.ore-=o;S.gold-=g;if(!S.cwEn)S.cwEn={};S.cwEn[id]=l+1})()`);
+    case 'en': return w.run(`(()=>{const k=${q(a)},l=enLv(k),c=enCost(l);if(!S.bld.forge||l>=enMax()||(S.items.ore||0)<c)return;S.items.ore-=c;if(!S.slotEn)S.slotEn={};S.slotEn[k]=l+1})()`);
+    case 'cw': return w.run(`(()=>{const id=${q(a)},l=cwLv(id),o=cwOre(l),g=cwGold(l);if(!S.bld.forge||!S.joined[id]||l>=enMax()||(S.items.ore||0)<o||S.gold<g)return;S.items.ore-=o;S.gold-=g;if(!S.cwEn)S.cwEn={};S.cwEn[id]=l+1})()`);
     case 'wish': return w.run(`S.wish=S.wish===${q(a)}?null:${q(a)}`);
     case 'autosell': return w.run(`S.autoSell=${a === 'on'}`);
     case 'gold': return w.run(`S.gold=${a}`);
@@ -49,8 +49,8 @@ function op(o) {
     case 'tag': return F('cycleTag')(+a);
     case 'gemplot': return w.run('(()=>{const n=S.gemPlots||0,c=GEM_PLOTS[n];if(c==null)return;if(!spendGem(c))return;S.gemPlots=n+1;ensurePlots()})()');
     case 'grownow': return F('growNow')();
-    case 'cook': return w.run(`(()=>{const r=RECIPES.find(x=>x.k===${q(a)});if(!Object.entries(r.need).every(([k,n])=>S.items[k]>=n))return;for(const[k,n]of Object.entries(r.need))S.items[k]-=n;S.buffs[r.buff]=Math.max(Date.now(),S.buffs[r.buff]||0)+600000*vpCook();stat('cook',1)})()`);
-    case 'sellall': return w.run('(()=>{const keys=Object.keys(S.items),val=keys.reduce((a,k)=>a+S.items[k]*itemPrice(k),0);S.gold+=val;keys.forEach(k=>S.items[k]=0)})()');
+    case 'cook': return w.run(`(()=>{const r=RECIPES.find(x=>x.k===${q(a)});if(!Object.entries(r.need).every(([k,n])=>S.items[k]>=n))return;for(const[k,n]of Object.entries(r.need))S.items[k]-=n;S.buffs[r.buff]=Math.max(Date.now(),S.buffs[r.buff]||0)+cookMs();stat('cook',1)})()`);
+    case 'sellall': return w.run('(()=>{const keys=Object.keys(S.items),kp=ordKeep();let v=0;keys.forEach(k=>{const n=Math.max(0,(S.items[k]||0)-(kp[k]||0));v+=n*itemPrice(k);S.items[k]-=n});S.gold+=v})()');
     case 'build': return F('orderBuild')(F('bldK')(a));
     case 'cancel': return F('cancelQueued')(a);
     case 'bgem': return w.run(`(()=>{const b=bldK(${q(a)}),l=S.bld[b.k];if(l>=b.max||inBuild(b.k))return;if(!oreOk(b,l))return;if(!spendGem(bldGem(bldCost(b,l))+timeGem(bldTime(b,l))))return;S.items.ore-=bldOre(b,l);S.bld[b.k]=l+1;if(!l)S.prod[b.k]=Date.now()})()`);
@@ -58,6 +58,20 @@ function op(o) {
     case 'time': { clock += +a; w.setNow(clock); return F('produce')(); }
     case 'seeds': return w.run(`S.seeds[${q(a)}]=${b}`);
     case 'items': return w.run(`S.items[${q(a)}]=${b}`);
+    // ── 마을 확장 (docs/content/VILLAGE.md) ──
+    case 'bld': return w.run(`S.bld[${q(a)}]=${+b}`);
+    case 'otick': return F('ordTick')();
+    case 'odeliver': return F('ordDeliver')(+a);
+    case 'oskip': return F('ordSkip')(+a);
+    case 'keep': return w.run(`S.keepOrder=${+a}`);
+    case 'blessfirst': return w.run('(()=>{const o=blessOpts();if(o.length)blessPick(o[0])})()');
+    case 'blessad': return w.run('(()=>{blessDay().ad=1;S.bless.opts=[]})()');
+    case 'wkput': return F('wkPut')(a, +b, c);
+    case 'wkout': return w.run(`S.work[${q(a)}]=wkIds(${q(a)}).filter(x=>x!==${q(b)})`);
+    case 'wkauto': return F('wkAuto')(a === '1');
+    case 'wkclear': return w.run('S.work={}');
+    case 'vlclaim': return F('vlClaim')();
+    case 'harvre': return F('harvestAll')();
     // ── 피트의 상점 ──
     case 'daily': return w.run(`daily()[${q(a)}]=${b}`);
     case 'mis': return w.run(`(()=>{const k=${q(a)},m=MISSIONS.find(x=>x.k===k);if(!misCan(m||null))return;daily().claim[k]=true;if(k==='all'){gainCard(5,'shop')}gainGem(m?m.r:MIS_ALL,m?m.n:'오늘의 할 일 완료')})()`);
@@ -94,6 +108,13 @@ const CASES = {
     'items:wheat:30', 'items:fish:9', 'cook:bread', 'cook:bread', 'cook:stew', 'cook:pie', 'cook:grill', 'time:' + 5 * M, 'cook:bread',
     'gold:1e12', 'build:farm', 'build:diner', 'build:dock', 'build:inn', 'cancel:diner', 'build:apiary', 'time:' + 30 * M, 'bfin', 'bgem:inn', 'bgem:mine', 'time:' + 3 * H, 'time:' + 13 * H,
     'items:ore:3', 'build:diner', 'bgem:diner', 'items:ore:9999', 'build:diner', 'sellall', 'tag:0', 'tag:0', 'tag:0', 'tag:0', 'tag:9']],
+  // 마을 확장: 주문(납품·덤·이삭 한도·다른 주문·1시간 갱신)·창고 판매 주문 재료 남기기·축복(광고 1번 더)·일꾼(추천·편성으로 빠짐)·마을 레벨 보상·새 요리·대장간
+  village2: [base.vill, ['otick', 'odeliver:0', 'odeliver:2', 'odeliver:3', 'items:fish:500', 'items:egg:50', 'items:milk:60', 'otick', 'odeliver:0', 'odeliver:1', 'odeliver:2', 'oskip:1', 'oskip:1',
+    'time:' + 61 * M, 'otick', 'oskip:1', 'items:ore:999', 'items:honey:999', 'items:wheat:999', 'items:pumpkin:999', 'otick', 'odeliver:0', 'odeliver:1', 'odeliver:2', 'odeliver:3', 'odeliver:4',
+    'keep:1', 'sellall', 'otick', 'keep:0', 'sellall', 'blessfirst', 'blessfirst', 'blessad', 'blessfirst', 'blessad',
+    'wkauto:0', 'wkput:inn:0:haral', 'set:fisher:haral', 'wkout:mine:gordon', 'wkauto:1', 'wkclear', 'wkauto:0', 'bld:market:9', 'otick', 'vlclaim', 'bld:chapel:10', 'vlclaim', 'vlclaim',
+    'items:milk:10', 'items:carrot:10', 'items:wheat:10', 'cook:soup', 'items:egg:9', 'items:pumpkin:9', 'cook:pancake', 'time:' + 30 * M,
+    'en:weapon', 'en:weapon', 'en:weapon', 'cw:haral', 'bld:forge:0', 'en:helm', 'gem:0', 'ensure', 'seeds:wheat:9', 'plantall', 'time:' + 3 * M, 'harvre', 'time:' + 2 * H]],
   // 첫 공사: 이삭 10개 선물 → 바로 완료
   firstBuild: [Object.assign({}, base.fresh, { stage: 3, best: 3, done: { marta: true }, bld: { farm: 1 } }), ['gold:100000', 'ensure', 'build:inn', 'bfin', 'build:farm', 'build:inn', 'time:' + 2 * H, 'gem:3', 'build:farm', 'bfin', 'time:' + 24 * H]],
   // 희귀 동료 3명(토비·카라·베릴) 맞이하기·별·편성 + 카드 묶음 나눠 받기

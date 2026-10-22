@@ -2,6 +2,7 @@
 영지마다 걸린 시간을 잰다. 로컬 서버(python3 -m http.server 8765)를 켠 뒤 저장소 루트에서 실행.
 
     python3 tools/balance_sim.py 3 '{"hpG":1.2}'   # 3시간, BAL 값 덮어쓰기
+    python3 tools/balance_sim.py village            # 마을 확장 밸런스 ①~④ (docs/content/VILLAGE.md 8장)
 """
 import asyncio,sys,json
 from playwright.async_api import async_playwright
@@ -11,6 +12,9 @@ async def main():
     b=await p.chromium.launch();pg=await b.new_page(viewport={'width':390,'height':844})
     await pg.goto('http://localhost:8765/index.html');await pg.evaluate("localStorage.clear()");await pg.reload();await pg.wait_for_timeout(800)
     await pg.click('#startBtn');await pg.wait_for_timeout(300)
+    if H=='village':
+      r=await pg.evaluate(open(SP+'/village_sim.js').read())
+      print(json.dumps(r,ensure_ascii=False,indent=1));await b.close();return
     js=open(SP+'/balance_sim.js').read().replace('HOURS',H).replace('TUNE',TUNE)
     r=await pg.evaluate(js)
     rec=r.pop('rec');tot=0;line=[]

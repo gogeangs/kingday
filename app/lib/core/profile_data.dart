@@ -35,6 +35,7 @@ final List<Deco> pframes = [
   Deco('capital', '왕도의 별', '마왕 발타사르 처치 (1부 완결)', (c) => orNum(c.s.raw['capClears'], 0) >= 1, tall: true),
   Deco('tower', '시련의 탑', '시련의 탑 50층', (c) => _top(c) >= 50, tall: true),
   Deco('retire', '은퇴의 정원', '은퇴 10번', (c) => c.s.retires >= 10, tall: true),
+  Deco('village', '에르단 마을', '마을 Lv.10', (c) => orNum(c.s.raw['vlv'], 1) >= 10, tall: true),
 ];
 
 /// 시련의 탑 최고 층 (S.tower.top)
@@ -56,6 +57,7 @@ final List<Deco> badges = [
   Deco('tower25', '탑 25층', '시련의 탑 25층', (c) => _top(c) >= 25),
   Deco('tower100', '탑의 주인', '시련의 탑 100층', (c) => _top(c) >= 100),
   Deco('primal', '태초의 손길', '태초 장비 착용', (c) => c.s.eq.values.any((it) => it is Map && asNum(it['g']) >= 6)),
+  Deco('village', '마을의 영웅', '마을 Lv.5', (c) => orNum(c.s.raw['vlv'], 1) >= 5),
   const Deco('goblin', '고블린 사냥꾼', '황금 고블린 희귀 전리품', _no, rare: true),
   const Deco('champ', '시즌 챔피언', '시즌 랭킹 1위 보상', _no, rk: true),
   const Deco('top10', '시즌 10강', '시즌 랭킹 2~10위 보상', _no, rk: true),

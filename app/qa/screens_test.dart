@@ -175,6 +175,14 @@ void main() {
       g.setTab(GameTab.vl);
       await frames(3);
       await shot('tab_vl_full');
+      // 마을 건물 창 (아래 반 창)
+      g.state.raw['pgFull'] = false;
+      for (final (k, t) in [('forge', 'forge'), ('market', 'order'), ('chapel', 'bless'), ('dock', 'work')]) {
+        g.vlSelect(k, tab: t);
+        await frames(3);
+        await shot('vl_${k}_$t');
+      }
+      g.vbClose();
       g.setTab(null);
       await frames(2);
 

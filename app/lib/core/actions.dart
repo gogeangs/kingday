@@ -13,6 +13,7 @@ import 'fmt.dart';
 import 'js.dart';
 import 'rng.dart';
 import 'state.dart';
+import 'village.dart';
 import 'web_data.g.dart';
 
 /// 화면이 해야 할 일 (창 띄우기·알림)
@@ -247,7 +248,7 @@ class GameActions {
   /// 브론의 대장간: 부위 강화 (광석)
   bool enhanceSlot(String k) {
     final l = c.enLv(k), cost = c.enCost(l);
-    if (l >= enMax || orNum(s.items['ore'], 0) < cost) return false;
+    if (!truthy(s.bld['forge']) || l >= c.enMax() || orNum(s.items['ore'], 0) < cost) return false;
     s.items['ore'] = asNum(s.items['ore']) - cost;
     final en = asMap(s.raw['slotEn']) ?? (s.raw['slotEn'] = <String, dynamic>{});
     en[k] = l + 1;
@@ -259,7 +260,7 @@ class GameActions {
   /// 동료 전용 무기 강화 (광석 + 골드)
   bool enhanceWeapon(String id) {
     final l = c.cwLv(id), o = c.cwOre(l), g = c.cwGold(l);
-    if (!s.isJoined(id) || l >= cwMax || orNum(s.items['ore'], 0) < o || s.gold < g) return false;
+    if (!truthy(s.bld['forge']) || !s.isJoined(id) || l >= c.enMax() || orNum(s.items['ore'], 0) < o || s.gold < g) return false;
     s.items['ore'] = asNum(s.items['ore']) - o;
     s.gold = s.gold - g;
     final en = asMap(s.raw['cwEn']) ?? (s.raw['cwEn'] = <String, dynamic>{});
@@ -346,8 +347,15 @@ class GameActions {
     }
     final party = asMap(s.raw['party']) ?? (s.raw['party'] = <String, dynamic>{});
     party[j] = id;
+    // 일하던 동료를 출전 편성에 넣으면 일꾼 칸에서 빠짐
+    final wasW = c.working()[id];
+    if (wasW != null) c.work[wasW] = [for (final x in c.work[wasW] as List) if (x != id) x];
     if (cur != null) onSwap?.call(cur, id);
-    if (!quiet) _toast('${comps[id]!.n}이(가) ${jobName[j]} 자리로 출전해요');
+    if (wasW != null) {
+      _toast('${comps[id]!.n}이(가) 원정대로 돌아갔어요');
+    } else if (!quiet) {
+      _toast('${comps[id]!.n}이(가) ${jobName[j]} 자리로 출전해요');
+    }
     return true;
   }
 
@@ -572,27 +580,214 @@ class GameActions {
     for (final e in r.need.entries) {
       s.items[e.key] = asNum(s.items[e.key]) - e.value;
     }
-    s.buffs[r.buff] = math.max(c.now, orNum(s.buffs[r.buff], 0)) + 600000 * (c.vpCook() + c.trCook());
+    s.buffs[r.buff] = math.max(c.now, orNum(s.buffs[r.buff], 0)) + c.cookMs();
     c.stat('cook', 1);
     _toast('${r.n} 완성! ${r.desc}');
   }
 
-  /// 창고 물건 값 합계
+  /// 창고 물건 값 합계 (「주문 재료 남기기」면 주문에 필요한 수는 빼고)
   num storeValue() {
+    final keep = c.ordKeep();
     num v = 0;
     for (final k in s.items.keys) {
-      v = v + asNum(s.items[k]) * c.itemPrice(k);
+      v = v + math.max(0, orNum(s.items[k], 0) - (keep[k] ?? 0)) * c.itemPrice(k);
     }
     return v;
   }
 
   void sellAll() {
-    final val = storeValue();
-    s.gold = s.gold + val;
+    final kp = c.ordKeep();
+    num v = 0;
     for (final k in s.items.keys.toList()) {
-      s.items[k] = 0;
+      final n = math.max(0, orNum(s.items[k], 0) - (kp[k] ?? 0));
+      v = v + n * c.itemPrice(k);
+      s.items[k] = asNum(s.items[k]) - n;
     }
-    _toast('창고 판매 +${fmt(val)}');
+    s.gold = s.gold + v;
+    _toast('창고 판매 +${fmt(v)}${kp.isNotEmpty ? ' · 주문 재료는 남겼어요' : ''}');
+  }
+
+  // ════════════════════ 마을 확장: 모두 수확·주문·축복·일꾼·마을 레벨 (docs/content/VILLAGE.md) ════════════════════
+  /// 모두 수확 + 빈 칸에 같은 씨앗 다시 심기 (마을 할 일 줄)
+  void harvestReplant() {
+    var t = 0, gb = 0, re = 0;
+    for (var i = 0; i < s.plots.length; i++) {
+      final ps = c.plotState(s.plots[i]);
+      if (ps.st != 'ready') continue;
+      final ck = ps.c!.k;
+      t += harvest(i);
+      gb += harvGob;
+      final sk = plotTag(i) ?? ck;
+      if (orNum(s.seeds[sk], 0) > 0) {
+        plant(i, sk);
+        re++;
+      }
+    }
+    _toast('작물 $t개 수확${gb > 0 ? ' (고블린 2배 $gb칸)' : ''}${re > 0 ? ' · $re칸 다시 심기' : ''}');
+    if (gb > 0) out.add(ActHaptic(const [20, 30, 20]));
+  }
+
+  /// 주문 납품 (웹 ordDeliver)
+  void ordDeliver(int i) {
+    final os = c.orders;
+    if (i >= os.length || !c.ordCan(os[i])) return;
+    final o = asMap(os[i])!;
+    for (final e in (o['need'] as Map).entries) {
+      s.items[e.key] = asNum(s.items[e.key]) - (e.value as num);
+    }
+    final g = c.ordGold(o);
+    s.gold = s.gold + g;
+    var ex = '';
+    final e = asMap(o['extra']) ?? const <String, dynamic>{};
+    final ek = e['k'], en = orNum(e['n'], 0);
+    if (ek == 'gem') {
+      final d = c.ordDay(), gv = math.min(math.max(0, ordGemCap - orNum(d['gem'], 0)), en);
+      if (gv > 0) {
+        d['gem'] = orNum(d['gem'], 0) + gv;
+        s.gem = s.gem + gv;
+        ex = '황금 이삭 +$gv';
+      }
+      if (gv < en) {
+        final ore = (en - gv) * 5;
+        s.items['ore'] = orNum(s.items['ore'], 0) + ore;
+        ex += '${ex.isNotEmpty ? ' · ' : ''}광석 +$ore';
+        if (gv == 0) out.add(ActLaterToast('오늘 주문으로 받을 수 있는 이삭은 다 받았어요', 1800));
+      }
+    } else if (ek == 'ore') {
+      s.items['ore'] = orNum(s.items['ore'], 0) + en;
+      ex = '광석 +$en';
+    } else if (ek == 'seed') {
+      s.seeds['wheat'] = orNum(s.seeds['wheat'], 0) + 6;
+      s.seeds['carrot'] = orNum(s.seeds['carrot'], 0) + 3;
+      s.seeds['pumpkin'] = orNum(s.seeds['pumpkin'], 0) + 1;
+      ex = '씨앗 묶음(밀 6·당근 3·호박 1)';
+    } else if (ek == 'card') {
+      final id = c.gainCard(rng, en.toInt(), 'battle');
+      if (id != null && id.isNotEmpty) {
+        ex = '${comps[id]!.n} 카드 +$en';
+      } else if (id == '') {
+        ex = '골드 +${fmt(c.cardGoldLast)}';
+      } else {
+        s.items['ore'] = orNum(s.items['ore'], 0) + 20;
+        ex = '광석 +20';
+      }
+    }
+    os[i] = <String, dynamic>{'at': c.now + ordWait};
+    c.stat('order', 1);
+    out.add(ActHaptic(const [18]));
+    _toast('${villagePeople[o['who']] ?? comps[o['who']]?.n ?? o['who']}의 주문 완료! 골드 +${fmt(g)}${ex.isNotEmpty ? ' · $ex' : ''}');
+  }
+
+  /// 다른 주문 받기: 칸마다 하루 1번 바로, 그다음은 1시간 기다림
+  void ordSkip(int i) {
+    final d = c.ordDay(), sk = asMap(d['skip'])!;
+    if (!truthy(sk['$i'])) {
+      sk['$i'] = 1;
+      c.orders[i] = c.ordNew(rng, i);
+      _toast('다른 주문을 받았어요');
+    } else {
+      c.orders[i] = <String, dynamic>{'at': c.now + ordWait};
+      _toast('1시간 뒤에 새 주문이 와요');
+    }
+  }
+
+  /// 축복 고르기
+  void blessPick(String k) {
+    if (c.blessLeft() == 0 || !c.blessOpts(rng).contains(k)) return;
+    final b = c.bless;
+    b['k'] = k;
+    b['until'] = c.now + c.blessMs();
+    b['used'] = orNum(b['used'], 0) + 1;
+    b['opts'] = <dynamic>[];
+    out.add(ActHaptic(const [18]));
+    _toast('${blessDef(k).n}이 함께해요 · ${fmtT(c.blessMs() / 1000)}');
+  }
+
+  /// 광고 보고 축복 한 번 더 (광고 횟수는 화면 쪽 watchAd 가 셈)
+  void blessAdGrant() {
+    c.blessDay()['ad'] = 1;
+    c.bless['opts'] = <dynamic>[];
+  }
+
+  /// 일꾼 넣기 (다른 건물에 있던 동료면 옮김)
+  void wkPut(String k, int i, String id) {
+    final w = c.work;
+    for (final b in w.keys.toList()) {
+      w[b] = [for (final x in w[b] as List) if (x != id) x];
+    }
+    final a = c.wkIds(k);
+    if (i < a.length) {
+      a[i] = id;
+    } else {
+      a.add(id);
+    }
+    w[k] = a.take(c.wkSlots(k)).toList();
+    final pct = (wkReal(k, c.wkOne(k, id)) * 100).round();
+    _toast(c.wkMatch(k, id) ? '${comps[id]!.n}: ${workLine(id) ?? '이건 내 전문이지!'} · +$pct%' : '${comps[id]!.n}이(가) ${buildingDef(k).n}에서 일해요 · +$pct%');
+  }
+
+  void wkOut(String k, String id) {
+    c.work[k] = c.wkIds(k).where((x) => x != id).toList();
+    _toast('${comps[id]!.n}이(가) 쉬러 갔어요');
+  }
+
+  void wkClear() {
+    s.raw['work'] = <String, dynamic>{};
+    _toast('일꾼을 모두 쉬게 했어요');
+  }
+
+  /// 추천 일꾼: 빈 칸에 효과가 큰 순서로 (all = 모두 다시 배치)
+  int wkAuto(bool all) {
+    c.wkClean();
+    final w = c.work;
+    if (all) {
+      for (final b in w.keys.toList()) {
+        w[b] = <dynamic>[];
+      }
+    }
+    final pool = c.idleIds(), holes = <String>[];
+    for (final b in buildings) {
+      final n = c.wkSlots(b.k) - c.wkIds(b.k).length;
+      for (var j = 0; j < n; j++) {
+        holes.add(b.k);
+      }
+    }
+    var n = 0;
+    while (holes.isNotEmpty && pool.isNotEmpty) {
+      var bh = 0, bp = 0;
+      num bv = -1;
+      for (var h = 0; h < holes.length; h++) {
+        for (var p = 0; p < pool.length; p++) {
+          final v = c.wkOne(holes[h], pool[p]);
+          if (v > bv) {
+            bv = v;
+            bh = h;
+            bp = p;
+          }
+        }
+      }
+      final k = holes.removeAt(bh), id = pool.removeAt(bp);
+      w[k] = [...c.wkIds(k), id];
+      n++;
+    }
+    _toast(n > 0 ? '${all ? '모두 다시 배치: ' : '추천 일꾼: '}$n명이 일하러 갔어요' : '채울 빈칸이나 쉬는 동료가 없어요');
+    return n;
+  }
+
+  /// 마을 레벨 보상 받기: 올린 레벨 목록(보상 창·에피소드는 화면 쪽에서) — (레벨, 이번에 처음 보는 동료 마을 에피소드인지)
+  List<(int, bool)> vlClaim() {
+    final got = <(int, bool)>[];
+    while (c.vlvGot < c.vLv()) {
+      final l = c.vlvGot + 1;
+      s.raw['vlv'] = l;
+      s.gem = s.gem + vlvGem[l];
+      final ep = asMap(s.raw['ep']) ?? (s.raw['ep'] = <String, dynamic>{});
+      final first = villageEpisodes.containsKey(l) && !truthy(ep['$l']);
+      if (first) ep['$l'] = 1;
+      got.add((l, first));
+    }
+    if (got.isNotEmpty) _toast('마을 Lv.${c.vlvGot}! 방치 골드 +${2 * c.vLv()}%');
+    return got;
   }
 
   // ════════════════════ 건물 공사 ════════════════════

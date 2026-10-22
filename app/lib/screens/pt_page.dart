@@ -7,6 +7,7 @@ import '../core/calc.dart';
 import '../core/data.dart';
 import '../core/fmt.dart';
 import '../core/js.dart';
+import '../core/village.dart';
 import '../game/controller.dart';
 import '../ui/fx.dart';
 import '../ui/game_widgets.dart';
@@ -234,7 +235,7 @@ class PtPage extends StatelessWidget {
         ]),
         sub: id == 'kael'
             ? '${ranks[c.rankIdx()].n} · 원정대 전투력 ${fmt(c.power())}'
-            : '${on ? '출전' : '대기'} · Lv.$lv · 전투력 ${fmt(c.cPow(id))}',
+            : '${on ? '출전' : c.working()[id] != null ? '🔨 ${buildingDef(c.working()[id]!).n}' : '대기'} · Lv.$lv · 전투력 ${fmt(c.cPow(id))}',
         right: id == 'kael'
             ? KdBuy(text: '장비', kind: BuyKind.ghost, small: true, minWidth: 74, onTap: () => g.setTab(GameTab.eq))
             : on
@@ -249,7 +250,7 @@ class PtPage extends StatelessWidget {
                 : Container(
                     padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                     decoration: BoxDecoration(border: Border.all(color: KdColors.line), borderRadius: BorderRadius.circular(8)),
-                    child: Text('대기', style: KdText.body(12, color: KdColors.muted)),
+                    child: Text(c.working()[id] != null ? '🔨 일꾼' : '대기', style: KdText.body(12, color: KdColors.muted)),
                   ),
       ),
     );

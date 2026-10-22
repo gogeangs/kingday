@@ -86,6 +86,27 @@ SAVES.tr = Object.assign(J(SAVES.late), {
 // 성유물 상자 Lv.10 넘은 저장 (docs/content/RELIC_BOX.md): 확률·뽑기에 태초 등급
 SAVES.box = Object.assign(J(SAVES.late), { boxLv: 27, boxXp: 55, capClears: 0 });
 
+// 마을 확장 (docs/content/VILLAGE.md): 새 건물 4종·일꾼(출전 중인 넬라도 넣어 둠 → 효과 0)·주문·축복·마을 레벨
+SAVES.vill = Object.assign(J(SAVES.late), {
+  capClears: 0,
+  bld: { inn: 10, farm: 6, diner: 10, dock: 10, apiary: 9, mine: 10, forge: 4, market: 6, ranch: 5, chapel: 5 },
+  items: { wheat: 520, carrot: 120, pumpkin: 55, fish: 2000, honey: 1500, ore: 980, egg: 12, milk: 3 },
+  prod: { dock: NOW - 50 * MIN, apiary: NOW - 50 * MIN, mine: NOW - 50 * MIN, egg: NOW - 10 * MIN, milk: NOW - 13 * MIN },
+  buffs: { spd: NOW + 9 * MIN, hp: NOW + 5 * MIN, sk: NOW + 2 * MIN },
+  work: { mine: ['gordon'], dock: ['haral', 'margo'], apiary: ['daisy'], market: ['nella'], inn: ['bron'] },
+  orders: [{ who: 'pete', need: { fish: 40, egg: 10 }, gold: 0, extra: { k: 'gem', n: 4 }, at: 0 }, { at: NOW + 30 * MIN },
+    { who: 'marta', need: { wheat: 500 }, gold: 0, extra: { k: 'ore', n: 12 }, at: 0 }, { who: 'daisy', need: { honey: 60 }, gold: 0, extra: { k: 'seed', n: 1 }, at: 0 }],
+  ordDay: { d: '2026-10-20', gem: 5, skip: { 1: 1 } },
+  bless: { d: '2026-10-20', used: 1, ad: 0, k: 'gold', until: NOW + 40 * MIN, opts: [] },
+  vlv: 3, ep: { 2: 1 }, walkers: { d: '2026-10-20', ids: ['bron', 'gordon', 'nella'] }, keepOrder: 1, workIntro: 1, workDot: '2026-10-20',
+});
+// 마을: 축복 없음·대장간 Lv.10 + 일꾼(비용 −50% 한도)·작물 대지의 축복
+SAVES.vill2 = Object.assign(J(SAVES.vill), {
+  bld: Object.assign(J(SAVES.vill.bld), { forge: 10, chapel: 0, market: 0 }), work: { forge: ['gordon', 'bron'], farm: ['daisy'], diner: ['margo'] },
+  bless: { d: '2026-10-19', used: 1, ad: 1, k: 'earth', until: NOW + 99 * MIN, opts: ['gold'] }, rec: Object.assign(J(SAVES.late.rec), { gordon: 3 }),
+  plots: [{ k: 'wheat', at: NOW - 20 * 1000 }, { k: 'pumpkin', at: NOW - 400 * 1000 }],
+});
+
 function setSave(name) {
   w.setNow(NOW);
   const s = F('hydrate')(J(SAVES[name]));
@@ -143,6 +164,25 @@ for (const name of Object.keys(SAVES)) {
     timeGem:[0,1,179,180,181,3600,43200].map(timeGem),
     adLeft:Object.fromEntries(Object.keys(ADS).map(k=>[k,adLeft(k)])),
     cardReady:cardReady(),nextGoal:nextGoal()})`);
+  // 마을 확장 공식 (부르는 순서도 앱과 같게: blessLeft 는 날짜가 바뀌면 S.bless 를 새로 씀)
+  sc.village = run(`({enMax:enMax(),forgeCut:forgeCut(),bldSum:bldSum(),vLv:vLv(),vlRw:vlRw(),
+    work:Object.fromEntries(BLD.map(b=>[b.k,{slots:wkSlots(b.k),ids:wkIds(b.k),bonus:workBonus(b.k),prodMul:prodMul(b.k)}])),
+    rest:restIds(),idle:idleIds(),working:working(),wkOpen:wkOpen(),
+    wkOne:Object.fromEntries(CARDIDS().map(id=>[id,BLD.map(b=>wkOne(b.k,id))])),
+    cookMs:cookMs(),vHp:vHp(),vBrave:vBrave(),vIdle:vIdle(),idle1h:idleGold(3600),
+    ordN:ordN(S.bld.market||0),ordMats:ordMats(),per2:ordMats().map(per2),ordGold:S.orders.map(o=>o&&o.need?ordGold(o):null),
+    ordCan:S.orders.map(ordCan),ordReady:ordReady(),ordKeep:ordKeep(),
+    blessK:blessK(),blessMs:blessMs(),blessLeft:blessLeft(),blessSec:[0,5,10].map(blessSec),bless:S.bless})`);
+  // 마을 난수: 주문 새로 만들기 · 축복 고르기 · 오늘 길 위 동료
+  setSave(name);
+  w.setSeed(5151);
+  const ra0 = w.ctx.renderAll;
+  w.ctx.renderAll = () => {};
+  sc.vrand = run(`(()=>{S.orders=[];ordTick();const o=JSON.parse(JSON.stringify(S.orders));S.bless={d:'',used:0,ad:0,k:'',until:0,opts:[]};
+    const opts=blessOpts();S.walkers={d:'',ids:[]};const wk=walkersToday();const sk=[];for(let i=0;i<S.orders.length;i++)if(S.orders[i]&&S.orders[i].need){ordSkip(i);ordSkip(i);sk.push(JSON.parse(JSON.stringify(S.orders[i])))}
+    return{orders:o,opts,walkers:wk,skip:sk,day:S.ordDay}})()`);
+  w.ctx.renderAll = ra0;
+  setSave(name);
   // 방치 보상: offline() 이 더하는 골드 (S.last 기준)
   {
     const gold0 = w.getS().gold;

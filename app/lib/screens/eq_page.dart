@@ -9,6 +9,7 @@ import '../battle/battle_data.dart';
 import '../core/data.dart';
 import '../core/fmt.dart';
 import '../core/js.dart';
+import '../core/village.dart';
 import '../game/controller.dart';
 import '../ui/fx.dart';
 import '../ui/game_widgets.dart';
@@ -303,8 +304,8 @@ class _Slot extends StatelessWidget {
   /// 칸을 누르면 (웹 slotSheet): 착용 장비 + 이 칸 강화
   void _sheet() {
     g.openSheet<void>((ctx) => StatefulBuilder(builder: (ctx, set) {
-          final sl = slotDef(k), it = g.calc.equipped(k), l = g.calc.enLv(k), mx = l >= enMax, cost = g.calc.enCost(l);
-          final ore = orNum(g.state.items['ore'], 0), open = truthy(g.state.bld['mine']);
+          final sl = slotDef(k), it = g.calc.equipped(k), l = g.calc.enLv(k), mx = l >= g.calc.enMax(), cost = g.calc.enCost(l);
+          final ore = orNum(g.state.items['ore'], 0), open = truthy(g.state.bld['forge']);
           String? after;
           if (it != null && !mx) {
             final m = 1 + .1 * (l + 1), p = <String>[];
@@ -320,7 +321,7 @@ class _Slot extends StatelessWidget {
               if (it == null) const KdNote('성유물 상자를 열면 이 칸의 장비가 나와요.', center: true),
               KdSec('브론의 대장간', small: '광석 ${fmt(ore)}'),
               if (!open)
-                const KdNote('마을에 광산을 재건하면 강화할 수 있어요.')
+                const KdNote('마을에서 브론의 대장간을 재건하면 강화할 수 있어요.')
               else ...[
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
@@ -363,35 +364,46 @@ class _Forge extends StatelessWidget {
 
   static bool canEn(GameController g) {
     final s = g.state, c = g.calc, ore = orNum(s.items['ore'], 0);
-    return truthy(s.bld['mine']) && slots.any((sl) => c.enLv(sl.k) < enMax && ore >= c.enCost(c.enLv(sl.k)));
+    return truthy(s.bld['forge']) && slots.any((sl) => c.enLv(sl.k) < c.enMax() && ore >= c.enCost(c.enLv(sl.k)));
   }
 
   static bool canCw(GameController g) {
     final s = g.state, c = g.calc, ore = orNum(s.items['ore'], 0);
-    return truthy(s.bld['mine']) &&
-        compWeapon.keys.any((id) => s.isJoined(id) && c.cwLv(id) < cwMax && ore >= c.cwOre(c.cwLv(id)) && s.gold >= c.cwGold(c.cwLv(id)));
+    return truthy(s.bld['forge']) &&
+        compWeapon.keys.any((id) => s.isJoined(id) && c.cwLv(id) < c.enMax() && ore >= c.cwOre(c.cwLv(id)) && s.gold >= c.cwGold(c.cwLv(id)));
   }
 
   @override
   Widget build(BuildContext context) {
-    final s = g.state, open = truthy(s.bld['mine']), ore = orNum(s.items['ore'], 0), dot = open && (canEn(g) || canCw(g));
+    final s = g.state, mine = truthy(s.bld['mine']), open = truthy(s.bld['forge']), ore = orNum(s.items['ore'], 0), dot = open && (canEn(g) || canCw(g));
     return KdBox(children: [
       GestureDetector(
         behavior: HitTestBehavior.opaque,
-        onTap: () => open ? showForgeSheet(g) : g.toast('마을에 광산을 재건하면 브론이 캐낸 광석으로 성유물을 강화할 수 있어요'),
+        onTap: () {
+          if (!mine) return g.toast('마을에 광산을 재건하면 브론의 대장간 빈터가 열려요');
+          if (!open) {
+            g.toast('마을에서 대장간을 재건해요');
+            return g.vlSelect('forge', tab: 'info');
+          }
+          showForgeSheet(g);
+        },
         child: Opacity(
           opacity: open ? 1 : .6,
           child: Stack(clipBehavior: Clip.none, children: [
             Row(children: [
-              uiImg('item_ore', size: 40),
+              kdImg('assets/game/village/forge_${open ? 'built' : 'ruin'}.png', w: 44, h: 44),
               const SizedBox(width: 10),
               Expanded(
                 child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                  Text('브론의 대장간', style: KdText.display(16)),
-                  Text(open ? '광석 ${fmt(ore)} · 성유물 강화 · 동료 무기' : '잠김', style: KdText.body(12, color: KdColors.muted)),
+                  Text.rich(TextSpan(children: [
+                    const TextSpan(text: '브론의 대장간'),
+                    if (open) TextSpan(text: '  마을 · Lv.${s.bldLv('forge')}', style: KdText.body(11, color: KdColors.gold, weight: FontWeight.w700)),
+                  ]), style: KdText.display(16)),
+                  Text(open ? '광석 ${fmt(ore)} · 성유물 강화 · 동료 무기' : mine ? '마을에서 대장간을 재건해요' : '마을에 광산을 재건하면 열려요',
+                      style: KdText.body(12, color: KdColors.muted)),
                 ]),
               ),
-              Text(open ? '열기 ›' : '🔒', style: KdText.body(13, color: KdColors.gold, weight: FontWeight.w700)),
+              Text(open ? '열기 ›' : mine ? '마을 ›' : '🔒', style: KdText.body(13, color: KdColors.gold, weight: FontWeight.w700)),
             ]),
             if (dot) const Positioned(top: -2, right: -2, child: KdRedDot()),
           ]),
@@ -404,109 +416,126 @@ class _Forge extends StatelessWidget {
 /// 대장간 창에서 마지막에 본 탭 ('en' 성유물 강화 · 'cw' 동료 무기)
 String _forgeTab = 'en';
 
-/// 웹 forgeSheet(tab): 창을 닫지 않고 연달아 강화
+/// 대장간 「강화」 내용 (장비 탭 바로가기 창과 마을 대장간 창이 같이 씀). [set] 은 다시 그리기
+List<Widget> forgeContent(GameController g, void Function(void Function()) set) {
+  final s = g.state, c = g.calc, ore = orNum(s.items['ore'], 0), ce = _Forge.canEn(g), cc = _Forge.canCw(g);
+  final cut = ((1 - c.forgeCut()) * 100).round();
+  Widget grid(List<Widget> items, int cols) => LayoutBuilder(builder: (_, cs) {
+        final w = (cs.maxWidth - 6 * (cols - 1)) / cols;
+        return Wrap(spacing: 6, runSpacing: 6, children: [for (final i in items) SizedBox(width: w, child: i)]);
+      });
+  Widget fg({required Widget icon, required Widget name, required Widget cost, VoidCallback? onTap}) => GestureDetector(
+        onTap: onTap,
+        child: Opacity(
+          opacity: onTap == null ? .5 : 1,
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 6),
+            decoration: BoxDecoration(color: KdColors.panel2, border: Border.all(color: KdColors.line), borderRadius: BorderRadius.circular(10)),
+            child: Column(children: [icon, const SizedBox(height: 2), name, const SizedBox(height: 2), cost]),
+          ),
+        ),
+      );
+  Widget nm(String n, int l) => Text.rich(
+        TextSpan(children: [
+          TextSpan(text: '$n '),
+          TextSpan(text: '+$l', style: const TextStyle(color: Color(0xFFFF9A3A))),
+        ]),
+        textAlign: TextAlign.center,
+        style: KdText.body(12, weight: FontWeight.w600),
+      );
+  final costStyle = KdText.figure(12, color: const Color(0xFFD8DCEF));
+  Widget tab(String k, String label, bool dot) => Expanded(
+        child: GestureDetector(
+          onTap: () => set(() => _forgeTab = k),
+          child: Stack(clipBehavior: Clip.none, children: [
+            Container(
+              height: 38,
+              alignment: Alignment.center,
+              decoration: BoxDecoration(
+                color: _forgeTab == k ? KdColors.gold : KdColors.panel2,
+                border: Border.all(color: _forgeTab == k ? KdColors.gold : KdColors.line),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Text(label, style: KdText.body(14, weight: FontWeight.w700, color: _forgeTab == k ? KdColors.goldInk : KdColors.muted)),
+            ),
+            if (dot) const Positioned(top: -2, right: -2, child: KdRedDot()),
+          ]),
+        ),
+      );
+  return [
+    Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+      iconNum(oreIcon, '광석 ${fmt(ore)}', style: KdText.body(13, weight: FontWeight.w600)),
+      const SizedBox(width: 14),
+      iconNum(goldIcon, '골드 ${fmt(s.gold)}', style: KdText.body(13, weight: FontWeight.w600)),
+    ]),
+    Text('대장간 Lv.${s.bldLv('forge')} · 강화 최대 +${c.enMax()}${cut > 0 ? ' · 광석 −$cut%' : ''}${c.workBonus('forge') > 0 ? ' (일꾼 포함)' : ''}',
+        style: KdText.body(12, color: const Color(0xFFFFD9A8))),
+    Row(children: [tab('en', '성유물 강화', ce), const SizedBox(width: 6), tab('cw', '동료 무기', cc)]),
+    if (_forgeTab == 'en') ...[
+      const KdNote('부위마다 강화할 때마다 그 부위 성유물 능력치가 10%씩 올라요. 장비를 바꿔도 강화는 부위에 남아요.'),
+      grid([
+        for (final sl in slots)
+          () {
+            final l = c.enLv(sl.k), mx = l >= c.enMax(), cost = c.enCost(l);
+            return fg(
+              icon: uiImg(slotImg[sl.k]!, size: 30),
+              name: nm(sl.n, l),
+              cost: mx ? Text('최대', style: costStyle) : iconNum(oreIcon, '$cost', style: costStyle),
+              onTap: mx || ore < cost
+                  ? null
+                  : () {
+                      g.act((a) => a.enhanceSlot(sl.k));
+                      set(() {});
+                    },
+            );
+          }(),
+      ], 3),
+    ] else ...[
+      const KdNote('단계마다 그 동료 공격·체력 +8%. 광석과 골드가 들어요.'),
+      grid([
+        for (final id in compWeapon.keys)
+          () {
+            final j = s.isJoined(id), l = c.cwLv(id), mx = l >= c.enMax(), o = c.cwOre(l), gd = c.cwGold(l);
+            return fg(
+              icon: j
+                  ? ClipRRect(borderRadius: BorderRadius.circular(10), child: SizedBox(width: 40, height: 40, child: FaceImg(id)))
+                  : const SizedBox(width: 40, height: 40, child: Center(child: Text('🔒', style: TextStyle(fontSize: 22)))),
+              name: j ? nm('${comps[id]!.n}의 ${compWeapon[id]}', l) : nm('???', l),
+              cost: !j
+                  ? Text('합류 전', style: costStyle)
+                  : mx
+                      ? Text('최대', style: costStyle)
+                      : Column(children: [iconNum(oreIcon, '$o', style: costStyle), iconNum(goldIcon, fmt(gd), style: costStyle)]),
+              onTap: !j || mx || ore < o || s.gold < gd
+                  ? null
+                  : () {
+                      g.act((a) => a.enhanceWeapon(id));
+                      set(() {});
+                    },
+            );
+          }(),
+      ], 2),
+    ],
+  ];
+}
+
+/// 강화할 수 있는지 (마을 할 일 줄 「⚒ 강화 가능」·건물 배지)
+bool forgeCanAny(GameController g) => _Forge.canEn(g) || _Forge.canCw(g);
+
+/// 웹 forgeSheet(tab): 장비 탭 바로가기. 창을 닫지 않고 연달아 강화
 void showForgeSheet(GameController g) {
-  g.openSheet<void>((ctx) => StatefulBuilder(builder: (ctx, set) {
-        final s = g.state, c = g.calc, ore = orNum(s.items['ore'], 0), ce = _Forge.canEn(g), cc = _Forge.canCw(g);
-        Widget grid(List<Widget> items, int cols) => LayoutBuilder(builder: (_, cs) {
-              final w = (cs.maxWidth - 6 * (cols - 1)) / cols;
-              return Wrap(spacing: 6, runSpacing: 6, children: [for (final i in items) SizedBox(width: w, child: i)]);
-            });
-        Widget fg({required Widget icon, required Widget name, required Widget cost, VoidCallback? onTap}) => GestureDetector(
-              onTap: onTap,
-              child: Opacity(
-                opacity: onTap == null ? .5 : 1,
-                child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 6),
-                  decoration: BoxDecoration(color: KdColors.panel2, border: Border.all(color: KdColors.line), borderRadius: BorderRadius.circular(10)),
-                  child: Column(children: [icon, const SizedBox(height: 2), name, const SizedBox(height: 2), cost]),
-                ),
-              ),
-            );
-        Widget nm(String n, int l) => Text.rich(
-              TextSpan(children: [
-                TextSpan(text: '$n '),
-                TextSpan(text: '+$l', style: const TextStyle(color: Color(0xFFFF9A3A))),
-              ]),
-              textAlign: TextAlign.center,
-              style: KdText.body(12, weight: FontWeight.w600),
-            );
-        final costStyle = KdText.figure(12, color: const Color(0xFFD8DCEF));
-        Widget tab(String k, String label, bool dot) => Expanded(
-              child: GestureDetector(
-                onTap: () => set(() => _forgeTab = k),
-                child: Stack(clipBehavior: Clip.none, children: [
-                  Container(
-                    height: 38,
-                    alignment: Alignment.center,
-                    decoration: BoxDecoration(
-                      color: _forgeTab == k ? KdColors.gold : KdColors.panel2,
-                      border: Border.all(color: _forgeTab == k ? KdColors.gold : KdColors.line),
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    child: Text(label, style: KdText.body(14, weight: FontWeight.w700, color: _forgeTab == k ? KdColors.goldInk : KdColors.muted)),
-                  ),
-                  if (dot) const Positioned(top: -2, right: -2, child: KdRedDot()),
-                ]),
-              ),
-            );
-        return KdSheetBody(
-          eyebrow: '장비',
+  g.openSheet<void>((ctx) => StatefulBuilder(
+        builder: (ctx, set) => KdSheetBody(
+          eyebrow: '마을 · 대장간 Lv.${g.state.bldLv('forge')}',
           title: '브론의 대장간',
-          children: [
-            Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-              iconNum(oreIcon, '광석 ${fmt(ore)}', style: KdText.body(13, weight: FontWeight.w600)),
-              const SizedBox(width: 14),
-              iconNum(goldIcon, '골드 ${fmt(s.gold)}', style: KdText.body(13, weight: FontWeight.w600)),
-            ]),
-            Row(children: [tab('en', '성유물 강화', ce), const SizedBox(width: 6), tab('cw', '동료 무기', cc)]),
-            if (_forgeTab == 'en') ...[
-              const KdNote('부위마다 강화할 때마다 그 부위 성유물 능력치가 10%씩 올라요. 장비를 바꿔도 강화는 부위에 남아요.'),
-              grid([
-                for (final sl in slots)
-                  () {
-                    final l = c.enLv(sl.k), mx = l >= enMax, cost = c.enCost(l);
-                    return fg(
-                      icon: uiImg(slotImg[sl.k]!, size: 30),
-                      name: nm(sl.n, l),
-                      cost: mx ? Text('최대', style: costStyle) : iconNum(oreIcon, '$cost', style: costStyle),
-                      onTap: mx || ore < cost
-                          ? null
-                          : () {
-                              g.act((a) => a.enhanceSlot(sl.k));
-                              set(() {});
-                            },
-                    );
-                  }(),
-              ], 3),
-            ] else ...[
-              const KdNote('단계마다 그 동료 공격·체력 +8%. 광석과 골드가 들어요.'),
-              grid([
-                for (final id in compWeapon.keys)
-                  () {
-                    final j = s.isJoined(id), l = c.cwLv(id), mx = l >= cwMax, o = c.cwOre(l), gd = c.cwGold(l);
-                    return fg(
-                      icon: j
-                          ? ClipRRect(borderRadius: BorderRadius.circular(10), child: SizedBox(width: 40, height: 40, child: FaceImg(id)))
-                          : const SizedBox(width: 40, height: 40, child: Center(child: Text('🔒', style: TextStyle(fontSize: 22)))),
-                      name: j ? nm('${comps[id]!.n}의 ${compWeapon[id]}', l) : nm('???', l),
-                      cost: !j
-                          ? Text('합류 전', style: costStyle)
-                          : mx
-                              ? Text('최대', style: costStyle)
-                              : Column(children: [iconNum(oreIcon, '$o', style: costStyle), iconNum(goldIcon, fmt(gd), style: costStyle)]),
-                      onTap: !j || mx || ore < o || s.gold < gd
-                          ? null
-                          : () {
-                              g.act((a) => a.enhanceWeapon(id));
-                              set(() {});
-                            },
-                    );
-                  }(),
-              ], 2),
-            ],
-          ],
-          acts: KdActs(buttons: [KdAct('닫기', primary: true, onTap: () => Navigator.of(ctx).pop())]),
-        );
-      }));
+          children: forgeContent(g, set),
+          acts: KdActs(buttons: [
+            KdAct('닫기', onTap: () => Navigator.of(ctx).pop()),
+            KdAct('마을에서 보기', primary: true, onTap: () {
+              Navigator.of(ctx).pop();
+              g.vlSelect('forge', tab: 'forge');
+            }),
+          ]),
+        ),
+      ));
 }

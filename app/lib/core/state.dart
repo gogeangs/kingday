@@ -25,9 +25,9 @@ class GameState {
         'eq': <String, dynamic>{}, 'autoSell': false, 'autoOpen': false, 'last': now, 'best': 1, 'started': false,
         'joined': <String, dynamic>{}, 'done': <String, dynamic>{},
         'lv': {'bron': 1, 'haral': 1, 'riel': 1, 'margo': 1},
-        'bld': {'inn': 0, 'farm': 0, 'diner': 0, 'dock': 0, 'apiary': 0, 'mine': 0},
+        'bld': {'inn': 0, 'farm': 0, 'diner': 0, 'dock': 0, 'apiary': 0, 'mine': 0, 'forge': 0, 'market': 0, 'ranch': 0, 'chapel': 0},
         'plots': <dynamic>[], 'seeds': {'wheat': 0, 'carrot': 0, 'pumpkin': 0},
-        'items': {'wheat': 0, 'carrot': 0, 'pumpkin': 0, 'fish': 0, 'honey': 0, 'ore': 0},
+        'items': {'wheat': 0, 'carrot': 0, 'pumpkin': 0, 'fish': 0, 'honey': 0, 'ore': 0, 'egg': 0, 'milk': 0},
         'prod': <String, dynamic>{}, 'buffs': <String, dynamic>{}, 'rankSeen': 0, 'memory': 0, 'retires': 0,
         'buys': <String, dynamic>{}, 'sub': {'until': 0, 'last': ''}, 'gem': 0, 'gemRank': 0,
         'gemLord': <String, dynamic>{},
@@ -43,6 +43,11 @@ class GameState {
         'dun': {'d': '', 'used': 0, 'ad': 0, 'star': {'mine': <String, dynamic>{}, 'field': <String, dynamic>{}, 'vault': <String, dynamic>{}}, 'seen': <String, dynamic>{}},
         // 은퇴 일기 (docs/content/RETIRE.md 7장) — trait·trReset·retRw 는 은퇴해도 유지, runStart 는 이번 회차 시작 영지
         'trait': <String, dynamic>{}, 'trReset': 0, 'runStart': 1, 'retRw': <String, dynamic>{}, 'diaryIntro': 0,
+        // 마을 확장 (docs/content/VILLAGE.md 7장) — 은퇴해도 모두 유지
+        'orders': <dynamic>[], 'ordDay': {'d': '', 'gem': 0, 'skip': <String, dynamic>{}},
+        'bless': {'d': '', 'used': 0, 'ad': 0, 'k': '', 'until': 0, 'opts': <dynamic>[]},
+        'vlv': 1, 'ep': <String, dynamic>{}, 'walkers': {'d': '', 'ids': <dynamic>[]}, 'keepOrder': 1,
+        'work': <String, dynamic>{}, 'workIntro': 0, 'workDot': '',
         'v': 3,
       };
 
@@ -84,6 +89,22 @@ class GameState {
     final dun = asMap(f['dun'])!;
     dun['star'] = <String, dynamic>{'mine': <String, dynamic>{}, 'field': <String, dynamic>{}, 'vault': <String, dynamic>{}, ...?asMap(dun['star'])};
     if (!truthy(dun['seen'])) dun['seen'] = <String, dynamic>{};
+    // 마을 확장: 광산이 있던 세이브는 브론의 대장간을 Lv.1로 지어 줌(강화 기록 slotEn·cwEn은 그대로)
+    final sb = asMap(src['bld']);
+    if (!(sb != null && sb['forge'] != null) && f['bld'] is Map && asNum((f['bld'] as Map)['mine']) > 0) (f['bld'] as Map)['forge'] = 1;
+    final f0 = freshMap(now);
+    for (final k in const ['ordDay', 'bless', 'walkers', 'work']) {
+      if (f[k] is! Map) f[k] = f0[k];
+    }
+    if (f['orders'] is! List) f['orders'] = <dynamic>[];
+    final wk = (f['work'] as Map);
+    wk.removeWhere((k, v) => v is! List);
+    final bl = f['bless'] as Map;
+    if (bl['opts'] is! List) bl['opts'] = <dynamic>[];
+    final od = f['ordDay'] as Map;
+    if (!truthy(od['skip']) || od['skip'] is! Map) od['skip'] = <String, dynamic>{};
+    final wl = f['walkers'] as Map;
+    if (wl['ids'] is! List) wl['ids'] = <dynamic>[];
     if (asNum(f['stage']) > last) f['stage'] = last;
     return g;
   }
