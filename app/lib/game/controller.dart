@@ -473,10 +473,7 @@ class GameController extends ChangeNotifier {
   }
 
   void _frameNow(double dt) {
-    for (final e in sim.events) {
-      _handle(e);
-    }
-    sim.events.clear();
+    _drainEvents();
     frame.value++;
     // 웹 loop(): 자동 열기 0.9초마다 (창이 없을 때)
     _autoT += dt;
@@ -492,6 +489,15 @@ class GameController extends ChangeNotifier {
       calc.pfCheck();
       chCheck();
       refresh();
+    }
+  }
+
+  /// 전투가 쌓아 둔 일(알림·창)을 처리 — 매 프레임, 그리고 눌러서 전투 상태를 바꾼 직후
+  void _drainEvents() {
+    final es = List<BattleEvent>.of(sim.events);
+    sim.events.clear();
+    for (final e in es) {
+      _handle(e);
     }
   }
 
@@ -929,6 +935,7 @@ class GameController extends ChangeNotifier {
     if (h == null) return;
     if (h.mode == 'dun' && h.st == 'fight') {
       sim.dunEnd();
+      _drainEvents();
     } else {
       sim.chExit();
       toast('영지 탈환전으로 돌아왔어요');
