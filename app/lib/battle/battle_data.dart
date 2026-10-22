@@ -1,6 +1,8 @@
 /// 전투 그림·몬스터 표 (웹 「이미지 에셋」 구역). 값은 web_data.g.dart 에서 자동으로 옮겨 온 것.
 library;
 
+import 'dart:ui' as ui;
+
 import '../core/web_data.g.dart';
 
 Map<String, dynamic> _m(Object? v) => (v as Map).cast<String, dynamic>();
@@ -40,6 +42,25 @@ final Map<int, MonSheet> monSheets = {for (final e in wMonSprites.entries) int.p
 /// 지역 번호 → 두 번째 마물(특성 있음)
 final Map<int, MonSheet> monAlt = {for (final e in wMonAlt.entries) int.parse(e.key): MonSheet._(_m(e.value))};
 final MonSheet goblinSheet = MonSheet._(_m(wGob));
+
+/// 마왕 발타사르 1·2단계 전용 그림 (assets/monsters/boss_balthasar{,2}_*.png). 없으면 알도르 그림을 물들여 씀
+final List<MonSheet> balthasarSheets = [
+  for (final id in ['boss_balthasar', 'boss_balthasar2']) MonSheet._({'id': id, 'walk': 4, 'attack': 4, 'hit': 2, 'fig': 200, 'h': 78}),
+];
+
+/// 왕도 그림이 오기 전 대체: 기존 그림 + 색 (웹 MON_SPRITES[5].tint · MON_ALT[5].tint)
+class CapTint {
+  const CapTint(this.src, this.color, this.mode);
+  final MonSheet src;
+  final ui.Color color;
+  final ui.BlendMode mode;
+}
+
+final Map<String, CapTint> capTint = {
+  'guard_iron': CapTint(monSheets[2]!, const ui.Color(0xFF4B3F6A), ui.BlendMode.multiply), // 흑철 근위병 ← 강철 골렘
+  'boss_guardcap': CapTint(monSheets[2]!, const ui.Color(0xFF7A5A2E), ui.BlendMode.multiply), // 근위대장 ← 강철 골렘(검은 청동)
+  'gargoyle_wall': CapTint(monSheets[1]!, const ui.Color(0xFF9C9AA8), ui.BlendMode.color), // 성벽 가고일 ← 그림자 박쥐(회색)
+};
 
 class Trait {
   Trait._(Map<String, dynamic> m) : hp = _n(m['hp']), atk = _n(m['atk']), mv = _n(m['mv']), cd = _n(m['cd']), n = m['n'];

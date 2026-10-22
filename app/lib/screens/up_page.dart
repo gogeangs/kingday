@@ -9,6 +9,7 @@ import 'package:flutter/material.dart';
 import '../core/calc.dart';
 import '../core/data.dart';
 import '../core/fmt.dart';
+import '../core/js.dart';
 import '../game/controller.dart';
 import '../ui/game_widgets.dart';
 import '../ui/theme.dart';
@@ -246,6 +247,8 @@ class _RetireBox extends StatelessWidget {
       KdKv('은퇴 자금', '${fmt(s.gold)} / ${fmt(t)}'),
       XpBar(math.min(1, s.gold / t).toDouble()),
       const KdNote('영지를 되찾을수록 목표 금액이 올라가요. 카엘은 아직 이 사실을 몰라요.'),
+      if (orNum(s.raw['capClears'], 0) > 0)
+        Text('👑 왕도 재탈환 보너스: 다음 회차에 왕도를 되찾으면 은퇴의 추억 +$capMem', style: KdText.body(12, color: const Color(0xFFFFD77A))),
       KdBuy(
         text: can ? '은퇴하기 · 추억 +$pts' : '영지 19곳을 되찾으면 은퇴할 수 있어요',
         minWidth: 0,

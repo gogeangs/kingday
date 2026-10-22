@@ -146,9 +146,37 @@ const wRegions = [
       'k:왕좌 말고 은퇴가 코앞이었으면 좋겠는데.',
     ],
   },
+  {
+    'n': '왕도 아스테리온',
+    'sky': ['#1b1530', '#6a5a8c'],
+    'hill': '#2e2740',
+    'hill2': '#4a3f60',
+    'ground': '#5b5468',
+    'kind': 'golem',
+    'col': '#4a4360',
+    'mn': '흑철 근위병',
+    'boss': '마왕 발타사르',
+    'cap': true,
+    'terr': [
+      '남쪽 성문',
+      '상인의 거리',
+      '대장장이 골목',
+      '별빛 대성당',
+      '기사단 훈련장',
+      '왕립 도서관',
+      '왕비의 정원',
+      '높은 성벽',
+      '왕궁 회랑',
+      '알현실',
+    ],
+    'lore': [
+      '왕도 아스테리온. 마왕의 근위대가 성문을 지키고, 쓰러진 군단장들의 잔영이 길을 막는다.',
+      'q:이 길 끝, 알현실에 마왕이 있다. 주인, 끝까지 가자.',
+    ],
+  },
 ];
 
-const wMaxland = 50;
+const wMaxland = 60;
 
 const wBossid = ['morbas', 'seril', 'gromak', 'aldor', 'ignis'];
 
@@ -913,6 +941,10 @@ const wBal = {
   'lordHp': 12,
   'bossAtk': 2.5,
   'lordAtk': 3,
+  'demHp': 12,
+  'demAtk': 2,
+  'demAtk2': 2.4,
+  'seal': 2,
 };
 
 const wCompGrow = 1.1;
@@ -1000,6 +1032,7 @@ const wRanks = [
   {'at': 30, 'n': '백작', 'k': '백작… 은퇴가 점점 멀어진다.'},
   {'at': 40, 'n': '공작', 'k': '다음은 설마… 아니겠지.'},
   {'at': 50, 'n': '왕도 진격대장', 'k': '왕도만 되찾으면 정말 은퇴한다.'},
+  {'at': 60, 'n': '왕도 탈환자', 'k': '왕도까지 되찾았으니… 이제 진짜 은퇴죠?'},
 ];
 
 const wEvents = [
@@ -1245,6 +1278,46 @@ const wMonSprites = {
     'h': 52,
     'boss': {'id': 'boss_ignis', 'walk': 4, 'attack': 4, 'hit': 2, 'fig': 200, 'h': 78},
   },
+  '5': {
+    'id': 'guard_iron',
+    'walk': 4,
+    'attack': 4,
+    'hit': 2,
+    'fig': 190,
+    'h': 58,
+    'tint': {
+      'src': {
+        'id': 'golem_steel',
+        'walk': 4,
+        'attack': 4,
+        'hit': 2,
+        'fig': 190,
+        'h': 58,
+        'boss': {'id': 'boss_gromak', 'walk': 4, 'attack': 4, 'hit': 2, 'fig': 200, 'h': 74},
+      },
+      'ops': [['multiply', '#4b3f6a']],
+    },
+    'boss': {
+      'id': 'boss_guardcap',
+      'walk': 4,
+      'attack': 4,
+      'hit': 2,
+      'fig': 200,
+      'h': 76,
+      'tint': {
+        'src': {
+          'id': 'golem_steel',
+          'walk': 4,
+          'attack': 4,
+          'hit': 2,
+          'fig': 190,
+          'h': 58,
+          'boss': {'id': 'boss_gromak', 'walk': 4, 'attack': 4, 'hit': 2, 'fig': 200, 'h': 74},
+        },
+        'ops': [['multiply', '#7a5a2e'], ['multiply', '#9a8ab8']],
+      },
+    },
+  },
 };
 
 const wMonAlt = {
@@ -1293,6 +1366,29 @@ const wMonAlt = {
     'h': 40,
     'lift': 26,
     'trait': 'flier',
+  },
+  '5': {
+    'id': 'gargoyle_wall',
+    'walk': 4,
+    'attack': 4,
+    'hit': 2,
+    'fig': 180,
+    'h': 44,
+    'lift': 30,
+    'trait': 'flier',
+    'tint': {
+      'src': {
+        'id': 'bat_shadow',
+        'walk': 4,
+        'attack': 4,
+        'hit': 2,
+        'fig': 180,
+        'h': 44,
+        'lift': 30,
+        'boss': {'id': 'boss_seril', 'walk': 4, 'attack': 4, 'hit': 2, 'fig': 195, 'h': 72},
+      },
+      'ops': [['color', '#9c9aa8']],
+    },
   },
 };
 
@@ -1372,11 +1468,11 @@ const wForm = {
 
 const wGobRare = {'badge': 0.005, 'frame': 0.002};
 
-const wBgImg = {'0': 'erdan', '1': 'dusk', '2': 'canyon', '3': 'frost', '4': 'ash'};
+const wBgImg = {'0': 'erdan', '1': 'dusk', '2': 'canyon', '3': 'frost', '4': 'ash', '5': 'capital'};
 
-const wBgFull = {'dusk': true, 'canyon': true, 'frost': true, 'ash': true};
+const wBgFull = {'dusk': true, 'canyon': true, 'frost': true, 'ash': true, 'capital': true};
 
-const wDeco = ['windmill', 'trees', 'spires', 'graves', 'volcano'];
+const wDeco = ['windmill', 'trees', 'spires', 'graves', 'volcano', 'spires'];
 
 const wCardFix = {'shop': {'legend': 0.01, 'epic': 0.1}, 'battle': {'legend': 0, 'epic': 0.1}};
 

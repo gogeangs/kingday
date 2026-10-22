@@ -9,6 +9,7 @@ import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 
@@ -793,7 +794,7 @@ class GameController extends ChangeNotifier {
             ]));
       case GemEvent(:final n, :final why):
         // 웹: 군단장 첫 처치 이삭은 2.3초 뒤 (「○○ 처치」 알림에 덮이지 않게) + 진동
-        Timer(Duration(milliseconds: why == '군단장 첫 처치' ? 2300 : 0), () {
+        Timer(Duration(milliseconds: why.endsWith('첫 처치') ? 2300 : 0), () {
           haptic(const [18]);
           sound('gem');
           toast('황금 이삭 +${fmt(n)} · $why');
@@ -806,10 +807,18 @@ class GameController extends ChangeNotifier {
           'q@proud:주인, 원정대의 힘이 가득 찼다! 빛나는 초상화를 눌러 봐라.',
           'sys:초상화 둘레의 금색 고리가 다 차면 특수 스킬을 쓸 수 있어요. 오른쪽 아래 AUTO를 켜 두면 알아서 써요. 초상화를 길게 누르면 스킬 설명이 나와요.',
         ], '알겠어', onGo: () => state.raw['autoSkill'] = was);
-      case StageClearedEvent(:final chapter):
+      case StageClearedEvent(:final chapter, :final clearedStage):
         sound('clear');
         if (chapter) _chapter();
+        _capStory(clearedStage);
         save();
+      case DemonWinEvent(:final bonus):
+        sound('fanfare');
+        if (!truthy(state.raw['ending1'])) {
+          _ending(0);
+        } else if (bonus > 0) {
+          Timer(const Duration(milliseconds: 2600), () => toast('왕도 재탈환 보너스! 은퇴의 추억 +$bonus'));
+        }
       case FightResetEvent():
         break;
     }
@@ -953,9 +962,100 @@ class GameController extends ChangeNotifier {
   /// 두 번째 은퇴부터는 다시 나오는 이야기 창(은퇴 직후·지역 이야기·칭호 상승)을 알림 한 줄로 (웹 quietStory)
   bool get _quietStory => orNum(state.raw['retires'], 0) >= 2;
 
+  // ── 왕도 아스테리온 · 1부 엔딩 (docs/content/CAPITAL.md) ──
+  /// 웹 capChapter(): 처음 한 번은 「왕도로 가는 길」 + 지역 소개, 그 뒤로는 알림 한 줄
+  void _capChapter() {
+    if (truthy(state.done['capRoad'])) {
+      toast('왕도 아스테리온 진입 · 알현실까지 10곳');
+      return;
+    }
+    state.done['capRoad'] = true;
+    final r = regions.last;
+    scene('다섯 군단을 몰아내다', '왕도로 가는 길', const [
+      'sys:다섯 군단이 모두 물러났다. 안개 너머로 왕도 아스테리온의 성벽이 보인다.',
+      'q@moved:…300년 만이다. 저 성문 안에 주인의 왕좌가 있다.',
+      'k:왕좌 말고 은퇴 서류는 없을까?',
+      'q:왕이 되면 은퇴 서류는 주인이 직접 쓰면 된다.',
+      'k@smile:…그 말, 이상하게 설득력 있네.',
+    ], '성문으로 간다');
+    scene('마지막 지역 · 왕도', r.n, [...r.lore, 'sys:이 땅의 지배자 · ${r.boss} · 홀수 영지는 군단장의 잔영, 짝수 영지는 마왕 근위대장'], '진격한다');
+  }
+
+  /// 웹 capStory(st0): 56 도서관 · 57 알도르 잔영 이야기 (처음 한 번)
+  void _capStory(int st0) {
+    if (st0 == 56 && !truthy(state.done['cap56'])) {
+      state.done['cap56'] = true;
+      scene('왕립 도서관', '불탄 책장 사이', const ['sys:불탄 책장 사이에서 낡은 초상화를 발견했다. 성검을 든 젊은 왕.', 'q@moved:…이 얼굴은.', 'k:아는 사람이야?', 'q:……아니다. 가자.'], '계속 간다');
+    }
+    if (st0 == 57 && !truthy(state.done['cap57'])) {
+      state.done['cap57'] = true;
+      scene('왕비의 정원', '잔영이 흩어지다', const ['q@moved:알도르. 이번엔 편히 잠들어라.', 'k:…루미나르, 괜찮아?', 'q:괜찮다. 칼은 울지 않는다.'], '…가자');
+    }
+  }
+
+  static const _endingScenes = <(String, String, String?, List<String>, String)>[
+    ('1부 엔딩 · 1', '왕좌 앞에서', 'throne', ['m:발타사르|왕관은 무겁지. 지키고 싶은 것이 많을수록.', 'm:발타사르|이 왕관은 내가 가져간다. 진짜 왕이 될 자격이 있다면, 마계까지 찾아오너라.', 'sys:발타사르가 왕관을 들고 검은 문 너머로 사라졌다.'], '…'),
+    ('1부 엔딩 · 2', '텅 빈 왕좌', null, ['k:…이겼다. 이제 은퇴?', 'q:아직이다. 왕관이 없는 왕은 왕이 아니다.', 'k@smile:나 왕 안 한다니까.'], '다음'),
+    ('1부 엔딩 · 3', '왕궁 뜰', 'garden', ['sys:되찾은 왕궁 뒤뜰. 카엘이 괭이로 땅을 고르고 있다.', 'q:주인, 거기는 왕궁 정원이다.', 'k@smile:좋은 흙이야. 여기다 밀 심으면 잘 자라겠어.', 'sys:1부 「잃어버린 왕국」 끝. 2부 「흩어진 동맹」에서 계속됩니다.'], '1부 완결'),
+  ];
+
+  /// 엔딩 장면 → 「1부 완결」 창. 일러스트(illust_throne·illust_garden)는 들어오기 전엔 건너뜀
+  Future<void> _ending(int i) async {
+    if (i >= _endingScenes.length) return _part1Sheet();
+    final (eb, t, il, p, btn) = _endingScenes[i];
+    String? ill;
+    if (il != null) {
+      try {
+        await rootBundle.load('assets/game/illust/illust_$il.jpg');
+        ill = il;
+      } catch (_) {}
+    }
+    scene(eb, t, p, btn, illust: ill, onGo: () => _ending(i + 1));
+  }
+
+  void _part1Sheet() {
+    state.raw['ending1'] = 1;
+    save();
+    Widget row(Widget ic, String a, String b) => Padding(
+          padding: const EdgeInsets.symmetric(vertical: 3),
+          child: Row(children: [
+            SizedBox(width: 28, height: 28, child: ic),
+            const SizedBox(width: 8),
+            Expanded(child: Text(a, style: KdText.body(13, color: KdColors.muted))),
+            Text(b, style: KdText.body(13, color: KdColors.gold, weight: FontWeight.w700)),
+          ]),
+        );
+    queue((ctx) => showKdSheet<void>(ctx, closable: false, builder: (c) => KdSheetBody(
+          eyebrow: '왕이 되는 그날까지 · 1부 「잃어버린 왕국」',
+          title: '1부 완결',
+          children: [
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+              decoration: BoxDecoration(color: KdColors.panel2, borderRadius: BorderRadius.circular(12), border: Border.all(color: const Color(0x73FFC94A))),
+              child: Column(children: [
+                row(kdImg(gemIcon), '황금 이삭', '+$demonGem'),
+                row(kdImg('assets/game/profile/frame_capital.png'), '프로필 테두리', '왕도의 별'),
+                row(kdImg('assets/game/profile/badge_part1.png'), '배지', '1부 완결'),
+                row(kdImg('assets/game/ui/${rankImg.last}.png'), '칭호', '왕도 탈환자 (+4%)'),
+              ]),
+            ),
+            const Para('sys:이제 「왕궁 뜰」에서 보스 없이 사냥이 이어져요. 은퇴하고 다시 왕도를 되찾으면 회차마다 한 번 은퇴의 추억 +$capMem을 더 받아요.'),
+            Text('2부 「흩어진 동맹」 — 엘프 왕국, 사막 제국, 북방 부족. 준비 중이에요.', textAlign: TextAlign.center, style: KdText.body(12, color: KdColors.muted)),
+          ],
+          acts: KdActs(buttons: [
+            KdAct('은퇴 계획 보기', onTap: () {
+              Navigator.of(c).pop();
+              setTab(GameTab.up);
+            }),
+            KdAct('계속 사냥하기', primary: true, onTap: () => Navigator.of(c).pop()),
+          ]),
+        )));
+  }
+
   /// 웹 chapter(): 새 지역에 들어설 때 군단 소개
   void _chapter() {
     final st = state.stage, r = GameCalc.region(st), i = GameCalc.regionIndex(st);
+    if (GameCalc.isCap(st)) return _capChapter();
     if (_quietStory) {
       toast('제${i + 1}군단 점령지 · ${r.n} 진입');
       return;
@@ -1009,7 +1109,7 @@ class GameController extends ChangeNotifier {
 }
 
 /// 칭호 그림 (웹 RANKIMG)
-const rankImg = ['rank_farmer', 'rank_guard', 'rank_knight', 'rank_lord', 'rank_count', 'rank_duke', 'rank_king'];
+const rankImg = ['rank_farmer', 'rank_guard', 'rank_knight', 'rank_lord', 'rank_count', 'rank_duke', 'rank_king', 'rank_king'];
 
 /// 테스트 광고 화면: 3, 2, 1 뒤 보상 (웹 #adOv)
 class _AdCountdown extends StatefulWidget {
