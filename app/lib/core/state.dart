@@ -6,6 +6,7 @@
 library;
 
 import 'dart:convert';
+import 'dart:math' as math;
 
 import 'js.dart';
 import 'web_data.g.dart';
@@ -41,6 +42,8 @@ class GameState {
         'chOpen': 0,
         'tower': {'top': 0, 'day': '', 'pk': 0},
         'dun': {'d': '', 'used': 0, 'ad': 0, 'star': {'mine': <String, dynamic>{}, 'field': <String, dynamic>{}, 'vault': <String, dynamic>{}}, 'seen': <String, dynamic>{}},
+        // 대륙 지도 (docs/content/WORLDMAP.md 7장)
+        'mapIntro': 0, 'fogSeen': 1, 'regSeen': <String, dynamic>{},
         // 은퇴 일기 (docs/content/RETIRE.md 7장) — trait·trReset·retRw 는 은퇴해도 유지, runStart 는 이번 회차 시작 영지
         'trait': <String, dynamic>{}, 'trReset': 0, 'runStart': 1, 'retRw': <String, dynamic>{}, 'diaryIntro': 0,
         // 마을 확장 (docs/content/VILLAGE.md 7장) — 은퇴해도 모두 유지
@@ -105,6 +108,16 @@ class GameState {
     if (!truthy(od['skip']) || od['skip'] is! Map) od['skip'] = <String, dynamic>{};
     final wl = f['walkers'] as Map;
     if (wl['ids'] is! List) wl['ids'] = <dynamic>[];
+    // 대륙 지도: 기존 세이브는 지금 S.best까지 걷힘 연출을 본 것으로 (연출이 몰려 나오지 않게)
+    final best = f['best'] is num ? f['best'] as num : 1;
+    if (src['fogSeen'] == null) {
+      f['fogSeen'] = math.max(1, best);
+      if (f['regSeen'] is! Map) f['regSeen'] = <String, dynamic>{};
+      for (var r = 0; r < 6; r++) {
+        if (best > 10 * (r + 1)) (f['regSeen'] as Map)['$r'] = 1;
+      }
+    }
+    if (f['regSeen'] is! Map) f['regSeen'] = <String, dynamic>{};
     if (asNum(f['stage']) > last) f['stage'] = last;
     return g;
   }

@@ -11,6 +11,7 @@ import 'package:kingday/core/save_store.dart';
 import 'package:kingday/game/controller.dart';
 import 'package:kingday/main.dart';
 import 'package:kingday/screens/challenge_sheet.dart';
+import 'package:kingday/screens/mp_page.dart';
 import 'package:kingday/screens/pt_page.dart';
 import 'package:kingday/screens/settings_sheet.dart';
 import 'package:kingday/screens/vl_page.dart';
@@ -182,6 +183,15 @@ void main() {
         }
         g.setTab(GameTab.mp);
         await frames(2);
+        expect(find.textContaining('대륙 탐험'), findsOneWidget);
+        // 지역 확대 → 아래 반 창(영지 10곳) → 전체 지도
+        mapZoomTo(g, 0, 360);
+        await frames(2);
+        expect(find.textContaining('되찾은 영지'), findsOneWidget);
+        expect(find.text('1-1'), findsOneWidget);
+        mapZoomOut(g);
+        await frames(2);
+        expect(find.textContaining('되찾은 영지'), findsNothing);
         g.setTab(null);
         await frames(2);
 

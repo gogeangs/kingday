@@ -18,6 +18,7 @@ import 'package:kingday/core/rng.dart';
 import 'package:kingday/core/save_code.dart';
 import 'package:kingday/core/state.dart';
 import 'package:kingday/core/village.dart';
+import 'package:kingday/core/worldmap.dart';
 import 'package:kingday/game/online.dart';
 
 late Map<String, dynamic> fx;
@@ -296,6 +297,20 @@ void main() {
         m['blessSec'] = [for (final l in [0, 5, 10]) blessSec(l)];
         m['bless'] = jsonDecode(jsonEncode(c.s.raw['bless']));
         same(m, v, 'village');
+      });
+
+      test('대륙 지도 규칙 (안개·이번 회차·탐험·어둠 지울 원)', () {
+        final c = calcFor(name), h = c.mapHoles();
+        same({
+          'seen': [for (var st = 1; st <= 60; st++) c.mapSeen(st)],
+          'taken': [for (var st = 1; st <= 60; st++) c.mapTaken(st)],
+          'entered': [for (var r = 0; r < 6; r++) c.mapEntered(r)],
+          'cleared': [for (var r = 0; r < 6; r++) c.mapRegCleared(r)],
+          'all': c.mapAllClear(),
+          'explore': c.mapExplore(),
+          'cur': c.mapCur(),
+          'holes': h == null ? null : [for (final x in h) [x.$1, x.$2, x.$3]],
+        }, sc['worldmap'], 'worldmap');
       });
 
       test('마을 난수 (주문·축복 고르기·길 위 동료·다른 주문)', () {

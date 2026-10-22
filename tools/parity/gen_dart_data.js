@@ -41,6 +41,8 @@ const TABLES = [
   ['ORD', '({gem:ORD_GEM,wait:ORD_WAIT,mul:ORD_MUL,lv:ORD_LV})'], ['BLS', 'BLS'], ['VTALK', 'VTALK'], ['WLINE', 'WLINE'],
   ['VEP', 'VEP'], ['VOPEN', 'VOPEN'], ['VMOVE', 'VMOVE'], ['VNOTE', 'VNOTE'], ['VPOS', 'VPOS'], ['VBB', 'VBB'], ['WSPOT', 'WSPOT'],
   ['VTABN', 'VTABN'], ['VFN', 'VFN'],
+  // ── 2026-10-23 대륙 지도 (docs/content/WORLDMAP.md) ──
+  ['MAPPOS', 'MAPPOS'], ['REG_FOG', 'REG_FOG'], ['P2', 'P2'],
 ];
 
 function dartStr(s) {
