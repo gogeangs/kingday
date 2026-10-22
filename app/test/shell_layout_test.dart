@@ -84,6 +84,13 @@ void main() {
 
         // 이야기 창 (대사 줄·금테 창·버튼) — 앞에 열린 창이 있으면 실패 때 무엇인지 보여 줌
         printOnFailure('앞에 열린 창: ${tester.widgetList<Text>(find.descendant(of: find.byType(KdSheetFrame), matching: find.byType(Text))).map((t) => t.data).take(6).toList()} · 단계 ${g.state.stage}');
+        // 이 저장에서 아직 안 본 옛 이야기·칭호 창이 있으면 먼저 모두 닫음 (전투가 빠르면 시험 중에 뜸)
+        for (var i = 0; i < 12; i++) {
+          final nav = g.navKey.currentState!;
+          if (!nav.canPop()) break;
+          nav.pop();
+          await tester.pump(const Duration(milliseconds: 100));
+        }
         g.scene('동료 합류', '요리사 마고', [
           '풍차 언덕 식당 주방에서, 국자 하나로 마물을 막아 내던 아주머니가 있었다.',
           'm:마고@laugh|배고픈 원정대는 못 이겨. 상처엔 수프가 최고야.',
