@@ -144,6 +144,8 @@ class Balance {
   static final num hpG = _n(wBal['hpG']), atkG = _n(wBal['atkG']), goldG = _n(wBal['goldG']), boxG = _n(wBal['boxG']);
   static final num bossHp = _n(wBal['bossHp']), lordHp = _n(wBal['lordHp']);
   static final num bossAtk = _n(wBal['bossAtk']), lordAtk = _n(wBal['lordAtk']);
+  /// 마왕 발타사르: 체력 ×demHp, 공격 1단계 ×demAtk → 2단계 ×demAtk2, 봉인의 파동 = 공격 ×seal
+  static final num demHp = _n(wBal['demHp']), demAtk = _n(wBal['demAtk']), demAtk2 = _n(wBal['demAtk2']), seal = _n(wBal['seal']);
 }
 
 const num compGrow = wCompGrow;
@@ -244,6 +246,9 @@ class MissionDef {
 
 final missions = [for (final x in wMissions) MissionDef._(_m(x))];
 const int missionAllReward = wMisAll, rankGem = wRankGem, lordGem = wLordGem;
+
+/// 왕도 보상 (웹 GHOST_GEM · DEMON_GEM · CAP_MEM)
+const int ghostGem = 30, demonGem = 300, capMem = 3;
 
 class AdDef {
   AdDef._(this.k, Map<String, dynamic> m) : n = _n(m['n']).toInt(), t = m['t'];

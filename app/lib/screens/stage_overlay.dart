@@ -25,8 +25,8 @@ class StageTop extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final s = g.state, st = s.stage, r = GameCalc.region(st), boss = g.sim.boss;
-    final label = st > maxLand ? '왕도 진격로' : '${(st - 1) ~/ 10 + 1}-${(st - 1) % 10 + 1} ${r.n}';
-    final sub = st > maxLand ? '' : '${GameCalc.terrName(st)} 탈환전';
+    final label = st > maxLand ? '왕궁 뜰' : '${(st - 1) ~/ 10 + 1}-${(st - 1) % 10 + 1} ${r.n}';
+    final sub = st > maxLand ? '보스 없이 사냥 중 · 1부 완결' : '${GameCalc.terrName(st)} 탈환전';
     final gi = g.state.raw['guideOff'] == true ? -1 : g.calc.guideIndex();
     // 오른쪽 위에 우편함·랭킹 버튼이 있으면 그만큼 비움 (웹 .ovtop padding-inline:8px 58px)
     final fab = g.online.on;
@@ -53,7 +53,7 @@ class StageTop extends StatelessWidget {
                   ]),
                 ),
                 const SizedBox(width: 8),
-                _pips(s.wave, boss != null),
+                _pips(s.wave, boss != null, st <= maxLand),
               ]),
             )),
             if (gi >= 0) _GuidePill(g, gi),
@@ -66,7 +66,7 @@ class StageTop extends StatelessWidget {
     );
   }
 
-  Widget _pips(int wave, bool boss) => Row(mainAxisSize: MainAxisSize.min, children: [
+  Widget _pips(int wave, bool boss, bool hasBoss) => Row(mainAxisSize: MainAxisSize.min, children: [
         for (var i = 0; i < 10; i++)
           Container(
             width: 8,
@@ -74,7 +74,8 @@ class StageTop extends StatelessWidget {
             margin: const EdgeInsets.only(right: 3),
             decoration: BoxDecoration(color: i < wave ? KdColors.gold : const Color(0x2EFFFFFF), borderRadius: BorderRadius.circular(3)),
           ),
-        Container(
+        // 61 왕궁 뜰은 보스 칸 없음
+        if (hasBoss) Container(
           width: 18,
           height: 18,
           margin: const EdgeInsets.only(left: 3),
@@ -161,7 +162,11 @@ class _BossBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final s = g.state, cmd = GameCalc.isLord(s.stage), left = math.max(0, g.sim.bossT), hurry = left <= 10;
+    // 왕도: 잔영은 군단장처럼 보라, 마왕은 1단계 보라 → 2단계 금 (웹 .bossbar.cmd/.dem/.gold)
+    final st = g.calc.fightSt(), cmd = GameCalc.isLord(st) || b.ghost != null, gold = b.dem && b.ph2;
+    final left = math.max(0, g.sim.bossT), hurry = left <= 10;
+    final tag = b.dem ? '마왕' : b.ghost != null ? '잔영' : b.guard ? '근위대장' : cmd ? '군단장' : '성주';
+    final faceId = b.dem ? 'aldor' : b.ghost != null ? bossIds[b.ghost!] : bossIds[GameCalc.regionIndex(st) % bossIds.length];
     final blink = hurry && (g.sim.time * 4).floor().isEven;
     return Container(
       width: math.min(320, MediaQuery.sizeOf(context).width * .92),
@@ -172,7 +177,7 @@ class _BossBar extends StatelessWidget {
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
         ),
-        border: Border.all(color: hurry ? const Color(0xFFFF4D63) : cmd ? const Color(0xFFC9A2FF) : const Color(0xB3FF6B7D)),
+        border: Border.all(color: hurry ? const Color(0xFFFF4D63) : gold ? const Color(0xFFFFD34A) : cmd ? const Color(0xFFC9A2FF) : const Color(0xB3FF6B7D)),
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           const BoxShadow(color: Color(0x66000000), blurRadius: 14, offset: Offset(0, 4)),
@@ -185,7 +190,16 @@ class _BossBar extends StatelessWidget {
             padding: const EdgeInsets.only(right: 8),
             child: ClipRRect(
               borderRadius: BorderRadius.circular(8),
-              child: SizedBox(width: 38, height: 38, child: FaceImg(bossIds[GameCalc.regionIndex(s.stage)])),
+              child: SizedBox(
+                width: 38,
+                height: 38,
+                // 잔영은 보랏빛 반투명, 마왕은 (전용 초상화 전까지) 알도르 초상화를 어둡게
+                child: b.ghost != null
+                    ? Opacity(opacity: .8, child: filtered(FaceImg(faceId), sat: 1.6, bright: .9, gray: .4))
+                    : b.dem
+                        ? filtered(FaceImg(faceId), bright: .55, sat: .7)
+                        : FaceImg(faceId),
+              ),
             ),
           ),
         Expanded(
@@ -195,13 +209,17 @@ class _BossBar extends StatelessWidget {
                 padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 1),
                 decoration: BoxDecoration(
                   color: cmd ? null : const Color(0xFFB8233A),
-                  gradient: cmd ? const LinearGradient(colors: [Color(0xFFA35CFF), Color(0xFF6A2FC0)], begin: Alignment.topCenter, end: Alignment.bottomCenter) : null,
+                  gradient: gold
+                      ? const LinearGradient(colors: [Color(0xFFFFD34A), Color(0xFFC98A12)], begin: Alignment.topCenter, end: Alignment.bottomCenter)
+                      : cmd
+                          ? const LinearGradient(colors: [Color(0xFFA35CFF), Color(0xFF6A2FC0)], begin: Alignment.topCenter, end: Alignment.bottomCenter)
+                          : null,
                   borderRadius: BorderRadius.circular(999),
                 ),
-                child: Text(cmd ? '군단장' : '성주', style: KdText.body(10, color: Colors.white, weight: FontWeight.w600, height: 1.3)),
+                child: Text(tag, style: KdText.body(10, color: gold ? const Color(0xFF2A1A00) : Colors.white, weight: FontWeight.w600, height: 1.3)),
               ),
               const SizedBox(width: 6),
-              Expanded(child: Text(GameCalc.bossName(s.stage), overflow: TextOverflow.ellipsis, style: KdText.display(12))),
+              Expanded(child: Text(GameCalc.bossName(st), overflow: TextOverflow.ellipsis, style: KdText.display(12))),
               Opacity(
                 opacity: blink ? .35 : 1,
                 child: Text('${left.ceil()}초', style: KdText.figure(12, color: hurry ? const Color(0xFFFF4D63) : const Color(0xFFFFD6DC))),
@@ -220,13 +238,19 @@ class _BossBar extends StatelessWidget {
                     child: DecoratedBox(
                       decoration: BoxDecoration(
                         gradient: LinearGradient(
-                          colors: cmd ? const [Color(0xFFD6A6FF), Color(0xFF8A3FE0)] : const [Color(0xFFFF8A98), Color(0xFFE0344C)],
+                          colors: gold
+                              ? const [Color(0xFFFFE58A), Color(0xFFD99A1C)]
+                              : cmd
+                                  ? const [Color(0xFFD6A6FF), Color(0xFF8A3FE0)]
+                                  : const [Color(0xFFFF8A98), Color(0xFFE0344C)],
                           begin: Alignment.topCenter,
                           end: Alignment.bottomCenter,
                         ),
                       ),
                     ),
                   ),
+                  // 마왕: 체력바 가운데 50% 눈금
+                  if (b.dem) const Align(child: SizedBox(width: 2, child: ColoredBox(color: Color(0xBFFFFFFF)))),
                   Center(
                     child: Text('${fmt(math.max(0, b.hp))} / ${fmt(b.max)}',
                         style: KdText.figure(10, color: Colors.white).copyWith(shadows: const [Shadow(blurRadius: 2)])),

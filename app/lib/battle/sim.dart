@@ -13,6 +13,7 @@ import '../core/calc.dart';
 import '../core/data.dart';
 import '../core/fmt.dart';
 import '../core/js.dart';
+import '../core/profile_data.dart';
 import '../core/rng.dart';
 import '../core/state.dart';
 import 'battle_data.dart';
@@ -36,10 +37,16 @@ class Mon {
   Mon({
     required this.x, required this.lane, required this.hp, required this.max, required this.atk,
     this.boss = false, this.lord = false, required this.cd, this.alt = false, this.gob = false,
-    this.mv, this.cdm, this.life,
+    this.mv, this.cdm, this.life, this.dem = false, this.ghost, this.guard = false,
   });
   num x, lane, hp, max, atk, cd;
   bool boss, lord, alt, gob;
+  /// 왕도: dem = 마왕 발타사르, ghost = 군단장 잔영(지역 번호 0~4), guard = 마왕 근위대장
+  bool dem, guard;
+  int? ghost;
+  /// 마왕 2단계, 다음 봉인의 파동까지 남은 시간
+  bool ph2 = false;
+  num sealT = 0;
   num? mv, cdm, life;
   num hit = 0, dead = 0, sw = 0, slow = 0, bind = 0, psn = 0, psnD = 0, psnT = 0;
   /// 베릴 「약점 감정」 취약(받는 피해 ×vulM), 토비 밀쳐냄(그림만), 카라 화상(0.5초마다 brnD)
@@ -75,6 +82,19 @@ class Fx {
 }
 
 /// 한마디 말풍선
+/// 마왕 대사 띠: [(누가, 대사)…] 를 2.6초씩
+class BossTalk {
+  BossTalk(this.lines);
+  final List<(String, String)> lines;
+  int i = 0;
+  num t = 2.6;
+}
+
+/// 봉인의 파동 예고 (남은 초)
+class SealWarn {
+  num t = 2;
+}
+
 class Quip {
   Quip(this.who, this.txt);
   final String who, txt;
@@ -90,8 +110,10 @@ class StageBanner {
 
 /// 보스 출현 경고
 class Warn {
-  Warn(this.cmd);
+  Warn(this.cmd, [this.txt]);
   final bool cmd;
+  /// 왕도 보스용 문구 (없으면 군단장/성주)
+  final String? txt;
   num t = 1.4;
 }
 
@@ -169,6 +191,19 @@ class GoblinLootEvent extends BattleEvent {
 
 class SkillTutorialEvent extends BattleEvent {}
 
+/// 왕도 이야기 (웹 capChapter·capStory): 'road' 처음 왕도 입장 · 'roadAgain' 다시 입장 · 'cap56' · 'cap57'
+class CapStoryEvent extends BattleEvent {
+  CapStoryEvent(this.kind);
+  final String kind;
+}
+
+/// 마왕 발타사르 처치 (웹 bossDemonWin): [first] 첫 처치, [bonus] 재탈환 추억
+class DemonWinEvent extends BattleEvent {
+  DemonWinEvent(this.first, this.bonus);
+  final bool first;
+  final int bonus;
+}
+
 class FightResetEvent extends BattleEvent {
   FightResetEvent(this.msg);
   final String msg;
@@ -215,6 +250,13 @@ class BattleSim {
   CutIn? cut;
   final SkillTimers skx = SkillTimers();
   final List<BattleEvent> events = [];
+  /// 마왕 2단계 전환 멈춤 · 대사 띠 · 봉인의 파동 예고
+  num holdT = 0;
+  BossTalk? talk;
+  SealWarn? seal;
+  static const balTalkStart = [('발타사르', '왔구나, 루미나르. 이번 주인은… 괭이를 든 농부인가.'), ('q', '괭이 아니다! …아, 아니, 주인 말고 내가 괭이가 아니라는 뜻이다.')];
+  static const balTalkReveal = [('발타사르', '300년 전, 너를 처음 뽑은 손이 이 손이었다.'), ('q', '……발타사르. 나의 첫 번째 주인.')];
+  static const sealEvery = 8, sealWarn = 2;
 
   GameState get s => c.s;
 
@@ -663,23 +705,32 @@ class BattleSim {
   }
 
   void spawn() {
-    final st = s.stage;
+    if (s.stage > maxLand && s.wave >= 10) s.wave = 0; // 61 왕궁 뜰: 보스 없이 계속
+    final st = c.fightSt();
     if (s.wave >= 10) {
-      final mx = GameCalc.monHp(st, true), lord = GameCalc.isLord(st);
-      mons = [Mon(x: w + 70, lane: .55, hp: mx, max: mx, atk: GameCalc.monAtk(st, true), boss: true, lord: lord, cd: .8)];
-      bossT = lord ? 40 : 30;
-      warn = Warn(lord);
+      final mx = GameCalc.monHp(st, true), dem = GameCalc.isDemon(st), gh = GameCalc.isGhost(st), gd = GameCalc.isGuard(st);
+      final lord = GameCalc.isLord(st) && !dem, cm = lord || dem || gh;
+      mons = [
+        Mon(x: w + 70, lane: .55, hp: mx, max: mx, atk: GameCalc.monAtk(st, true), boss: true, lord: lord || dem, cd: .8,
+            dem: dem, ghost: gh ? GameCalc.ghostIdx(st) : null, guard: gd)
+      ];
+      bossT = GameCalc.bossLim(st);
+      warn = Warn(cm, dem ? '⚠ 마왕 출현! ⚠' : gh ? '⚠ 군단장의 잔영! ⚠' : gd ? '⚠ 근위대장 출현! ⚠' : null);
       events.add(SoundEvent('boss'));
-      shakeT = lord ? .6 : .4;
+      shakeT = cm ? .6 : .4;
       mons[0].mv = .55;
-      say('q', lord ? '군단장이다! 이번엔 도망치지 마라, 주인!' : '성주다! 정신 차려라, 주인!');
+      if (dem) {
+        talk = BossTalk(balTalkStart);
+      } else {
+        say('q', gh ? '쓰러뜨린 군단장의 잔영이다! 다시 한번 베어라, 주인!' : gd ? '마왕 근위대장이다! 왕도를 되찾자, 주인!' : lord ? '군단장이다! 이번엔 도망치지 마라, 주인!' : '성주다! 정신 차려라, 주인!');
+      }
       return;
     }
     final left = 10 - s.wave;
     var n = 1;
     if (left > 1 && rng.next() < .55) n++;
     if (left > 2 && st >= 3 && rng.next() < .35) n++;
-    final ri = ((st - 1) ~/ 10) % 5;
+    final ri = GameCalc.regionIndex(st);
     final altSheet = monAlt[ri];
     final alt = altSheet != null && rng.next() < .4 ? altSheet : null;
     final tr = alt != null ? traits[alt.trait]! : null;
@@ -718,7 +769,7 @@ class BattleSim {
   bool noSave = false;
 
   void _gobDrop(Mon m, num sc) {
-    final g = jsFloor(GameCalc.reward(s.stage, false) * 30 * (c.buff('gold') ? 1.5 : 1) * c.memMul());
+    final g = jsFloor(GameCalc.reward(c.fightSt(), false) * 30 * (c.buff('gold') ? 1.5 : 1) * c.memMul());
     final gem = 5 + (rng.next() * 6).floor();
     s.gold = s.gold + g;
     c.stat('gob', 1);
@@ -787,6 +838,7 @@ class BattleSim {
   }
 
   void resetFight(String msg) {
+    final dem = mons.any((m) => m.dem);
     skx.shield = skx.honey = skx.feast = skx.guts = skx.sym = 0;
     for (final id in c.members()) {
       party[id]!.hp = c.stats(id).hp;
@@ -795,6 +847,14 @@ class BattleSim {
     mons = [];
     spawnT = 1;
     s.wave = 0;
+    seal = null;
+    talk = null;
+    holdT = 0;
+    // 마왕에게 지면 59(왕궁 회랑) 마지막 웨이브로
+    if (dem) {
+      s.stage = maxLand - 1;
+      s.wave = 9;
+    }
     events.add(FightResetEvent(msg));
     toast(msg);
   }
@@ -802,6 +862,19 @@ class BattleSim {
   // ───────────── 한 프레임 ─────────────
   /// step(dt): 웹 step() 과 같은 순서로 한 프레임 진행
   void step(num dt) {
+    if (talk != null) {
+      talk!.t -= dt;
+      if (talk!.t <= 0) {
+        talk!.i++;
+        talk!.t = 2.6;
+        if (talk!.i >= talk!.lines.length) talk = null;
+      }
+    }
+    if (holdT > 0) {
+      holdT -= dt; // 마왕 2단계 전환: 잠깐 멈춤
+      return;
+    }
+    if (seal != null) seal!.t -= dt;
     time += dt;
     flash = math.max(0, flash - dt);
     if (cut != null) {
@@ -940,6 +1013,7 @@ class BattleSim {
         return resetFight('성검의 가호로 모두 다시 일어섰어요. 더 강해져서 돌아가요');
       }
       if (mons.any((m) => m.boss && m.hp > 0 && m.dead == 0) && engaged) {
+        _demStep(dt, l);
         bossT -= dt;
         if (bossT <= 0) return resetFight('마족이 버텼어요. 더 강해진 뒤 다시 도전해요');
       }
@@ -1101,12 +1175,12 @@ class BattleSim {
 
   void _kill(Mon m, num sc) {
     spawnFx('coin', m.x, m.y - 26 * sc, 34 * sc, .6, -60 * sc);
-    final g = GameCalc.reward(s.stage, m.boss) * (c.buff('gold') ? 1.5 : 1) * c.memMul();
+    final g = GameCalc.reward(c.fightSt(), m.boss) * (c.buff('gold') ? 1.5 : 1) * c.memMul();
     s.gold = s.gold + g;
     final d = c.daily();
     d['kill'] = orNum(d['kill'], 0) + 1;
     addFloat(m.x, m.y - 30 * sc, '+${fmt(g)}', 0xFFFFC94A, 14);
-    final nc = m.boss ? (GameCalc.isLord(s.stage) ? 5 : 2) : (rng.next() < .003 ? 1 : 0);
+    final nc = m.boss ? (GameCalc.isLord(c.fightSt()) ? 5 : 2) : (rng.next() < .003 ? 1 : 0);
     if (nc != 0) {
       final cid = c.gainCard(rng, nc, 'battle');
       if (cid != null && cid.isNotEmpty) {
@@ -1127,27 +1201,126 @@ class BattleSim {
     if (m.boss) {
       events.add(HapticEvent(const [40, 30, 60]));
       final cleared = s.stage, bn = GameCalc.bossName(cleared), lord = GameCalc.isLord(cleared), tn = GameCalc.terrName(cleared);
-      final gl = s.raw['gemLord'] is Map ? s.raw['gemLord'] as Map : (s.raw['gemLord'] = <String, dynamic>{});
-      if (lord && !truthy(gl['$cleared'])) {
-        gl['$cleared'] = 1;
-        s.gem = s.gem + lordGem;
-        events.add(GemEvent(lordGem, '군단장 첫 처치'));
+      final dem = GameCalc.isDemon(cleared), gh = GameCalc.isGhost(cleared);
+      if (dem) {
+        _demonWin();
+      } else {
+        final gl = s.raw['gemLord'] is Map ? s.raw['gemLord'] as Map : (s.raw['gemLord'] = <String, dynamic>{});
+        if (lord && !truthy(gl['$cleared'])) {
+          gl['$cleared'] = 1;
+          s.gem = s.gem + lordGem;
+          events.add(GemEvent(lordGem, '군단장 첫 처치'));
+        }
+        if (gh && !truthy(gl['$cleared'])) {
+          gl['$cleared'] = 1;
+          s.gem = s.gem + ghostGem;
+          events.add(GemEvent(ghostGem, '잔영 첫 처치'));
+        }
       }
-      s.stage = cleared + 1;
+      s.stage = math.min(maxLand + 1, cleared + 1);
       s.best = math.max(s.best, s.stage);
       s.wave = 0;
+      seal = null;
       toast('$bn 처치');
-      banner = StageBanner('$tn 탈환!', lord ? '군단장을 쓰러뜨렸다' : '영지를 되찾았다');
-      say('k', lord ? '됐다… 이제 진짜 은퇴해도 되지?' : '여기 흙, 다시 살아나겠네.');
-      events.add(StageClearedEvent(cleared, lord, (s.stage - 1) % 10 == 0));
+      banner = StageBanner('$tn 탈환!', dem ? '마왕을 몰아냈다' : lord ? '군단장을 쓰러뜨렸다' : gh ? '잔영을 걷어냈다' : '영지를 되찾았다');
+      say('k', dem ? '…끝났다. 진짜로.' : lord ? '됐다… 이제 진짜 은퇴해도 되지?' : '여기 흙, 다시 살아나겠네.');
+      final chapter = s.stage <= maxLand && (s.stage - 1) % 10 == 0;
+      // 왕도 이야기 표시 여부는 웹처럼 여기서 정함 (처음 한 번만 장면, 그 뒤는 알림)
+      if (chapter && GameCalc.isCap(s.stage)) {
+        events.add(CapStoryEvent(truthy(s.done['capRoad']) ? 'roadAgain' : 'road'));
+        s.done['capRoad'] = true;
+      }
+      for (final (st0, k) in const [(56, 'cap56'), (57, 'cap57')]) {
+        if (cleared == st0 && !truthy(s.done[k])) {
+          s.done[k] = true;
+          events.add(CapStoryEvent(k));
+        }
+      }
+      events.add(StageClearedEvent(cleared, lord, chapter && !GameCalc.isCap(s.stage)));
       runStoryEvents();
     } else {
       s.wave = s.wave + 1;
     }
   }
 
-  /// 보스 남은 시간 한도 (성주 30초, 군단장 40초)
-  num get bossLimit => GameCalc.isLord(s.stage) ? 40 : 30;
+  /// 마왕 발타사르: 50%에서 1.5초 멈춤 → 정체 공개 → 2단계(공격 ×demAtk2), 2단계는 8초마다 「봉인의 파동」 (웹 demStep)
+  void _demStep(num dt, BattleLayout l) {
+    Mon? bm;
+    for (final m in mons) {
+      if (m.dem && m.hp > 0 && m.dead == 0) bm = m;
+    }
+    if (bm == null) return;
+    if (!bm.ph2 && bm.hp <= bm.max * .5) {
+      bm.ph2 = true;
+      bm.atk = bm.atk * Balance.demAtk2 / Balance.demAtk;
+      bm.sealT = sealEvery;
+      holdT = 1.5;
+      shakeT = .5;
+      flash = .25;
+      talk = BossTalk(balTalkReveal);
+      events.add(HapticEvent(const [60, 40, 60]));
+      return;
+    }
+    if (!bm.ph2) return;
+    bm.sealT -= dt;
+    if (bm.sealT <= sealWarn && seal == null) seal = SealWarn();
+    if (bm.sealT <= 0) {
+      bm.sealT = sealEvery;
+      seal = null;
+      _sealHit(bm, l);
+    }
+  }
+
+  /// 봉인의 파동: 원정대 전체에 공격 ×seal. 방어 스킬(브론 버팀목·버치 벌통 방패·덕배 불굴 등)로 버틸 수 있음
+  void _sealHit(Mon bm, BattleLayout l) {
+    flash = .35;
+    shakeT = .6;
+    events.add(HapticEvent(const [80]));
+    for (final id in l.ids) {
+      final q = party[id];
+      if (q == null || q.down) continue;
+      final dm = bm.atk * Balance.seal * (skx.shield > 0 ? .5 : 1) * (skx.mount > 0 ? .3 : 1) * (q.bsh > 0 ? 1 - .4 * q.bshK : 1);
+      q.hp -= dm;
+      q.hit = .2;
+      addFloat(l.pos[id]!, l.py[id]! - (heightOf(id) + 8) * l.s, '-${fmt(dm)}', 0xFFFFD34A, 14);
+      if (q.hp <= 0) {
+        if (skx.guts > 0 && q.guts) {
+          q.guts = false;
+          q.hp = 1;
+          addFloat(l.pos[id]!, l.py[id]! - (heightOf(id) + 24) * l.s, '불굴!', 0xFFFFD27A, 14);
+        } else {
+          q.hp = 0;
+          q.down = true;
+        }
+      }
+    }
+    spawnFx('crit', w * .3, l.bot - 20 * l.s, 140 * l.s, .5);
+  }
+
+  /// 마왕 처치 (웹 bossDemonWin): 첫 처치 이삭 300·테두리·배지 / 은퇴 후 다시 처치하면 그 회차 1번 은퇴의 추억 +3
+  void _demonWin() {
+    final first = orNum(s.raw['capClears'], 0) <= 0;
+    s.raw['capClears'] = orNum(s.raw['capClears'], 0) + 1;
+    talk = null;
+    seal = null;
+    final gl = s.raw['gemLord'] is Map ? s.raw['gemLord'] as Map : (s.raw['gemLord'] = <String, dynamic>{});
+    if (first && !truthy(gl['$maxLand'])) {
+      gl['$maxLand'] = 1;
+      s.gem = s.gem + demonGem;
+      events.add(GemEvent(demonGem, '마왕 발타사르 첫 처치'));
+    }
+    var bonus = 0;
+    if (!first && !truthy(s.raw['capBonus'])) {
+      s.memory = s.memory + capMem;
+      bonus = capMem;
+    }
+    s.raw['capBonus'] = 1;
+    c.pfCheck();
+    events.add(DemonWinEvent(first, bonus));
+  }
+
+  /// 보스 남은 시간 한도 (성주 30초, 군단장 40초, 마왕 60초)
+  num get bossLimit => GameCalc.bossLim(c.fightSt());
   Mon? get boss {
     for (final m in mons) {
       if (m.boss) return m;

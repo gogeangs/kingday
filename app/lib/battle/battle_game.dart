@@ -10,6 +10,7 @@ import 'dart:ui' as ui;
 import 'package:flame/components.dart' show Vector2;
 import 'package:flame/game.dart';
 import 'package:flutter/painting.dart';
+import 'package:flutter/services.dart';
 
 import '../core/calc.dart';
 import '../core/data.dart';
@@ -71,7 +72,7 @@ class BattleGame extends FlameGame {
   /// 지금 지역과 다음 지역의 배경·마물 그림을 미리 받는다 (웹 loadBgs/loadMonReg)
   Future<void> _ensureRegion(int ri) async {
     for (final r in [ri, ri + 1]) {
-      if (r > 4 || !_loadingRegions.add(r)) continue;
+      if (r >= regions.length || !_loadingRegions.add(r)) continue;
       final paths = <String>[];
       final bg = bgImage[r];
       if (bg != null) {
@@ -79,7 +80,9 @@ class BattleGame extends FlameGame {
           paths.add('bg/${bg}_$l.png');
         }
       }
-      for (final m in [monSheets[r], monSheets[r]?.boss, monAlt[r]]) {
+      // 왕도(5): 전용 그림이 오기 전에는 물들일 원본(군단장 5명·골렘·박쥐)도 받음
+      final capSrc = r == regions.length - 1 ? [for (var j = 0; j < 5; j++) ...[monSheets[j], monSheets[j]?.boss], ...balthasarSheets] : const <MonSheet?>[];
+      for (final m in [monSheets[r], monSheets[r]?.boss, monAlt[r], ...capSrc]) {
         if (m == null) continue;
         for (final a in ['walk', 'attack', 'hit']) {
           paths.add('monsters/${m.id}_$a.png');
@@ -90,7 +93,9 @@ class BattleGame extends FlameGame {
           paths.add('monsters/${goblinSheet.id}_$a.png');
         }
       }
-      await Future.wait(paths.map((p) async {
+      // 아직 안 들어온 그림(왕도 배경·몬스터 등)은 부르지 않음 — 앱에 들어 있는 그림 목록으로 확인
+      final have = await _assetList();
+      await Future.wait(paths.where((p) => have == null || have.contains('assets/game/$p')).map((p) async {
         try {
           final im = await images.load(p);
           _img[p] = im;
@@ -105,6 +110,17 @@ class BattleGame extends FlameGame {
           _img['monsters/${goblinSheet.id}_$a.png'] = await images.load('monsters/${goblinSheet.id}_$a.png');
         } catch (_) {}
       }
+    }
+  }
+
+  Set<String>? _assets;
+  Future<Set<String>?> _assetList() async {
+    if (_assets != null) return _assets;
+    try {
+      final m = await AssetManifest.loadFromAssetBundle(rootBundle);
+      return _assets = m.listAssets().toSet();
+    } catch (_) {
+      return null;
     }
   }
 
@@ -210,6 +226,38 @@ class BattleGame extends FlameGame {
     canvas.restore();
     _drawWarn(l);
     _drawBanner(l);
+    _drawDemon(l);
+  }
+
+  /// 봉인의 파동 예고 원 · 마왕 대사 띠 (웹 drawDemon)
+  void _drawDemon(BattleLayout l) {
+    final sw = sim.seal;
+    if (sw != null && l.ids.isNotEmpty) {
+      final k = _cl(1 - math.max(0, sw.t) / BattleSim.sealWarn);
+      final back = l.ids.map((i) => l.pos[i]!).reduce(math.min).toDouble();
+      final cx = (back + l.front) / 2, cy = (l.top + l.bot) / 2 + 10 * l.s;
+      final rx = math.max(80.0, (l.front - back) * .75 + 50 * l.s).toDouble(), ry = rx * .32;
+      final r = ui.Rect.fromCenter(center: ui.Offset(cx.toDouble(), cy.toDouble()), width: rx * 2, height: ry * 2);
+      _c.drawOval(r, ui.Paint()
+        ..style = ui.PaintingStyle.stroke
+        ..strokeWidth = 3
+        ..color = ui.Color.fromRGBO(255, 211, 74, .25 + .55 * k));
+      _c.drawOval(ui.Rect.fromCenter(center: r.center, width: rx * 2 * k, height: ry * 2 * k), ui.Paint()..color = ui.Color.fromRGBO(255, 211, 74, .08 + .22 * k));
+      _text('봉인의 파동!', cx, cy - ry - 8, 13, const ui.Color(0xFFFFE08A), stroke: const ui.Color(0xB3000000), strokeW: 3);
+    }
+    final tk = sim.talk;
+    if (tk != null) {
+      final (w, t) = tk.lines[tk.i];
+      final q = w == 'q', a = _cl(math.min((2.6 - tk.t) * 5, tk.t * 4)), cy = _ht * .24;
+      final g = ui.Gradient.linear(ui.Offset.zero, ui.Offset(_w, 0),
+          [const ui.Color(0x000A0614), const ui.Color(0xE00A0614), const ui.Color(0xE00A0614), const ui.Color(0x000A0614)], [0, .12, .88, 1]);
+      _c.saveLayer(null, ui.Paint()..color = ui.Color.fromRGBO(0, 0, 0, a));
+      _c.drawRect(ui.Rect.fromLTWH(0, cy - 28, _w, 56), ui.Paint()..shader = g);
+      _c.drawRect(ui.Rect.fromLTWH(_w * .1, cy - 28, _w * .8, 2), ui.Paint()..color = q ? const ui.Color(0xFF5AB4FF) : const ui.Color(0xFFB98CFF));
+      _text(q ? '성검 루미나르' : w, _w / 2, cy - 11, 11, q ? const ui.Color(0xFF8FD0FF) : const ui.Color(0xFFCFA8FF));
+      _text(t, _w / 2, cy + 10, math.min(14, _w / 26), const ui.Color(0xFFF4EEFE), serif: true, maxW: _w - 24, weight: FontWeight.w600);
+      _c.restore();
+    }
   }
 
   // ── 기본 도형 ──
@@ -392,13 +440,35 @@ class BattleGame extends FlameGame {
   }
 
   // ── 마물 (웹 drawMon) ──
-  MonSheet? _monSheet(int ri, Mon m) {
-    if (m.gob) return goblinSheet;
+  bool _has(MonSheet? d) => d != null && _img['monsters/${d.id}_walk.png'] != null;
+
+  /// 그릴 시트 + 물들이기 (웹 monSprite/tintSet). 왕도 그림이 오기 전엔 기존 그림을 색만 바꿔 씀
+  ({MonSheet sheet, ui.ColorFilter? tint, double alpha, double scale, bool lordArt})? _monArt(int ri, Mon m) {
+    if (m.gob) return (sheet: goblinSheet, tint: null, alpha: 1.0, scale: 1.0, lordArt: false);
+    if (m.dem) {
+      final own = balthasarSheets[m.ph2 ? 1 : 0];
+      if (_has(own)) return (sheet: own, tint: null, alpha: 1.0, scale: 1.3, lordArt: true);
+      final src = monSheets[3]?.boss; // 알도르
+      if (!_has(src)) return null;
+      return (
+        sheet: src!,
+        tint: m.ph2 ? const ui.ColorFilter.mode(ui.Color(0xFFC8B6FF), ui.BlendMode.color) : const ui.ColorFilter.mode(ui.Color(0xFF3A2F4C), ui.BlendMode.multiply),
+        alpha: 1.0, scale: 1.3, lordArt: true,
+      );
+    }
+    if (m.ghost != null) {
+      final src = monSheets[m.ghost!]?.boss;
+      if (!_has(src)) return null;
+      return (sheet: src!, tint: const ui.ColorFilter.mode(ui.Color(0xFFA88CFF), ui.BlendMode.color), alpha: .72, scale: 1.0, lordArt: true);
+    }
     final d = monSheets[ri];
     if (d == null) return null;
-    if (m.alt) return monAlt[ri];
-    if (m.lord && d.boss != null) return d.boss;
-    return d;
+    MonSheet? pick = m.alt ? monAlt[ri] : (m.lord || m.guard) && d.boss != null ? d.boss : d;
+    if (pick == null) return null;
+    if (_has(pick)) return (sheet: pick, tint: null, alpha: 1.0, scale: 1.0, lordArt: m.lord && pick == d.boss);
+    final t = capTint[pick.id];
+    if (t == null || !_has(t.src)) return null;
+    return (sheet: t.src, tint: ui.ColorFilter.mode(t.color, t.mode), alpha: 1.0, scale: 1.0, lordArt: false);
   }
 
   void _drawAura(double x, double y, double ss, bool cmd) {
@@ -417,14 +487,15 @@ class BattleGame extends FlameGame {
     // 토비 「파도 가르기」로 밀쳐지면 잠깐 뒤로 밀렸다 돌아옴 (그림만, 웹 drawMon 의 m.kb)
     final kbx = m.kb > 0 ? math.sin(m.kb / .5 * math.pi) * 36 * s : 0.0;
     final k0 = m.boss ? (m.lord ? 1.8 : 1.5) : m.gob ? 1.3 : 1.0, x = m.x.toDouble() + kbx, ss = s * k0;
-    final fade = m.dead > 0 ? (m.dead / .35).clamp(0, 1).toDouble() : 1.0;
-    if (m.boss) _drawAura(x, y, ss, m.lord);
+    final art = _monArt(ri, m);
+    final fade = (m.dead > 0 ? (m.dead / .35).clamp(0, 1).toDouble() : 1.0) * (art?.alpha ?? 1.0);
+    if (m.boss) _drawAura(x, y, ss, m.lord || m.ghost != null);
     _ell(x, y, 18 * ss, 5 * ss, ui.Color.fromRGBO(0, 0, 0, .25 * fade));
     final ph = x * .05;
-    final md = _monSheet(ri, m);
+    final md = art?.sheet;
     double top = y - 40 * ss, bot = y;
     if (md != null) {
-      final sk = (m.lord && md == monSheets[ri]?.boss) ? ss * .8 : ss;
+      final sk = art!.lordArt ? ss * .8 * art.scale : ss;
       final ly = (md.lift != null ? y - md.lift! * sk * (1 + .08 * math.sin(_t * 5 + ph)) : y).toDouble();
       final kk = (md.h * sk / md.fig).toDouble(), moving = m.tx != null && m.x > m.tx! + 1;
       var a = 'walk';
@@ -449,15 +520,17 @@ class BattleGame extends FlameGame {
           _c.translate(-x, 0);
         }
         if ((m.boss || m.gob) && m.dead == 0) {
-          final glow = m.gob ? const ui.Color(0xF2FFD23C) : m.lord ? const ui.Color(0xE6B46EFF) : const ui.Color(0xD9FF3C50);
+          final glow = m.gob || m.ph2 ? const ui.Color(0xF2FFD23C) : m.lord || m.ghost != null ? const ui.Color(0xE6B46EFF) : const ui.Color(0xD9FF3C50);
           final blur = (14 + 6 * math.sin(_t * 4)) * s;
           _c.drawImageRect(im, src, dst, ui.Paint()
             ..colorFilter = ui.ColorFilter.mode(glow, ui.BlendMode.srcIn)
             ..imageFilter = ui.ImageFilter.blur(sigmaX: blur / 2, sigmaY: blur / 2));
         }
-        _c.drawImageRect(im, src, dst, ui.Paint()
+        final pt = ui.Paint()
           ..filterQuality = ui.FilterQuality.medium
-          ..color = ui.Color.fromRGBO(0, 0, 0, _cl(fade)));
+          ..color = ui.Color.fromRGBO(0, 0, 0, _cl(fade));
+        if (art.tint != null) pt.colorFilter = art.tint;
+        _c.drawImageRect(im, src, dst, pt);
         if (m.hit > 0) {
           _c.drawImageRect(im, src, dst, ui.Paint()
             ..blendMode = ui.BlendMode.plus
@@ -685,7 +758,7 @@ class BattleGame extends FlameGame {
     _c.drawRect(ui.Rect.fromLTWH(0, cy - 26, _w, 2), line);
     _c.drawRect(ui.Rect.fromLTWH(0, cy + 24, _w, 2), line);
     final sx = ((1 - math.min(1, (1.4 - wr.t) * 4)) * 40).toDouble();
-    _text(wr.cmd ? '⚠ 군단장 출현! ⚠' : '⚠ 성주 출현! ⚠', _w / 2 + sx, cy + 8, (24 * math.min(1.2, l.s)).round(),
+    _text(wr.txt ?? (wr.cmd ? '⚠ 군단장 출현! ⚠' : '⚠ 성주 출현! ⚠'), _w / 2 + sx, cy + 8, (24 * math.min(1.2, l.s)).round(),
         wr.cmd ? const ui.Color(0xFFE2C4FF) : const ui.Color(0xFFFFD2D8),
         serif: true, stroke: const ui.Color(0xFF1A0006), strokeW: 4);
     _c.restore();

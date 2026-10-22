@@ -33,12 +33,14 @@ class MpPage extends StatelessWidget {
       KdBuy(text: '🏆 랭킹 보기', minWidth: 0, onTap: () => openRanking(g)),
       const SizedBox(height: 12),
       KdBox(children: [
-        KdSec('${s.stage > maxLand ? '왕도 아스테리온' : GameCalc.terrName(s.stage)} 탈환 중', small: '${r.n} · ${(s.stage - 1) % 10 + 1}/10'),
+        s.stage > maxLand
+            ? const KdSec('왕궁 뜰에서 사냥 중', small: '1부 완결 · 보스 없음')
+            : KdSec('${GameCalc.terrName(s.stage)} 탈환 중', small: '${r.n} · ${(s.stage - 1) % 10 + 1}/10'),
         KdKv('되찾은 영지', '$c / $maxLand'),
         KdKv('지금 칭호', '${ranks[ri].n} (원정대 +${ri * 4}%)'),
-        KdKv('다음 칭호', nx != null ? '${nx.n}까지 ${nx.at - c}곳' : '왕도 탈환만 남았어요'),
+        KdKv('다음 칭호', nx != null ? '${nx.n}까지 ${nx.at - c}곳' : '모든 칭호를 얻었어요'),
         KdKv('이 지역의 지배자', r.boss),
-        const KdNote('영지마다 마족 성주가 지키고, 지역의 마지막 영지에는 군단장이 있어요. 다섯 군단을 모두 몰아내면 왕도로 가는 길이 열려요.'),
+        const KdNote('영지마다 마족 성주가 지키고, 지역의 마지막 영지에는 군단장이 있어요. 다섯 군단을 모두 몰아내면 왕도 아스테리온이 열리고, 알현실에는 마왕이 기다려요.'),
       ]),
     ]);
   }
@@ -68,7 +70,9 @@ class _MapPainter extends CustomPainter {
     c.drawRect(Offset.zero & size, Paint()..color = const Color(0xFF1A2034));
     final rows = regions.length, cap = ImageStore.get('assets/game/map/capital_${g.state.stage - 1 >= maxLand ? 'open' : 'locked'}.png');
     const top = 10.0;
-    final bottomPad = cap != null ? 104.0 : 56.0, rh = (mh - top - bottomPad) / rows, padX = 22.0, dx = (mw - padX * 2) / 9;
+    // 왕도는 6번째 줄, 성 아이콘은 마지막 칸(알현실) — 아래 여백 없음
+    const bottomPad = 8.0;
+    final rh = (mh - top - bottomPad) / rows, padX = 22.0, dx = (mw - padX * 2) / 9;
     final cur = g.state.stage - 1, rad0 = math.min(dx * .34, 11.0);
     final pts = <(double, double, int, int)>[
       for (var i = 0; i < rows; i++)
@@ -96,7 +100,23 @@ class _MapPainter extends CustomPainter {
     for (var k = 0; k < pts.length; k++) {
       final (x, y, i, j) = pts[k];
       final lord = j == 9, rad = lord ? rad0 * 1.25 : rad0;
-      final rn = ImageStore.get('assets/game/map/${_rNode[i]}_${lord ? 'boss' : 'enemy'}.png');
+      if (k == pts.length - 1) {
+        final z = math.min(rh * 1.05, 64.0);
+        if (k == cur) {
+          c.drawCircle(Offset(x, y - z * .12), z * .42 + math.sin(t * 4) * 2,
+              Paint()
+                ..style = PaintingStyle.stroke
+                ..strokeWidth = 2.5
+                ..color = const Color(0xFFFFC94A));
+        }
+        if (cap != null) {
+          drawImg(c, cap, Rect.fromLTWH(x - z / 2, y - z * .7, z, z));
+        } else {
+          c.drawCircle(Offset(x, y), rad, Paint()..color = cur >= maxLand ? const Color(0xFFFFC94A) : const Color(0xFF6A5A8C));
+        }
+        continue;
+      }
+      final rn = i < _rNode.length ? ImageStore.get('assets/game/map/${_rNode[i]}_${lord ? 'boss' : 'enemy'}.png') : null;
       final im = k < cur ? captured : rn;
       final z = math.min(rh * .78, rad * (k == cur ? 2.9 : lord ? 2.5 : 2.4));
       if (k == cur) {
@@ -126,14 +146,6 @@ class _MapPainter extends CustomPainter {
       _text(c, r.n, lx, ly, 12, const Color(0xFFDFE5F2), display: true, w: FontWeight.w700);
       _text(c, r.boss, lx + nw, ly, 10, const Color(0xFF97A2C3));
     }
-    // 왕도
-    final kx = mw / 2, ky = mh - bottomPad / 2, done = cur >= maxLand;
-    if (cap != null) {
-      final z = bottomPad * 1.05;
-      drawImg(c, cap, Rect.fromLTWH(kx - z - 6, mh - z - 2, z, z));
-    }
-    _text(c, '왕도 아스테리온', kx + 24, ky + 2, 12, const Color(0xFFDFE5F2), display: true, w: FontWeight.w700);
-    _text(c, done ? '진격로가 열렸어요' : '다섯 군단을 몰아내면 열려요', kx + 24, ky + 16, 10, const Color(0xFF97A2C3));
   }
 
   @override

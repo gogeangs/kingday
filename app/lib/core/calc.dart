@@ -51,11 +51,32 @@ class GameCalc {
   bool get _bake => bakeProbe?.call() ?? bakeActive;
 
   // ───────────── 영지 ─────────────
-  static RegionDef region(int st) => regions[((st - 1) ~/ 10) % regions.length];
-  static int regionIndex(int st) => ((st - 1) ~/ 10) % regions.length;
-  static String terrName(int st) => region(st).terr[(st - 1) % 10];
+  /// 61 이상은 왕도에 머묾 (웹 region: % 대신 최댓값)
+  static RegionDef region(int st) => regions[regionIndex(st)];
+  static int regionIndex(int st) => math.max(0, math.min((st - 1) ~/ 10, regions.length - 1));
+  static String terrName(int st) => st > maxLand ? '왕궁 뜰' : region(st).terr[(st - 1) % 10];
   static bool isLord(int st) => st % 10 == 0;
-  static String bossName(int st) => isLord(st) ? region(st).boss : '${terrName(st)}의 마족 성주';
+
+  // 왕도 (51~60): 홀수 = 군단장 잔영, 짝수 = 마왕 근위대장, 60 = 마왕 발타사르, 61 = 왕궁 뜰
+  static const int cap0 = maxLand - 10;
+  static bool isCap(int st) => st > cap0 && st <= maxLand;
+  static bool isDemon(int st) => st == maxLand;
+  static bool isGhost(int st) => isCap(st) && st % 2 == 1;
+  static int ghostIdx(int st) => (st - cap0 - 1) ~/ 2;
+  static bool isGuard(int st) => isCap(st) && st % 2 == 0 && !isDemon(st);
+  static String bossName(int st) => isDemon(st)
+      ? '마왕 발타사르'
+      : isGhost(st)
+          ? '잔영: ${regions[ghostIdx(st)].boss}'
+          : isGuard(st)
+              ? '${terrName(st)}의 마왕 근위대장'
+              : isLord(st)
+                  ? region(st).boss
+                  : '${terrName(st)}의 마족 성주';
+  /// 보스 제한 시간 (성주 30 · 군단장 40 · 마왕 60)
+  static int bossLim(int st) => isDemon(st) ? 60 : isLord(st) ? 40 : 30;
+  /// 61 왕궁 뜰은 60단계 몬스터 (웹 fightSt)
+  int fightSt() => math.min(s.stage, maxLand);
   int landCount() => math.min(maxLand, s.stage - 1);
 
   /// rankIdx(s): 되찾은 영지 수로 정하는 칭호 단계
@@ -73,11 +94,11 @@ class GameCalc {
   // ───────────── 밸런스 손잡이 (BAL) ─────────────
   /// monHp(st,b)
   static num monHp(int st, bool boss) =>
-      20 * math.pow(Balance.hpG, st - 1) * (boss ? (isLord(st) ? Balance.lordHp : Balance.bossHp) : 1);
+      20 * math.pow(Balance.hpG, st - 1) * (boss ? (isDemon(st) ? Balance.demHp : isLord(st) ? Balance.lordHp : Balance.bossHp) : 1);
 
   /// monAtk(st,b)
   static num monAtk(int st, bool boss) =>
-      4 * math.pow(Balance.atkG, st - 1) * (boss ? (isLord(st) ? Balance.lordAtk : Balance.bossAtk) : 1);
+      4 * math.pow(Balance.atkG, st - 1) * (boss ? (isDemon(st) ? Balance.demAtk : isLord(st) ? Balance.lordAtk : Balance.bossAtk) : 1);
 
   /// reward(st,b): 마물 1마리 골드
   static num reward(int st, bool boss) => 3 * math.pow(Balance.goldG, st - 1) * (boss ? 10 : 1);
@@ -375,8 +396,8 @@ class GameCalc {
     final cap = (6 + s.bldLv('inn')) * 3600;
     final sec = math.min(cap, (now - s.last) / 1000);
     if (sec < 60) return (sec: sec, cap: cap, gold: 0);
-    final tpk = monHp(s.stage, false) / _dps() + 1.2;
-    final g = jsFloor(sec / tpk * reward(s.stage, false) * .5 * memMul() * (subOn() ? 1.5 : 1));
+    final tpk = monHp(fightSt(), false) / _dps() + 1.2;
+    final g = jsFloor(sec / tpk * reward(fightSt(), false) * .5 * memMul() * (subOn() ? 1.5 : 1));
     return (sec: sec, cap: cap, gold: g > 0 ? g : 0);
   }
 
@@ -698,6 +719,7 @@ class GameCalc {
   void retire(int p) {
     s.memory = s.memory + p;
     s.retires = s.retires + 1;
+    s.raw['capBonus'] = 0; // 왕도 재탈환 보너스: 회차마다 1번
     s.gold = 60;
     s.stage = 1;
     s.wave = 0;

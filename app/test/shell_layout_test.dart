@@ -10,6 +10,7 @@ import 'package:kingday/game/controller.dart';
 import 'package:kingday/main.dart';
 import 'package:kingday/screens/pt_page.dart';
 import 'package:kingday/screens/settings_sheet.dart';
+import 'package:kingday/ui/widgets.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 /// 오늘 출석을 이미 한 것으로 (출석부가 자동으로 뜨지 않게)
@@ -22,7 +23,7 @@ String _today() {
 Map<String, Object> _lateSave() => {
       'acorn-idle-v1': '{"gold":9.87e14,"stage":51,"best":51,"gem":123456,"started":true,'
           '"joined":{"margo":true,"haral":true,"riel":true,"bron":true},'
-          '"done":{"marta":true,"margo":true,"haral":true,"riel":true,"bron":true,"tutSkill":true},'
+          '"done":{"marta":true,"margo":true,"haral":true,"riel":true,"bron":true,"tutSkill":true,"toby":true,"toby2":true,"capRoad":true,"cap56":true,"cap57":true},'
           '"lv":{"bron":60,"haral":61,"riel":58,"margo":55},"bld":{"inn":10,"farm":6,"diner":10,"dock":10,"apiary":9,"mine":10},'
           '"rec":{"brida":3},"party":{"miner":"brida"},"seeds":{"wheat":5,"carrot":2,"pumpkin":1},"items":{"wheat":40,"carrot":9,"pumpkin":4,"fish":120,"honey":80,"ore":999},"plots":[{"k":"wheat","at":0},{"k":"carrot","at":9999999999999},null],"plotTag":[null,"carrot"],"build":{"k":"dock","end":9999999999999,"dur":3600},"bq":["apiary"],"gemPlots":2,"buffs":{"atk":9999999999999,"gold":9999999999999},"att":{"intro":1,"last":"${_today()}"},"v":3}',
     };
@@ -81,7 +82,15 @@ void main() {
         g.setTab(null);
         await tester.pump(const Duration(milliseconds: 50));
 
-        // 이야기 창 (대사 줄·금테 창·버튼)
+        // 이야기 창 (대사 줄·금테 창·버튼) — 앞에 열린 창이 있으면 실패 때 무엇인지 보여 줌
+        printOnFailure('앞에 열린 창: ${tester.widgetList<Text>(find.descendant(of: find.byType(KdSheetFrame), matching: find.byType(Text))).map((t) => t.data).take(6).toList()} · 단계 ${g.state.stage}');
+        // 이 저장에서 아직 안 본 옛 이야기·칭호 창이 있으면 먼저 모두 닫음 (전투가 빠르면 시험 중에 뜸)
+        for (var i = 0; i < 12; i++) {
+          final nav = g.navKey.currentState!;
+          if (!nav.canPop()) break;
+          nav.pop();
+          await tester.pump(const Duration(milliseconds: 100));
+        }
         g.scene('동료 합류', '요리사 마고', [
           '풍차 언덕 식당 주방에서, 국자 하나로 마물을 막아 내던 아주머니가 있었다.',
           'm:마고@laugh|배고픈 원정대는 못 이겨. 상처엔 수프가 최고야.',

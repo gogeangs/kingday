@@ -27,7 +27,7 @@ const int seasonZero = 1792335600000;
 int seasonEndAt(int now) => seasonZero + (((now - seasonZero) / 12096e5).floor() + 1) * 1209600000;
 
 /// 영지 번호 → 「3-7」 (웹 stgName)
-String stgName(num st) => st > maxLand ? '왕도' : '${((st - 1) / 10).floor() + 1}-${((st - 1) % 10).toInt() + 1}';
+String stgName(num st) => st > maxLand ? '왕궁 뜰' : '${((st - 1) / 10).floor() + 1}-${((st - 1) % 10).toInt() + 1}';
 
 /// 닉네임 오류 (웹 NICKERR)
 const nickErr = {

@@ -32,6 +32,7 @@ final List<Deco> pframes = [
   const Deco('goblin', '황금 고블린', '황금 고블린 희귀 전리품', _no, rare: true, tall: true),
   const Deco('season', '시즌 왕관', '시즌 랭킹 1위 보상', _no, rk: true, tall: true),
   const Deco('conquer', '정복자', '영지 50곳 탈환 · 명예의 전당 보상', _no, rk: true, tall: true),
+  Deco('capital', '왕도의 별', '마왕 발타사르 처치 (1부 완결)', (c) => orNum(c.s.raw['capClears'], 0) >= 1),
 ];
 
 final List<Deco> badges = [
@@ -42,7 +43,9 @@ final List<Deco> badges = [
   Deco('chest', '상자 사냥꾼', '성유물 상자 Lv.10', (c) => c.s.boxLv >= 10),
   Deco('horns', '군단장 사냥꾼', '군단장 처치', (c) => (asMap(c.s.raw['gemLord'])?.length ?? 0) >= 1),
   Deco('retire', '은퇴 전문가', '은퇴 3번', (c) => c.s.retires >= 3),
-  Deco('king', '농부 왕', '영지 50곳 모두 탈환', (c) => c.s.best > maxLand),
+  // 왕도가 생겨도 50곳 기준 그대로
+  Deco('king', '농부 왕', '영지 50곳 모두 탈환', (c) => c.s.best > 50),
+  Deco('part1', '1부 완결', '마왕 발타사르 처치', (c) => orNum(c.s.raw['capClears'], 0) >= 1),
   const Deco('goblin', '고블린 사냥꾼', '황금 고블린 희귀 전리품', _no, rare: true),
   const Deco('champ', '시즌 챔피언', '시즌 랭킹 1위 보상', _no, rk: true),
   const Deco('top10', '시즌 10강', '시즌 랭킹 2~10위 보상', _no, rk: true),

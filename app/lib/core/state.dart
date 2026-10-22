@@ -8,6 +8,7 @@ library;
 import 'dart:convert';
 
 import 'js.dart';
+import 'web_data.g.dart';
 
 class GameState {
   GameState(this.raw);
@@ -34,6 +35,8 @@ class GameState {
         // 출석체크 (docs/content/ATTENDANCE.md) — 웹과 같은 필드명
         'att': {'last': '', 'w': 0, 'ym': '', 'm': 0, 'ad': '', 'got': <dynamic>[], 'intro': 0, 'tab': 'w'},
         'tickets': {'box': 0, 'box10': 0},
+        // 왕도·1부 엔딩 (docs/content/CAPITAL.md 7장)
+        'capClears': 0, 'capBonus': 0, 'ending1': 0,
         'v': 3,
       };
 
@@ -62,6 +65,16 @@ class GameState {
     }
     final g = GameState(f);
     if (asNum(src['v']) < 3) f['rankSeen'] = rankIdx(g);
+    // 왕도 이전 저장: 예전 「왕도 진격로」(51 이상)에 있던 기록은 51(남쪽 성문)부터, 최고 기록도 51까지
+    const cap1 = wMaxland - 9, last = wMaxland + 1;
+    if (src['capClears'] == null) {
+      if (asNum(f['stage']) > cap1) {
+        f['stage'] = cap1;
+        f['wave'] = 0;
+      }
+      if (asNum(f['best']) > cap1) f['best'] = cap1;
+    }
+    if (asNum(f['stage']) > last) f['stage'] = last;
     return g;
   }
 
