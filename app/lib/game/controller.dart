@@ -491,6 +491,7 @@ class GameController extends ChangeNotifier {
     if (_uiT > .4) {
       _uiT = 0;
       _builtToast(calc.produce());
+      calc.pkCheck();
       calc.pfCheck();
       chCheck();
       refresh();

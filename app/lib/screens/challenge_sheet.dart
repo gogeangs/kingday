@@ -16,6 +16,7 @@ Future<void> openChallenge(GameController g) async {
     g.toast('영지 $chOpenLand을 되찾으면 열려요');
     return;
   }
+  c.pkCheck();
   await g.openSheet((ctx) => ValueListenableBuilder<int>(valueListenable: g.ui, builder: (_, __, ___) => _ChSheet(g, ctx)));
 }
 
@@ -61,6 +62,7 @@ class _ChSheet extends StatelessWidget {
         ]),
       ),
       children: [
+        _memory(c.chPm(), c.pkPow()),
         _card([
           _head('🗼', '시련의 탑', '최고', '$top층'),
           Text.rich(TextSpan(children: [
@@ -91,6 +93,29 @@ class _ChSheet extends StatelessWidget {
         ]),
       ],
       acts: KdActs(buttons: [KdAct('닫기', primary: true, onTap: () => Navigator.of(sheet).pop())]),
+    );
+  }
+
+  /// 추억 속 원정대 안내 (웹 .chpk)
+  Widget _memory(num pm, num pk) {
+    final on = pm >= pkShow;
+    return Container(
+      key: const ValueKey('chPk'),
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      decoration: BoxDecoration(
+        color: on ? const Color(0x12FFC94A) : const Color(0x0AFFFFFF),
+        border: Border.all(color: on ? const Color(0x73FFC94A) : const Color(0x14FFFFFF)),
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Column(children: [
+        Text.rich(TextSpan(children: [
+          const TextSpan(text: '🕯 '),
+          const TextSpan(text: '추억 속 원정대', style: TextStyle(fontWeight: FontWeight.w700)),
+          if (on) TextSpan(text: ' ×${pmText(pm)}', style: const TextStyle(color: Color(0xFFFFD34A), fontWeight: FontWeight.w700, fontSize: 15)),
+        ]), textAlign: TextAlign.center, style: KdText.body(13)),
+        Text('탑·던전에서는 지금 원정대와 역대 가장 강했던 원정대(전투력 ${fmt(pk)}) 중 센 쪽으로 싸워요. 은퇴해도 그대로예요',
+            textAlign: TextAlign.center, style: KdText.body(11.5, color: KdColors.muted, height: 1.45)),
+      ]),
     );
   }
 
