@@ -161,9 +161,9 @@ void main() {
     b.syncParty();
     b.towerStart(31);
     close(b.ch!.pm, pm, 'ch.pm');
-    final m = Mon(x: 100, lane: .5, hp: 1e30, max: 1e30, atk: 0, cd: 1);
+    final m = Mon(x: 100, lane: .5, hp: 1e9, max: 1e9, atk: 0, cd: 1);
     b.hitMon(m, 100, false, 1);
-    close(1e30 - m.hp, 100 * pm, '주는 피해');
+    close(1e9 - m.hp, 100 * pm, '주는 피해');
     b.chExit();
     final m2 = Mon(x: 100, lane: .5, hp: 1000, max: 1000, atk: 0, cd: 1);
     b.hitMon(m2, 100, false, 1);
