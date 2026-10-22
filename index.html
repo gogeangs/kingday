@@ -2655,7 +2655,7 @@ const WCAM={x:MAPW/2,y:MAPH/2,z:1,tx:MAPW/2,ty:MAPH/2,tz:1};let wmZoomR=-1,wmAni
 function wmView(){const vw=MAPW/WCAM.z,vh=vw*MH/MW;let x=WCAM.x-vw/2,y=WCAM.y-vh/2;x=Math.max(0,Math.min(MAPW-vw,x));y=Math.max(0,Math.min(MAPH-vh,y));return{x,y,w:vw,h:vh,s:MW/vw}}
 const wmToS=(v,x,y)=>[(x-v.x)*v.s,(y-v.y)*v.s];
 function wmGo(x,y,z){WCAM.tx=x;WCAM.ty=y;WCAM.tz=z}
-const wmCur=()=>Math.min(MAXLAND,S.stage);
+const wmCur=()=>Math.max(1,Math.min(MAXLAND,S.stage));
 function wmFocusCur(z){const p=MAPPOS.pts[wmCur()-1];wmGo(p[0],p[1],z||1.25)}
 /* 지도 탭을 열 때: 처음 대사 · 걷힘 연출(처음 1번씩) */
 function mapOpen(){wmLoad();resizeM();wmZoomR=-1;mzClose(true);wmFocusCur(1.25);const k=WCAM;k.x=k.tx;k.y=k.ty;k.z=k.tz;

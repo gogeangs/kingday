@@ -188,7 +188,7 @@ void main() {
         mapZoomTo(g, 0, 360);
         await frames(2);
         expect(find.textContaining('되찾은 영지'), findsOneWidget);
-        expect(find.text('1-10'), findsOneWidget);
+        expect(find.text('1-1'), findsOneWidget);
         mapZoomOut(g);
         await frames(2);
         expect(find.textContaining('되찾은 영지'), findsNothing);

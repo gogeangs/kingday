@@ -86,7 +86,7 @@ extension WorldMapCalc on GameCalc {
   }
 
   /// 지금 위치 (61 왕궁 뜰은 60 자리)
-  int mapCur() => math.min(maxLand, s.stage);
+  int mapCur() => math.max(1, math.min(maxLand, s.stage));
 
   /// 어둠을 지울 원 [x, y, 반지름]. 에르단 전체가 걷혔으면 null (웹 wmHoles)
   List<(double, double, double)>? mapHoles() {
