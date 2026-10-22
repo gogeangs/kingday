@@ -99,7 +99,7 @@
 - 왼쪽 「폐허」: 같은 예배당이 무너진 모습 — 부러진 종탑, 떨어진 종, 깨진 창, 덩굴에 덮인 문, 금이 간 흰 벽
 ```
 
-## 남은 그림 5장 (2026-10-23 다시 작성)
+## 남은 그림 5장 (2026-10-23 다시 작성) — **5장 모두 받음·반영 완료** (원본 `art/source/village/{items_new,buffs_new,bless,badge_village,frame_village}.png`, 자르기 `python3 tools/extract_village_ui.py`). 이로써 마을 그림 9장 전부 완료
 - 화풍 맞추기용 첨부(게임용 축소본 말고 **원본**): V-5는 `art/source/dishes.png`·`art/source/ui_icons_concept.png`, V-5B는 `art/source/buff_atk.png`·`art/source/dishes.png`, V-6은 `art/source/retire/trait_branches.png`, V-13은 `art/source/retire/badge_retire5.png`, V-14는 `art/source/retire/frame_retire.png`.
 - 받은 뒤 처리: 칸별로 잘라 아이콘 256, 배지 160, 테두리는 `frame_tower.png`과 같은 자리(256×296), imagequant.
 
