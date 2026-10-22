@@ -169,7 +169,7 @@ void main() {
       await press('닫기');
 
       // 닉네임은 프로필에서 정함 (랭킹 창엔 닉네임 버튼·물어보는 창 없음)
-      openNick(g, after: () => openRanking(g));
+      openNick(g, after: () => openRanking(g, 'season'));
       await frames();
       await tester.enterText(find.byType(TextField), '누가씀');
       await press('정하기');
