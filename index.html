@@ -250,7 +250,7 @@ canvas{display:block;width:100%;height:100%}
 /* 마왕 발타사르: 체력바 50% 눈금, 2단계는 금색 */
 .bossbar.dem .track::after{content:"";position:absolute;left:50%;top:0;bottom:0;width:2px;background:rgba(255,255,255,.75);z-index:1}
 .bossbar.gold{border-color:#ffd34a;box-shadow:0 0 16px rgba(255,200,80,.45)}.bossbar.gold .fill{background:linear-gradient(#ffe58a,#d99a1c)}.bossbar.gold .btag{background:linear-gradient(#ffd34a,#c98a12);color:#2a1a00}
-.bossface.ghost{filter:sepia(1) hue-rotate(220deg) saturate(1.6) brightness(.9);opacity:.8}.bossface.dem{filter:brightness(.55) saturate(.7)}.bossportrait.demp{filter:brightness(.6) saturate(.7)}
+.bossface.ghost{filter:sepia(1) hue-rotate(220deg) saturate(1.6) brightness(.9);opacity:.8}.bossface.dem.alt{filter:brightness(.55) saturate(.7)}
 .p1box{display:flex;flex-direction:column;gap:6px;background:var(--panel2);border:1px solid rgba(255,201,74,.45);border-radius:12px;padding:8px 10px}
 .p1r{display:flex;align-items:center;gap:8px;font-size:13px}.p1r img{width:28px;height:28px;object-fit:contain}.p1r span{flex:1;color:var(--muted)}.p1r b{color:var(--gold)}
 .p1next{text-align:center;margin:0}.capb{color:#ffd77a!important;margin:2px 0 6px}
@@ -991,7 +991,7 @@ function queue(fn){sceneQ.push(fn);pump()}
 let titleOpen=true;
 function pump(){if(!titleOpen&&$('modal').hidden&&!pending&&sceneQ.length)sceneQ.shift()()}
 /* 대화 초상화: 'k@smile:대사', 'q@angry:대사' 처럼 표정을 고를 수 있어요. 없으면 기본 표정 */
-const NPCID={'막례':'makrye','말봉':'malbong','덕배':'deokbae','페피':'peppy','안단테':'andante','토비':'toby','카라':'kara','베릴':'beryl','모라':'mora','멜로':'melo','포리':'pori','롤로':'rollo','크랩':'crab','버치':'birch','그램':'gram','고든':'gordon','데이지':'daisy','브리다':'brida','넬라':'nella','루카':'luka','브론':'bron','하랄':'haral','리엘':'riel','마고':'margo','마르타':'marta','피트':'pete','티모':'timo','모르바스':'morbas','세릴':'seril','그로마크':'gromak','알도르':'aldor','이그니스':'ignis'};
+const NPCID={'막례':'makrye','말봉':'malbong','덕배':'deokbae','페피':'peppy','안단테':'andante','토비':'toby','카라':'kara','베릴':'beryl','모라':'mora','멜로':'melo','포리':'pori','롤로':'rollo','크랩':'crab','버치':'birch','그램':'gram','고든':'gordon','데이지':'daisy','브리다':'brida','넬라':'nella','루카':'luka','브론':'bron','하랄':'haral','리엘':'riel','마고':'margo','마르타':'marta','피트':'pete','티모':'timo','모르바스':'morbas','세릴':'seril','그로마크':'gromak','알도르':'aldor','이그니스':'ignis','발타사르':'baltasar'};
 const BOSSID=['morbas','seril','gromak','aldor','ignis'];
 const PORTRAIT={k:{id:'kael',def:'idle',moods:['idle','surprised','smile','flustered']},q:{id:'luminar',def:'proud',moods:['proud','angry','moved']}};
 function guessMood(w,t){if(w==='k'){if(/\?|누구|왜|설마/.test(t))return'surprised';if(/…|못 하|아니고|멀어|싫/.test(t))return'flustered';if(/좋|은퇴|흙|행복/.test(t))return'smile';return'idle'}
@@ -1519,7 +1519,7 @@ function spawn(){
   {const cm=lord||dem||gh,bb=$('bossbar');bb.classList.toggle('cmd',cm);bb.classList.toggle('dem',dem);bb.classList.remove('hurry','gold');$('bossTag').textContent=dem?'마왕':gh?'잔영':gd?'근위대장':lord?'군단장':'성주';
    warn={t:1.4,cmd:cm,txt:dem?'⚠ 마왕 출현! ⚠':gh?'⚠ 군단장의 잔영! ⚠':gd?'⚠ 근위대장 출현! ⚠':null};shakeT=cm?.6:.4;mons[0].mv=.55}
   {const f=$('bossFace');f.className='bossface'+(gh?' ghost':dem?' dem':'');f.onerror=()=>{f.hidden=true};
-   if(dem){f.onerror=()=>{if(!f.dataset.alt){f.dataset.alt=1;f.src='assets/portraits/portrait_aldor_idle.png'}else f.hidden=true};delete f.dataset.alt;f.src='assets/portraits/portrait_baltasar_idle.png';f.hidden=false}
+   if(dem){f.onerror=()=>{if(!f.dataset.alt){f.dataset.alt=1;f.classList.add('alt');f.src='assets/portraits/portrait_aldor_idle.png'}else f.hidden=true};delete f.dataset.alt;f.src='assets/portraits/portrait_baltasar_idle.png';f.hidden=false}
    else if(gh){f.src='assets/portraits/portrait_'+BOSSID[ghostIdx(st)]+'_idle.png';f.hidden=false}
    else if(lord){f.src='assets/portraits/portrait_'+BOSSID[Math.floor((st-1)/10)%5]+'_idle.png';f.hidden=false}else f.hidden=true}$('bossbar').hidden=false;
   if(dem)talkStart(BALT_TALK.start);
@@ -1558,11 +1558,15 @@ const SEAL_EVERY=8,SEAL_WARN=2;
 let holdT=0,talk=null,seal=null;
 function talkStart(lines){talk={lines,i:0,t:2.6}}
 function demStep(dt,L){const bm=mons.find(m=>m.dem&&m.hp>0&&!m.dead);if(!bm)return;
- if(!bm.ph2&&bm.hp<=bm.max*.5){bm.ph2=true;bm.atk=bm.atk*BAL.demAtk2/BAL.demAtk;bm.sealT=SEAL_EVERY;holdT=1.5;shakeT=.5;flash=.25;talkStart(BALT_TALK.reveal);$('bossbar').classList.add('gold');haptic([60,40,60]);return}
+ if(!bm.ph2&&bm.hp<=bm.max*.5){bm.ph2=true;bm.atk=bm.atk*BAL.demAtk2/BAL.demAtk;bm.sealT=SEAL_EVERY;holdT=1.5;shakeT=.5;flash=.25;talkStart(BALT_TALK.reveal);$('bossbar').classList.add('gold');{const f=$('bossFace');if(!f.dataset.alt)f.src='assets/portraits/portrait_baltasar_laugh.png'}haptic([60,40,60]);return}
  if(!bm.ph2)return;bm.sealT-=dt;if(bm.sealT<=SEAL_WARN&&!seal)seal={t:SEAL_WARN};
  if(bm.sealT<=0){bm.sealT=SEAL_EVERY;seal=null;sealHit(bm,L)}}
 /* 봉인의 파동: 원정대 전체에 공격의 2배. 방어 스킬(브론 버팀목·덕배 불굴·버치 벌통 방패 등)로 버틸 수 있음 */
+function sealGeo(L){const x0=Math.min(...L.ids.map(i=>L.pos[i])),rx=Math.max(80,(L.front-x0)*.75+50*L.s);return{cx:(x0+L.front)/2,cy:(L.top+L.bot)/2+10*L.s,rx,ry:rx*.32}}
+/* 파동 효과(fx_boss_seal 512x384 칸, 바닥 y=372): 바닥을 예고 원 가운데에 맞춤 */
+const sealFxY=(g,sz)=>g.cy+sz/2-sz*372/384;
 function sealHit(bm,L){const{ids,pos,py,s}=L;flash=.35;shakeT=.6;haptic([80]);
+ {const g=sealGeo(L),sz=g.rx*1.7;spawnFx('boss_seal',g.cx,sealFxY(g,sz),sz,.8)}
  for(const id of ids){const q=P[id];if(!q||q.down)continue;const dm=bm.atk*BAL.seal*(SKX.shield>0?.5:1)*(SKX.mount>0?.3:1)*(q.bsh>0?1-.4*(q.bshK||1):1);q.hp-=dm;q.hit=.2;addFloat(pos[id],py[id]-(HEIGHT[id]+8)*s,'-'+fmt(dm),'#ffd34a',14);
   if(q.hp<=0){if(SKX.guts>0&&q.guts){q.guts=0;q.hp=1;addFloat(pos[id],py[id]-(HEIGHT[id]+24)*s,'불굴!','#ffd27a',14)}else{q.hp=0;q.down=true}}}
  spawnFx('crit',W*.3,L.bot-20*s,140*s,.5)}
@@ -1575,7 +1579,7 @@ function bossDemonWin(){const first=!(S.capClears>0);S.capClears=(S.capClears||0
 function capStory(st0){if(st0===56&&!S.done.cap56){S.done.cap56=true;queue(()=>scene('왕립 도서관','불탄 책장 사이',['sys:불탄 책장 사이에서 낡은 초상화를 발견했다. 성검을 든 젊은 왕.','q@moved:…이 얼굴은.','k:아는 사람이야?','q:……아니다. 가자.'],'계속 간다'))}
  if(st0===57&&!S.done.cap57){S.done.cap57=true;queue(()=>scene('왕비의 정원','잔영이 흩어지다',['q@moved:알도르. 이번엔 편히 잠들어라.','k:…루미나르, 괜찮아?','q:괜찮다. 칼은 울지 않는다.'],'…가자'))}}
 const ENDING=[
- {eb:'1부 엔딩 · 1',t:'왕좌 앞에서',il:'ending1',p:['m:발타사르|왕관은 무겁지. 지키고 싶은 것이 많을수록.','m:발타사르|이 왕관은 내가 가져간다. 진짜 왕이 될 자격이 있다면, 마계까지 찾아오너라.','sys:발타사르가 왕관을 들고 검은 문 너머로 사라졌다.'],btn:'…'},
+ {eb:'1부 엔딩 · 1',t:'왕좌 앞에서',il:'ending1',p:['m:발타사르@laugh|왕관은 무겁지. 지키고 싶은 것이 많을수록.','m:발타사르@laugh|이 왕관은 내가 가져간다. 진짜 왕이 될 자격이 있다면, 마계까지 찾아오너라.','sys:발타사르가 왕관을 들고 검은 문 너머로 사라졌다.'],btn:'…'},
  {eb:'1부 엔딩 · 2',t:'텅 빈 왕좌',p:['k:…이겼다. 이제 은퇴?','q:아직이다. 왕관이 없는 왕은 왕이 아니다.','k@smile:나 왕 안 한다니까.'],btn:'다음'},
  {eb:'1부 엔딩 · 3',t:'왕궁 뜰',il:'ending2',p:['sys:되찾은 왕궁 뒤뜰. 카엘이 괭이로 땅을 고르고 있다.','q:주인, 거기는 왕궁 정원이다.','k@smile:좋은 흙이야. 여기다 밀 심으면 잘 자라겠어.','sys:1부 「잃어버린 왕국」 끝. 2부 「흩어진 동맹」에서 계속됩니다.'],btn:'1부 완결'}];
 function endingScene(i){const e=ENDING[i];if(!e)return part1Sheet();scene(e.eb,e.t,e.p,e.btn,{go:()=>queue(()=>endingScene(i+1))},e.il)}
@@ -1793,7 +1797,7 @@ const SPR_FRAME=256,SPR_FOOT=250,SPR_FIG=171; // SPR_FIG: 프레임 안에서 �
 const SPR={};
 /* 전투 효과: assets/fx/fx_<이름>.png, 256 칸(작살은 512x256)을 가로로 이은 시트. 없으면 코드 효과 */
 const BANNER=new Image();BANNER.onload=()=>{BANNER.ok=true};
-const FXDEF={hit:4,crit:5,bees:4,heal:5,coin:4,harpoon:1,soup:1,skill_kael:4,skill_bron:4,skill_haral:4,skill_riel:4,skill_margo:4,skill_luka:4,skill_nella:4,skill_brida:4,skill_daisy:4,skill_gordon:4,skill_makrye:4,skill_malbong:4,skill_deokbae:4,skill_peppy:4,skill_andante:4,skill_toby:4,skill_kara:4,skill_beryl:4,skill_mora:4,skill_melo:4,skill_pori:4,skill_rollo:4,skill_crab:4,skill_birch:4,skill_gram:4,net:2},FXI={};let fxs=[];
+const FXDEF={hit:4,crit:5,bees:4,heal:5,coin:4,harpoon:1,soup:1,skill_kael:4,skill_bron:4,skill_haral:4,skill_riel:4,skill_margo:4,skill_luka:4,skill_nella:4,skill_brida:4,skill_daisy:4,skill_gordon:4,skill_makrye:4,skill_malbong:4,skill_deokbae:4,skill_peppy:4,skill_andante:4,skill_toby:4,skill_kara:4,skill_beryl:4,skill_mora:4,skill_melo:4,skill_pori:4,skill_rollo:4,skill_crab:4,skill_birch:4,skill_gram:4,net:2,boss_seal:4},FXI={};let fxs=[];
 function loadFx(){for(const k in FXDEF){const im=new Image();im.onload=()=>{im.ok=true;im.cw=im.width/FXDEF[k]};im.src='assets/fx/fx_'+k+'.png';FXI[k]=im}}
 const fxOk=k=>FXI[k]&&FXI[k].ok;
 function spawnFx(k,x,y,size,d,vy){if(fxOk(k))fxs.push({k,x,y,size,d,t:0,vy:vy||0})}
@@ -1809,7 +1813,7 @@ const MON_SPRITES={0:{id:'slime_plague',walk:4,attack:4,hit:2,fig:150,h:54,boss:
 MON_SPRITES[5]={id:'guard_black',walk:4,attack:4,hit:2,fig:150,h:58,tint:{src:MON_SPRITES[2],ops:[['multiply','#4b3f6a']]},
  boss:{id:'boss_guardcap',walk:4,attack:4,hit:2,fig:150,h:76,tint:{src:MON_SPRITES[2],ops:[['multiply','#7a5a2e'],['multiply','#9a8ab8']]}}};
 /* 마왕 발타사르: 전용 그림(boss_baltasar·boss_baltasar2)이 없으면 알도르 그림을 크게·어둡게(1단계) / 보랏빛 은색(2단계) */
-const BALT=[{id:'boss_baltasar',walk:4,attack:4,hit:2,fig:200,h:78},{id:'boss_baltasar2',walk:4,attack:4,hit:2,fig:200,h:78}];
+const BALT=[{id:'boss_baltasar',walk:4,attack:4,hit:2,cast:4,fig:175,h:78},{id:'boss_baltasar2',walk:4,attack:4,hit:2,cast:4,fig:175,h:78}];
 /* 지역별 두 번째 마물: 그림이 들어온 것만 등장. trait: 체력·공격·이동·공격간격 배수 */
 const TRAITS={tank:{hp:1.6,atk:.9,mv:.6,cd:1.15,n:'단단함'},swift:{hp:.7,atk:1.1,mv:1.7,cd:.8,n:'빠름'},swarm:{hp:.55,atk:.6,mv:1.2,cd:1,n:'떼'},guard:{hp:1.4,atk:.85,mv:.8,cd:1.1,n:'방패'},flier:{hp:.8,atk:1.05,mv:1.5,cd:.9,n:'비행'}};
 const MON_ALT={0:{id:'scarecrow_cursed',walk:4,attack:4,hit:2,fig:150,h:46,trait:'tank'},1:{id:'wolf_shadow',walk:4,attack:4,hit:2,fig:150,h:40,trait:'swift'},2:{id:'goblin_pick',walk:4,attack:4,hit:2,fig:150,h:40,trait:'swarm'},3:{id:'skeleton_frost',walk:4,attack:4,hit:2,fig:150,h:46,trait:'guard'},4:{id:'imp_flame',walk:4,attack:4,hit:2,fig:150,h:40,lift:26,trait:'flier'},
@@ -1822,7 +1826,7 @@ function tintSet(base,tid,ops){if(TINT[tid])return TINT[tid];if(!base||!sprOk(ba
   for(const[mode,col]of ops){x.globalCompositeOperation=mode;x.fillStyle=col;x.fillRect(0,0,c.width,c.height)}x.globalCompositeOperation='destination-in';x.drawImage(im,0,0);c.ok=true;out[a]=c}
  MSPR[tid]=out;return TINT[tid]=Object.assign({},base,{id:tid,tint:null})}
 const sprT=d=>!d?null:sprOk(d)?d:d.tint&&d.tint.src?tintSet(d.tint.src,d.id+'_t',d.tint.ops):null;
-function loadMon(d){if(!d||MSPR[d.id])return;MSPR[d.id]={};for(const a of['walk','attack','hit']){const im=new Image();im.onload=()=>{im.ok=true};im.src='assets/monsters/'+d.id+'_'+a+'.png';MSPR[d.id][a]=im}}
+function loadMon(d){if(!d||MSPR[d.id])return;MSPR[d.id]={};for(const a of d.cast?['walk','attack','hit','cast']:['walk','attack','hit']){const im=new Image();im.onload=()=>{im.ok=true};im.src='assets/monsters/'+d.id+'_'+a+'.png';MSPR[d.id][a]=im}}
 const loadMonReg=k=>{if(MON_SPRITES[k])[MON_SPRITES[k],MON_SPRITES[k].boss,MON_ALT[k]].forEach(loadMon);if(k===5){for(let j=0;j<5;j++)[MON_SPRITES[j],MON_SPRITES[j].boss].forEach(loadMon);BALT.forEach(loadMon)}};/* 왕도는 물들일 원본(군단장 5명·골렘·박쥐)도 받음 */
 function loadMonSprites(){const r=regNow();loadMonReg(r);loadMonReg(r+1);loadMon(GOB)}
 /* 황금 고블린: 곡괭이 고블린 그림을 금빛으로 물들여 씀 (전용 그림이 오면 goblin_gold_*.png로 교체) */
@@ -1879,6 +1883,7 @@ function drawMon(r,y,s,m){
  const md=monSprite(r,m),sk=md&&md.lordArt?ss*.8*(md.dem?1.3:1):ss,ly=md&&md.lift?y-md.lift*ss*(1+.08*Math.sin(T*5+ph)):y;
  if(md){if(md.ghostArt)ctx.globalAlpha=fade*.72;if(m.flee){ctx.save();ctx.translate(x,0);ctx.scale(-1,1);ctx.translate(-x,0)}const k=md.h*sk/md.fig,moving=m.tx!=null&&m.x>m.tx+1;let a='walk',i=Math.floor(T*8+ph)%md.walk;
   if(m.hit>0||m.dead>0){a='hit';i=m.dead>0?1:0}else if(m.sw>0){a='attack';i=Math.max(0,Math.min(md.attack-1,Math.floor((1-m.sw/.4)*md.attack)))}else if(!moving){i=Math.floor(T*4+ph)%md.walk}
+  if(m.dem&&seal&&!m.dead&&md.cast&&MSPR[md.id].cast&&MSPR[md.id].cast.ok){a='cast';i=Math.min(md.cast-1,Math.floor((1-Math.max(0,seal.t)/SEAL_WARN)*md.cast))}
   if((m.boss||m.gob)&&!m.dead){ctx.save();ctx.shadowColor=m.gob||m.ph2?'rgba(255,210,60,.95)':m.lord||m.ghost!=null?'rgba(180,110,255,.9)':'rgba(255,60,80,.85)';ctx.shadowBlur=(14+6*Math.sin(T*4))*s;ctx.drawImage(MSPR[md.id][a],i*SPR_FRAME,0,SPR_FRAME,SPR_FRAME,x-SPR_FRAME/2*k,ly-SPR_FOOT*k,SPR_FRAME*k,SPR_FRAME*k);ctx.restore()}
   else ctx.drawImage(MSPR[md.id][a],i*SPR_FRAME,0,SPR_FRAME,SPR_FRAME,x-SPR_FRAME/2*k,ly-SPR_FOOT*k,SPR_FRAME*k,SPR_FRAME*k);
   if(m.hit>0){ctx.globalCompositeOperation='lighter';ctx.globalAlpha=fade*.35;ctx.drawImage(MSPR[md.id][a],i*SPR_FRAME,0,SPR_FRAME,SPR_FRAME,x-SPR_FRAME/2*k,ly-SPR_FOOT*k,SPR_FRAME*k,SPR_FRAME*k);ctx.globalCompositeOperation='source-over';ctx.globalAlpha=fade}
@@ -1944,7 +1949,8 @@ function draw(){
 }
 /* 마왕 대사 띠 · 봉인의 파동 예고 원 */
 function drawDemon(L){
- if(seal){const k=1-Math.max(0,seal.t)/SEAL_WARN,cx=(Math.min(...L.ids.map(i=>L.pos[i]))+L.front)/2,cy=(L.top+L.bot)/2+10*L.s,rx=Math.max(80,(L.front-Math.min(...L.ids.map(i=>L.pos[i])))*.75+50*L.s),ry=rx*.32;
+ if(seal){const k=1-Math.max(0,seal.t)/SEAL_WARN,{cx,cy,rx,ry}=sealGeo(L);
+  if(fxOk('boss_seal')){const sz=rx*1.7;ctx.globalAlpha=.3+.7*k;fxFrame('boss_seal',0,cx,sealFxY({cy},sz),sz);ctx.globalAlpha=1}
   ctx.save();ctx.globalAlpha=.25+.55*k;ctx.strokeStyle='#ffd34a';ctx.lineWidth=3;ctx.setLineDash([10,6]);ctx.lineDashOffset=-T*40;ctx.beginPath();ctx.ellipse(cx,cy,rx,ry,0,0,Math.PI*2);ctx.stroke();
   ctx.setLineDash([]);ctx.fillStyle='rgba(255,211,74,'+(.08+.22*k)+')';ctx.beginPath();ctx.ellipse(cx,cy,rx*k,ry*k,0,0,Math.PI*2);ctx.fill();
   ctx.globalAlpha=1;ctx.textAlign='center';ctx.font='700 13px "IBM Plex Sans KR",sans-serif';ctx.lineWidth=3;ctx.strokeStyle='rgba(0,0,0,.7)';ctx.strokeText('봉인의 파동!',cx,cy-ry-8);ctx.fillStyle='#ffe08a';ctx.fillText('봉인의 파동!',cx,cy-ry-8);ctx.restore()}
@@ -2210,7 +2216,7 @@ const PFRAMES=[
  {k:'goblin',n:'황금 고블린',d:'황금 고블린 희귀 전리품',ok:()=>false,rare:1,tall:1},
  {k:'season',n:'시즌 왕관',d:'시즌 랭킹 1위 보상',ok:()=>false,rk:1,tall:1},
  {k:'conquer',n:'정복자',d:'영지 50곳 탈환 · 명예의 전당 보상',ok:()=>false,rk:1,tall:1},
- {k:'capital',n:'왕도의 별',d:'마왕 발타사르 처치 (1부 완결)',ok:()=>(S.capClears||0)>=1}];
+ {k:'capital',n:'왕도의 별',d:'마왕 발타사르 처치 (1부 완결)',ok:()=>(S.capClears||0)>=1,tall:1}];
 const pfTall=k=>(PFRAMES.find(f=>f.k===k)||{}).tall?' tall':'';
 const stat=(k,n)=>{if(!S.stat)S.stat={};S.stat[k]=(S.stat[k]||0)+n},st=k=>(S.stat&&S.stat[k])||0;
 const BADGES=[

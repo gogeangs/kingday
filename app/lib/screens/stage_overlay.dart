@@ -166,7 +166,7 @@ class _BossBar extends StatelessWidget {
     final st = g.calc.fightSt(), cmd = GameCalc.isLord(st) || b.ghost != null, gold = b.dem && b.ph2;
     final left = math.max(0, g.sim.bossT), hurry = left <= 10;
     final tag = b.dem ? '마왕' : b.ghost != null ? '잔영' : b.guard ? '근위대장' : cmd ? '군단장' : '성주';
-    final faceId = b.dem ? 'aldor' : b.ghost != null ? bossIds[b.ghost!] : bossIds[GameCalc.regionIndex(st) % bossIds.length];
+    final faceId = b.dem ? 'baltasar' : b.ghost != null ? bossIds[b.ghost!] : bossIds[GameCalc.regionIndex(st) % bossIds.length];
     final blink = hurry && (g.sim.time * 4).floor().isEven;
     return Container(
       width: math.min(320, MediaQuery.sizeOf(context).width * .92),
@@ -193,12 +193,10 @@ class _BossBar extends StatelessWidget {
               child: SizedBox(
                 width: 38,
                 height: 38,
-                // 잔영은 보랏빛 반투명, 마왕은 (전용 초상화 전까지) 알도르 초상화를 어둡게
+                // 잔영은 보랏빛 반투명, 마왕은 1단계 「검은 왕」 → 2단계 「옛 왕」 얼굴
                 child: b.ghost != null
-                    ? Opacity(opacity: .8, child: filtered(FaceImg(faceId), sat: 1.6, bright: .9, gray: .4))
-                    : b.dem
-                        ? filtered(FaceImg(faceId), bright: .55, sat: .7)
-                        : FaceImg(faceId),
+                    ? Opacity(opacity: .8, child: filtered(FaceImg(faceId, mood: gold ? 'laugh' : 'idle'), sat: 1.6, bright: .9, gray: .4))
+                    : FaceImg(faceId, mood: gold ? 'laugh' : 'idle'),
               ),
             ),
           ),

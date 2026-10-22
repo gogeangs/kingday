@@ -1276,6 +1276,10 @@ class BattleSim {
     flash = .35;
     shakeT = .6;
     events.add(HapticEvent(const [80]));
+    if (l.ids.isNotEmpty) {
+      final g = sealGeo(l.ids, l.pos, l.front, l.top, l.bot, l.s), sz = g.rx * 1.7;
+      spawnFx('boss_seal', g.cx, sealFxY(g.cy, sz), sz, .8);
+    }
     for (final id in l.ids) {
       final q = party[id];
       if (q == null || q.down) continue;

@@ -45,8 +45,21 @@ final MonSheet goblinSheet = MonSheet._(_m(wGob));
 
 /// 마왕 발타사르 1·2단계 전용 그림 (assets/monsters/boss_baltasar{,2}_*.png). 없으면 알도르 그림을 물들여 씀
 final List<MonSheet> baltasarSheets = [
-  for (final id in ['boss_baltasar', 'boss_baltasar2']) MonSheet._({'id': id, 'walk': 4, 'attack': 4, 'hit': 2, 'fig': 200, 'h': 78}),
+  for (final id in ['boss_baltasar', 'boss_baltasar2']) MonSheet._({'id': id, 'walk': 4, 'attack': 4, 'hit': 2, 'fig': 175, 'h': 78}),
 ];
+
+/// 발타사르 시전 동작 프레임 수 (assets/monsters/boss_baltasar{,2}_cast.png, 봉인의 파동 예고 동안)
+const int baltasarCast = 4;
+
+/// 봉인의 파동 위치 (웹 sealGeo). 효과 그림 fx_boss_seal 은 512x384 칸, 바닥 y=372
+({double cx, double cy, double rx, double ry}) sealGeo(List<String> ids, Map<String, num> pos, num front, num top, num bot, num s) {
+  final back = ids.map((i) => pos[i]!).reduce((a, b) => a < b ? a : b).toDouble();
+  final rx = ((front - back) * .75 + 50 * s).toDouble();
+  final r = rx < 80 ? 80.0 : rx;
+  return (cx: (back + front) / 2, cy: ((top + bot) / 2 + 10 * s).toDouble(), rx: r, ry: r * .32);
+}
+
+double sealFxY(double cy, double sz) => cy + sz / 2 - sz * 372 / 384;
 
 /// 왕도 그림이 오기 전 대체: 기존 그림 + 색 (웹 MON_SPRITES[5].tint · MON_ALT[5].tint)
 class CapTint {

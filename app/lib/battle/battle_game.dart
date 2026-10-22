@@ -88,6 +88,11 @@ class BattleGame extends FlameGame {
           paths.add('monsters/${m.id}_$a.png');
         }
       }
+      if (r == regions.length - 1) {
+        for (final m in baltasarSheets) {
+          paths.add('monsters/${m.id}_cast.png');
+        }
+      }
       if (r == 0) {
         for (final a in ['walk', 'attack', 'hit']) {
           paths.add('monsters/${goblinSheet.id}_$a.png');
@@ -234,9 +239,12 @@ class BattleGame extends FlameGame {
     final sw = sim.seal;
     if (sw != null && l.ids.isNotEmpty) {
       final k = _cl(1 - math.max(0, sw.t) / BattleSim.sealWarn);
-      final back = l.ids.map((i) => l.pos[i]!).reduce(math.min).toDouble();
-      final cx = (back + l.front) / 2, cy = (l.top + l.bot) / 2 + 10 * l.s;
-      final rx = math.max(80.0, (l.front - back) * .75 + 50 * l.s).toDouble(), ry = rx * .32;
+      final g = sealGeo(l.ids, l.pos, l.front, l.top, l.bot, l.s);
+      final cx = g.cx, cy = g.cy, rx = g.rx, ry = g.ry;
+      if (sim.fxOk('boss_seal')) {
+        final sz = rx * 1.7;
+        _fxFrame('boss_seal', 0, cx, sealFxY(cy, sz), sz, alpha: .3 + .7 * k);
+      }
       final r = ui.Rect.fromCenter(center: ui.Offset(cx.toDouble(), cy.toDouble()), width: rx * 2, height: ry * 2);
       _c.drawOval(r, ui.Paint()
         ..style = ui.PaintingStyle.stroke
@@ -508,6 +516,12 @@ class BattleGame extends FlameGame {
         i = math.max(0, math.min(md.attack - 1, ((1 - m.sw / .4) * md.attack).floor()));
       } else if (!moving) {
         i = (_t * 4 + ph).floor() % md.walk;
+      }
+      // 봉인의 파동 예고 동안 마왕은 시전 동작 (전용 그림이 있을 때만)
+      final sw = sim.seal;
+      if (m.dem && sw != null && m.dead == 0 && _img['monsters/${md.id}_cast.png'] != null) {
+        a = 'cast';
+        i = math.min(baltasarCast - 1, ((1 - math.max(0, sw.t) / BattleSim.sealWarn) * baltasarCast).floor());
       }
       final im = _img['monsters/${md.id}_$a.png'];
       if (im != null) {

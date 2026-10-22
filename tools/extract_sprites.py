@@ -30,6 +30,7 @@ SCALE = 0.795         # 원본 시트 → 게임 프레임 배율 (모든 캐릭
 ALPHA_CUT = 140       # 이보다 흐린 픽셀(콘셉트의 뿌연 후광)은 지움
 ROWS = [("idle", 4), ("walk", 6), ("attack", 4), ("hit", 2)]
 MON_ROWS = [("walk", 4), ("attack", 4), ("hit", 2)]
+CAST_ROW = ("cast", 4)   # --cast: 4줄째 마법 시전 (마왕 발타사르)
 MON_SCALE = 0.62
 
 
@@ -95,8 +96,8 @@ def own_mask(loose_lab, box):
     return keep
 
 
-def main(src, cid, monster=False, center=False, wide=(), scale=None):
-    rows_def = MON_ROWS if monster else ROWS
+def main(src, cid, monster=False, center=False, wide=(), scale=None, cast=False):
+    rows_def = (MON_ROWS + [CAST_ROW] if cast else MON_ROWS) if monster else ROWS
     scale = scale or (MON_SCALE if monster else SCALE)
     outdir = "assets/monsters" if monster else "assets/characters"
     img = np.array(Image.open(src).convert("RGBA"))
@@ -149,4 +150,4 @@ def main(src, cid, monster=False, center=False, wide=(), scale=None):
 if __name__ == "__main__":
     wide = dict((w.split(":") + [""])[:2] for w in next((a.split("=", 1)[1].split(",") for a in sys.argv[3:] if a.startswith("--wide=")), []))  # --wide=attack:512,hit
     sc = next((float(a.split("=", 1)[1]) for a in sys.argv[3:] if a.startswith("--scale=")), None)  # --scale=0.5: 원본이 커서 칸 밖으로 넘칠 때
-    main(sys.argv[1], sys.argv[2], "--monster" in sys.argv[3:], "--center" in sys.argv[3:], wide, sc)
+    main(sys.argv[1], sys.argv[2], "--monster" in sys.argv[3:], "--center" in sys.argv[3:], wide, sc, "--cast" in sys.argv[3:])
