@@ -508,23 +508,7 @@ Future<void> openRanking(GameController g, [String? tab]) async {
     g.scene('랭킹', '준비 중이에요', ['랭킹 서버를 연결하고 있어요. 곧 다른 영주들과 겨룰 수 있어요!', 'q@proud:흥, 주인이 1등인 건 정해진 일이다.'], '기대할게요', closable: true);
     return;
   }
-  // 임시 닉네임이면 처음 한 번 정할지 물어봄
-  if (o.nickTemp && !truthy(g.state.raw['nickAsk']) && tab == null) {
-    g.state.raw['nickAsk'] = 1;
-    g.save();
-    g.openSheet<void>((c) => KdSheetBody(
-          titleWidget: const HdBanner('hd_rank', '랭킹'),
-          children: [
-            Text('랭킹에 이름이 올라가요!', textAlign: TextAlign.center, style: KdText.display(20)),
-            Text('지금은 임시 닉네임 「${o.nick}」(으)로 표시돼요.\n다른 영주들에게 보일 이름을 정해 볼까요?', textAlign: TextAlign.center, style: _muted()),
-          ],
-          acts: KdActs(buttons: [
-            KdAct('나중에', onTap: () => g.chainSheet(c, () => openRanking(g, 'season'))),
-            KdAct('닉네임 정하기', primary: true, onTap: () => g.chainSheet(c, () => openNick(g, after: () => openRanking(g, 'season')))),
-          ]),
-        ));
-    return;
-  }
+  // 닉네임은 프로필에서만 정함 (처음엔 임시 닉네임으로 랭킹에 올라감)
   g.openSheet<void>((c) => _Rank(g, c));
 }
 
@@ -766,7 +750,6 @@ class _RankState extends State<_Rank> {
         ],
       ],
       acts: KdActs(buttons: [
-        KdAct('닉네임 바꾸기', onTap: () => g.chainSheet(widget.sheet, () => openNick(g))),
         KdAct('닫기', primary: true, onTap: () => Navigator.of(widget.sheet).pop()),
       ]),
     );
