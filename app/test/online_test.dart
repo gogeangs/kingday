@@ -168,11 +168,9 @@ void main() {
       expect(find.text('카드를 받았어요!'), findsOneWidget);
       await press('닫기');
 
-      // 랭킹: 임시 닉네임이면 먼저 정할지 물어봄
-      openRanking(g);
+      // 닉네임은 프로필에서 정함 (랭킹 창에는 닉네임 버튼·안내 창 없음, 임시 닉네임 그대로 올라감)
+      openNick(g, after: () => openRanking(g));
       await frames();
-      expect(find.text('랭킹에 이름이 올라가요!'), findsOneWidget);
-      await press('닉네임 정하기');
       await tester.enterText(find.byType(TextField), '누가씀');
       await press('정하기');
       await frames(2);
