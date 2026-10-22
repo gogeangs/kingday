@@ -1,6 +1,7 @@
 # 대륙 지도 그림 프롬프트 (ChatGPT 전용)
 
 작성일: 2026-10-23 · 기획서 `claude/CONTENT_WORLDMAP.md`
+- **3장 모두 받음·반영 완료 (2026-10-23)**: `assets/map/world_map.jpg`, `world_map_dark.jpg`, `fog_1..6.png` (원본 `art/source/map/`). 두 지도 구도 일치 확인.
 - 3장, 블록 하나 = 그림 한 장. 순서: V-W1(탈환 판) → 같은 대화창에서 V-W1B(점령 판) → V-W2(어둠 구름)
 - 화풍 맞추기: V-W1에는 `assets/village/village_map.jpg`(마을 지도)와 지역 배경 몇 장(`art/source/erdan_layer_concept_a.png` 등)을 첨부하면 좋다.
 - 받은 뒤 처리: V-W1은 `assets/map/world_map.jpg`(1024×1536, jpg 84%), V-W2는 덩어리별로 잘라 `assets/map/fog_{1..6}.png`(폭 512).
