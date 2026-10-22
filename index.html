@@ -247,6 +247,13 @@ canvas{display:block;width:100%;height:100%}
 .bossbar .track{position:relative;height:13px;background:rgba(255,255,255,.12);border-radius:7px;overflow:hidden}
 .bossbar .fill{height:100%;background:linear-gradient(#ff8a98,#e0344c);width:100%;transition:width .15s}
 .bossbar.cmd .fill{background:linear-gradient(#d6a6ff,#8a3fe0)}
+/* 마왕 발타사르: 체력바 50% 눈금, 2단계는 금색 */
+.bossbar.dem .track::after{content:"";position:absolute;left:50%;top:0;bottom:0;width:2px;background:rgba(255,255,255,.75);z-index:1}
+.bossbar.gold{border-color:#ffd34a;box-shadow:0 0 16px rgba(255,200,80,.45)}.bossbar.gold .fill{background:linear-gradient(#ffe58a,#d99a1c)}.bossbar.gold .btag{background:linear-gradient(#ffd34a,#c98a12);color:#2a1a00}
+.bossface.ghost{filter:sepia(1) hue-rotate(220deg) saturate(1.6) brightness(.9);opacity:.8}.bossface.dem{filter:brightness(.55) saturate(.7)}.bossportrait.demp{filter:brightness(.6) saturate(.7)}
+.p1box{display:flex;flex-direction:column;gap:6px;background:var(--panel2);border:1px solid rgba(255,201,74,.45);border-radius:12px;padding:8px 10px}
+.p1r{display:flex;align-items:center;gap:8px;font-size:13px}.p1r img{width:28px;height:28px;object-fit:contain}.p1r span{flex:1;color:var(--muted)}.p1r b{color:var(--gold)}
+.p1next{text-align:center;margin:0}.capb{color:#ffd77a!important;margin:2px 0 6px}
 .bossbar #bossHp{position:absolute;inset:0;display:grid;place-items:center;font-size:10px;font-weight:700;color:#fff;text-shadow:0 1px 2px #000;font-variant-numeric:tabular-nums}
 .bossbar .tline{height:2px;background:rgba(255,255,255,.1);border-radius:1px;overflow:hidden}
 .bossbar .tline i{display:block;height:100%;background:#ffc94a;width:100%}
@@ -620,9 +627,16 @@ const REGIONS=[
   lore:['은빛 기사단이 잠든 얼음 무덤. 망령의 군단장 알도르가 형제들의 무덤을 지키고 있다.','q@moved:…알도르. 내 두 번째 주인이었던 자다. 주인, 이번만큼은 진지하게 싸워 다오.']},
  {n:'잿불 심연',sky:['#220b0b','#922f1a'],hill:'#3a1812',hill2:'#58261a',ground:'#33241f',kind:'slime',col:'#ff6a3a',mn:'잿불 점액',boss:'화염의 군단장 이그니스',
   terr:['잿빛 들판','불타는 숲','용암 강','마족 야영지','검은 탑','재의 다리','불꽃 제단','유황 계곡','심연의 계단','마계의 문'],
-  lore:['마계의 문이 열린 곳. 화염의 군단장 이그니스가 문을 지키며 끝없이 증원을 들여보내고 있다.','q:이 문을 닫으면 왕도로 가는 길이 열린다. 왕좌가 코앞이다, 주인!','k:왕좌 말고 은퇴가 코앞이었으면 좋겠는데.']}
+  lore:['마계의 문이 열린 곳. 화염의 군단장 이그니스가 문을 지키며 끝없이 증원을 들여보내고 있다.','q:이 문을 닫으면 왕도로 가는 길이 열린다. 왕좌가 코앞이다, 주인!','k:왕좌 말고 은퇴가 코앞이었으면 좋겠는데.']},
+ /* 6번째: 왕도 아스테리온 (docs/content/CAPITAL.md). 홀수 영지 = 군단장 잔영, 짝수 = 마왕 근위대장, 60 = 마왕 발타사르 */
+ {n:'왕도 아스테리온',sky:['#1b1530','#6a5a8c'],hill:'#2e2740',hill2:'#4a3f60',ground:'#5b5468',kind:'golem',col:'#4a4360',mn:'흑철 근위병',boss:'마왕 발타사르',cap:true,
+  terr:['남쪽 성문','상인의 거리','대장장이 골목','별빛 대성당','기사단 훈련장','왕립 도서관','왕비의 정원','높은 성벽','왕궁 회랑','알현실'],
+  lore:['왕도 아스테리온. 마왕의 근위대가 성문을 지키고, 쓰러진 군단장들의 잔영이 길을 막는다.','q:이 길 끝, 알현실에 마왕이 있다. 주인, 끝까지 가자.']}
 ];
 const MAXLAND=REGIONS.length*10;
+/* 왕도: 51~60. 60 = 알현실(마왕), 61 = 왕궁 뜰(보스 없이 사냥, 끝) */
+const CAP0=MAXLAND-10,isCap=st=>st>CAP0&&st<=MAXLAND,isDemon=st=>st===MAXLAND,isGhost=st=>isCap(st)&&st%2===1,ghostIdx=st=>(st-CAP0-1)/2,isGuard=st=>isCap(st)&&st%2===0&&!isDemon(st);
+const fightSt=()=>Math.min(S.stage,MAXLAND);/* 61 왕궁 뜰은 60단계 몬스터 */
 const COMP={
  kael:{n:'카엘',role:'농부 용사',desc:'은퇴만 꿈꾸는 농부. 성검 루미나르를 뽑아 버렸다.'},
  bron:{n:'브론',role:'광부 · 방어',desc:'드워프 광부. 곡괭이를 들고 앞줄에서 공격을 받아낸다.',join:'드워프 협곡에서 합류',base:{atk:6,hp:240,aps:.8},per:{atk:2,hp:48}},
@@ -762,7 +776,7 @@ const icoImg=k=>`<img src="assets/ui/item_${k==='wheat'?'wheat':k}.png" alt="" o
 const costBtn=(lb,c,o)=>`<span class="bl">${lb}</span><span class="bc"><img src="assets/ui/ui_gold.png" alt="" onerror="this.remove()">${fmt(c)}</span>${o?`<span class="bc ore${(S.items.ore||0)<o?' lack':''}"><img src="assets/ui/item_ore.png" alt="" onerror="this.remove()">${o}</span>`:''}`;
 const uiImg=(n,c)=>`<img class="${c||'rowic'}" src="assets/ui/${n}.png" alt="" onerror="this.remove()">`;
 const bldImg=(k,l)=>VART.includes(k)?`<img class="rowic art" src="assets/village/${k}_${l?'built':'ruin'}.png" alt="" onerror="this.remove()">`:uiImg('bld_'+k);
-const RANKIMG=['rank_farmer','rank_guard','rank_knight','rank_lord','rank_count','rank_duke','rank_king'];
+const RANKIMG=['rank_farmer','rank_guard','rank_knight','rank_lord','rank_count','rank_duke','rank_king','rank_king'];
 const ITEMN=Object.fromEntries([...CROPS,...GOODS].map(x=>[x.k,x.n]));
 const RECIPES=[
  {k:'bread',n:'마르타의 밀빵',need:{wheat:5},buff:'atk',desc:'원정대 공격력 +20%'},
@@ -807,7 +821,7 @@ function buildTutorial(b,l){S.done.tutBuild=true;S.gem=(S.gem||0)+TUT_GEM;
   'sys:황금 이삭 '+TUT_GEM+'개를 선물로 받았어요. 공사 중인 건물의 파란 "바로 완료" 버튼을 누르면 이삭으로 공사를 끝낼 수 있어요. 공사 중에도 다른 건물을 '+BQ_MAX+'개까지 예약해 두면 차례로 지어져요.'],
   '이삭으로 바로 완료',{label:'그냥 기다릴래요',go:()=>{if(!building()||!spendGem(timeGem(buildLeft())))return;finishBuild();renderAll()}}))}
 function checkBuild(){let n=0;while(building()&&Date.now()>=S.build.end&&n++<10)finishBuild(n>1)}
-const RANKS=[{at:0,n:'농부'},{at:3,n:'마을 지킴이',k:'지킴이라니… 그냥 이웃 돕는 거예요.'},{at:10,n:'기사',k:'기사 아니고 농부라니까요…'},{at:20,n:'영주',k:'영주요? 세금 계산 같은 거 못 하는데.'},{at:30,n:'백작',k:'백작… 은퇴가 점점 멀어진다.'},{at:40,n:'공작',k:'다음은 설마… 아니겠지.'},{at:50,n:'왕도 진격대장',k:'왕도만 되찾으면 정말 은퇴한다.'}];
+const RANKS=[{at:0,n:'농부'},{at:3,n:'마을 지킴이',k:'지킴이라니… 그냥 이웃 돕는 거예요.'},{at:10,n:'기사',k:'기사 아니고 농부라니까요…'},{at:20,n:'영주',k:'영주요? 세금 계산 같은 거 못 하는데.'},{at:30,n:'백작',k:'백작… 은퇴가 점점 멀어진다.'},{at:40,n:'공작',k:'다음은 설마… 아니겠지.'},{at:50,n:'왕도 진격대장',k:'왕도만 되찾으면 정말 은퇴한다.'},{at:60,n:'왕도 탈환자',k:'왕도까지 되찾았으니… 이제 진짜 은퇴죠?'}];/* 「왕」은 3부를 위해 남김 */
 const EVENTS=[
  {at:2,id:'marta',eb:'새로운 주민',t:'농부 마르타',p:['개울 마을을 되찾자, 이웃집 마르타 할머니가 가장 먼저 돌아왔다.','m:마르타|용사? 웃기지 마라. 밭일이나 거들어. 씨앗 가져오면 밭은 내가 봐 주마.','k:…네. 사실 그게 제일 하고 싶은 일이에요.','sys:마을에 밭이 열렸어요. 마물이 떨어뜨리는 씨앗을 심어 보세요. 밀 씨앗 5개를 받았어요.'],btn:'밭으로 간다',act:()=>{S.bld.farm=Math.max(1,S.bld.farm);S.seeds.wheat+=5}},
  {at:3,id:'margo',eb:'동료 합류',t:'요리사 마고',p:['풍차 언덕 식당 주방에서, 국자 하나로 마물을 막아 내던 아주머니가 있었다.','m:마고@laugh|배고픈 원정대는 못 이겨. 상처엔 수프가 최고야. 대신 그 밭 작물, 나한테 먼저 팔아.','sys:마고가 합류했어요. 수프를 던져 가장 다친 동료를 치유해요. 마을에 식당을 열 수 있어요.'],btn:'함께 간다',act:()=>{S.joined.margo=true}},
@@ -825,11 +839,14 @@ const KEY='acorn-idle-v1';
 let S;
 function fresh(){return{gold:0,stage:1,wave:0,boxLv:1,boxXp:0,up:{atk:0,hp:0,spd:0,crit:0},eq:{},autoSell:false,autoOpen:false,last:Date.now(),best:1,started:false,
  joined:{},done:{},lv:{bron:1,haral:1,riel:1,margo:1},bld:{inn:0,farm:0,diner:0,dock:0,apiary:0,mine:0},plots:[],seeds:{wheat:0,carrot:0,pumpkin:0},
- items:{wheat:0,carrot:0,pumpkin:0,fish:0,honey:0,ore:0},prod:{},buffs:{},rankSeen:0,memory:0,retires:0,buys:{},sub:{until:0,last:''},gem:0,gemRank:0,gemLord:{},daily:{d:'',kill:0,box:0,harv:0,claim:{}},att:{last:'',w:0,ym:'',m:0,ad:'',got:[],intro:0,tab:'w'},tickets:{box:0,box10:0},v:3}}
+ items:{wheat:0,carrot:0,pumpkin:0,fish:0,honey:0,ore:0},prod:{},buffs:{},rankSeen:0,memory:0,retires:0,buys:{},sub:{until:0,last:''},gem:0,gemRank:0,gemLord:{},daily:{d:'',kill:0,box:0,harv:0,claim:{}},att:{last:'',w:0,ym:'',m:0,ad:'',got:[],intro:0,tab:'w'},tickets:{box:0,box10:0},capClears:0,capBonus:0,ending1:0,v:3}}
 function hydrate(d){const f=fresh();for(const k in d){if(f[k]&&typeof f[k]==='object'&&!Array.isArray(f[k])&&d[k]&&typeof d[k]==='object')f[k]=Object.assign(f[k],d[k]);else f[k]=d[k]}
  if(d&&d.crops){for(const k in d.crops)f.items[k]=(f.items[k]||0)+d.crops[k];delete f.crops}
- if((d&&d.v||0)<3){f.rankSeen=rankIdx(f)}return f}
-const MISSIONS=[{k:'kill',n:'마물 100마리 처치',goal:100,r:10},{k:'box',n:'성유물 상자 10번 열기',goal:10,r:10},{k:'harv',n:'작물 10개 수확',goal:10,r:10}],MIS_ALL=20,RANK_GEM=30,LORD_GEM=50;
+ if((d&&d.v||0)<3){f.rankSeen=rankIdx(f)}
+ /* 왕도 이전 저장: 예전 「왕도 진격로」(51 이상)에 있던 기록은 51(남쪽 성문)부터. 최고 기록도 51까지로 맞춤 */
+ if(d&&d.capClears==null){if(f.stage>CAP0+1){f.stage=CAP0+1;f.wave=0}if(f.best>CAP0+1)f.best=CAP0+1}
+ if(f.stage>MAXLAND+1)f.stage=MAXLAND+1;return f}
+const MISSIONS=[{k:'kill',n:'마물 100마리 처치',goal:100,r:10},{k:'box',n:'성유물 상자 10번 열기',goal:10,r:10},{k:'harv',n:'작물 10개 수확',goal:10,r:10}],MIS_ALL=20,RANK_GEM=30,LORD_GEM=50,GHOST_GEM=30,DEMON_GEM=300,CAP_MEM=3;
 function today(){const t=new Date();return t.getFullYear()+'-'+(t.getMonth()+1)+'-'+t.getDate()}
 function daily(){if(!S.daily||S.daily.d!==today())S.daily={d:today(),kill:0,box:0,harv:0,claim:{},ad:{}};if(!S.daily.ad)S.daily.ad={};return S.daily}
 /* 광고 보상 자리: AD_TEST 동안은 3초짜리 가짜 광고 화면 뒤에 보상. 실제 광고 SDK를 붙일 때 playAd만 바꾸면 됨 */
@@ -929,10 +946,11 @@ function growNow(){const g=S.plots.filter(p=>plotState(p).st==='grow');if(!g.len
 const FMTU=['','K','M','B','T',...Array.from({length:26*26},(_,i)=>String.fromCharCode(97+Math.floor(i/26))+String.fromCharCode(97+i%26))];
 function fmt(n){if(!isFinite(n))return'∞';n=Math.floor(n);if(n<1e4)return n.toLocaleString('ko-KR');const u=FMTU;let i=0;while(n>=1000&&i<u.length-1){n/=1000;i++}return(n<10?n.toFixed(2):n<100?n.toFixed(1):Math.floor(n))+u[i]}
 function mmss(sec){sec=Math.max(0,Math.ceil(sec));const m=Math.floor(sec/60),s=sec%60;return m+':'+String(s).padStart(2,'0')}
-const region=st=>REGIONS[Math.floor((st-1)/10)%REGIONS.length];
-const terrName=st=>region(st).terr[(st-1)%10];
+const region=st=>REGIONS[Math.max(0,Math.min(Math.floor((st-1)/10),REGIONS.length-1))];/* 61 이상은 왕도에 머묾 */
+const terrName=st=>st>MAXLAND?'왕궁 뜰':region(st).terr[(st-1)%10];
 const isLord=st=>st%10===0;
-const bossName=st=>isLord(st)?region(st).boss:terrName(st)+'의 마족 성주';
+const bossName=st=>isDemon(st)?'마왕 발타사르':isGhost(st)?'잔영: '+REGIONS[ghostIdx(st)].boss:isGuard(st)?terrName(st)+'의 마왕 근위대장':isLord(st)?region(st).boss:terrName(st)+'의 마족 성주';
+const bossLim=st=>isDemon(st)?60:isLord(st)?40:30;/* 보스 제한 시간 */
 const buff=k=>(S.buffs[k]||0)>Date.now();
 const landCount=()=>Math.min(MAXLAND,S.stage-1);
 function rankIdx(s){s=s||S;const c=Math.min(MAXLAND,s.stage-1);let i=0;RANKS.forEach((r,j)=>{if(c>=r.at)i=j});return i}
@@ -953,9 +971,9 @@ const stats=id=>id==='kael'?kStats():cStats(id);
 const members=()=>JSLOT.map(slotMember).filter(Boolean);
 function power(){return Math.round(members().reduce((a,id)=>{const t=stats(id);return a+(t.atk*6+t.hp)*(1+t.crit)*t.aps*(JOB[id]==='keeper'?1.4:1)},0))}
 /* 밸런스 손잡이: 영지마다 곱해지는 비율. tools/balance_sim.py 로 맞춤 */
-const BAL={hpG:1.2,atkG:1.17,goldG:1.16,boxG:1.17,bossHp:6,lordHp:12,bossAtk:2.5,lordAtk:3};
-const monHp=(st,b)=>20*Math.pow(BAL.hpG,st-1)*(b?(isLord(st)?BAL.lordHp:BAL.bossHp):1);
-const monAtk=(st,b)=>4*Math.pow(BAL.atkG,st-1)*(b?(isLord(st)?BAL.lordAtk:BAL.bossAtk):1);
+const BAL={hpG:1.2,atkG:1.17,goldG:1.16,boxG:1.17,bossHp:6,lordHp:12,bossAtk:2.5,lordAtk:3,demHp:12,demAtk:2,demAtk2:2.4,seal:2};/* dem*: 마왕 발타사르 — 체력 ×12(체력바 하나), 공격 1단계 ×2 → 2단계 ×2.4, 봉인의 파동 = 공격 ×2. tools/capital_sim.py 로 맞춤(docs/content/CAPITAL.md 3-3) */
+const monHp=(st,b)=>20*Math.pow(BAL.hpG,st-1)*(b?(isDemon(st)?BAL.demHp:isLord(st)?BAL.lordHp:BAL.bossHp):1);
+const monAtk=(st,b)=>4*Math.pow(BAL.atkG,st-1)*(b?(isDemon(st)?BAL.demAtk:isLord(st)?BAL.lordAtk:BAL.bossAtk):1);
 const reward=(st,b)=>3*Math.pow(BAL.goldG,st-1)*(b?10:1);
 const boxCost=()=>Math.floor(20*Math.pow(BAL.boxG,S.stage-1));
 const xpNeed=()=>S.boxLv*10;
@@ -994,7 +1012,11 @@ function scene(eyebrow,title,paras,btn,alt,illust){
 }
 /* 두 번째 은퇴부터는 다시 나오는 이야기 창(은퇴 직후·지역 이야기·칭호 상승)을 알림 한 줄로 */
 const quietStory=()=>(S.retires||0)>=2;
-function chapter(){const st=S.stage;if(quietStory()){const r=region(st),i=Math.floor((st-1)/10)%5;toast('제'+(i+1)+'군단 점령지 · '+r.n+' 진입');return}queue(()=>{const r=region(st),i=Math.floor((st-1)/10)%5;scene('제'+(i+1)+'군단 · 점령지',`<img class="bossportrait" src="assets/portraits/portrait_${BOSSID[i]}_idle.png" alt="" onerror="this.remove()">`+r.n,[...r.lore,'sys:이 땅의 지배자 · '+r.boss],'진격한다')})}
+/* 왕도 입장: 처음 한 번은 「왕도로 가는 길」 + 지역 소개, 그 뒤로는 알림 한 줄 */
+function capChapter(){if(S.done.capRoad){toast('왕도 아스테리온 진입 · 알현실까지 10곳');return}S.done.capRoad=true;const r=REGIONS[REGIONS.length-1];
+ queue(()=>scene('다섯 군단을 몰아내다','왕도로 가는 길',['sys:다섯 군단이 모두 물러났다. 안개 너머로 왕도 아스테리온의 성벽이 보인다.','q@moved:…300년 만이다. 저 성문 안에 주인의 왕좌가 있다.','k:왕좌 말고 은퇴 서류는 없을까?','q:왕이 되면 은퇴 서류는 주인이 직접 쓰면 된다.','k@smile:…그 말, 이상하게 설득력 있네.'],'성문으로 간다'));
+ queue(()=>scene('마지막 지역 · 왕도',`<img class="bossportrait demp" src="assets/portraits/portrait_balthasar_idle.png" alt="" onerror="this.remove()">`+r.n,[...r.lore,'sys:이 땅의 지배자 · '+r.boss+' · 홀수 영지는 군단장의 잔영, 짝수 영지는 마왕 근위대장'],'진격한다'))}
+function chapter(){const st=S.stage;if(isCap(st))return capChapter();if(quietStory()){const r=region(st),i=Math.floor((st-1)/10)%5;toast('제'+(i+1)+'군단 점령지 · '+r.n+' 진입');return}queue(()=>{const r=region(st),i=Math.floor((st-1)/10)%5;scene('제'+(i+1)+'군단 · 점령지',`<img class="bossportrait" src="assets/portraits/portrait_${BOSSID[i]}_idle.png" alt="" onerror="this.remove()">`+r.n,[...r.lore,'sys:이 땅의 지배자 · '+r.boss],'진격한다')})}
 function events(){for(const e of EVENTS)if(S.stage>=e.at&&!S.done[e.id]){S.done[e.id]=true;e.act();syncParty();queue(()=>scene(e.eb,e.t,e.p,e.btn))}
  const ri=rankIdx();if(ri>S.rankSeen){S.rankSeen=ri;const r=RANKS[ri],gg=ri>(S.gemRank||0);if(gg){S.gemRank=ri;S.gem=(S.gem||0)+RANK_GEM};if(quietStory())toast('칭호 상승: '+r.n+' · 능력치 +4%'+(gg?' · 황금 이삭 +'+RANK_GEM:''));else queue(()=>scene('칭호 상승',uiImg(RANKIMG[ri],'rankbig')+r.n+' 카엘',['되찾은 영지가 '+r.at+'곳에 이르자, 사람들이 카엘을 '+r.n+'(이)라고 부르기 시작했다.','k@flustered:'+r.k,'q@proud:하하! 한 걸음 더 왕좌에 가까워졌다!','sys:모든 원정대 능력치 +4%'+(gg?' · 황금 이삭 +'+RANK_GEM:'')],'…알겠어요'))}
  renderAll()}
@@ -1202,10 +1224,11 @@ function renderParty(){
 let retSig='';
 function renderRetire(){
  const t=retireTarget(),pct=Math.min(100,S.gold/t*100),pts=retirePts(),can=S.stage>=20;
- const sig=[fmt(S.gold),fmt(t),pts,can,S.memory].join();if(sig===retSig)return;retSig=sig;
+ const sig=[fmt(S.gold),fmt(t),pts,can,S.memory,S.capClears].join();if(sig===retSig)return;retSig=sig;
  $('retireBox').innerHTML=`<div class="sec">카엘의 은퇴 계획</div><div class="kv" style="margin-top:-4px"><span>은퇴의 추억 ${S.memory}개</span><b>모든 능력치·골드 +${S.memory*5}%</b></div>${can?`<div class="rtgain">지금 은퇴하면 <b>+${pts*5}%</b> → 모든 능력치·골드 <b>+${(S.memory+pts)*5}%</b></div>`:''}
   <div class="meter"><div class="kv"><span>은퇴 자금</span><b>${fmt(S.gold)} / ${fmt(t)}</b></div><div class="xp"><div style="width:${pct.toFixed(1)}%"></div></div></div>
   <p class="note">영지를 되찾을수록 목표 금액이 올라가요. 카엘은 아직 이 사실을 몰라요.</p>
+  ${S.capClears>0?`<p class="note capb">👑 왕도 재탈환 보너스: 다음 회차에 왕도를 되찾으면 은퇴의 추억 +${CAP_MEM}</p>`:''}
   <button class="buy" id="retireBtn" ${can?'':'disabled'}>${can?'은퇴하기 · 추억 +'+pts:'영지 19곳을 되찾으면 은퇴할 수 있어요'}</button>`;
  $('retireBtn').onclick=()=>{if(S.stage<20)return;const p=retirePts();queue(()=>scene('은퇴하기','드디어 은퇴?',['k@smile:좋아, 이 정도면 충분해. 난 밭으로 돌아간다.','q@angry:주인! 아직 왕좌가…!'],'은퇴 준비하기',{label:'아직은 아니야',go:()=>retireConfirm(p)}))};
 }
@@ -1224,19 +1247,19 @@ function retireConfirm(p){const eqN=Object.values(S.eq).filter(Boolean).length,u
  <div class="acts"><button id="mAlt">취소</button><button class="pri danger" id="mGo">은퇴 확정</button></div>`;
  $('modal').hidden=false;$('mAlt').onclick=closeModal;$('mAlt').focus({preventScroll:true});$('mGo').onclick=()=>{closeModal();retire(p)}}
 function retire(p){
- S.memory+=p;S.retires++;S.gold=60;S.stage=1;S.wave=0;S.eq={};S.up={atk:0,hp:0,spd:0,crit:0};for(const k in S.lv)S.lv[k]=1;S.rankSeen=0;
+ S.memory+=p;S.retires++;S.capBonus=0;S.gold=60;S.stage=1;S.wave=0;S.eq={};S.up={atk:0,hp:0,spd:0,crit:0};for(const k in S.lv)S.lv[k]=1;S.rankSeen=0;
  for(const id in P)delete P[id];mons=[];$('bossbar').hidden=true;syncParty();
  if(quietStory())toast('은퇴의 추억 +'+p+' · 다시 출발!');else queue(()=>scene('몇 년 뒤','…다시 끌려 나오다',['평화로운 3년이었다. 카엘은 매일 밭을 갈았고, 호박은 해마다 커졌다.','그러던 어느 날, 마계의 문이 다시 열렸다.','q@proud:일어나라, 주인. 은퇴는 끝났다.','k@flustered:…왜 또 나야.','m:티모|형! 은퇴했다더니 또 나왔네요! 역시 영웅은 쉬지 않아!'],'괭이 대신 검을 든다',null,'retire'));if(!quietStory())chapter();renderAll()}
 let mapSig='';
 function renderMapInfo(){
  const c=landCount(),ri=rankIdx(),nx=RANKS[ri+1],r=region(S.stage);
  const sig=[S.stage,ri].join();if(sig===mapSig)return;mapSig=sig;
- $('mapInfo').innerHTML=`<div class="sec">${S.stage>MAXLAND?'왕도 아스테리온':terrName(S.stage)} 탈환 중 <small>${r.n} · ${(S.stage-1)%10+1}/10</small></div>
+ $('mapInfo').innerHTML=`<div class="sec">${S.stage>MAXLAND?'왕궁 뜰에서 사냥 중 <small>1부 완결 · 보스 없음</small>':terrName(S.stage)+' 탈환 중 <small>'+r.n+' · '+((S.stage-1)%10+1)+'/10</small>'}</div>
   <div class="kv"><span>되찾은 영지</span><b>${c} / ${MAXLAND}</b></div>
   <div class="kv"><span>지금 칭호</span><b>${RANKS[ri].n} (원정대 +${ri*4}%)</b></div>
-  <div class="kv"><span>다음 칭호</span><b>${nx?nx.n+'까지 '+(nx.at-c)+'곳':'왕도 탈환만 남았어요'}</b></div>
+  <div class="kv"><span>다음 칭호</span><b>${nx?nx.n+'까지 '+(nx.at-c)+'곳':'모든 칭호를 얻었어요'}</b></div>
   <div class="kv"><span>이 지역의 지배자</span><b>${r.boss}</b></div>
-  <p class="note">영지마다 마족 성주가 지키고, 지역의 마지막 영지에는 군단장이 있어요. 다섯 군단을 모두 몰아내면 왕도로 가는 길이 열려요.</p>`;
+  <p class="note">영지마다 마족 성주가 지키고, 지역의 마지막 영지에는 군단장이 있어요. 다섯 군단을 모두 몰아내면 왕도 아스테리온이 열리고, 알현실에는 마왕이 기다려요.</p>`;
 }
 
 /* ---------- 공통 렌더 ---------- */
@@ -1318,8 +1341,8 @@ function renderBox(){
 function renderAll(){
  if(!S)return;const r=region(S.stage);
  numFlash('gold',S.gold,true);$('gem').textContent=fmt(S.gem||0);$('gemDot').hidden=!(MISSIONS.some(misCan)||misCan(null)||(subOn()&&S.sub.last!==today()));attHud();
- $('stLabel').textContent=S.stage>MAXLAND?'왕도 진격로':(Math.floor((S.stage-1)/10)+1)+'-'+((S.stage-1)%10+1)+' '+r.n;
- $('stRegion').textContent=S.stage>MAXLAND?'':terrName(S.stage)+' 탈환전';
+ $('stLabel').textContent=S.stage>MAXLAND?'왕궁 뜰':(Math.floor((S.stage-1)/10)+1)+'-'+((S.stage-1)%10+1)+' '+r.n;
+ $('stRegion').textContent=S.stage>MAXLAND?'보스 없이 사냥 중 · 1부 완결':terrName(S.stage)+' 탈환전';
  pfCheck();renderGuide();numFlash('hPow',power());$('hRank').textContent=RANKS[rankIdx()].n;{const ri=$('hRankImg'),src='assets/ui/'+RANKIMG[rankIdx()]+'.png';if(ri&&!ri.src.endsWith(src))ri.src=src}
  const c=boxCost(),tb=tkN('box');$('openCost').textContent=tb?'무료권 '+tb+'장':fmt(c);$('openBtn').disabled=(S.gold<c&&!tb)||!!pending;$('quickCost').textContent=tb?'무료 '+tb:fmt(c);$('quickBox').disabled=(S.gold<c&&!tb)||!!pending;{const t10=tkN('box10'),e=$('open10c'),h=t10?'무료권 '+t10+'장':'<img src="assets/gem/ui_gem.png" alt="" style="width:20px;height:20px" onerror="this.remove()">'+GEM10;if(e&&e.dataset.h!==h){e.dataset.h=h;e.innerHTML=h}}
  renderPartyRow();if(curTab==='eq')drawEqHero();
@@ -1330,7 +1353,7 @@ function renderAll(){
  if(curTab==='up'){const p0=power();let best=null,bv=0;for(const u of UPG){const l=S.up[u.k];if(l>=u.max||S.gold<u.cost(l))continue;S.up[u.k]++;const g=(power()-p0)/u.cost(l);S.up[u.k]--;if(g>bv){bv=g;best=u.k}}UPG.forEach(u=>{const e=$('upr-'+u.k);if(e)e.classList.toggle('best',u.k===best)})}
  renderParty();renderBlds();renderFarm();renderKitchen();vlPanels();renderShop();renderRetire();renderMapInfo();
  const boss=mons.some(m=>m.boss);
- $('pips').innerHTML=Array.from({length:10},(_,i)=>`<i class="pip${i<S.wave?' on':''}"></i>`).join('')+`<i class="pip boss${boss?' on':''}" aria-label="보스"></i>`;
+ $('pips').innerHTML=Array.from({length:10},(_,i)=>`<i class="pip${i<S.wave?' on':''}"></i>`).join('')+(S.stage>MAXLAND?'':`<i class="pip boss${boss?' on':''}" aria-label="보스"></i>`);
  const now=Date.now();$('buffs').innerHTML=Object.keys(BUFFN).filter(buff).map(b=>`<span class="buff"><img src="assets/ui/buff_${b}.png" alt="" onerror="this.onerror=()=>this.remove();this.src='assets/ui/dish_${(RECIPES.find(x=>x.buff===b)||{}).k}.png'">${BUFFN[b]} ${mmss((S.buffs[b]-now)/1000)}</span>`).join('')+[['shield','bron'],['honey','riel'],['feast','margo']].filter(([k])=>SKX[k]>0).map(([k,id])=>`<span class="buff sk"><img src="assets/skills/skill_${id}.png" alt="" onerror="this.remove()">${SKILLS[id].n} ${Math.ceil(SKX[k])}초</span>`).join('');renderAuto();
  const ready=S.bld.farm&&S.plots.some(p=>plotState(p).st==='ready');
  $('vlDot').hidden=!ready;{const pd=$('ptDot');if(pd&&(T*2|0)!==pd._t){pd._t=T*2|0;const a=ptAct();pd.hidden=!a||a===S.dotSeen||curTab==='pt';if(curTab==='pt'&&a!==S.dotSeen)S.dotSeen=a;const cd=$('ptCardDot');if(cd)cd.hidden=!cardReady().length}}
@@ -1489,13 +1512,23 @@ function layout(){const ids=members(),s=Math.min(W/300,Ht/380),top=Ht*.43,bot=Ma
  const front=Math.max(...ids.map(id=>pos[id]));return{ids,pos,py,dsc,front,s,top,bot}}
 const depthAt=(L,lane)=>L.top+(L.bot-L.top)*lane;
 function spawn(){
- if(S.wave>=10){const mx=monHp(S.stage,true);mons=[{x:W+70,lane:.55,hp:mx,max:mx,atk:monAtk(S.stage,true),boss:true,lord:isLord(S.stage),cd:.8,hit:0,dead:0}];bossT=isLord(S.stage)?40:30;$('bossName').textContent=bossName(S.stage);{const cm=isLord(S.stage),bb=$('bossbar');bb.classList.toggle('cmd',cm);bb.classList.remove('hurry');$('bossTag').textContent=cm?'군단장':'성주';warn={t:1.4,cmd:cm};shakeT=cm?.6:.4;mons[0].mv=.55}{const f=$('bossFace');if(isLord(S.stage)){f.src='assets/portraits/portrait_'+BOSSID[Math.floor((S.stage-1)/10)%5]+'_idle.png';f.onerror=()=>{f.hidden=true};f.hidden=false}else f.hidden=true}$('bossbar').hidden=false;
-  say('q',isLord(S.stage)?'군단장이다! 이번엔 도망치지 마라, 주인!':'성주다! 정신 차려라, 주인!');return}
+ if(S.stage>MAXLAND&&S.wave>=10)S.wave=0;/* 61 왕궁 뜰: 보스 없이 계속 */
+ const st=fightSt();
+ if(S.wave>=10){const mx=monHp(st,true),dem=isDemon(st),gh=isGhost(st),gd=isGuard(st),lord=isLord(st)&&!dem;
+  mons=[{x:W+70,lane:.55,hp:mx,max:mx,atk:monAtk(st,true),boss:true,lord:lord||dem,dem,ghost:gh?ghostIdx(st):null,guard:gd,cd:.8,hit:0,dead:0}];bossT=bossLim(st);$('bossName').textContent=bossName(st);
+  {const cm=lord||dem||gh,bb=$('bossbar');bb.classList.toggle('cmd',cm);bb.classList.toggle('dem',dem);bb.classList.remove('hurry','gold');$('bossTag').textContent=dem?'마왕':gh?'잔영':gd?'근위대장':lord?'군단장':'성주';
+   warn={t:1.4,cmd:cm,txt:dem?'⚠ 마왕 출현! ⚠':gh?'⚠ 군단장의 잔영! ⚠':gd?'⚠ 근위대장 출현! ⚠':null};shakeT=cm?.6:.4;mons[0].mv=.55}
+  {const f=$('bossFace');f.className='bossface'+(gh?' ghost':dem?' dem':'');f.onerror=()=>{f.hidden=true};
+   if(dem){f.onerror=()=>{if(!f.dataset.alt){f.dataset.alt=1;f.src='assets/portraits/portrait_aldor_idle.png'}else f.hidden=true};delete f.dataset.alt;f.src='assets/portraits/portrait_balthasar_idle.png';f.hidden=false}
+   else if(gh){f.src='assets/portraits/portrait_'+BOSSID[ghostIdx(st)]+'_idle.png';f.hidden=false}
+   else if(lord){f.src='assets/portraits/portrait_'+BOSSID[Math.floor((st-1)/10)%5]+'_idle.png';f.hidden=false}else f.hidden=true}$('bossbar').hidden=false;
+  if(dem)talkStart(BALT_TALK.start);
+  else say('q',gh?'쓰러뜨린 군단장의 잔영이다! 다시 한번 베어라, 주인!':gd?'마왕 근위대장이다! 왕도를 되찾자, 주인!':lord?'군단장이다! 이번엔 도망치지 마라, 주인!':'성주다! 정신 차려라, 주인!');return}
  const left=10-S.wave;let n=1;if(left>1&&Math.random()<.55)n++;if(left>2&&S.stage>=3&&Math.random()<.35)n++;
- const ri=Math.floor((S.stage-1)/10)%5,alt=MON_ALT[ri]&&sprOk(MON_ALT[ri])&&Math.random()<.4?MON_ALT[ri]:null,tr=alt?TRAITS[alt.trait]:null;
+ const ri=REGIONS.indexOf(region(st)),alt=MON_ALT[ri]&&sprT(MON_ALT[ri])&&Math.random()<.4?MON_ALT[ri]:null,tr=alt?TRAITS[alt.trait]:null;
  if(tr&&alt.trait==='swarm'&&left>n)n++;
- const mx=monHp(S.stage,false)*(n>1?.75:1)*(tr?tr.hp:1);mons=[];for(let i=0;i<n;i++)mons.push({x:W+60+i*40,lane:[.45,.82,.12,.65][i],hp:mx,max:mx,atk:monAtk(S.stage,false)*(n>1?.8:1)*(tr?tr.atk:1),boss:false,cd:.8+i*.35,hit:0,dead:0,alt:!!alt,mv:tr?tr.mv:1,cdm:tr?tr.cd:1});
- if((S.stage>=3||DEMO==='goblin')&&gobT<=0){gobT=DEMO==='goblin'?20:360+Math.random()*360;const gh=monHp(S.stage,false)*5;mons.unshift({x:W+30,lane:.3,hp:gh,max:gh,atk:0,boss:false,cd:1e9,hit:0,dead:0,gob:true,mv:1.4,life:12});
+ const mx=monHp(st,false)*(n>1?.75:1)*(tr?tr.hp:1);mons=[];for(let i=0;i<n;i++)mons.push({x:W+60+i*40,lane:[.45,.82,.12,.65][i],hp:mx,max:mx,atk:monAtk(st,false)*(n>1?.8:1)*(tr?tr.atk:1),boss:false,cd:.8+i*.35,hit:0,dead:0,alt:!!alt,mv:tr?tr.mv:1,cdm:tr?tr.cd:1});
+ if((S.stage>=3||DEMO==='goblin')&&gobT<=0){gobT=DEMO==='goblin'?20:360+Math.random()*360;const gh=monHp(st,false)*5;mons.unshift({x:W+30,lane:.3,hp:gh,max:gh,atk:0,boss:false,cd:1e9,hit:0,dead:0,gob:true,mv:1.4,life:12});
   banner={t:2,txt:'황금 고블린 출현!',sub:'12초 안에 잡으면 보물을 떨군다'};shakeT=.3}
 }
 /* 황금 고블린 희귀 전리품: 배지 0.5%, 테두리 0.2% (잡을 때마다, 이미 있으면 안 나옴) */
@@ -1505,7 +1538,7 @@ function gobRare(pop){const got=[];S.bdUnl=S.bdUnl||{};S.pfUnl=S.pfUnl||{};
  if(!pfHas('goblin')&&Math.random()<GOB_RARE.frame){S.pfUnl.goblin=1;got.push(['frame','프로필 테두리','황금 고블린'])}
  for(const[t,kind,n]of got)pop.push(()=>{$('sheet').innerHTML=`<div class="eyebrow" style="color:#ffd34a">아주 드문 전리품!</div><h2>${kind} 「${n}」</h2><div class="rareloot"><img src="assets/profile/${t}_goblin.png" alt=""></div>${para('q@moved:황금 고블린이 이런 걸 숨기고 있었다니… 주인, 오늘은 운이 좋군.')}<p class="note" style="text-align:center">프로필(얼굴 누르기)에서 ${t==='frame'?'끼울':'달'} 수 있어요</p><div class="acts"><button id="mX">닫기</button><button class="pri" id="mGo">바로 ${t==='frame'?'끼우기':'달기'}</button></div>`;$('modal').hidden=false;
   $('mX').onclick=closeModal;$('mGo').onclick=()=>{if(t==='frame')S.pf='goblin';else S.badge='goblin';pfCheck();save();closeModal()}});return got}
-function gobDrop(m,s){const g=Math.floor(reward(S.stage,false)*30*(buff('gold')?1.5:1)*memMul()),gem=5+Math.floor(Math.random()*6);S.gold+=g;stat('gob',1);haptic([30,30,30]);if(!noSave){gobWeek().n++;gobDirty=true;setTimeout(gobRankToast,2600)}
+function gobDrop(m,s){const g=Math.floor(reward(fightSt(),false)*30*(buff('gold')?1.5:1)*memMul()),gem=5+Math.floor(Math.random()*6);S.gold+=g;stat('gob',1);haptic([30,30,30]);if(!noSave){gobWeek().n++;gobDirty=true;setTimeout(gobRankToast,2600)}
  spawnFx('coin',m.x,m.y-30*s,70*s,.8,-70*s);addFloat(m.x,m.y-40*s,'+'+fmt(g),'#ffc94a',20);addFloat(m.x,m.y-66*s,'황금 이삭 +'+gem,'#ffe27a',14);
  const it=rollItem(Math.max(2,rollItem().g));S.gem=(S.gem||0)+gem;const gc=gainCard(3,'battle'),cg=gc===''?cardGoldLast:0;
  const pop=[],q=gobRare(pop),cur=S.eq[it.slot];
@@ -1515,8 +1548,48 @@ function gobDrop(m,s){const g=Math.floor(reward(S.stage,false)*30*(buff('gold')?
  pop.forEach(queue)}
 function addFloat(x,y,txt,col,size){floats.push({x,y,txt,col,size:size||15,t:0})}
 function hitMon(m,d,cr,s,gy){if(m.vul>0)d*=m.vulM||1.3;m.hp-=d;m.hit=.12;spawnFx(cr?'crit':'hit',m.x+(Math.random()-.5)*10*s,m.y-(m.boss?50:28)*s,(cr?60:42)*s*(m.boss?1.3:1),cr?.36:.24);addFloat(m.x+(Math.random()-.5)*12*s,(m.barY!=null?m.barY-8*s:m.y-(m.boss?95:60)*s),fmt(d),cr?'#ffc94a':'#ffffff',cr?21:14)}
-function resetFight(msg){SKX.shield=SKX.honey=SKX.feast=SKX.guts=SKX.sym=0;for(const id of members()){P[id].hp=stats(id).hp;P[id].down=false}mons=[];spawnT=1;S.wave=0;$('bossbar').hidden=true;toast(msg);renderAll()}
+function resetFight(msg){const dem=mons.some(m=>m.dem);SKX.shield=SKX.honey=SKX.feast=SKX.guts=SKX.sym=0;for(const id of members()){P[id].hp=stats(id).hp;P[id].down=false}mons=[];spawnT=1;S.wave=0;seal=null;talk=null;holdT=0;
+ /* 마왕에게 지면 59(왕궁 회랑) 마지막 웨이브로 */
+ if(dem){S.stage=MAXLAND-1;S.wave=9}$('bossbar').hidden=true;$('bossbar').classList.remove('gold','dem');toast(msg);renderAll()}
+/* ---------- 마왕 발타사르 (60 알현실): 50%에서 1.5초 멈춤 → 정체 공개 → 2단계, 2단계는 8초마다 「봉인의 파동」 ---------- */
+const BALT_TALK={start:[['발타사르','왔구나, 루미나르. 이번 주인은… 괭이를 든 농부인가.'],['q','괭이 아니다! …아, 아니, 주인 말고 내가 괭이가 아니라는 뜻이다.']],
+ reveal:[['발타사르','300년 전, 너를 처음 뽑은 손이 이 손이었다.'],['q','……발타사르. 나의 첫 번째 주인.']]};
+const SEAL_EVERY=8,SEAL_WARN=2;
+let holdT=0,talk=null,seal=null;
+function talkStart(lines){talk={lines,i:0,t:2.6}}
+function demStep(dt,L){const bm=mons.find(m=>m.dem&&m.hp>0&&!m.dead);if(!bm)return;
+ if(!bm.ph2&&bm.hp<=bm.max*.5){bm.ph2=true;bm.atk=bm.atk*BAL.demAtk2/BAL.demAtk;bm.sealT=SEAL_EVERY;holdT=1.5;shakeT=.5;flash=.25;talkStart(BALT_TALK.reveal);$('bossbar').classList.add('gold');haptic([60,40,60]);return}
+ if(!bm.ph2)return;bm.sealT-=dt;if(bm.sealT<=SEAL_WARN&&!seal)seal={t:SEAL_WARN};
+ if(bm.sealT<=0){bm.sealT=SEAL_EVERY;seal=null;sealHit(bm,L)}}
+/* 봉인의 파동: 원정대 전체에 공격의 2배. 방어 스킬(브론 버팀목·덕배 불굴·버치 벌통 방패 등)로 버틸 수 있음 */
+function sealHit(bm,L){const{ids,pos,py,s}=L;flash=.35;shakeT=.6;haptic([80]);
+ for(const id of ids){const q=P[id];if(!q||q.down)continue;const dm=bm.atk*BAL.seal*(SKX.shield>0?.5:1)*(SKX.mount>0?.3:1)*(q.bsh>0?1-.4*(q.bshK||1):1);q.hp-=dm;q.hit=.2;addFloat(pos[id],py[id]-(HEIGHT[id]+8)*s,'-'+fmt(dm),'#ffd34a',14);
+  if(q.hp<=0){if(SKX.guts>0&&q.guts){q.guts=0;q.hp=1;addFloat(pos[id],py[id]-(HEIGHT[id]+24)*s,'불굴!','#ffd27a',14)}else{q.hp=0;q.down=true}}}
+ spawnFx('crit',W*.3,L.bot-20*s,140*s,.5)}
+/* 마왕 처치: 첫 처치 보상(이삭 300·테두리·배지) / 은퇴 후 다시 처치하면 그 회차 1번 은퇴의 추억 +3 */
+function bossDemonWin(){const first=!(S.capClears>0);S.capClears=(S.capClears||0)+1;talk=null;seal=null;
+ if(first&&!S.gemLord[MAXLAND]){S.gemLord[MAXLAND]=1;setTimeout(()=>gainGem(DEMON_GEM,'마왕 발타사르 첫 처치'),2300)}
+ let bonus=0;if(!first&&!S.capBonus){S.memory+=CAP_MEM;bonus=CAP_MEM}S.capBonus=1;pfCheck();
+ if(!S.ending1)queue(()=>endingScene(0));else if(bonus)setTimeout(()=>toast('왕도 재탈환 보너스! 은퇴의 추억 +'+bonus),2600)}
+/* 왕도 이야기: 처음 한 번만 (은퇴 후에는 알림 한 줄) */
+function capStory(st0){if(st0===56&&!S.done.cap56){S.done.cap56=true;queue(()=>scene('왕립 도서관','불탄 책장 사이',['sys:불탄 책장 사이에서 낡은 초상화를 발견했다. 성검을 든 젊은 왕.','q@moved:…이 얼굴은.','k:아는 사람이야?','q:……아니다. 가자.'],'계속 간다'))}
+ if(st0===57&&!S.done.cap57){S.done.cap57=true;queue(()=>scene('왕비의 정원','잔영이 흩어지다',['q@moved:알도르. 이번엔 편히 잠들어라.','k:…루미나르, 괜찮아?','q:괜찮다. 칼은 울지 않는다.'],'…가자'))}}
+const ENDING=[
+ {eb:'1부 엔딩 · 1',t:'왕좌 앞에서',il:'throne',p:['m:발타사르|왕관은 무겁지. 지키고 싶은 것이 많을수록.','m:발타사르|이 왕관은 내가 가져간다. 진짜 왕이 될 자격이 있다면, 마계까지 찾아오너라.','sys:발타사르가 왕관을 들고 검은 문 너머로 사라졌다.'],btn:'…'},
+ {eb:'1부 엔딩 · 2',t:'텅 빈 왕좌',p:['k:…이겼다. 이제 은퇴?','q:아직이다. 왕관이 없는 왕은 왕이 아니다.','k@smile:나 왕 안 한다니까.'],btn:'다음'},
+ {eb:'1부 엔딩 · 3',t:'왕궁 뜰',il:'garden',p:['sys:되찾은 왕궁 뒤뜰. 카엘이 괭이로 땅을 고르고 있다.','q:주인, 거기는 왕궁 정원이다.','k@smile:좋은 흙이야. 여기다 밀 심으면 잘 자라겠어.','sys:1부 「잃어버린 왕국」 끝. 2부 「흩어진 동맹」에서 계속됩니다.'],btn:'1부 완결'}];
+function endingScene(i){const e=ENDING[i];if(!e)return part1Sheet();scene(e.eb,e.t,e.p,e.btn,{go:()=>queue(()=>endingScene(i+1))},e.il)}
+function part1Sheet(){S.ending1=1;save();const li=(ic,a,b)=>`<div class="p1r">${ic}<span>${a}</span><b>${b}</b></div>`;
+ $('sheet').innerHTML=`<div class="eyebrow">왕이 되는 그날까지 · 1부 「잃어버린 왕국」</div><h2>1부 완결</h2>
+ <div class="p1box">${li(GEMIMG,'황금 이삭','+'+DEMON_GEM)}${li(`<img src="assets/profile/frame_capital.png" alt="" onerror="this.remove()">`,'프로필 테두리','왕도의 별')}${li(`<img src="assets/profile/badge_part1.png" alt="" onerror="this.remove()">`,'배지','1부 완결')}${li(uiImg(RANKIMG[RANKS.length-1],'chipic'),'칭호','왕도 탈환자 (+4%)')}</div>
+ ${para('sys:이제 「왕궁 뜰」에서 보스 없이 사냥이 이어져요. 은퇴하고 다시 왕도를 되찾으면 회차마다 한 번 은퇴의 추억 +'+CAP_MEM+'을 더 받아요.')}
+ <p class="note p1next">2부 「흩어진 동맹」 — 엘프 왕국, 사막 제국, 북방 부족. 준비 중이에요.</p>
+ <div class="acts"><button id="mAlt">은퇴 계획 보기</button><button class="pri" id="mGo">계속 사냥하기</button></div>`;
+ $('modal').hidden=false;$('mGo').onclick=closeModal;$('mAlt').onclick=()=>{closeModal();setTab('up');setTimeout(()=>{const e=$('retireBox');if(e)e.scrollIntoView({block:'center'})},200)}}
 function step(dt){
+ if(talk){talk.t-=dt;if(talk.t<=0){talk.i++;talk.t=2.6;if(talk.i>=talk.lines.length)talk=null}}
+ if(holdT>0){holdT-=dt;return}/* 마왕 2단계 전환: 잠깐 멈춤 */
+ if(seal){seal.t-=dt}
  T+=dt;flash=Math.max(0,flash-dt);if(cut){cut.t-=dt;if(cut.t<=0)cut=null}if(warn){warn.t-=dt;if(warn.t<=0)warn=null}{const cv=$('cv');if(shakeT>0){shakeT-=dt;const a=shakeT*14;cv.style.transform=`translate(${(Math.random()-.5)*a}px,${(Math.random()-.5)*a}px)`}else if(cv.style.transform)cv.style.transform=''}
  {const bm=mons.find(m=>m.boss);if(bm){$('bossfill').style.width=Math.max(0,bm.hp/bm.max*100)+'%';$('bossHp').textContent=fmt(Math.max(0,bm.hp))+' / '+fmt(bm.max)}}
  const L=layout(),{ids,pos,py,front,s}=L,gy=0;syncParty();for(const m of mons)m.y=depthAt(L,m.lane??.5);if(banner){banner.t-=dt;if(banner.t<=0)banner=null}
@@ -1552,13 +1625,18 @@ function step(dt){
     const tk=ids.find(i=>JOB[i]==='miner'),tid=(tk&&P[tk]&&!P[tk].down)?tk:ids.find(i=>!P[i].down);if(!tid)continue;
     const q=P[tid],dm=m.atk*(SKX.shield>0?.5:1)*(SKX.mount>0?.3:1)*(q.bsh>0?1-.4*(q.bshK||1):1);if(SKX.mount>0&&P.brida){const rf=m.atk*.7*.5*SKX.mountK;hitMon(m,rf,false,s,0)}if(tid==='gordon'&&(SKX.wall>0||Math.random()<.25)){hitMon(m,stats('gordon').atk*.6*skPow('gordon'),false,s,0);P.gordon.swing=.22}q.hp-=dm;q.hit=.15;addFloat(pos[tid],py[tid]-(HEIGHT[tid]+8)*s,'-'+fmt(dm),'#ff6b7d',13);if(q.hp<=0){if(SKX.guts>0&&q.guts){q.guts=0;q.hp=1;addFloat(pos[tid],py[tid]-(HEIGHT[tid]+24)*s,'불굴!','#ffd27a',14)}else{q.hp=0;q.down=true}}}
   }
-  for(const m of mons){if(m.hp<=0&&!m.dead&&m.gob&&!m.flee){m.dead=.5;gobDrop(m,s);renderAll();continue}if(m.hp<=0&&!m.dead&&!m.gob){m.dead=.35;spawnFx('coin',m.x,m.y-26*s,34*s,.6,-60*s);const g=reward(S.stage,m.boss)*(buff('gold')?1.5:1)*memMul();S.gold+=g;dailyAdd('kill',1);addFloat(m.x,m.y-30*s,'+'+fmt(g),'#ffc94a',14);{const nc=m.boss?(isLord(S.stage)?5:2):Math.random()<.003?1:0;if(nc){const cid=gainCard(nc,'battle');if(cid)addFloat(m.x,m.y-74*s,COMP[cid].n+' 카드 +'+nc,'#c9a4ff',13);else if(cid==='')addFloat(m.x,m.y-74*s,'+'+fmt(cardGoldLast),'#ffc94a',13)}}
+  for(const m of mons){if(m.hp<=0&&!m.dead&&m.gob&&!m.flee){m.dead=.5;gobDrop(m,s);renderAll();continue}if(m.hp<=0&&!m.dead&&!m.gob){m.dead=.35;spawnFx('coin',m.x,m.y-26*s,34*s,.6,-60*s);const g=reward(fightSt(),m.boss)*(buff('gold')?1.5:1)*memMul();S.gold+=g;dailyAdd('kill',1);addFloat(m.x,m.y-30*s,'+'+fmt(g),'#ffc94a',14);{const nc=m.boss?(isLord(fightSt())?5:2):Math.random()<.003?1:0;if(nc){const cid=gainCard(nc,'battle');if(cid)addFloat(m.x,m.y-74*s,COMP[cid].n+' 카드 +'+nc,'#c9a4ff',13);else if(cid==='')addFloat(m.x,m.y-74*s,'+'+fmt(cardGoldLast),'#ffc94a',13)}}
    if(S.bld.farm)for(const c of[...CROPS].reverse())if(Math.random()<c.drop*(m.boss?5:1)){S.seeds[c.k]++;addFloat(m.x,m.y-50*s,c.n+' 씨앗','#9be38a',12);break}
-   if(m.boss){haptic([40,30,60]);const bn=bossName(S.stage),lord=isLord(S.stage),tn=terrName(S.stage);if(lord&&!S.gemLord[S.stage]){S.gemLord[S.stage]=1;setTimeout(()=>gainGem(LORD_GEM,'군단장 첫 처치'),2300)}S.stage++;S.best=Math.max(S.best,S.stage);S.wave=0;$('bossbar').hidden=true;
-    toast(bn+' 처치');banner={t:2,txt:tn+' 탈환!',sub:lord?'군단장을 쓰러뜨렸다':'영지를 되찾았다'};say('k',lord?'됐다… 이제 진짜 은퇴해도 되지?':'여기 흙, 다시 살아나겠네.');if((S.stage-1)%10===0)chapter();events()}
+   if(m.boss){haptic([40,30,60]);const st0=S.stage,bn=bossName(st0),lord=isLord(st0),dem=isDemon(st0),tn=terrName(st0);
+    if(dem){bossDemonWin()}
+    else{if(lord&&!S.gemLord[st0]){S.gemLord[st0]=1;setTimeout(()=>gainGem(LORD_GEM,'군단장 첫 처치'),2300)}
+     if(isGhost(st0)&&!S.gemLord[st0]){S.gemLord[st0]=1;setTimeout(()=>gainGem(GHOST_GEM,'잔영 첫 처치'),2300)}}
+    S.stage=Math.min(MAXLAND+1,st0+1);S.best=Math.max(S.best,S.stage);S.wave=0;$('bossbar').hidden=true;$('bossbar').classList.remove('gold','dem');seal=null;
+    toast(bn+' 처치');banner={t:2,txt:tn+' 탈환!',sub:dem?'마왕을 몰아냈다':lord?'군단장을 쓰러뜨렸다':isGhost(st0)?'잔영을 걷어냈다':'영지를 되찾았다'};say('k',dem?'…끝났다. 진짜로.':lord?'됐다… 이제 진짜 은퇴해도 되지?':'여기 흙, 다시 살아나겠네.');
+    if(S.stage<=MAXLAND&&(S.stage-1)%10===0)chapter();capStory(st0);events()}
    else S.wave++;renderAll()}}
   if(ids.every(i=>P[i].down))return resetFight('성검의 가호로 모두 다시 일어섰어요. 더 강해져서 돌아가요');
-  if(mons.some(m=>m.boss&&m.hp>0&&!m.dead)&&engaged){const lim=isLord(S.stage)?40:30;bossT-=dt;$('bossTime').style.width=Math.max(0,bossT/lim*100)+'%';$('bosst').textContent=Math.ceil(Math.max(0,bossT))+'초';$('bossbar').classList.toggle('hurry',bossT<=10);if(bossT<=0)return resetFight('마족이 버텼어요. 더 강해진 뒤 다시 도전해요')}
+  if(mons.some(m=>m.boss&&m.hp>0&&!m.dead)&&engaged){const lim=bossLim(fightSt());demStep(dt,L);bossT-=dt;$('bossTime').style.width=Math.max(0,bossT/lim*100)+'%';$('bosst').textContent=Math.ceil(Math.max(0,bossT))+'초';$('bossbar').classList.toggle('hurry',bossT<=10);if(bossT<=0)return resetFight('마족이 버텼어요. 더 강해진 뒤 다시 도전해요')}
  }
  floats.forEach(f=>{f.t+=dt;f.y-=dt*40});floats=floats.filter(f=>f.t<.9);
  proj.forEach(p=>p.t+=dt);proj=proj.filter(p=>p.t<p.d);
@@ -1727,12 +1805,25 @@ const MON_SPRITES={0:{id:'slime_plague',walk:4,attack:4,hit:2,fig:150,h:54,boss:
  2:{id:'golem_steel',walk:4,attack:4,hit:2,fig:190,h:58,boss:{id:'boss_gromak',walk:4,attack:4,hit:2,fig:200,h:74}},
  3:{id:'wraith_frost',walk:4,attack:4,hit:2,fig:185,h:50,lift:18,boss:{id:'boss_aldor',walk:4,attack:4,hit:2,fig:195,h:74}},
  4:{id:'slime_ash',walk:4,attack:4,hit:2,fig:150,h:52,boss:{id:'boss_ignis',walk:4,attack:4,hit:2,fig:200,h:78}}};
+/* 왕도(5): 전용 그림이 오기 전에는 기존 그림을 물들여 씀 (tint). 흑철 근위병 ← 강철 골렘(검보라), 근위대장 ← 강철 골렘(검은 청동) */
+MON_SPRITES[5]={id:'guard_iron',walk:4,attack:4,hit:2,fig:190,h:58,tint:{src:MON_SPRITES[2],ops:[['multiply','#4b3f6a']]},
+ boss:{id:'boss_guardcap',walk:4,attack:4,hit:2,fig:200,h:76,tint:{src:MON_SPRITES[2],ops:[['multiply','#7a5a2e'],['multiply','#9a8ab8']]}}};
+/* 마왕 발타사르: 전용 그림(boss_balthasar·boss_balthasar2)이 없으면 알도르 그림을 크게·어둡게(1단계) / 보랏빛 은색(2단계) */
+const BALT=[{id:'boss_balthasar',walk:4,attack:4,hit:2,fig:200,h:78},{id:'boss_balthasar2',walk:4,attack:4,hit:2,fig:200,h:78}];
 /* 지역별 두 번째 마물: 그림이 들어온 것만 등장. trait: 체력·공격·이동·공격간격 배수 */
 const TRAITS={tank:{hp:1.6,atk:.9,mv:.6,cd:1.15,n:'단단함'},swift:{hp:.7,atk:1.1,mv:1.7,cd:.8,n:'빠름'},swarm:{hp:.55,atk:.6,mv:1.2,cd:1,n:'떼'},guard:{hp:1.4,atk:.85,mv:.8,cd:1.1,n:'방패'},flier:{hp:.8,atk:1.05,mv:1.5,cd:.9,n:'비행'}};
-const MON_ALT={0:{id:'scarecrow_cursed',walk:4,attack:4,hit:2,fig:150,h:46,trait:'tank'},1:{id:'wolf_shadow',walk:4,attack:4,hit:2,fig:150,h:40,trait:'swift'},2:{id:'goblin_pick',walk:4,attack:4,hit:2,fig:150,h:40,trait:'swarm'},3:{id:'skeleton_frost',walk:4,attack:4,hit:2,fig:150,h:46,trait:'guard'},4:{id:'imp_flame',walk:4,attack:4,hit:2,fig:150,h:40,lift:26,trait:'flier'}};
-const MSPR={};
+const MON_ALT={0:{id:'scarecrow_cursed',walk:4,attack:4,hit:2,fig:150,h:46,trait:'tank'},1:{id:'wolf_shadow',walk:4,attack:4,hit:2,fig:150,h:40,trait:'swift'},2:{id:'goblin_pick',walk:4,attack:4,hit:2,fig:150,h:40,trait:'swarm'},3:{id:'skeleton_frost',walk:4,attack:4,hit:2,fig:150,h:46,trait:'guard'},4:{id:'imp_flame',walk:4,attack:4,hit:2,fig:150,h:40,lift:26,trait:'flier'},
+ 5:{id:'gargoyle_wall',walk:4,attack:4,hit:2,fig:180,h:44,lift:30,trait:'flier',tint:{src:null,ops:[['color','#9c9aa8']]}}};/* 성벽 가고일 ← 그림자 박쥐(회색 석상) */
+MON_ALT[5].tint.src=MON_SPRITES[1];
+const MSPR={},TINT={};
+/* 물들인 그림 만들기: 원본 시트가 다 불러지면 한 번만 캔버스로 만들어 둠. ops = [['multiply'|'color', 색]...] */
+function tintSet(base,tid,ops){if(TINT[tid])return TINT[tid];if(!base||!sprOk(base))return null;const out={};
+ for(const a of['walk','attack','hit']){const im=MSPR[base.id][a],c=document.createElement('canvas');c.width=im.width;c.height=im.height;const x=c.getContext('2d');x.drawImage(im,0,0);
+  for(const[mode,col]of ops){x.globalCompositeOperation=mode;x.fillStyle=col;x.fillRect(0,0,c.width,c.height)}x.globalCompositeOperation='destination-in';x.drawImage(im,0,0);c.ok=true;out[a]=c}
+ MSPR[tid]=out;return TINT[tid]=Object.assign({},base,{id:tid,tint:null})}
+const sprT=d=>!d?null:sprOk(d)?d:d.tint&&d.tint.src?tintSet(d.tint.src,d.id+'_t',d.tint.ops):null;
 function loadMon(d){if(!d||MSPR[d.id])return;MSPR[d.id]={};for(const a of['walk','attack','hit']){const im=new Image();im.onload=()=>{im.ok=true};im.src='assets/monsters/'+d.id+'_'+a+'.png';MSPR[d.id][a]=im}}
-const loadMonReg=k=>{if(MON_SPRITES[k])[MON_SPRITES[k],MON_SPRITES[k].boss,MON_ALT[k]].forEach(loadMon)};
+const loadMonReg=k=>{if(MON_SPRITES[k])[MON_SPRITES[k],MON_SPRITES[k].boss,MON_ALT[k]].forEach(loadMon);if(k===5){for(let j=0;j<5;j++)[MON_SPRITES[j],MON_SPRITES[j].boss].forEach(loadMon);BALT.forEach(loadMon)}};/* 왕도는 물들일 원본(군단장 5명·골렘·박쥐)도 받음 */
 function loadMonSprites(){const r=regNow();loadMonReg(r);loadMonReg(r+1);loadMon(GOB)}
 /* 황금 고블린: 곡괭이 고블린 그림을 금빛으로 물들여 씀 (전용 그림이 오면 goblin_gold_*.png로 교체) */
 const GOB={id:'goblin_gold',walk:4,attack:4,hit:2,fig:150,h:46},GOBT={id:'goblin_gold_t',walk:4,attack:4,hit:2,fig:150,h:44};
@@ -1742,9 +1833,13 @@ function gobSprite(){if(sprOk(GOB))return GOB;if(sprOk(GOBT))return GOBT;const s
   x.globalCompositeOperation='overlay';x.globalAlpha=.35;x.fillStyle='#fff3b0';x.fillRect(0,0,c.width,c.height);x.globalCompositeOperation='destination-in';x.globalAlpha=1;x.drawImage(im,0,0);c.ok=true;MSPR.goblin_gold_t[a]=c}
  return GOBT}
 const sprOk=d=>{if(d&&!MSPR[d.id]){loadMon(d);if(d===GOB)return false;for(const k in MON_SPRITES)if([MON_SPRITES[k],MON_SPRITES[k].boss,MON_ALT[k]].includes(d)){loadMonReg(+k+1);break}}const m=d&&MSPR[d.id];return!!m&&['walk','attack','hit'].every(a=>m[a]&&m[a].ok)};
-function monSprite(r,mon){if(mon&&mon.gob)return gobSprite();const ri=REGIONS.indexOf(r),d=MON_SPRITES[ri];if(!d)return null;if(mon&&mon.alt){const a=MON_ALT[ri];return a&&sprOk(a)?a:null}
+function monSprite(r,mon){if(mon&&mon.gob)return gobSprite();
+ if(mon&&mon.dem){const ph=mon.ph2?1:0,a=sprOk(BALT[ph])?BALT[ph]:tintSet(MON_SPRITES[3].boss,'balt'+ph,ph?[['color','#c8b6ff'],['multiply','#d8ccff']]:[['multiply','#3a2f4c'],['multiply','#b0a0c8']]);return a?Object.assign({lordArt:true,dem:true},a):null}
+ if(mon&&mon.ghost!=null){const b=MON_SPRITES[mon.ghost].boss,a=tintSet(b,'ghost_'+b.id,[['color','#a88cff']]);return a?Object.assign({lordArt:true,ghostArt:true},a):null}/* 군단장 잔영: 보랏빛 + 반투명 */
+ const ri=REGIONS.indexOf(r),d=MON_SPRITES[ri];if(!d)return null;if(mon&&mon.alt){const a=MON_ALT[ri];return sprT(a)}
  if(mon&&mon.lord&&d.boss){return sprOk(d.boss)?Object.assign({lordArt:true},d.boss):null} // 군단장은 전용 그림 (없으면 코드 그림)
- return sprOk(d)?d:null}
+ if(mon&&mon.guard&&d.boss)return sprT(d.boss);
+ return sprT(d)}
 function loadSprites(){for(const id in SPRITES){SPR[id]={};for(const a of['idle','walk','attack','hit']){const im=new Image();
  im.onload=()=>{im.ok=true;if(hasSprite(id)){HEIGHT[id]=SPRITES[id].h;partySig='';prowSig='';eqSig='';if(id==='kael')drawMyFace()}};im.onerror=()=>{im.bad=true;const al=SPRITE_ALT[id];if(al&&SPR[al]){SPR[id][a]=SPR[al][a];SPR[id].alt=true;prowSig='';partySig=''}};im.src='assets/characters/'+id+'_'+a+'.png';SPR[id][a]=im}}}
 /* 그림이 오기 전 임시: 같은 직업 동료 그림을 색만 바꿔 씀 */
@@ -1780,14 +1875,14 @@ function drawAura(x,y,ss,cmd){const pulse=.75+.25*Math.sin(T*3),w=(cmd?46:38)*ss
  ctx.restore()}
 function drawMon(r,y,s,m){
  const k=m.boss?(m.lord?1.8:1.5):m.gob?1.3:1,x=m.x+(m.kb>0?Math.sin(m.kb/.5*Math.PI)*36*s:0),ss=s*k,fade=m.dead>0?m.dead/.35:1;ctx.globalAlpha=fade;
- const col=m.hit>0?'#ffffff':r.col;if(m.boss)drawAura(x,y,ss,m.lord);ell(x,y,18*ss,5*ss,'rgba(0,0,0,.25)');let top,bot=y;const ph=x*.05;
- const md=monSprite(r,m),sk=md&&md.lordArt?ss*.8:ss,ly=md&&md.lift?y-md.lift*ss*(1+.08*Math.sin(T*5+ph)):y;
- if(md){if(m.flee){ctx.save();ctx.translate(x,0);ctx.scale(-1,1);ctx.translate(-x,0)}const k=md.h*sk/md.fig,moving=m.tx!=null&&m.x>m.tx+1;let a='walk',i=Math.floor(T*8+ph)%md.walk;
+ const col=m.hit>0?'#ffffff':r.col;if(m.boss)drawAura(x,y,ss,m.lord||m.ghost!=null);ell(x,y,18*ss,5*ss,'rgba(0,0,0,.25)');let top,bot=y;const ph=x*.05;
+ const md=monSprite(r,m),sk=md&&md.lordArt?ss*.8*(md.dem?1.3:1):ss,ly=md&&md.lift?y-md.lift*ss*(1+.08*Math.sin(T*5+ph)):y;
+ if(md){if(md.ghostArt)ctx.globalAlpha=fade*.72;if(m.flee){ctx.save();ctx.translate(x,0);ctx.scale(-1,1);ctx.translate(-x,0)}const k=md.h*sk/md.fig,moving=m.tx!=null&&m.x>m.tx+1;let a='walk',i=Math.floor(T*8+ph)%md.walk;
   if(m.hit>0||m.dead>0){a='hit';i=m.dead>0?1:0}else if(m.sw>0){a='attack';i=Math.max(0,Math.min(md.attack-1,Math.floor((1-m.sw/.4)*md.attack)))}else if(!moving){i=Math.floor(T*4+ph)%md.walk}
-  if((m.boss||m.gob)&&!m.dead){ctx.save();ctx.shadowColor=m.gob?'rgba(255,210,60,.95)':m.lord?'rgba(180,110,255,.9)':'rgba(255,60,80,.85)';ctx.shadowBlur=(14+6*Math.sin(T*4))*s;ctx.drawImage(MSPR[md.id][a],i*SPR_FRAME,0,SPR_FRAME,SPR_FRAME,x-SPR_FRAME/2*k,ly-SPR_FOOT*k,SPR_FRAME*k,SPR_FRAME*k);ctx.restore()}
+  if((m.boss||m.gob)&&!m.dead){ctx.save();ctx.shadowColor=m.gob||m.ph2?'rgba(255,210,60,.95)':m.lord||m.ghost!=null?'rgba(180,110,255,.9)':'rgba(255,60,80,.85)';ctx.shadowBlur=(14+6*Math.sin(T*4))*s;ctx.drawImage(MSPR[md.id][a],i*SPR_FRAME,0,SPR_FRAME,SPR_FRAME,x-SPR_FRAME/2*k,ly-SPR_FOOT*k,SPR_FRAME*k,SPR_FRAME*k);ctx.restore()}
   else ctx.drawImage(MSPR[md.id][a],i*SPR_FRAME,0,SPR_FRAME,SPR_FRAME,x-SPR_FRAME/2*k,ly-SPR_FOOT*k,SPR_FRAME*k,SPR_FRAME*k);
   if(m.hit>0){ctx.globalCompositeOperation='lighter';ctx.globalAlpha=fade*.35;ctx.drawImage(MSPR[md.id][a],i*SPR_FRAME,0,SPR_FRAME,SPR_FRAME,x-SPR_FRAME/2*k,ly-SPR_FOOT*k,SPR_FRAME*k,SPR_FRAME*k);ctx.globalCompositeOperation='source-over';ctx.globalAlpha=fade}
-  top=ly-md.fig*k;bot=ly;if(m.flee)ctx.restore()}
+  top=ly-md.fig*k;bot=ly;if(m.flee)ctx.restore();ctx.globalAlpha=fade}
  else if(r.kind==='slime'){const q=Math.sin(T*6+ph)*.08,rx=20*ss*(1+q),ry=17*ss*(1-q);ell(x,y-ry,rx,ry,col);ctx.fillStyle=col;ctx.fillRect(x-rx,y-ry,rx*2,ry);ell(x-7*ss,y-ry*1.3,5*ss,4*ss,'rgba(255,255,255,.35)');eyes(x-10*ss,y-ry,ss,'#3a0a14');top=y-ry*2}
  else if(r.kind==='bat'){const fy=y-46*ss+Math.sin(T*5+ph)*5*ss,fl=Math.sin(T*18+ph)*8*ss;ctx.fillStyle=col;
   ctx.beginPath();ctx.moveTo(x,fy);ctx.lineTo(x+26*ss,fy-12*ss+fl);ctx.lineTo(x+18*ss,fy+6*ss);ctx.closePath();ctx.fill();
@@ -1838,14 +1933,25 @@ function draw(){
   const v=ctx.createRadialGradient(W/2,Ht/2,Math.min(W,Ht)*.3,W/2,Ht/2,Math.max(W,Ht)*.75);v.addColorStop(0,'rgba('+col+',0)');v.addColorStop(1,'rgba('+col+',.55)');ctx.fillStyle=v;ctx.fillRect(0,0,W,Ht);
   const g=ctx.createLinearGradient(0,0,W,0);g.addColorStop(0,'rgba(20,4,8,0)');g.addColorStop(.2,'rgba(20,4,8,.85)');g.addColorStop(.8,'rgba(20,4,8,.85)');g.addColorStop(1,'rgba(20,4,8,0)');ctx.fillStyle=g;ctx.fillRect(0,cy-26,W,52);
   ctx.fillStyle='rgba('+col+',.9)';ctx.fillRect(0,cy-26,W,2);ctx.fillRect(0,cy+24,W,2);
-  const sx=(1-Math.min(1,(1.4-warn.t)*4))*40;ctx.textAlign='center';ctx.font=`700 ${Math.round(24*Math.min(1.2,s))}px Hahmlet, serif`;ctx.lineWidth=4;ctx.strokeStyle='#1a0006';const t=warn.cmd?'⚠ 군단장 출현! ⚠':'⚠ 성주 출현! ⚠';ctx.strokeText(t,W/2+sx,cy+8);ctx.fillStyle=warn.cmd?'#e2c4ff':'#ffd2d8';ctx.fillText(t,W/2+sx,cy+8);ctx.restore()}
+  const sx=(1-Math.min(1,(1.4-warn.t)*4))*40;ctx.textAlign='center';ctx.font=`700 ${Math.round(24*Math.min(1.2,s))}px Hahmlet, serif`;ctx.lineWidth=4;ctx.strokeStyle='#1a0006';const t=warn.txt||(warn.cmd?'⚠ 군단장 출현! ⚠':'⚠ 성주 출현! ⚠');ctx.strokeText(t,W/2+sx,cy+8);ctx.fillStyle=warn.cmd?'#e2c4ff':'#ffd2d8';ctx.fillText(t,W/2+sx,cy+8);ctx.restore()}
  if(banner){const k=Math.min(1,(2-banner.t)*5,banner.t*2.5),cy=Ht*.36;ctx.globalAlpha=k;
   if(BANNER.ok){const bw=Math.min(W*.98,460),bh=bw/4,sc=.85+.15*Math.min(1,(2-banner.t)*6);ctx.save();ctx.translate(W/2,cy);ctx.scale(sc,sc);ctx.drawImage(BANNER,-bw/2,-bh*.55,bw,bh);ctx.restore()}
   else{const g=ctx.createLinearGradient(0,0,W,0);g.addColorStop(0,'rgba(20,14,4,0)');g.addColorStop(.2,'rgba(20,14,4,.85)');g.addColorStop(.8,'rgba(20,14,4,.85)');g.addColorStop(1,'rgba(20,14,4,0)');ctx.fillStyle=g;ctx.fillRect(0,cy-34,W,64);
   ctx.fillStyle='#ffc94a';ctx.fillRect(W*.15,cy-34,W*.7,2);ctx.fillRect(W*.15,cy+28,W*.7,2)}
   const bf=BANNER.ok?Math.min(W*.98,460)*.052:26*Math.min(1.3,s),ty=BANNER.ok?cy+bf*.1:cy+4;ctx.textAlign='center';ctx.font=`700 ${bf}px Hahmlet, serif`;ctx.lineWidth=4;ctx.strokeStyle='#3a1200';ctx.strokeText(banner.txt,W/2,ty,W*.42);ctx.fillStyle='#ffe08a';ctx.fillText(banner.txt,W/2,ty,W*.42);
   ctx.font=`600 12px "IBM Plex Sans KR",sans-serif`;ctx.lineWidth=3;ctx.strokeStyle='rgba(0,0,0,.7)';const sy=BANNER.ok?cy+Math.min(W*.98,460)/4*.62:cy+21;ctx.strokeText(banner.sub,W/2,sy);ctx.fillStyle='#f4ead0';ctx.fillText(banner.sub,W/2,sy);ctx.globalAlpha=1}
+ drawDemon(L);
 }
+/* 마왕 대사 띠 · 봉인의 파동 예고 원 */
+function drawDemon(L){
+ if(seal){const k=1-Math.max(0,seal.t)/SEAL_WARN,cx=(Math.min(...L.ids.map(i=>L.pos[i]))+L.front)/2,cy=(L.top+L.bot)/2+10*L.s,rx=Math.max(80,(L.front-Math.min(...L.ids.map(i=>L.pos[i])))*.75+50*L.s),ry=rx*.32;
+  ctx.save();ctx.globalAlpha=.25+.55*k;ctx.strokeStyle='#ffd34a';ctx.lineWidth=3;ctx.setLineDash([10,6]);ctx.lineDashOffset=-T*40;ctx.beginPath();ctx.ellipse(cx,cy,rx,ry,0,0,Math.PI*2);ctx.stroke();
+  ctx.setLineDash([]);ctx.fillStyle='rgba(255,211,74,'+(.08+.22*k)+')';ctx.beginPath();ctx.ellipse(cx,cy,rx*k,ry*k,0,0,Math.PI*2);ctx.fill();
+  ctx.globalAlpha=1;ctx.textAlign='center';ctx.font='700 13px "IBM Plex Sans KR",sans-serif';ctx.lineWidth=3;ctx.strokeStyle='rgba(0,0,0,.7)';ctx.strokeText('봉인의 파동!',cx,cy-ry-8);ctx.fillStyle='#ffe08a';ctx.fillText('봉인의 파동!',cx,cy-ry-8);ctx.restore()}
+ if(talk){const [w,t]=talk.lines[talk.i],q=w==='q',who=q?'성검 루미나르':w,cy=Ht*.24,a=Math.min(1,(2.6-talk.t)*5,talk.t*4);ctx.save();ctx.globalAlpha=a;
+  const g=ctx.createLinearGradient(0,0,W,0);g.addColorStop(0,'rgba(10,6,20,0)');g.addColorStop(.12,'rgba(10,6,20,.88)');g.addColorStop(.88,'rgba(10,6,20,.88)');g.addColorStop(1,'rgba(10,6,20,0)');ctx.fillStyle=g;ctx.fillRect(0,cy-28,W,56);
+  ctx.fillStyle=q?'#5ab4ff':'#b98cff';ctx.fillRect(W*.1,cy-28,W*.8,2);ctx.textAlign='center';ctx.font='700 11px "IBM Plex Sans KR",sans-serif';ctx.fillStyle=q?'#8fd0ff':'#cfa8ff';ctx.fillText(who,W/2,cy-11);
+  ctx.font=`600 ${Math.min(14,W/26)}px Hahmlet, serif`;ctx.fillStyle='#f4eefe';ctx.fillText(t,W/2,cy+10,W-24);ctx.restore()}}
 function portrait(id){
  const c=$('pf-'+id);if(!c)return;{const pim=pfImg(id),has=owned(id);if(pim){const d=Math.min(2,window.devicePixelRatio||1);c.width=56*d;c.height=68*d;const x=c.getContext('2d');x.setTransform(d,0,0,d,0,0);x.drawImage(pim,40,0,432,512,0,0,56,68);if(!has){x.globalCompositeOperation='source-atop';x.fillStyle='#0d1220';x.fillRect(0,0,56,68)}return}const raw=PFIMG[id];if(raw&&!raw.bad){raw.addEventListener('load',()=>portrait(id),{once:true});raw.addEventListener('error',()=>portrait(id),{once:true});return}}const d=Math.min(2,window.devicePixelRatio||1),w=56,h=68;c.width=w*d;c.height=h*d;const pc=c.getContext('2d');pc.setTransform(d,0,0,d,0,0);
  const prev=ctx;ctx=pc;const has=owned(id);if(hasSprite(id))drawSprite(id,w*.5,h-3,.78,'idle',0);else DRAW[id](w*.42,h-4,.8,pose(null,false));ctx=prev;
@@ -1916,7 +2022,7 @@ const MAPNODE={ok:false};(()=>{let n=0;for(const k of['captured','enemy','boss',
 function drawMap(){
  if(!MW)return;const prev=ctx;ctx=mctx;
  ctx.fillStyle='#1a2034';ctx.fillRect(0,0,MW,MH);
- const rows=REGIONS.length,top=10,bottomPad=CAPIMG.locked?104:56,rh=(MH-top-bottomPad)/rows,padX=22,dx=(MW-padX*2)/9,cur=S.stage-1,R=Math.min(dx*.34,11);
+ const rows=REGIONS.length,top=10,bottomPad=8,rh=(MH-top-bottomPad)/rows,padX=22,dx=(MW-padX*2)/9,cur=S.stage-1,R=Math.min(dx*.34,11);
  const pts=[];for(let i=0;i<rows;i++)for(let j=0;j<10;j++){const col=i%2?9-j:j;pts.push({x:padX+col*dx,y:top+i*rh+rh*.64,i,j})}
  for(let i=0;i<rows;i++){const r=REGIONS[i];ctx.fillStyle=r.hill;ctx.globalAlpha=.35;rr(4,top+i*rh+2,MW-8,rh-4,10);ctx.globalAlpha=1;
 }
@@ -1926,14 +2032,15 @@ function drawMap(){
   ctx.textAlign='left';ctx.fillStyle='#dfe5f2';ctx.font=`700 12px Hahmlet, serif`;ctx.fillText(r.n,lx,ly);ctx.fillStyle='#97a2c3';ctx.font=`500 10px "IBM Plex Sans KR",sans-serif`;ctx.fillText(r.boss,lx+nw,ly)}};
  ctx.lineWidth=3;for(let k=0;k<pts.length-1;k++){ctx.strokeStyle=k<cur?'#5fae6b':'#4a2232';ctx.beginPath();ctx.moveTo(pts[k].x,pts[k].y);ctx.lineTo(pts[k+1].x,pts[k+1].y);ctx.stroke()}
  const NI=MAPNODE;pts.forEach((p,k)=>{const lord=p.j===9,rad=lord?R*1.25:R;
+  /* 왕도 마지막 칸(알현실) = 성 아이콘 크게 */
+  if(k===pts.length-1){const done=cur>=MAXLAND,cap=CAPIMG[done?'open':'locked'],z=Math.min(rh*1.05,64);if(k===cur){const pr=z*.42+Math.sin(T*4)*2;ctx.strokeStyle='#ffc94a';ctx.lineWidth=2.5;ctx.beginPath();ctx.arc(p.x,p.y-z*.12,pr,0,Math.PI*2);ctx.stroke()}
+   if(cap)ctx.drawImage(cap,p.x-z/2,p.y-z*.7,z,z);else{ctx.fillStyle=done?'#ffc94a':'#6a5a8c';ctx.beginPath();ctx.moveTo(p.x-14,p.y+8);ctx.lineTo(p.x-14,p.y-6);ctx.lineTo(p.x-7,p.y+1);ctx.lineTo(p.x,p.y-12);ctx.lineTo(p.x+7,p.y+1);ctx.lineTo(p.x+14,p.y-6);ctx.lineTo(p.x+14,p.y+8);ctx.fill()}return}
   if(NI.ok){const rn=RNODE[p.i]&&RNODE[p.i][lord?'boss':'enemy'],im=k<cur?NI.captured:rn||(k===cur?NI.current:lord?NI.boss:NI.enemy),z=Math.min(rh*.78,rad*(k===cur?2.9:rn?(lord?2.5:2.4):2.4));if(k===cur){const pr=rad+5+Math.sin(T*4)*2;ctx.globalAlpha=.5;ctx.strokeStyle='#ffc94a';ctx.lineWidth=2.5;ctx.beginPath();ctx.arc(p.x,p.y,pr,0,Math.PI*2);ctx.stroke();ctx.globalAlpha=1}ctx.drawImage(im,p.x-z/2,p.y-z*.62-(k===cur?Math.abs(Math.sin(T*3))*3:0),z,z);return}
   if(k<cur){ell(p.x,p.y,rad,rad,'#5fae6b');ctx.strokeStyle='#eaffea';ctx.lineWidth=1.8;ctx.beginPath();ctx.moveTo(p.x-rad*.4,p.y);ctx.lineTo(p.x-rad*.05,p.y+rad*.35);ctx.lineTo(p.x+rad*.45,p.y-rad*.35);ctx.stroke()}
   else{ell(p.x,p.y,rad,rad,k===cur?'#7a2b3a':'#4a1f2c');ctx.fillStyle='#c25a6a';ctx.beginPath();ctx.moveTo(p.x-rad*.5,p.y-rad*.1);ctx.lineTo(p.x-rad*.7,p.y-rad*.75);ctx.lineTo(p.x-rad*.15,p.y-rad*.3);ctx.moveTo(p.x+rad*.15,p.y-rad*.3);ctx.lineTo(p.x+rad*.7,p.y-rad*.75);ctx.lineTo(p.x+rad*.5,p.y-rad*.1);ctx.fill()}
   if(lord){ctx.strokeStyle=k<cur?'#ffc94a':'#ff6b7d';ctx.lineWidth=2;ctx.beginPath();ctx.arc(p.x,p.y,rad+2,0,Math.PI*2);ctx.stroke()}
   if(k===cur){const pr=rad+5+Math.sin(T*4)*2;ctx.strokeStyle='#ffc94a';ctx.lineWidth=2.5;ctx.beginPath();ctx.arc(p.x,p.y,pr,0,Math.PI*2);ctx.stroke()}});
  regionLabels();
- const kx=MW/2,ky=MH-bottomPad/2,done=cur>=MAXLAND,cap=CAPIMG[done?'open':'locked'];if(cap){const z=bottomPad*1.05;ctx.drawImage(cap,kx-z-6,MH-z-2,z,z)}else{ctx.fillStyle=done?'#ffc94a':'#4a3a2a';ctx.beginPath();ctx.moveTo(kx-16,ky+8);ctx.lineTo(kx-16,ky-6);ctx.lineTo(kx-8,ky+1);ctx.lineTo(kx,ky-12);ctx.lineTo(kx+8,ky+1);ctx.lineTo(kx+16,ky-6);ctx.lineTo(kx+16,ky+8);ctx.fill();}
- ctx.fillStyle='#dfe5f2';ctx.font='700 12px Hahmlet, serif';ctx.textAlign='left';ctx.fillText('왕도 아스테리온',kx+24,ky+2);ctx.fillStyle='#97a2c3';ctx.font='500 10px "IBM Plex Sans KR",sans-serif';ctx.fillText(done?'진격로가 열렸어요':'다섯 군단을 몰아내면 열려요',kx+24,ky+16);
  
  ctx=prev;
 }
@@ -1972,7 +2079,7 @@ async function gobSubmit(){if(!sbOn()||!S.nick||gobBusy||!gobDirty)return;const 
 setInterval(()=>{rankSubmit(false);gobSubmit()},30000);
 async function gobRankToast(){const n=gobWeek().n;let r=null;if(sbOn()&&S.nick){try{gobDirty=true;await gobSubmit();const rows=await sbRpc('kd_gob_ranking',{});const me=rows.find(x=>x.me);if(me)r=me.rank}catch(e){}}
  toast('황금 고블린 이번 주 '+n+'마리'+(r?' · 지금 '+r+'위':''))}
-const stgName=st=>st>MAXLAND?'왕도':(Math.floor((st-1)/10)+1)+'-'+((st-1)%10+1);
+const stgName=st=>st>MAXLAND?'왕궁 뜰':(Math.floor((st-1)/10)+1)+'-'+((st-1)%10+1);
 const NICKERR={length:'2~10글자로 정해 주세요',chars:'한글·영문·숫자·_ 만 쓸 수 있어요',bad:'쓸 수 없는 단어가 들어 있어요',taken:'이미 누가 쓰고 있어요',once:'닉네임은 시즌마다 한 번만 바꿀 수 있어요',login:'연결에 실패했어요. 잠시 후 다시 해 주세요'};
 function nickSheet(after){$('sheet').innerHTML=`<div class="eyebrow">프로필</div><h2>닉네임 ${S.nickTemp||!S.nick?'정하기':'바꾸기'}</h2><p class="note" style="text-align:center">${S.nickTemp?'지금은 임시 닉네임이에요. 원하는 이름으로 바꿔 보세요.<br>':''}랭킹과 우편에 쓰이는 이름이에요. 2~10글자, 시즌마다 한 번 바꿀 수 있어요.</p>
  <input class="nickin" id="nickIn" maxlength="10" value="${S.nickTemp?'':(S.nick||'')}" placeholder="예: 은퇴하고픈농부" autocomplete="off"><p class="note nickerr" id="nickErr"></p>
@@ -2102,7 +2209,8 @@ const PFRAMES=[
  {k:'royal',n:'붉은 왕관',d:'칭호 공작',ok:()=>rankIdx()>=5},
  {k:'goblin',n:'황금 고블린',d:'황금 고블린 희귀 전리품',ok:()=>false,rare:1,tall:1},
  {k:'season',n:'시즌 왕관',d:'시즌 랭킹 1위 보상',ok:()=>false,rk:1,tall:1},
- {k:'conquer',n:'정복자',d:'영지 50곳 탈환 · 명예의 전당 보상',ok:()=>false,rk:1,tall:1}];
+ {k:'conquer',n:'정복자',d:'영지 50곳 탈환 · 명예의 전당 보상',ok:()=>false,rk:1,tall:1},
+ {k:'capital',n:'왕도의 별',d:'마왕 발타사르 처치 (1부 완결)',ok:()=>(S.capClears||0)>=1}];
 const pfTall=k=>(PFRAMES.find(f=>f.k===k)||{}).tall?' tall':'';
 const stat=(k,n)=>{if(!S.stat)S.stat={};S.stat[k]=(S.stat[k]||0)+n},st=k=>(S.stat&&S.stat[k])||0;
 const BADGES=[
@@ -2113,7 +2221,8 @@ const BADGES=[
  {k:'chest',n:'상자 사냥꾼',d:'성유물 상자 Lv.10',ok:()=>S.boxLv>=10},
  {k:'horns',n:'군단장 사냥꾼',d:'군단장 처치',ok:()=>Object.keys(S.gemLord||{}).length>=1},
  {k:'retire',n:'은퇴 전문가',d:'은퇴 3번',ok:()=>(S.retires||0)>=3},
- {k:'king',n:'농부 왕',d:'영지 50곳 모두 탈환',ok:()=>S.best>MAXLAND},
+ {k:'king',n:'농부 왕',d:'영지 50곳 모두 탈환',ok:()=>S.best>50},/* 왕도가 생겨도 50곳 기준 그대로 */
+ {k:'part1',n:'1부 완결',d:'마왕 발타사르 처치',ok:()=>(S.capClears||0)>=1},
  {k:'goblin',n:'고블린 사냥꾼',d:'황금 고블린 희귀 전리품',ok:()=>false,rare:1},
  {k:'champ',n:'시즌 챔피언',d:'시즌 랭킹 1위 보상',ok:()=>false,rk:1},
  {k:'top10',n:'시즌 10강',d:'시즌 랭킹 2~10위 보상',ok:()=>false,rk:1},
@@ -2170,7 +2279,7 @@ const goldX=x=>Math.max(100,Math.floor(goldRate()*3600*x.h));
 function buyGoldX(k){const x=GOLDX.find(v=>v.k===k),g=goldX(x);if(!spendGem(x.gem))return;S.gold+=g;toast(x.n+' 구매! 골드 +'+fmt(g));shopSig='';renderAll()}
 function offline(){
  const cap=(6+S.bld.inn)*3600,sec=Math.min(cap,(Date.now()-S.last)/1000);if(sec<60)return;
- const dps=members().reduce((a,id)=>{const t=stats(id);return a+t.atk*t.aps*(1+t.crit)},0),tpk=monHp(S.stage,false)/dps+1.2,g=Math.floor(sec/tpk*reward(S.stage,false)*.5*memMul()*(subOn()?1.5:1));if(g<=0)return;
+ const dps=members().reduce((a,id)=>{const t=stats(id);return a+t.atk*t.aps*(1+t.crit)},0),tpk=monHp(fightSt(),false)/dps+1.2,g=Math.floor(sec/tpk*reward(fightSt(),false)*.5*memMul()*(subOn()?1.5:1));if(g<=0)return;
  S.gold+=g;const hr=Math.floor(sec/3600),mn=Math.floor(sec%3600/60);
  queue(()=>{$('sheet').innerHTML=`<img class="illust il-offline" src="assets/illust/illust_offline.jpg" alt="" onerror="this.remove()"><div class="eyebrow">돌아온 카엘</div><h2>영지에서 세금이 걷혔어요</h2><div class="card" style="--c:var(--gold)"><span class="cap">${hr?hr+'시간 ':''}${mn}분 동안</span><div class="t" style="font-size:28px;color:var(--gold)">+${fmt(g)}</div><span class="s">백성들이 보낸 골드${S.bld.farm?' · 밭 작물도 자랐어요':''}</span><span class="s ofcap">${sec>=cap?'⏳ 가득 참! ':''}최대 ${cap/3600}시간 · 여관 레벨마다 +1시간</span></div>${adLeft('offline')?`<button class="buy ad" id="mAd" style="width:100%;padding:10px">▶ 광고 보고 2배 · 오늘 ${adLeft('offline')}회</button>`:''}<div class="acts"><button id="mDbl" style="background:linear-gradient(#2c4a8c,#1d3366);color:#ffe08a;border-color:#5a7ac8;white-space:nowrap">2배 받기 ${GEMIMG.replace('alt=""','alt="" style="width:16px;height:16px;vertical-align:-3px"')}${GEM_OFFLINE}</button><button class="pri" id="mGo">받기</button></div>`;$('modal').hidden=false;$('mGo').onclick=closeModal;$('mDbl').onclick=()=>{if(!spendGem(GEM_OFFLINE))return;S.gold+=g;toast('세금 2배! 골드 +'+fmt(g));closeModal()};const ab=$('mAd');if(ab)ab.onclick=()=>watchAd('offline',()=>{S.gold+=g;toast('세금 2배! 골드 +'+fmt(g));closeModal()});$('mGo').focus({preventScroll:true})});
 }
