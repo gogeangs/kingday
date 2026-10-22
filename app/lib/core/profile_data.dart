@@ -32,7 +32,7 @@ final List<Deco> pframes = [
   const Deco('goblin', '황금 고블린', '황금 고블린 희귀 전리품', _no, rare: true, tall: true),
   const Deco('season', '시즌 왕관', '시즌 랭킹 1위 보상', _no, rk: true, tall: true),
   const Deco('conquer', '정복자', '영지 50곳 탈환 · 명예의 전당 보상', _no, rk: true, tall: true),
-  Deco('capital', '왕도의 별', '마왕 발타사르 처치 (1부 완결)', (c) => orNum(c.s.raw['capClears'], 0) >= 1),
+  Deco('capital', '왕도의 별', '마왕 발타사르 처치 (1부 완결)', (c) => orNum(c.s.raw['capClears'], 0) >= 1, tall: true),
 ];
 
 final List<Deco> badges = [

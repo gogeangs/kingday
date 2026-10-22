@@ -267,7 +267,7 @@ class Para extends StatelessWidget {
   static const _npc = {
     '막례': 'makrye', '말봉': 'malbong', '덕배': 'deokbae', '페피': 'peppy', '안단테': 'andante', '토비': 'toby', '카라': 'kara', '베릴': 'beryl', '모라': 'mora', '멜로': 'melo', '포리': 'pori', '롤로': 'rollo', '크랩': 'crab', '버치': 'birch', '그램': 'gram', '고든': 'gordon', '데이지': 'daisy', '브리다': 'brida', '넬라': 'nella', '루카': 'luka', '브론': 'bron', '하랄': 'haral',
     '리엘': 'riel', '마고': 'margo', '마르타': 'marta', '피트': 'pete', '티모': 'timo', '모르바스': 'morbas', '세릴': 'seril',
-    '그로마크': 'gromak', '알도르': 'aldor', '이그니스': 'ignis',
+    '그로마크': 'gromak', '알도르': 'aldor', '이그니스': 'ignis', '발타사르': 'baltasar',
   };
 
   /// guessMood(w,t): 표정이 없으면 대사로 짐작

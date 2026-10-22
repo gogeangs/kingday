@@ -1436,6 +1436,7 @@ const wFxdef = {
   'skill_birch': 4,
   'skill_gram': 4,
   'net': 2,
+  'boss_seal': 4,
 };
 
 const wForm = {
