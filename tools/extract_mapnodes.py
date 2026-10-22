@@ -1,7 +1,7 @@
 """지도 노드 원본 → 256x256 투명 PNG (받침 바닥을 y=250에 맞춤).
 
     python3 tools/extract_mapnodes.py art/source/map
-원본 이름: mapnode_<region>_<enemy|boss>.png  (region: erdan, dusk, canyon, frost, ash)
+원본 이름: mapnode_<region>_<enemy|boss>.png  (region: erdan, dusk, canyon, frost, ash, capital — 왕도 원본은 art/source/capital/)
 """
 import sys, glob, os
 import numpy as np

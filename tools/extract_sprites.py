@@ -16,6 +16,8 @@
     python3 tools/extract_sprites.py art/source/bron_motion_concept.png bron
     # 몬스터 (1줄 이동 4 / 2줄 공격 4 / 3줄 피격 2, 왼쪽을 봄)
     python3 tools/extract_sprites.py art/source/slime_plague_motion.png slime_plague --monster
+    # 칸 밖으로 넘치면 배율을 낮추고 몸 가운데로 맞춤
+    python3 tools/extract_sprites.py art/source/capital/guard_black_motion.png guard_black --monster --center --scale=0.5
 """
 import sys
 import numpy as np
@@ -93,9 +95,9 @@ def own_mask(loose_lab, box):
     return keep
 
 
-def main(src, cid, monster=False, center=False, wide=()):
+def main(src, cid, monster=False, center=False, wide=(), scale=None):
     rows_def = MON_ROWS if monster else ROWS
-    scale = MON_SCALE if monster else SCALE
+    scale = scale or (MON_SCALE if monster else SCALE)
     outdir = "assets/monsters" if monster else "assets/characters"
     img = np.array(Image.open(src).convert("RGBA"))
     alpha = img[..., 3]
@@ -146,4 +148,5 @@ def main(src, cid, monster=False, center=False, wide=()):
 
 if __name__ == "__main__":
     wide = dict((w.split(":") + [""])[:2] for w in next((a.split("=", 1)[1].split(",") for a in sys.argv[3:] if a.startswith("--wide=")), []))  # --wide=attack:512,hit
-    main(sys.argv[1], sys.argv[2], "--monster" in sys.argv[3:], "--center" in sys.argv[3:], wide)
+    sc = next((float(a.split("=", 1)[1]) for a in sys.argv[3:] if a.startswith("--scale=")), None)  # --scale=0.5: 원본이 커서 칸 밖으로 넘칠 때
+    main(sys.argv[1], sys.argv[2], "--monster" in sys.argv[3:], "--center" in sys.argv[3:], wide, sc)
