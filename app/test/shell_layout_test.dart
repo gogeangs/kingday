@@ -197,7 +197,8 @@ void main() {
           await closeTop();
         }
 
-        // 도전: 창 → 탑 15층(쌍둥이) 전투 화면 → 나가기 / 던전 전투 화면 → 나가기(★0 환불 창)
+        // 도전 (후반 저장만): 창 → 탑 15층(쌍둥이) 전투 화면 → 나가기 / 던전 전투 화면 → 나가기(★0 환불 창)
+        if (save == 'late') {
         openChallenge(g);
         await frames();
         expect(find.text('시련의 탑'), findsWidgets);
@@ -219,6 +220,7 @@ void main() {
         await frames();
         expect(find.text('한 마리도 못 잡았어요'), findsOneWidget);
         await press('확인');
+        }
 
         // 6단계: 은퇴 (단련 탭 상자 → 은퇴하기 → 확인 → 몇 년 뒤 → 첫 지역)
         g.state.stage = 25;

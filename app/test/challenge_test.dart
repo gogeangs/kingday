@@ -59,7 +59,7 @@ void main() {
       }
     }
     for (final v in fx['lv'] as List) {
-      final cc = calcFor({'gold': 60, 'best': v['best'], 'stage': 1});
+      final cc = calcFor({'gold': 60, 'best': v['best'], 'stage': 1, 'capClears': 0});
       expect(cc.dunL(), v['L'], reason: 'best ${v['best']} L');
       expect(cc.dunMs(), v['ms'], reason: 'best ${v['best']} ms');
       expect(cc.chCan(), v['can'], reason: 'best ${v['best']} can');

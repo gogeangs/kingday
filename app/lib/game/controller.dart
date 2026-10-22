@@ -859,6 +859,7 @@ class GameController extends ChangeNotifier {
 
   void _chShow() {
     if (tab != null) setTab(null);
+    frame.value++;
     refresh();
   }
 
@@ -932,6 +933,7 @@ class GameController extends ChangeNotifier {
       sim.chExit();
       toast('영지 탈환전으로 돌아왔어요');
     }
+    frame.value++;
     refresh();
   }
 
