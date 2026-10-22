@@ -6,7 +6,7 @@
 - 주민 6장(V-7~V-12)은 **한 대화창에서 이어서** 만들기(등신·크기 맞추기).
 - 받은 뒤 처리(개발 세션): 건물은 좌우 반으로 잘라 `assets/village/{k}_ruin.png`·`{k}_built.png` 512 / 아이콘 시트는 칸별로 잘라 256 / 주민은 초상화 2개를 512로 `assets/portraits/portrait_{id}_{idle,laugh}.png`, 전신은 `assets/village/folk_{id}.png` 높이 384 / 배지 160 / 테두리는 `frame_tower.png`과 같은 자리(256×296) / 모두 imagequant
 
-### V-1 마을 지도 (빈터 10칸) → `assets/village/village_map.jpg`
+### V-1 마을 지도 → `assets/village/village_map.jpg` — **받음·반영 완료 (2026-10-23)**, 빈터 8칸 + 광장 + 풀밭으로 10채 배치(기획서 4-1)
 ```
 모바일 방치형 RPG 「왕이 되는 그날까지」의 마을 화면에 쓸 「마을 지도」 배경을 그려줘. 비스듬히 위에서 내려다본(약 45도) 시골 마을 한 장.
 - 크기: 세로로 조금 긴 그림 (가로 1024 × 세로 1536), 꽉 찬 그림(투명 없음)
