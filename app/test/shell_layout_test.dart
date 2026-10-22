@@ -23,7 +23,7 @@ String _today() {
 Map<String, Object> _lateSave() => {
       'acorn-idle-v1': '{"gold":9.87e14,"stage":51,"best":51,"gem":123456,"started":true,'
           '"joined":{"margo":true,"haral":true,"riel":true,"bron":true},'
-          '"done":{"marta":true,"margo":true,"haral":true,"riel":true,"bron":true,"tutSkill":true,"capRoad":true,"cap56":true,"cap57":true},'
+          '"done":{"marta":true,"margo":true,"haral":true,"riel":true,"bron":true,"tutSkill":true,"toby":true,"toby2":true,"capRoad":true,"cap56":true,"cap57":true},'
           '"lv":{"bron":60,"haral":61,"riel":58,"margo":55},"bld":{"inn":10,"farm":6,"diner":10,"dock":10,"apiary":9,"mine":10},'
           '"rec":{"brida":3},"party":{"miner":"brida"},"seeds":{"wheat":5,"carrot":2,"pumpkin":1},"items":{"wheat":40,"carrot":9,"pumpkin":4,"fish":120,"honey":80,"ore":999},"plots":[{"k":"wheat","at":0},{"k":"carrot","at":9999999999999},null],"plotTag":[null,"carrot"],"build":{"k":"dock","end":9999999999999,"dur":3600},"bq":["apiary"],"gemPlots":2,"buffs":{"atk":9999999999999,"gold":9999999999999},"att":{"intro":1,"last":"${_today()}"},"v":3}',
     };
