@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 
 import '../battle/sim.dart';
 import '../core/calc.dart';
+import '../core/challenge.dart';
 import '../core/data.dart';
 import '../core/fmt.dart';
 import '../core/js.dart';
@@ -24,9 +25,18 @@ class StageTop extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final s = g.state, st = s.stage, r = GameCalc.region(st), boss = g.sim.boss;
-    final label = st > maxLand ? '왕궁 뜰' : '${(st - 1) ~/ 10 + 1}-${(st - 1) % 10 + 1} ${r.n}';
-    final sub = st > maxLand ? '보스 없이 사냥 중 · 1부 완결' : '${GameCalc.terrName(st)} 탈환전';
+    final s = g.state, st = s.stage, r = GameCalc.region(st), boss = g.sim.boss, h = g.sim.ch;
+    var label = st > maxLand ? '왕궁 뜰' : '${(st - 1) ~/ 10 + 1}-${(st - 1) % 10 + 1} ${r.n}';
+    var sub = st > maxLand ? '보스 없이 사냥 중 · 1부 완결' : '${GameCalc.terrName(st)} 탈환전';
+    // 도전 중: 탑 층·규칙 / 던전 남은 시간·처치 수·별 (웹 chHud)
+    if (h != null && h.mode == 'tower') {
+      final i = h.info!;
+      label = '시련의 탑 ${i.f}층';
+      sub = i.gate ? '수문장' : i.rule >= 0 ? '시련 · ${towerRules[i.rule].n}' : '최고 ${g.calc.towerTop()}층';
+    } else if (h != null) {
+      label = '${dunDef(h.k).n} · 단계 ${h.l}';
+      sub = '⏱ ${mmss(math.max(0, h.t))} · ${h.kills}마리';
+    }
     final gi = g.state.raw['guideOff'] == true ? -1 : g.calc.guideIndex();
     // 오른쪽 위에 우편함·랭킹 버튼이 있으면 그만큼 비움 (웹 .ovtop padding-inline:8px 58px)
     final fab = g.online.on;
@@ -52,11 +62,17 @@ class StageTop extends StatelessWidget {
                       Text(sub, maxLines: 1, overflow: TextOverflow.ellipsis, style: KdText.body(11.5, color: KdColors.muted, height: 1.2)),
                   ]),
                 ),
-                const SizedBox(width: 8),
-                _pips(s.wave, boss != null, st <= maxLand),
+                if (h == null) ...[const SizedBox(width: 8), _pips(s.wave, boss != null, st <= maxLand)],
+                if (h != null && h.mode == 'dun') ...[
+                  const SizedBox(width: 8),
+                  for (final n in dunStars)
+                    Text('★', style: TextStyle(fontSize: 13, height: 1, color: h.kills >= n ? KdColors.gold : const Color(0x40FFFFFF))),
+                ],
               ]),
             )),
-            if (gi >= 0) _GuidePill(g, gi),
+            if (h != null) _ChBtn('나가기', onTap: g.chExitTap),
+            if (h != null && h.mode == 'tower' && h.st == 'win') _ChBtn('다음 층 ▶', gold: true, onTap: g.chNextTap),
+            if (gi >= 0 && h == null) _GuidePill(g, gi),
             ]),
             if (boss != null) ...[const SizedBox(height: 6), IgnorePointer(child: _BossBar(g, boss))],
             const SizedBox(height: 6),
@@ -88,6 +104,29 @@ class StageTop extends StatelessWidget {
           child: OverflowBox(maxWidth: 20, maxHeight: 20, child: uiImg('ui_boss_mark', size: 20)),
         ),
       ]);
+}
+
+/// 도전 중 위쪽 버튼 (웹 .chx)
+class _ChBtn extends StatelessWidget {
+  const _ChBtn(this.t, {required this.onTap, this.gold = false});
+  final String t;
+  final VoidCallback onTap;
+  final bool gold;
+
+  @override
+  Widget build(BuildContext context) => GestureDetector(
+        onTap: onTap,
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 11, vertical: 6),
+          decoration: BoxDecoration(
+            color: gold ? null : const Color(0xE00A0E1A),
+            gradient: gold ? const LinearGradient(colors: [Color(0xFFFFCF4A), Color(0xFFE9A91C)], begin: Alignment.topCenter, end: Alignment.bottomCenter) : null,
+            border: Border.all(color: gold ? const Color(0xFFFFE08A) : const Color(0x99FFC94A)),
+            borderRadius: BorderRadius.circular(999),
+          ),
+          child: Text(t, style: KdText.body(13, color: gold ? const Color(0xFF3A2300) : const Color(0xFFFFE08A), weight: FontWeight.w700, height: 1.2)),
+        ),
+      );
 }
 
 /// 다음 할 일 (웹 .guide): 바뀌면 6초 동안 펼쳐 보여 주고, 접힌 걸 누르면 펼침, 펼친 걸 누르면 그곳으로
@@ -163,10 +202,21 @@ class _BossBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // 왕도: 잔영은 군단장처럼 보라, 마왕은 1단계 보라 → 2단계 금 (웹 .bossbar.cmd/.dem/.gold)
-    final st = g.calc.fightSt(), cmd = GameCalc.isLord(st) || b.ghost != null, gold = b.dem && b.ph2;
+    final st = g.calc.fightSt(), h = g.sim.ch, ti = h?.info;
+    // 시련의 탑: 층 태그·층 이름, 수문장·잔영은 보라 (웹 towerSpawn)
+    final cmd = ti != null ? (ti.gate || ti.art.ghost != null) : GameCalc.isLord(st) || b.ghost != null, gold = b.dem && b.ph2;
     final left = math.max(0, g.sim.bossT), hurry = left <= 10;
-    final tag = b.dem ? '마왕' : b.ghost != null ? '잔영' : b.guard ? '근위대장' : cmd ? '군단장' : '성주';
-    final faceId = b.dem ? 'baltasar' : b.ghost != null ? bossIds[b.ghost!] : bossIds[GameCalc.regionIndex(st) % bossIds.length];
+    final tag = ti != null ? '${ti.f}층' : b.dem ? '마왕' : b.ghost != null ? '잔영' : b.guard ? '근위대장' : cmd ? '군단장' : '성주';
+    final faceId = ti != null ? (ti.face ?? 'baltasar') : b.dem ? 'baltasar' : b.ghost != null ? bossIds[b.ghost!] : bossIds[GameCalc.regionIndex(st) % bossIds.length];
+    final showFace = ti != null ? ti.face != null : cmd;
+    // 쌍둥이: 보스 2마리 체력 합
+    num bhp = 0, bmax = 0;
+    for (final m in g.sim.mons) {
+      if (m.boss) {
+        bhp += math.max(0, m.hp);
+        bmax += m.max;
+      }
+    }
     final blink = hurry && (g.sim.time * 4).floor().isEven;
     return Container(
       width: math.min(320, MediaQuery.sizeOf(context).width * .92),
@@ -185,7 +235,7 @@ class _BossBar extends StatelessWidget {
         ],
       ),
       child: Row(children: [
-        if (cmd)
+        if (showFace)
           Padding(
             padding: const EdgeInsets.only(right: 8),
             child: ClipRRect(
@@ -217,7 +267,7 @@ class _BossBar extends StatelessWidget {
                 child: Text(tag, style: KdText.body(10, color: gold ? const Color(0xFF2A1A00) : Colors.white, weight: FontWeight.w600, height: 1.3)),
               ),
               const SizedBox(width: 6),
-              Expanded(child: Text(GameCalc.bossName(st), overflow: TextOverflow.ellipsis, style: KdText.display(12))),
+              Expanded(child: Text(ti != null ? ti.name : GameCalc.bossName(st), overflow: TextOverflow.ellipsis, style: KdText.display(12))),
               Opacity(
                 opacity: blink ? .35 : 1,
                 child: Text('${left.ceil()}초', style: KdText.figure(12, color: hurry ? const Color(0xFFFF4D63) : const Color(0xFFFFD6DC))),
@@ -232,7 +282,7 @@ class _BossBar extends StatelessWidget {
                   const ColoredBox(color: Color(0x1FFFFFFF)),
                   FractionallySizedBox(
                     alignment: Alignment.centerLeft,
-                    widthFactor: _c01(b.hp / b.max),
+                    widthFactor: _c01(bmax > 0 ? bhp / bmax : 0),
                     child: DecoratedBox(
                       decoration: BoxDecoration(
                         gradient: LinearGradient(
@@ -250,7 +300,7 @@ class _BossBar extends StatelessWidget {
                   // 마왕: 체력바 가운데 50% 눈금
                   if (b.dem) const Align(child: SizedBox(width: 2, child: ColoredBox(color: Color(0xBFFFFFFF)))),
                   Center(
-                    child: Text('${fmt(math.max(0, b.hp))} / ${fmt(b.max)}',
+                    child: Text('${fmt(bhp)} / ${fmt(bmax)}',
                         style: KdText.figure(10, color: Colors.white).copyWith(shadows: const [Shadow(blurRadius: 2)])),
                   ),
                 ]),

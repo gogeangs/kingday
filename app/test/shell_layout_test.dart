@@ -4,10 +4,12 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:kingday/core/challenge.dart';
 import 'package:kingday/core/save_code.dart';
 import 'package:kingday/core/save_store.dart';
 import 'package:kingday/game/controller.dart';
 import 'package:kingday/main.dart';
+import 'package:kingday/screens/challenge_sheet.dart';
 import 'package:kingday/screens/pt_page.dart';
 import 'package:kingday/screens/settings_sheet.dart';
 import 'package:kingday/ui/widgets.dart';
@@ -21,7 +23,7 @@ String _today() {
 
 /// 후반 저장 (긴 칭호·큰 숫자·5명 원정대)
 Map<String, Object> _lateSave() => {
-      'acorn-idle-v1': '{"gold":9.87e14,"stage":51,"best":51,"gem":123456,"started":true,'
+      'acorn-idle-v1': '{"gold":9.87e14,"stage":51,"best":51,"gem":123456,"started":true,"chOpen":1,"tower":{"top":14,"day":""},'
           '"joined":{"margo":true,"haral":true,"riel":true,"bron":true},'
           '"done":{"marta":true,"margo":true,"haral":true,"riel":true,"bron":true,"tutSkill":true,"toby":true,"toby2":true,"capRoad":true,"cap56":true,"cap57":true},'
           '"lv":{"bron":60,"haral":61,"riel":58,"margo":55},"bld":{"inn":10,"farm":6,"diner":10,"dock":10,"apiary":9,"mine":10},'
@@ -194,6 +196,29 @@ void main() {
           expect(find.text('누구를 출전시킬까요?'), findsOneWidget);
           await closeTop();
         }
+
+        // 도전: 창 → 탑 15층(쌍둥이) 전투 화면 → 나가기 / 던전 전투 화면 → 나가기(★0 환불 창)
+        openChallenge(g);
+        await frames();
+        expect(find.text('시련의 탑'), findsWidgets);
+        expect(find.text('요일 던전'), findsOneWidget);
+        await closeTop();
+        g.towerStart(15);
+        await frames(3);
+        expect(find.text('나가기'), findsOneWidget);
+        expect(find.text('시련의 탑 15층'), findsOneWidget);
+        g.chExitTap();
+        await frames();
+        expect(g.sim.ch, isNull);
+        g.dunEnter(g.calc.dunOpenK().first);
+        await frames();
+        if (find.text('입장하기').evaluate().isNotEmpty) await press('입장하기');
+        await frames(2);
+        expect(g.sim.ch?.mode, 'dun');
+        g.chExitTap();
+        await frames();
+        expect(find.text('한 마리도 못 잡았어요'), findsOneWidget);
+        await press('확인');
 
         // 6단계: 은퇴 (단련 탭 상자 → 은퇴하기 → 확인 → 몇 년 뒤 → 첫 지역)
         g.state.stage = 25;

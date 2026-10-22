@@ -13,6 +13,7 @@ import 'package:flutter/painting.dart';
 import 'package:flutter/services.dart';
 
 import '../core/calc.dart';
+import '../core/challenge.dart';
 import '../core/data.dart';
 import 'battle_data.dart';
 import 'sim.dart';
@@ -164,6 +165,42 @@ class BattleGame extends FlameGame {
 
   int _lastRegion = -1;
 
+  /// 도전 중이면 쓰는 지역 그림을 받는다: 탑은 모든 보스(0~5)와 탑 배경(tower_*), 던전은 배경·마물 지역 (웹 sprOk/bgReadyN 이 그때그때 받던 자리)
+  String? _chLoaded;
+  void _ensureCh() {
+    final h = sim.ch;
+    if (h == null) return;
+    final key = h.mode == 'tower' ? 'tower' : h.k;
+    if (_chLoaded == key) return;
+    _chLoaded = key;
+    if (h.mode == 'tower') {
+      for (var r = 0; r < regions.length; r += 2) {
+        _ensureRegion(r);
+      }
+      _loadTowerBg();
+    } else {
+      final d = dunDef(h.k);
+      _ensureRegion(d.ri);
+      _ensureRegion(d.mri);
+    }
+  }
+
+  bool _towerBgTried = false;
+  Future<void> _loadTowerBg() async {
+    if (_towerBgTried) return;
+    _towerBgTried = true;
+    final have = await _assetList();
+    for (final l in ['sky', 'far', 'mid', 'ground']) {
+      final p = 'bg/tower_$l.png';
+      if (have != null && !have.contains('assets/game/$p')) continue;
+      try {
+        final im = await images.load(p);
+        _img[p] = im;
+        await _measureBg(p, im);
+      } catch (_) {}
+    }
+  }
+
   @override
   void onGameResize(Vector2 size) {
     super.onGameResize(size);
@@ -182,6 +219,7 @@ class BattleGame extends FlameGame {
       _lastRegion = ri;
       _ensureRegion(ri);
     }
+    _ensureCh();
     onTick?.call(math.min(.1, dt));
   }
 
@@ -202,15 +240,18 @@ class BattleGame extends FlameGame {
     _c = canvas;
     canvas.save();
     canvas.translate(sim.shakeX.toDouble(), sim.shakeY.toDouble());
-    final r = GameCalc.region(sim.s.stage), ri = GameCalc.regionIndex(sim.s.stage), l = sim.layout();
-    _drawBg(ri, r, l);
+    // 도전 중: 탑은 탑 배경(없으면 서리 무덤을 어둡게), 던전은 던전 배경 (웹 draw)
+    final h = sim.ch, ri = h != null ? sim.chRi() : GameCalc.regionIndex(sim.s.stage), r = regions[ri], l = sim.layout();
+    final towerBg = h != null && h.mode == 'tower' && ['sky', 'far', 'mid', 'ground'].every((x) => _img['bg/tower_$x.png'] != null);
+    _drawBg(ri, r, l, bnOver: towerBg ? 'tower' : null);
+    if (h != null && h.mode == 'tower' && !towerBg) _c.drawRect(ui.Rect.fromLTWH(0, 0, _w, _ht), ui.Paint()..color = const ui.Color(0x6B080A1E));
     final ents = <(double, void Function())>[
       for (final id in l.ids)
         (l.py[id]!.toDouble(), () => _drawMember(id, l.pos[id]!.toDouble(), l.py[id]!.toDouble(), (l.s * l.dsc[id]!).toDouble(), sim.party[id], !sim.engaged)),
       for (final m in sim.mons)
         () {
           final y = sim.depthAt(l, m.lane).toDouble();
-          return (y, () => _drawMon(ri, y, (l.s * (.9 + .14 * m.lane)).toDouble(), m));
+          return (y, () => _drawMon(m.ri ?? ri, y, (l.s * (.9 + .14 * m.lane)).toDouble(), m));
         }(),
     ];
     // 웹 Array.sort 는 안정 정렬 → 같은 깊이면 원래 순서
@@ -341,8 +382,8 @@ class BattleGame extends FlameGame {
     }
   }
 
-  void _drawBg(int ri, RegionDef r, BattleLayout l) {
-    final bn = bgImage[ri];
+  void _drawBg(int ri, RegionDef r, BattleLayout l, {String? bnOver}) {
+    final bn = bnOver ?? bgImage[ri];
     ui.Image? L(String layer) => bn == null ? null : _img['bg/${bn}_$layer.png'];
     final sky = L('sky'), far = L('far'), mid = L('mid'), ground = L('ground');
     final ht = _ht, w = _w;
@@ -354,7 +395,7 @@ class BattleGame extends FlameGame {
     }
     final hz = (l.top - ht * .05).toDouble();
     final opG = _opaqueTop['bg/${bn}_ground.png'] ?? .5, opM = _opaqueTop['bg/${bn}_mid.png'] ?? .5;
-    if (bgFull.contains(bn)) {
+    if (bgFull.contains(bn) || bn == 'tower') {
       _tileLayer(sky, hz + ht * .1, math.max(hz + ht * .1, w * sky.height / sky.width * 1.3), .04);
       final gH = ht - hz + ht * .06, gOp = ht - gH + gH * opG, mH = ht * .27, mB = math.max(hz + ht * .15, gOp + 6);
       final mOp = mB - mH + mH * opM, fH = ht * .2, fB = math.max(hz + ht * .05, mOp + 6);
@@ -453,7 +494,7 @@ class BattleGame extends FlameGame {
   /// 그릴 시트 + 물들이기 (웹 monSprite/tintSet). 왕도 그림이 오기 전엔 기존 그림을 색만 바꿔 씀
   ({MonSheet sheet, ui.ColorFilter? tint, double alpha, double scale, bool lordArt})? _monArt(int ri, Mon m) {
     if (m.gob) return (sheet: goblinSheet, tint: null, alpha: 1.0, scale: 1.0, lordArt: false);
-    if (m.dem) {
+    if (m.dem || m.balt) {
       final own = baltasarSheets[m.ph2 ? 1 : 0];
       if (_has(own)) return (sheet: own, tint: null, alpha: 1.0, scale: 1.3, lordArt: true);
       final src = monSheets[3]?.boss; // 알도르

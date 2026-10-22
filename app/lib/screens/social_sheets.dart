@@ -9,6 +9,7 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 
 import '../core/calc.dart';
+import '../core/challenge.dart';
 import '../core/data.dart';
 import '../core/fmt.dart';
 import '../core/js.dart';
@@ -376,6 +377,7 @@ class _ProfileState extends State<_Profile> {
               Text('${ranks[c.rankIdx()].n} · 전투력 ${fmt(c.power())}', style: _muted()),
               const SizedBox(height: 3),
               Text('최고 영지 ${math.min(s.best, maxLand)} · 은퇴 ${fmt(s.retires)}번 · 은퇴의 추억 ${fmt(s.memory)}개', style: _muted()),
+              if (c.chOpen) ...[const SizedBox(height: 3), Text('시련의 탑 최고 ${c.towerTop()}층', style: _muted())],
             ]),
           ),
         ]),

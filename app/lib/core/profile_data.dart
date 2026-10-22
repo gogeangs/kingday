@@ -33,7 +33,11 @@ final List<Deco> pframes = [
   const Deco('season', '시즌 왕관', '시즌 랭킹 1위 보상', _no, rk: true, tall: true),
   const Deco('conquer', '정복자', '영지 50곳 탈환 · 명예의 전당 보상', _no, rk: true, tall: true),
   Deco('capital', '왕도의 별', '마왕 발타사르 처치 (1부 완결)', (c) => orNum(c.s.raw['capClears'], 0) >= 1, tall: true),
+  Deco('tower', '시련의 탑', '시련의 탑 50층', (c) => _top(c) >= 50),
 ];
+
+/// 시련의 탑 최고 층 (S.tower.top)
+num _top(GameCalc c) => orNum(asMap(c.s.raw['tower'])?['top'], 0);
 
 final List<Deco> badges = [
   Deco('pumpkin', '첫 달빛 호박', '달빛 호박 수확', (c) => _st(c, 'pump') >= 1),
@@ -46,6 +50,8 @@ final List<Deco> badges = [
   // 왕도가 생겨도 50곳 기준 그대로
   Deco('king', '농부 왕', '영지 50곳 모두 탈환', (c) => c.s.best > 50),
   Deco('part1', '1부 완결', '마왕 발타사르 처치', (c) => orNum(c.s.raw['capClears'], 0) >= 1),
+  Deco('tower25', '탑 25층', '시련의 탑 25층', (c) => _top(c) >= 25),
+  Deco('tower100', '탑의 주인', '시련의 탑 100층', (c) => _top(c) >= 100),
   const Deco('goblin', '고블린 사냥꾼', '황금 고블린 희귀 전리품', _no, rare: true),
   const Deco('champ', '시즌 챔피언', '시즌 랭킹 1위 보상', _no, rk: true),
   const Deco('top10', '시즌 10강', '시즌 랭킹 2~10위 보상', _no, rk: true),
