@@ -75,6 +75,14 @@ const SAVES = {
   old: { gold: 500, stage: 14, best: 14, crops: { wheat: 7, carrot: 2 }, items: { wheat: 1 }, joined: { margo: true }, lv: { margo: 3 } },
 };
 
+// 은퇴 일기 특성이 있는 후반 저장 (docs/content/RETIRE.md): 지름길로 31부터 시작한 회차, 은퇴 9번
+SAVES.tr = Object.assign(J(SAVES.late), {
+  stage: 47, best: 61, capClears: 1, memory: 120, retires: 9, runStart: 31, retRw: { 1: 1, 3: 1 }, trReset: 1, diaryIntro: 1,
+  trait: { sharp: 8, hat: 5, critd: 3, stubborn: 2, stretch: 1, climb: 2, soil: 4, hands: 6, carpenter: 3, seedbag: 2, stew: 2, bumper: 1,
+    purse: 3, shortcut: 7, inn: 2, knack: 4, memoir: 2, goblin: 1 },
+  plots: [{ k: 'wheat', at: NOW - 40 * 1000 }, { k: 'carrot', at: NOW - 200 * 1000 }, null, { k: 'pumpkin', at: NOW - 900 * 1000 }],
+});
+
 function setSave(name) {
   w.setNow(NOW);
   const s = F('hydrate')(J(SAVES[name]));
@@ -108,6 +116,11 @@ for (const name of Object.keys(SAVES)) {
     members:members(),power:power(),gemGold:gemGold(),goldRate:goldRate(),goldX:GOLDX.map(goldX),
     buffs:Object.keys(BUFFN).map(k=>buff(k)),subOn:subOn(),gearSum:gearSum(),kStats:kStats(),
     guide:(S.retires>0||S.best>30)?-1:GUIDE.findIndex((x,j)=>!x.ok()&&!(j<3&&S.best>12))})`);
+  sc.retire = run(`({tl:Object.fromEntries(MEMT.map(t=>[t.k,tl(t.k)])),spent:trSpent(),spentB:MEMB.map(b=>trSpent(b.k)),memPts:memPts(),canAny:trCanAny(),
+    open:MEMT.map(trOpen),next:MEMT.map(t=>trNext(t)??null),resetGem:trResetGem(),
+    start:retStart(false),start1:retStart(true),base:retireBase(),pts:retirePts(),run:retRun(),can:retCan(),purse:[1,6,31].map(retPurse),
+    bossLim:[5,10,60].map(bossLim),cropT:CROPS.map(cropT),crX:crX(),offCapH:offCapH(),trCook:trCook(),trProd:trProd(),trBld:trBld(),trUp:trUp(),
+    eff:MEMT.map(t=>[t.e(1),t.e(t.c.length)])})`);
   sc.comp = {};
   for (const id of COMPS) {
     sc.comp[id] = run(`({stats:${id === 'kael' ? 'kStats()' : `cStats('${id}')`},cPow:cPow('${id}'),owned:owned('${id}'),
@@ -159,7 +172,7 @@ for (const name of Object.keys(SAVES)) {
   {
     const ra = w.ctx.renderAll;
     w.ctx.renderAll = () => {};
-    F('retire')(5);
+    F('retire')(5, false);
     w.ctx.renderAll = ra;
   }
   sc.retired = run('S');

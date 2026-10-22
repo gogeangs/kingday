@@ -280,7 +280,7 @@ class GameActions {
     var n = 0;
     num cost = 0;
     while (n < _want && l + n < u.max && n < 5000) {
-      final cc = GameCalc.upgradeCost(u.k, l + n);
+      final cc = c.upgradeCost(u.k, l + n);
       if (upMul == 'max' && n > 0 && cost + cc > s.gold) break;
       cost += cc;
       n++;
@@ -294,7 +294,7 @@ class GameActions {
     if (s.upLv(k) >= u.max) return 0;
     var n = 0;
     while (n < _want && s.upLv(k) < u.max && n < 5000) {
-      final cost = GameCalc.upgradeCost(k, s.upLv(k));
+      final cost = c.upgradeCost(k, s.upLv(k));
       if (s.gold < cost) break;
       s.gold = s.gold - cost;
       s.up[k] = s.upLv(k) + 1;
@@ -312,7 +312,7 @@ class GameActions {
     num bv = 0;
     for (final u in upgrades) {
       final l = s.upLv(u.k);
-      final cost = GameCalc.upgradeCost(u.k, l);
+      final cost = c.upgradeCost(u.k, l);
       if (l >= u.max || s.gold < cost) continue;
       s.up[u.k] = l + 1;
       final g = (c.power() - p0) / cost;
@@ -475,7 +475,8 @@ class GameActions {
     harvGob = 0;
     if (ps.st != 'ready') return 0;
     final gb = truthy(asMap(s.plots[i])?['g']) ? 2 : 1;
-    final n = (2 + (rng.next() < .3 ? 1 : 0)) * gb, k = ps.c!.k;
+    final bp = c.tl('bumper') != 0 && rng.next() < .05 * c.tl('bumper') ? 2 : 1; // 풍년의 기억
+    final n = (2 + (rng.next() < .3 ? 1 : 0)) * gb * bp, k = ps.c!.k;
     harvGob = gb > 1 ? 1 : 0;
     s.items[k] = asNum(s.items[k]) + n;
     s.plots[i] = null;
@@ -572,7 +573,7 @@ class GameActions {
     for (final e in r.need.entries) {
       s.items[e.key] = asNum(s.items[e.key]) - e.value;
     }
-    s.buffs[r.buff] = math.max(c.now, orNum(s.buffs[r.buff], 0)) + 600000 * c.vpCook();
+    s.buffs[r.buff] = math.max(c.now, orNum(s.buffs[r.buff], 0)) + 600000 * (c.vpCook() + c.trCook());
     c.stat('cook', 1);
     _toast('${r.n} 완성! ${r.desc}');
   }

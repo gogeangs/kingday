@@ -285,7 +285,7 @@ class _Tabs extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final dots = {GameTab.pt: g.ptDot, GameTab.vl: g.vlDot, GameTab.mp: g.chDot};
+    final dots = {GameTab.pt: g.ptDot, GameTab.up: g.upDot, GameTab.vl: g.vlDot, GameTab.mp: g.chDot};
     return Container(
       padding: EdgeInsets.fromLTRB(8, 5, 8, math.max(6, bottom - 18)),
       decoration: const BoxDecoration(
@@ -322,7 +322,7 @@ class _Tabs extends StatelessWidget {
           ]),
         ),
         // 원정대 점은 금색(선택), 마을 점은 빨강
-        if (dot) Positioned(top: 3, right: 10, child: _Dot(opt: t == GameTab.pt)),
+        if (dot) Positioned(top: 3, right: 10, child: _Dot(opt: t == GameTab.pt || t == GameTab.up)),
       ]),
     );
   }

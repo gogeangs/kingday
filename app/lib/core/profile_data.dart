@@ -1,4 +1,4 @@
-/// 프로필 꾸미기 — 테두리 11종·배지 14종 (웹 PFRAMES · BADGES · pfCheck)
+/// 프로필 꾸미기 — 테두리·배지 (웹 PFRAMES · BADGES · pfCheck)
 library;
 
 import 'attendance.dart';
@@ -34,6 +34,7 @@ final List<Deco> pframes = [
   const Deco('conquer', '정복자', '영지 50곳 탈환 · 명예의 전당 보상', _no, rk: true, tall: true),
   Deco('capital', '왕도의 별', '마왕 발타사르 처치 (1부 완결)', (c) => orNum(c.s.raw['capClears'], 0) >= 1, tall: true),
   Deco('tower', '시련의 탑', '시련의 탑 50층', (c) => _top(c) >= 50, tall: true),
+  Deco('retire', '은퇴의 정원', '은퇴 10번', (c) => c.s.retires >= 10, tall: true),
 ];
 
 /// 시련의 탑 최고 층 (S.tower.top)
@@ -47,6 +48,8 @@ final List<Deco> badges = [
   Deco('chest', '상자 사냥꾼', '성유물 상자 Lv.10', (c) => c.s.boxLv >= 10),
   Deco('horns', '군단장 사냥꾼', '군단장 처치', (c) => (asMap(c.s.raw['gemLord'])?.length ?? 0) >= 1),
   Deco('retire', '은퇴 전문가', '은퇴 3번', (c) => c.s.retires >= 3),
+  Deco('retire5', '노련한 은퇴자', '은퇴 5번', (c) => c.s.retires >= 5),
+  Deco('retire20', '전설의 은퇴자', '은퇴 20번', (c) => c.s.retires >= 20),
   // 왕도가 생겨도 50곳 기준 그대로
   Deco('king', '농부 왕', '영지 50곳 모두 탈환', (c) => c.s.best > 50),
   Deco('part1', '1부 완결', '마왕 발타사르 처치', (c) => orNum(c.s.raw['capClears'], 0) >= 1),

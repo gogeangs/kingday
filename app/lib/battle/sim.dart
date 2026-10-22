@@ -346,6 +346,7 @@ class BattleSim {
     mons = [];
     _chPartyReset();
     ch = st;
+    _stretch();
     spawnT = .6;
   }
 
@@ -357,7 +358,7 @@ class BattleSim {
     spawnT = .8;
   }
 
-  void towerStart(int f) => _chBegin(ChState.tower(f));
+  void towerStart(int f) => _chBegin(ChState.tower(f)..lim += 2 * c.tl('stubborn'));
 
   /// 던전 입장 (입장권은 부르는 쪽에서 씀)
   void dunStart(String k) => _chBegin(ChState.dun(k, c.dunL(), c.dunMs(), k == 'vault' ? 40 + rng.next() * 80 : 1e9));
@@ -377,7 +378,7 @@ class BattleSim {
         Mon(x: w + 70 + j * 50, lane: n > 1 ? const [.4, .72][j] : .55, hp: i.hp, max: i.hp, atk: i.atk, boss: true, lord: a.lord || a.balt,
             balt: a.balt, ghost: a.ghost, guard: a.guard, ri: a.ri, shell: i.rule == 3, cd: .8 + j * .3, mv: .55)
     ];
-    bossT = i.lim;
+    bossT = ch!.lim;
     events.add(SoundEvent('boss'));
     if (i.gate) {
       warn = Warn(true, '⚠ ${i.f}층 수문장! ⚠');
@@ -552,6 +553,16 @@ class BattleSim {
   bool skFull(String id) {
     final p = party[id];
     return p != null && !p.down && p.sg >= skills[id]!.need;
+  }
+
+  /// 아침 체조: 보스 등장·도전 시작 때 스킬 게이지를 단계마다 10% 채워 둠 (웹 stretchSk)
+  void _stretch() {
+    final v = .1 * c.tl('stretch');
+    if (v == 0) return;
+    for (final e in party.entries) {
+      final n = skills[e.key]?.need;
+      if (n != null) e.value.sg = math.min(n, e.value.sg + n * v);
+    }
   }
 
   void chargeSkill(String id) {
@@ -952,6 +963,7 @@ class BattleSim {
 
   // ───────────── 마물 ─────────────
   void hitMon(Mon m, num d, bool cr, num sc) {
+    if (ch != null && c.tl('climb') != 0) d *= 1 + .1 * c.tl('climb'); // 탑 오르기
     if (m.vul > 0) d *= m.vulM;
     if (m.shell) d *= .5;
     m.hp -= d;
@@ -973,7 +985,8 @@ class BattleSim {
         Mon(x: w + 70, lane: .55, hp: mx, max: mx, atk: GameCalc.monAtk(st, true), boss: true, lord: lord || dem, cd: .8,
             dem: dem, ghost: gh ? GameCalc.ghostIdx(st) : null, guard: gd)
       ];
-      bossT = GameCalc.bossLim(st);
+      bossT = c.bossLimT(st);
+      _stretch();
       warn = Warn(cm, dem ? '⚠ 마왕 출현! ⚠' : gh ? '⚠ 군단장의 잔영! ⚠' : gd ? '⚠ 근위대장 출현! ⚠' : null);
       events.add(SoundEvent('boss'));
       shakeT = cm ? .6 : .4;
@@ -1005,7 +1018,7 @@ class BattleSim {
         )
     ];
     if (st >= 3 && gobT <= 0) {
-      gobT = 360 + rng.next() * 360;
+      gobT = (360 + rng.next() * 360) * (1 - .1 * c.tl('goblin'));
       final gh = GameCalc.monHp(st, false) * 5;
       mons.insert(0, Mon(x: w + 30, lane: .3, hp: gh, max: gh, atk: 0, cd: 1e9, gob: true, mv: 1.4, life: 12));
       banner = StageBanner('황금 고블린 출현!', '12초 안에 잡으면 보물을 떨군다');
@@ -1343,7 +1356,7 @@ class BattleSim {
       }
       if (tgt == null) continue;
       final cr = rng.next() < t.crit;
-      final d = t.atk * (cr ? 2 : 1) * (.9 + rng.next() * .2) * (skx.feast > 0 ? 1.2 : 1);
+      final d = t.atk * (cr ? c.crX() : 1) * (.9 + rng.next() * .2) * (skx.feast > 0 ? 1.2 : 1);
       p.swing = .22;
       if (id == 'daisy') {
         for (final m in alive) {
@@ -1592,7 +1605,7 @@ class BattleSim {
   }
 
   /// 보스 남은 시간 한도 (성주 30초, 군단장 40초, 마왕 60초)
-  num get bossLimit => ch != null ? ch!.lim : GameCalc.bossLim(c.fightSt());
+  num get bossLimit => ch != null ? ch!.lim : c.bossLimT(c.fightSt());
   Mon? get boss {
     for (final m in mons) {
       if (m.boss) return m;

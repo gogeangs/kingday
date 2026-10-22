@@ -5,6 +5,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:kingday/core/challenge.dart';
+import 'package:kingday/core/retire.dart';
 import 'package:kingday/core/save_code.dart';
 import 'package:kingday/core/save_store.dart';
 import 'package:kingday/game/controller.dart';
@@ -232,6 +233,47 @@ void main() {
         expect(find.text('한 마리도 못 잡았어요'), findsOneWidget, reason: '처치 $kills · modalOpen ${g.modalOpen} · 열린 창 $open');
         await press('확인');
         }
+
+        // 은퇴 일기 (docs/content/RETIRE.md): 처음 대사 → 특성 찍기 → 갈래·탭 바꾸기 → 초기화 확인
+        g.state.memory = 40;
+        g.setTab(GameTab.up);
+        await frames(2);
+        expect(find.byKey(const ValueKey('diaryBtn')), findsOneWidget);
+        g.openDiary();
+        await frames();
+        expect(find.text('카엘의 은퇴 일기'), findsOneWidget);
+        await press('일기 펼치기');
+        await frames();
+        // 고른 탭·갈래는 창을 닫아도 남음(웹 diaryTab·diaryBr) → 앞 시험에서 고른 것이 남아 있을 수 있어 처음으로 돌림
+        await tester.tap(find.byKey(const ValueKey('dyTab-tr')));
+        await frames(2);
+        await tester.tap(find.byKey(const ValueKey('dyBr-sword')));
+        await frames(2);
+        expect(find.text('날 선 괭이'), findsOneWidget);
+        await tester.tap(find.byKey(const ValueKey('dyTr-sharp')));
+        await frames(2);
+        expect(g.calc.tl('sharp'), 1);
+        await tester.tap(find.byKey(const ValueKey('dyBr-travel')));
+        await frames(2);
+        expect(find.text('지름길'), findsOneWidget);
+        await tester.tap(find.byKey(const ValueKey('dyBr-farm')));
+        await frames(2);
+        expect(find.text('풍년의 기억'), findsOneWidget);
+        await tester.ensureVisible(find.byKey(const ValueKey('dyReset')));
+        await frames(1);
+        await tester.tap(find.byKey(const ValueKey('dyReset')));
+        await frames(2);
+        expect(find.text('특성 초기화'), findsOneWidget);
+        await press('초기화');
+        expect(g.calc.tl('sharp'), 0);
+        expect(g.calc.trResetGem(), 100, reason: '첫 초기화는 무료, 다음부터 이삭 100');
+        await tester.tap(find.byKey(const ValueKey('dyTab-log')));
+        await frames(2);
+        expect(find.text('은퇴 횟수'), findsOneWidget);
+        await tester.tap(find.byKey(const ValueKey('dyTab-rw')));
+        await frames(2);
+        expect(find.textContaining('은퇴 20회'), findsOneWidget);
+        await press('닫기');
 
         // 6단계: 은퇴 (단련 탭 상자 → 은퇴하기 → 확인 → 몇 년 뒤 → 첫 지역)
         g.state.stage = 25;

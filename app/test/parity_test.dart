@@ -10,6 +10,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:kingday/core/calc.dart';
 import 'package:kingday/core/data.dart';
 import 'package:kingday/core/profile_data.dart';
+import 'package:kingday/core/retire.dart';
 import 'package:kingday/core/fmt.dart';
 import 'package:kingday/core/rng.dart';
 import 'package:kingday/core/save_code.dart';
@@ -121,7 +122,7 @@ void main() {
     same(comps.keys.toList(), fx['misc']['compIds'], 'COMP');
   });
 
-  for (final name in ['fresh', 'mid', 'late', 'old', 'g1', 'g2', 'g3', 'g4']) {
+  for (final name in ['fresh', 'mid', 'late', 'old', 'g1', 'g2', 'g3', 'g4', 'tr']) {
     group('저장 데이터 「$name」', () {
       late Map<String, dynamic> sc;
       setUp(() => sc = (fx['scenarios'] as Map)[name] as Map<String, dynamic>);
@@ -130,6 +131,35 @@ void main() {
         final c = calcFor(name);
         c.pfCheck();
         same(jsonDecode(jsonEncode({'pfUnl': c.s.raw['pfUnl'], 'bdUnl': c.s.raw['bdUnl'], 'pfNew': c.s.raw['pfNew']})), sc['pf'], 'pf');
+      });
+
+      test('은퇴 일기: 특성·지름길·추억 보정·효과 배수', () {
+        final c = calcFor(name), r = sc['retire'] as Map<String, dynamic>;
+        same({for (final t in memTraits) t.k: c.tl(t.k)}, r['tl'], 'tl');
+        same(c.trSpent(), r['spent'], 'trSpent');
+        same([for (final b in memBranches) c.trSpent(b.k)], r['spentB'], 'trSpent(b)');
+        same(c.memPts(), r['memPts'], 'memPts');
+        same(c.trCanAny(), r['canAny'], 'trCanAny');
+        same([for (final t in memTraits) c.trOpen(t)], r['open'], 'trOpen');
+        same([for (final t in memTraits) c.trNext(t)], r['next'], 'trNext');
+        same(c.trResetGem(), r['resetGem'], 'trResetGem');
+        same(c.retStart(false), r['start'], 'retStart');
+        same(c.retStart(true), r['start1'], 'retStart(1)');
+        same(c.retireBase(), r['base'], 'retireBase');
+        same(c.retirePts(), r['pts'], 'retirePts');
+        same(c.retRun(), r['run'], 'retRun');
+        same(c.retCan(), r['can'], 'retCan');
+        same([for (final st in [1, 6, 31]) c.retPurse(st)], r['purse'], 'retPurse');
+        same([for (final st in [5, 10, 60]) c.bossLimT(st)], r['bossLim'], 'bossLim');
+        same([for (final cr in crops) c.cropT(cr)], r['cropT'], 'cropT');
+        same(c.crX(), r['crX'], 'crX');
+        same(c.offCapH(), r['offCapH'], 'offCapH');
+        same(c.trCook(), r['trCook'], 'trCook');
+        same(c.trProd(), r['trProd'], 'trProd');
+        same(c.trBld(), r['trBld'], 'trBld');
+        same(c.trUp(), r['trUp'], 'trUp');
+        same([for (final t in memTraits) [t.e(1), t.e(t.max)]], r['eff'], 'MEMT 효과 문구');
+        same(memTotal, 282, '전부 찍는 포인트');
       });
 
       test('불러오기(hydrate) 결과가 웹과 같은 JSON', () {
@@ -199,7 +229,7 @@ void main() {
         same([for (var l = 0; l <= 20; l++) c.cwOre(l)], e['cwOre'], 'cwOre');
         same([for (var l = 0; l <= 20; l++) c.cwGold(l)], e['cwGold'], 'cwGold');
         same([for (var l = 1; l <= 80; l++) GameCalc.compCost(l)], e['comp'], 'compCost');
-        same({for (final u in upgrades) u.k: [for (var l = 0; l <= 60; l++) GameCalc.upgradeCost(u.k, l)]}, e['upg'], 'UPG');
+        same({for (final u in upgrades) u.k: [for (var l = 0; l <= 60; l++) c.upgradeCost(u.k, l)]}, e['upg'], 'UPG');
         same({
           for (final b in buildings)
             b.k: [
@@ -261,7 +291,9 @@ void main() {
       });
 
       test('은퇴', () {
+        // 웹 retire(p): 은퇴 + 은퇴 횟수 보상(retRwCheck → 받은 게 있으면 pfCheck)
         final c = calcFor(name)..retire(5);
+        if (c.retRwCheck() != null) c.pfCheck();
         same(jsonDecode(jsonEncode(c.s.raw)), sc['retired'], 'retired S');
       });
 

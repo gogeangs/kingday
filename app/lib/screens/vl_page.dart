@@ -553,7 +553,7 @@ class _Farm extends StatelessWidget {
                     Expanded(
                       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                         Text(cr.n, style: KdText.display(15)),
-                        Text('자라는 시간 ${mmss(cr.t)} · 씨앗 ${fmt(orNum(g.state.seeds[cr.k], 0))}개', style: KdText.figure(12, color: KdColors.muted, weight: FontWeight.w400)),
+                        Text('자라는 시간 ${mmss(g.calc.cropT(cr))} · 씨앗 ${fmt(orNum(g.state.seeds[cr.k], 0))}개', style: KdText.figure(12, color: KdColors.muted, weight: FontWeight.w400)),
                       ]),
                     ),
                     KdBuy(
@@ -628,7 +628,7 @@ class _Kitchen extends StatelessWidget {
                     Text(r.n, style: KdText.display(15)),
                     if (left > 0) Text('${mmss(left)} 남음', style: KdText.figure(12, color: KdColors.gold, weight: FontWeight.w400)),
                   ]),
-                  Text('${r.desc} · ${(10 * g.calc.vpCook()).round()}분${g.calc.vpCook() > 1 ? ' (수라간의 손맛)' : ''}', style: KdText.body(12, color: KdColors.muted)),
+                  Text('${r.desc} · ${(10 * (g.calc.vpCook() + g.calc.trCook())).round()}분${g.calc.vpCook() > 1 ? ' (수라간의 손맛)' : ''}${g.calc.trCook() > 0 ? ' (오래 끓인 국)' : ''}', style: KdText.body(12, color: KdColors.muted)),
                   Text('재료: $need', style: KdText.body(12, color: KdColors.muted)),
                 ]),
               ),
