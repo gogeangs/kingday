@@ -216,9 +216,13 @@ void main() {
         if (find.text('입장하기').evaluate().isNotEmpty) await press('입장하기');
         await frames(2);
         expect(g.sim.ch?.mode, 'dun');
+        final kills = g.sim.ch?.kills;
         g.chExitTap();
         await frames();
-        expect(find.text('한 마리도 못 잡았어요'), findsOneWidget);
+        final open = tester.widgetList<Text>(find.descendant(of: find.byType(KdSheetFrame), matching: find.byType(Text))).map((t) => t.data).take(8).toList();
+        expect(g.sim.ch, isNull);
+        expect(g.calc.dunLeft(), 2, reason: '★0 이면 입장권 환불 (처치 $kills)');
+        expect(find.text('한 마리도 못 잡았어요'), findsOneWidget, reason: '처치 $kills · modalOpen ${g.modalOpen} · 열린 창 $open');
         await press('확인');
         }
 
