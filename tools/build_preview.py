@@ -12,7 +12,8 @@ INLINE 에는 'assets/ui/'+이름 처럼 코드로 경로를 만들어 부르는
 import base64, os, re, sys
 
 INLINE = ['assets/fonts/hahmlet-500.woff2', 'assets/fonts/hahmlet-700.woff2', 'assets/fonts/plexkr-400.woff2', 'assets/fonts/plexkr-600.woff2'] + \
-    ['assets/ui/%s.png' % n for n in 'btn_auto btn_close icon_goblin icon_lock icon_mail icon_rank relic_chest tab_party village_skill'.split()]
+    ['assets/ui/%s.png' % n for n in ('btn_auto btn_close icon_goblin icon_lock icon_mail icon_rank relic_chest tab_party village_skill '
+                                      'hd_challenge hd_goblin hd_mail hd_profile hd_rank hd_settings icon_challenge tab_equipment tab_map tab_training tab_village').split()]
 DROP = ['assets/icon/apple-touch-icon.png', 'assets/icon/favicon-16.png', 'assets/icon/favicon-32.png', 'assets/icon/icon-192.png', 'assets/icon/icon-512.png', 'favicon.ico', 'manifest.webmanifest']
 MIME = {'.png': 'image/png', '.woff2': 'font/woff2'}
 

@@ -101,7 +101,13 @@ class _ChSheet extends StatelessWidget {
       decoration: BoxDecoration(color: const Color(0x38000000), borderRadius: BorderRadius.circular(10)),
       child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
         // 던전 카드 그림 (없으면 빠짐)
-        ClipRRect(borderRadius: BorderRadius.circular(8), child: Image.asset('assets/game/ui/dun_$k.png', fit: BoxFit.cover, errorBuilder: (_, __, ___) => const SizedBox.shrink())),
+        Padding(
+          padding: const EdgeInsets.only(bottom: 6),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(8),
+            child: AspectRatio(aspectRatio: 3, child: Image.asset('assets/game/ui/dun_$k.jpg', fit: BoxFit.cover, errorBuilder: (_, __, ___) => const SizedBox.shrink())),
+          ),
+        ),
         Wrap(alignment: WrapAlignment.spaceBetween, crossAxisAlignment: WrapCrossAlignment.center, spacing: 8, runSpacing: 6, children: [
           ConstrainedBox(
             constraints: const BoxConstraints(minWidth: 150),

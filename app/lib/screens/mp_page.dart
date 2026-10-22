@@ -40,7 +40,7 @@ class MpPage extends StatelessWidget {
           child: Stack(clipBehavior: Clip.none, children: [
             SizedBox(
               width: double.infinity,
-              child: KdBuy(minWidth: 0, onTap: () => openChallenge(g), extra: null, text: g.calc.chOpen ? '⚔ 도전' : '⚔ 도전 🔒'),
+              child: KdBuy(minWidth: 0, onTap: () => openChallenge(g), costIcon: 'assets/game/ui/icon_challenge.png', text: g.calc.chOpen ? '도전' : '도전 🔒'),
             ),
             if (g.chDot)
               Positioned(
