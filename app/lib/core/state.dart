@@ -39,7 +39,7 @@ class GameState {
         'capClears': 0, 'capBonus': 0, 'ending1': 0,
         // 도전: 시련의 탑·요일 던전 (docs/content/CHALLENGE.md 7장) — chOpen·tower·dun.star 는 은퇴해도 유지
         'chOpen': 0,
-        'tower': {'top': 0, 'day': ''},
+        'tower': {'top': 0, 'day': '', 'pk': 0},
         'dun': {'d': '', 'used': 0, 'ad': 0, 'star': {'mine': <String, dynamic>{}, 'field': <String, dynamic>{}, 'vault': <String, dynamic>{}}, 'seen': <String, dynamic>{}},
         // 은퇴 일기 (docs/content/RETIRE.md 7장) — trait·trReset·retRw 는 은퇴해도 유지, runStart 는 이번 회차 시작 영지
         'trait': <String, dynamic>{}, 'trReset': 0, 'runStart': 1, 'retRw': <String, dynamic>{}, 'diaryIntro': 0,

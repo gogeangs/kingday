@@ -8,6 +8,7 @@ import 'dart:math' as math;
 
 import 'calc.dart';
 import 'data.dart';
+import 'fmt.dart';
 import 'js.dart';
 
 /// 영지 20을 되찾으면 열림 (은퇴해도 유지: S.chOpen)
@@ -26,6 +27,12 @@ const towerRules = [
   TowerRule('급한 전투', '제한 시간 20초 · 보스 체력 80%'),
   TowerRule('단단한 껍질', '보스가 받는 피해 −50% · 대신 공격 −50%'),
 ];
+/// 추억 속 원정대: 이 배수부터 화면에 표시 (웹 PK_SHOW)
+const num pkShow = 1.1;
+
+/// 배수 글자 (웹 pmTag: 10 미만은 소수 한 자리)
+String pmText(num pm) => pm < 10 ? pm.toStringAsFixed(1) : fmt(pm);
+
 const int towerLim = 30, towerGateLim = 40, towerRushLim = 20, towerGem = 30;
 
 /// 탑 보스 그림: 지역 번호(ri) + 군단장(lord)/발타사르(balt)/근위대장(guard)/잔영(ghost)
@@ -202,6 +209,42 @@ extension ChallengeCalc on GameCalc {
       if ((r[c] ?? 0) > 0) s.seeds[c] = orNum(s.seeds[c], 0) + r[c]!;
     }
     if ((r['gem'] ?? 0) > 0) s.gem = s.gem + r['gem']!;
+  }
+
+  // ───────────── 추억 속 원정대 (CHALLENGE.md 11장) ─────────────
+  /// 탑·던전에서는 원정대 힘을 「지금」과 「역대 최고」 중 센 쪽으로.
+  /// S.tower.pk = 역대 최고 전투력(요리 버프 빼고) ÷ 그때의 영구 배수(추억·날 선 괭이) (웹 pkPerm·pkCheck·chPm)
+  num pkPerm() => memMul() * trAtk();
+
+  /// 요리 버프·루카 빵 배달을 뺀 전투력 (웹 powNoBuff)
+  num powNoBuff() {
+    final b = s.raw['buffs'], bp = bakeProbe, ba = bakeActive;
+    s.raw['buffs'] = <String, dynamic>{};
+    bakeProbe = null;
+    bakeActive = false;
+    try {
+      return power();
+    } finally {
+      s.raw['buffs'] = b;
+      bakeProbe = bp;
+      bakeActive = ba;
+    }
+  }
+
+  void pkCheck() {
+    final p = powNoBuff();
+    if (!(p > 0)) return;
+    final v = p / pkPerm();
+    if (v > orNum(towerS['pk'], 0)) towerS['pk'] = v;
+  }
+
+  /// 역대 최고 원정대 전투력 (지금 추억·특성 기준)
+  num pkPow() => orNum(towerS['pk'], 0) * pkPerm();
+
+  /// 탑·던전 배수 = max(1, 역대 최고 ÷ 지금)
+  num chPm() {
+    final p = powNoBuff();
+    return p > 0 ? math.max(1, pkPow() / p) : 1;
   }
 
   /// 도전 버튼 노란 점: 오늘 탑 보급을 안 받았거나 입장권이 남음

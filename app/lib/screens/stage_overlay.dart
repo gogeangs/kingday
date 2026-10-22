@@ -32,10 +32,10 @@ class StageTop extends StatelessWidget {
     if (h != null && h.mode == 'tower') {
       final i = h.info!;
       label = '시련의 탑 ${i.f}층';
-      sub = i.gate ? '수문장' : i.rule >= 0 ? '시련 · ${towerRules[i.rule].n}' : '최고 ${g.calc.towerTop()}층';
+      sub = (i.gate ? '수문장' : i.rule >= 0 ? '시련 · ${towerRules[i.rule].n}' : '최고 ${g.calc.towerTop()}층') + (h.pm >= pkShow ? ' · 추억 ×${pmText(h.pm)}' : '');
     } else if (h != null) {
       label = '${dunDef(h.k).n} · 단계 ${h.l}';
-      sub = '⏱ ${mmss(math.max(0, h.t))} · ${h.kills}마리';
+      sub = '⏱ ${mmss(math.max(0, h.t))} · ${h.kills}마리${h.pm >= pkShow ? ' · 추억 ×${pmText(h.pm)}' : ''}';
     }
     final gi = g.state.raw['guideOff'] == true ? -1 : g.calc.guideIndex();
     // 오른쪽 위에 우편함·랭킹 버튼이 있으면 그만큼 비움 (웹 .ovtop padding-inline:8px 58px)

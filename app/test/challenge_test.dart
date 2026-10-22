@@ -136,6 +136,44 @@ void main() {
     expect(c.bdHas('tower25'), isTrue);
   });
 
+  test('추억 속 원정대: 역대 최고 기록 · 은퇴 뒤 배수 · 주는 피해 ×·받는 피해 ÷ (CHALLENGE.md 11장)', () {
+    final c = calcFor({
+      'gold': 1000, 'stage': 45, 'best': 45, 'memory': 20, 'chOpen': 1, 'tower': {'top': 30},
+      'joined': {'margo': true, 'haral': true, 'riel': true, 'bron': true},
+      'lv': {'bron': 40, 'haral': 40, 'riel': 40, 'margo': 40}, 'up': {'atk': 300, 'hp': 300, 'spd': 20, 'crit': 20},
+      'buffs': {'atk': now + 600000},
+    });
+    c.pkCheck();
+    final peak = c.powNoBuff();
+    expect(c.power() > peak, isTrue, reason: '요리 버프는 빼고 기록');
+    close(asNum(c.towerS['pk']) * c.pkPerm(), peak, 'pk');
+    expect(c.chPm(), 1);
+    // 은퇴: 추억 +7 → 역대 최고도 같은 비율로 커짐, 지금은 약해져 배수가 큼
+    c.retire(7);
+    c.pkCheck();
+    close(c.pkPow(), peak * c.memMul() / 2.0, '추억만큼 커진 역대 최고');
+    final pm = c.chPm();
+    expect(pm, greaterThan(10));
+    close(pm, c.pkPow() / c.powNoBuff(), 'chPm');
+    expect(c.towerTop(), 30);
+    // 탑 전투: 들어갈 때 배수 고정, 주는 피해 ×pm
+    final b = BattleSim(c, rng: Mulberry32(5), gobT: 1e9);
+    b.syncParty();
+    b.towerStart(31);
+    close(b.ch!.pm, pm, 'ch.pm');
+    final m = Mon(x: 100, lane: .5, hp: 1e30, max: 1e30, atk: 0, cd: 1);
+    b.hitMon(m, 100, false, 1);
+    close(1e30 - m.hp, 100 * pm, '주는 피해');
+    b.chExit();
+    final m2 = Mon(x: 100, lane: .5, hp: 1000, max: 1000, atk: 0, cd: 1);
+    b.hitMon(m2, 100, false, 1);
+    close(1000 - m2.hp, 100, '영지 전투는 그대로');
+    // 새 기록이 더 세면 갈아 끼움
+    c.towerS['pk'] = 0;
+    c.pkCheck();
+    expect(c.chPm(), 1);
+  });
+
   test('시련 규칙: 회복 금지 · 단단한 껍질', () {
     final c = calcFor({'gold': 1000, 'stage': 33, 'best': 33});
     final b = BattleSim(c, rng: Mulberry32(3), gobT: 1e9)..syncParty();

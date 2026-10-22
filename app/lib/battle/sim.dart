@@ -78,6 +78,9 @@ class ChState {
   final TowerInfo? info;
   num lim = 30;
 
+  /// 추억 속 원정대 배수 (들어올 때 정함, 웹 CH.pm)
+  num pm = 1;
+
   /// 'fight' 싸우는 중 · 'win'/'lose' 탑 결과 · 'done' 던전 끝
   String st = 'fight';
   // 던전
@@ -345,8 +348,11 @@ class BattleSim {
   void _chBegin(ChState st) {
     mons = [];
     _chPartyReset();
+    c.pkCheck();
+    st.pm = c.chPm();
     ch = st;
     _stretch();
+    if (st.pm >= pkShow) say('q', st.mode == 'tower' ? '기억해라, 주인. 가장 강했던 때의 너를.' : '몸은 잊어도 검은 기억한다. 가자.');
     spawnT = .6;
   }
 
@@ -554,6 +560,9 @@ class BattleSim {
     final p = party[id];
     return p != null && !p.down && p.sg >= skills[id]!.need;
   }
+
+  /// 추억 속 원정대: 도전 중 주는 피해 ×, 받는 피해 ÷ (웹 chPmNow)
+  num get _pmNow => ch != null && ch!.pm > 1 ? ch!.pm : 1;
 
   /// 아침 체조: 보스 등장·도전 시작 때 스킬 게이지를 단계마다 10% 채워 둠 (웹 stretchSk)
   void _stretch() {
@@ -964,6 +973,7 @@ class BattleSim {
   // ───────────── 마물 ─────────────
   void hitMon(Mon m, num d, bool cr, num sc) {
     if (ch != null && c.tl('climb') != 0) d *= 1 + .1 * c.tl('climb'); // 탑 오르기
+    d *= _pmNow; // 추억 속 원정대
     if (m.vul > 0) d *= m.vulM;
     if (m.shell) d *= .5;
     m.hp -= d;
@@ -1428,7 +1438,7 @@ class BattleSim {
       }
       if (tid == null) continue;
       final q = party[tid]!;
-      final dm = m.atk * (skx.shield > 0 ? .5 : 1) * (skx.mount > 0 ? .3 : 1) * (q.bsh > 0 ? 1 - .4 * q.bshK : 1);
+      final dm = m.atk * (skx.shield > 0 ? .5 : 1) * (skx.mount > 0 ? .3 : 1) * (q.bsh > 0 ? 1 - .4 * q.bshK : 1) / _pmNow;
       if (skx.mount > 0 && party.containsKey('brida')) {
         final rf = m.atk * .7 * .5 * skx.mountK;
         hitMon(m, rf, false, sc);
@@ -1564,7 +1574,7 @@ class BattleSim {
     for (final id in l.ids) {
       final q = party[id];
       if (q == null || q.down) continue;
-      final dm = bm.atk * Balance.seal * (skx.shield > 0 ? .5 : 1) * (skx.mount > 0 ? .3 : 1) * (q.bsh > 0 ? 1 - .4 * q.bshK : 1);
+      final dm = bm.atk * Balance.seal * (skx.shield > 0 ? .5 : 1) * (skx.mount > 0 ? .3 : 1) * (q.bsh > 0 ? 1 - .4 * q.bshK : 1) / _pmNow;
       q.hp -= dm;
       q.hit = .2;
       addFloat(l.pos[id]!, l.py[id]! - (heightOf(id) + 8) * l.s, '-${fmt(dm)}', 0xFFFFD34A, 14);
