@@ -123,6 +123,15 @@ class _PageSheetState extends State<PageSheet> {
                   children: [pageBody(g, t)],
                 );
                 // 마을: 건물을 누르면 아래에서 올라오는 건물 창 (웹 #p-vb, ⤢ 로 크게)
+                // 지도: 지역을 누르면 아래 반 창 (웹 #p-mz)
+                if (t == GameTab.mp && g.mapZoomR >= 0) {
+                  return LayoutBuilder(
+                    builder: (_, cs) => Stack(children: [
+                      list,
+                      Positioned(left: 0, right: 0, bottom: 0, height: cs.maxHeight * .38, child: MapRegionPanel(g)),
+                    ]),
+                  );
+                }
                 if (t != GameTab.vl || !g.vbOpen) return list;
                 return LayoutBuilder(
                   builder: (_, cs) => Stack(children: [

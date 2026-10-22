@@ -173,6 +173,9 @@ for (const name of Object.keys(SAVES)) {
     ordN:ordN(S.bld.market||0),ordMats:ordMats(),per2:ordMats().map(per2),ordGold:S.orders.map(o=>o&&o.need?ordGold(o):null),
     ordCan:S.orders.map(ordCan),ordReady:ordReady(),ordKeep:ordKeep(),
     blessK:blessK(),blessMs:blessMs(),blessLeft:blessLeft(),blessSec:[0,5,10].map(blessSec),bless:S.bless})`);
+  // 대륙 지도 규칙 (안개·이번 회차·탐험·어둠 지울 원)
+  sc.worldmap = run(`({seen:Array.from({length:60},(_,i)=>mapSeen(i+1)),taken:Array.from({length:60},(_,i)=>mapTaken(i+1)),
+    entered:[0,1,2,3,4,5].map(mapEntered),cleared:[0,1,2,3,4,5].map(mapRegCleared),all:mapAllClear(),explore:mapExplore(),cur:wmCur(),holes:wmHoles()})`);
   // 마을 난수: 주문 새로 만들기 · 축복 고르기 · 오늘 길 위 동료
   setSave(name);
   w.setSeed(5151);

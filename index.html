@@ -456,7 +456,15 @@ canvas{display:block;width:100%;height:100%}
 .vhint{margin:-6px 0 0;text-align:center;font-size:12px;color:var(--muted)}
 .vsel .row{border:1px solid rgba(255,201,74,.45);background:linear-gradient(#2a2a3a,var(--panel))}
 .vsel .rowic{width:64px;height:64px}
-.mapwrap{border-radius:12px;overflow:hidden;border:1px solid var(--line);flex:0 0 auto;height:440px}
+.mapwrap{position:relative;box-sizing:border-box;width:100%;aspect-ratio:2/3;border-radius:12px;overflow:hidden;border:1px solid #4a3a5a;background:#1a1028;flex:0 0 auto}
+.mapwrap canvas{position:absolute;inset:0;width:100%;height:100%;cursor:pointer;touch-action:manipulation}
+.mapbar{display:flex;align-items:center;gap:10px;background:linear-gradient(#241a34,#1a1428);border:1px solid #4a3a5a;border-radius:12px;padding:8px 10px 8px 12px}
+.mapbar .mbx{flex:1;min-width:0;display:flex;flex-direction:column;gap:4px}.mapbar .mbx b{font-family:var(--f-display);font-size:15px;color:#ffe08a}.mapbar .mbx>i{display:block;height:6px;border-radius:3px;background:rgba(255,255,255,.1);overflow:hidden}.mapbar .mbx>i>i{display:block;height:100%;background:linear-gradient(90deg,#c99a2e,#ffe08a)}
+.mapbar .mbr{font-size:12.5px;color:#d8d0ee;white-space:nowrap}.mapbar .mbr b{color:#9be3a8}.mapbar .mbk{width:36px;height:36px;border-radius:50%;border:1px solid #6b5420;background:#2a2216;font-size:18px;cursor:pointer;flex:0 0 36px}
+.mapnext{width:100%;text-align:left;font:inherit;font-size:13px;color:#d8d0ee;background:rgba(255,255,255,.04);border:1px solid var(--line);border-radius:10px;padding:8px 12px;cursor:pointer;display:flex;gap:4px;align-items:center;flex-wrap:wrap}.mapnext b{color:#fff}.mapnext i{margin-left:auto;font-style:normal;color:var(--gold)}
+.mzw.half{top:62%}#p-mp.mzon{padding-bottom:42vh}
+.mzh{display:flex;gap:10px;align-items:center}.mzf{width:54px;height:54px;border-radius:50%;object-fit:cover;background:#2a2216;border:2px solid #6b5420}.mzh>div{flex:1;min-width:0;display:flex;flex-direction:column;gap:3px}.mzh small{color:var(--muted);font-size:12px}
+.mzl{display:flex;flex-direction:column;gap:2px}.mzr{display:grid;grid-template-columns:34px 1fr auto 44px;gap:6px;align-items:center;font-size:13px;padding:5px 8px;border-radius:8px;background:rgba(255,255,255,.03)}.mzr i{font-style:normal;color:var(--muted);font-variant-numeric:tabular-nums}.mzr em{font-style:normal;font-size:11px;color:var(--muted)}.mzr b{text-align:right;color:#9be3a8}.mzr.cur{background:rgba(255,201,74,.14)}.mzr.cur b{color:var(--gold)}
 .inv{display:flex;flex-wrap:wrap;gap:6px}
 .chip{font-size:12px;background:var(--panel2);border-radius:999px;padding:3px 9px;font-variant-numeric:tabular-nums;display:flex;align-items:center;gap:5px}
 .chip i{width:8px;height:8px;border-radius:50%;background:var(--c)}
@@ -638,9 +646,16 @@ button:focus-visible,input:focus-visible{outline:2px solid var(--gold);outline-o
 
     <section class="page" id="p-mp" hidden>
       <div class="phead"><h2>지도</h2><button class="pclose" data-close aria-label="전투로 돌아가기">✕</button></div>
-      <div class="mapwrap"><canvas id="mc" aria-label="에르단 대륙 영지 탈환 지도"></canvas></div>
+      <div class="mapbar" id="mapBar"></div>
+      <button class="mapnext" id="mapNext"></button>
+      <div class="mapwrap"><canvas id="mc" aria-label="에르단 대륙 지도. 지역을 누르면 크게 보여요"></canvas></div>
       <div class="mprow"><button class="buy rkbtn" id="mapRank">🏆 랭킹 보기</button><button class="buy rkbtn chbtn" id="mapCh"><img class="chimg" src="assets/ui/icon_challenge.png" alt="" onerror="this.remove()"><span class="chemo">⚔</span> <span id="mapChT">도전</span><i class="dot" id="chDot" hidden></i></button></div>
-      <div class="box" id="mapInfo"></div>
+      <p class="vhint">지역을 누르면 크게 보여요 · 두 번 누르면 전체 지도</p>
+    </section>
+
+    <section class="page half vbw mzw" id="p-mz" hidden>
+      <div class="phead"><h2 id="mzT">지역</h2><button class="pclose" id="mzX" aria-label="지역 창 닫기">✕</button></div>
+      <div id="mzBody" style="display:flex;flex-direction:column;gap:10px"></div>
     </section>
   </div>
 
@@ -985,7 +1000,7 @@ const KEY='acorn-idle-v1';
 let S;
 function fresh(){return{gold:0,stage:1,wave:0,boxLv:1,boxXp:0,up:{atk:0,hp:0,spd:0,crit:0},eq:{},autoSell:false,autoOpen:false,last:Date.now(),best:1,started:false,
  joined:{},done:{},lv:{bron:1,haral:1,riel:1,margo:1},bld:{inn:0,farm:0,diner:0,dock:0,apiary:0,mine:0,forge:0,market:0,ranch:0,chapel:0},plots:[],seeds:{wheat:0,carrot:0,pumpkin:0},
- items:{wheat:0,carrot:0,pumpkin:0,fish:0,honey:0,ore:0,egg:0,milk:0},prod:{},buffs:{},rankSeen:0,memory:0,retires:0,buys:{},sub:{until:0,last:''},gem:0,gemRank:0,gemLord:{},daily:{d:'',kill:0,box:0,harv:0,claim:{}},att:{last:'',w:0,ym:'',m:0,ad:'',got:[],intro:0,tab:'w'},tickets:{box:0,box10:0},capClears:0,capBonus:0,ending1:0,chOpen:0,tower:{top:0,day:'',pk:0},dun:{d:'',used:0,ad:0,star:{mine:{},field:{},vault:{}},seen:{}},trait:{},trReset:0,runStart:1,retRw:{},diaryIntro:0,
+ items:{wheat:0,carrot:0,pumpkin:0,fish:0,honey:0,ore:0,egg:0,milk:0},prod:{},buffs:{},rankSeen:0,memory:0,retires:0,buys:{},sub:{until:0,last:''},gem:0,gemRank:0,gemLord:{},daily:{d:'',kill:0,box:0,harv:0,claim:{}},att:{last:'',w:0,ym:'',m:0,ad:'',got:[],intro:0,tab:'w'},tickets:{box:0,box10:0},capClears:0,capBonus:0,ending1:0,chOpen:0,tower:{top:0,day:'',pk:0},dun:{d:'',used:0,ad:0,star:{mine:{},field:{},vault:{}},seen:{}},mapIntro:0,fogSeen:1,regSeen:{},trait:{},trReset:0,runStart:1,retRw:{},diaryIntro:0,
  orders:[],ordDay:{d:'',gem:0,skip:{}},bless:{d:'',used:0,ad:0,k:'',until:0,opts:[]},vlv:1,ep:{},walkers:{d:'',ids:[]},keepOrder:1,work:{},workIntro:0,workDot:'',v:3}}
 function hydrate(d){const f=fresh();for(const k in d){if(f[k]&&typeof f[k]==='object'&&!Array.isArray(f[k])&&d[k]&&typeof d[k]==='object')f[k]=Object.assign(f[k],d[k]);else f[k]=d[k]}
  if(d&&d.crops){for(const k in d.crops)f.items[k]=(f.items[k]||0)+d.crops[k];delete f.crops}
@@ -995,6 +1010,9 @@ function hydrate(d){const f=fresh();for(const k in d){if(f[k]&&typeof f[k]==='ob
  f.dun.star=Object.assign({mine:{},field:{},vault:{}},f.dun.star||{});if(!f.dun.seen)f.dun.seen={};
  /* 마을 확장: 광산이 있던 세이브는 브론의 대장간을 Lv.1로 지어 줌(강화 기록 slotEn·cwEn은 그대로) */
  if(d&&!(d.bld&&d.bld.forge!=null)&&f.bld.mine>0)f.bld.forge=1;
+ /* 대륙 지도: 기존 세이브는 지금 S.best까지 걷힘 연출을 본 것으로 (연출이 몰려 나오지 않게) */
+ if(!(d&&d.fogSeen!=null)){f.fogSeen=Math.max(1,+f.best||1);if(!f.regSeen||typeof f.regSeen!=='object')f.regSeen={};for(let r=0;r<6;r++)if((+f.best||1)>10*(r+1))f.regSeen[r]=1}
+ if(!f.regSeen||typeof f.regSeen!=='object'||Array.isArray(f.regSeen))f.regSeen={};
  {const f0=fresh();for(const k of['ordDay','bless','walkers','work'])if(!f[k]||typeof f[k]!=='object'||Array.isArray(f[k]))f[k]=f0[k]}
  if(!Array.isArray(f.orders))f.orders=[];for(const k in f.work)if(!Array.isArray(f.work[k]))delete f.work[k];if(!Array.isArray(f.bless.opts))f.bless.opts=[];if(!f.ordDay.skip||typeof f.ordDay.skip!=='object')f.ordDay.skip={};if(!Array.isArray(f.walkers.ids))f.walkers.ids=[];
  if(f.stage>MAXLAND+1)f.stage=MAXLAND+1;return f}
@@ -1517,17 +1535,6 @@ function diarySheet(){const mp=memPts(),tabs=[['tr','특성'],['log','기록'],[
 function trBuy(k){const t=memT(k),nx=trNext(t);if(nx==null||!trOpen(t)||nx>memPts())return;if(!S.trait)S.trait={};S.trait[k]=tl(k)+1;toast(t.n+' '+S.trait[k]+'단계!');haptic([20]);retSig='';save();diarySheet();renderAll()}
 function trResetAsk(){const g=trResetGem();$('sheet').innerHTML=`<div class="eyebrow">은퇴 일기</div><h2>특성 초기화</h2><p class="note" style="text-align:center">찍은 포인트를 모두 돌려받아요. ${g?'황금 이삭 '+g:'무료'}<br><small>${g?'':'첫 1번은 무료, 그다음부터 황금 이삭 100'}</small></p><div class="acts"><button id="mAlt">취소</button><button class="pri" id="mGo">초기화</button></div>`;
  $('modal').hidden=false;$('mAlt').onclick=()=>diarySheet();$('mGo').onclick=()=>{if(g&&!spendGem(g))return diarySheet();const back=trSpent();S.trait={};S.trReset=(S.trReset||0)+1;toast('추억 포인트 '+back+' 돌려받음');retSig='';save();diarySheet();renderAll()}}
-let mapSig='';
-function renderMapInfo(){
- const c=landCount(),ri=rankIdx(),nx=RANKS[ri+1],r=region(S.stage);
- const sig=[S.stage,ri].join();if(sig===mapSig)return;mapSig=sig;
- $('mapInfo').innerHTML=`<div class="sec">${S.stage>MAXLAND?'왕궁 뜰에서 사냥 중 <small>1부 완결 · 보스 없음</small>':terrName(S.stage)+' 탈환 중 <small>'+r.n+' · '+((S.stage-1)%10+1)+'/10</small>'}</div>
-  <div class="kv"><span>되찾은 영지</span><b>${c} / ${MAXLAND}</b></div>
-  <div class="kv"><span>지금 칭호</span><b>${RANKS[ri].n} (원정대 +${ri*4}%)</b></div>
-  <div class="kv"><span>다음 칭호</span><b>${nx?nx.n+'까지 '+(nx.at-c)+'곳':'모든 칭호를 얻었어요'}</b></div>
-  <div class="kv"><span>이 지역의 지배자</span><b>${r.boss}</b></div>
-  <p class="note">영지마다 마족 성주가 지키고, 지역의 마지막 영지에는 군단장이 있어요. 다섯 군단을 모두 몰아내면 왕도 아스테리온이 열리고, 알현실에는 마왕이 기다려요.</p>`;
-}
 
 /* ---------- 공통 렌더 ---------- */
 let toastT;function toast(m){const t=$('toast');try{t.classList.toggle('hi',!$('modal').hidden||(!!curTab&&(!HALF.includes(curTab)||!!S.pgFull)))}catch(e){}t.textContent=m;t.style.opacity=1;clearTimeout(toastT);toastT=setTimeout(()=>t.style.opacity=0,2000)}
@@ -1623,7 +1630,7 @@ function renderAll(){
  $('vlDot').hidden=!vDot();{const pd=$('ptDot');if(pd&&(T*2|0)!==pd._t){pd._t=T*2|0;const a=ptAct();pd.hidden=!a||a===S.dotSeen||curTab==='pt';if(curTab==='pt'&&a!==S.dotSeen)S.dotSeen=a;const cd=$('ptCardDot');if(cd)cd.hidden=!cardReady().length}}
 }
 let curTab=null; // null = 전투 화면
-function setTab(t){if(t===curTab)t=null;if(t==='pt')dotSeen();if(t!=='sh')misOpen=adOpen=false;curTab=t;document.querySelectorAll('.tab').forEach(b=>b.setAttribute('aria-selected',b.dataset.t===t));['eq','pt','up','vl','mp','sh'].forEach(x=>$('p-'+x).hidden=x!==t);pgMode();if(t==='vl'){resizeV();farmSig='';kitSig='';bldSig='';vSig='';vTopSig='';vPreload();requestAnimationFrame(resizeV)}else{$('p-vb').hidden=true;$('p-vl').classList.remove('vbon')}if(t==='mp')resizeM();if(t==='pt')partySig='';if(t==='sh')shopSig='';if(t==='eq'){eqSig=''}renderAll()}
+function setTab(t){if(t===curTab)t=null;if(t==='pt')dotSeen();if(t!=='sh')misOpen=adOpen=false;curTab=t;document.querySelectorAll('.tab').forEach(b=>b.setAttribute('aria-selected',b.dataset.t===t));['eq','pt','up','vl','mp','sh'].forEach(x=>$('p-'+x).hidden=x!==t);pgMode();if(t==='vl'){resizeV();farmSig='';kitSig='';bldSig='';vSig='';vTopSig='';vPreload();requestAnimationFrame(resizeV)}else{$('p-vb').hidden=true;$('p-vl').classList.remove('vbon')}if(t==='mp')mapOpen();else{const z=$('p-mz');if(z)z.hidden=true}if(t==='pt')partySig='';if(t==='sh')shopSig='';if(t==='eq'){eqSig=''}renderAll()}
 document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>setTab(b.dataset.t));
 document.querySelectorAll('[data-close]').forEach(b=>b.onclick=()=>setTab(null));
 const HALF=['eq','pt','up','sh'];
@@ -2584,38 +2591,164 @@ $('vbX').onclick=vbClose;$('vbExp').onclick=()=>{vbFull=!vbFull;$('vbExp').textC
 $('vlvBar').onclick=vlSheet;$('wkMgr').onclick=wkSheet;
 {const b=$('wkRec');let lt=null,long=false;b.addEventListener('pointerdown',()=>{long=false;lt=setTimeout(()=>{long=true;haptic(30);wkAuto(true)},600)});const end=()=>{clearTimeout(lt)};b.addEventListener('pointerup',end);b.addEventListener('pointerleave',end);b.addEventListener('pointercancel',end);b.oncontextmenu=e=>e.preventDefault();b.onclick=()=>{if(long){long=false;return}wkAuto(false)}}
 {const h=$('p-vb').querySelector('.phead');let sy=null;h.addEventListener('pointerdown',e=>{if(!e.target.closest('button')){sy=e.clientY;try{h.setPointerCapture(e.pointerId)}catch(_){}}});h.addEventListener('pointerup',e=>{if(sy!=null&&e.clientY-sy>50)vbClose();sy=null});h.addEventListener('pointercancel',()=>sy=null);h.style.touchAction='none'}
-/* ---------- 영지 지도 ---------- */
+/* ---------- 대륙 지도 「안개 걷힌 에르단」 (docs/content/WORLDMAP.md) ---------- */
+/* 지도 그림(1024×1536) 좌표: 영지 60곳 · 명소 9곳(가운데 x,y · 누르는 반지름) · 지역 확대 중심 6곳 */
+const MAPPOS={
+ pts:[[470,1450],[560,1390],[600,1320],[700,1295],[800,1300],[530,1250],[390,1215],[470,1180],[510,1130],[640,1060],
+  [510,1000],[430,965],[360,920],[300,985],[215,1000],[110,985],[70,890],[150,850],[190,790],[150,720],
+  [640,990],[770,1035],[860,1000],[900,925],[920,870],[860,830],[740,850],[820,790],[720,770],[930,760],
+  [395,540],[400,470],[330,420],[265,395],[200,450],[130,500],[80,420],[130,330],[300,330],[180,290],
+  [760,700],[870,625],[760,560],[690,470],[735,425],[800,470],[900,470],[780,340],[900,300],[870,410],
+  [470,720],[450,650],[480,490],[560,445],[540,380],[540,320],[560,260],[530,215],[545,175],[545,125]],
+ spot:{village:[470,1360,70],tower:[530,610,55],capital:[545,110,90],field:[320,1265,45],vault:[240,870,40],mine:[800,880,40],elf:[110,90,70],desert:[950,150,60],north:[700,40,80]},
+ ctr:[[520,1280],[200,900],[830,880],[220,420],[800,430],[540,250]]};
+const MAPW=1024,MAPH=1536,FOG_R=82,LAND_R=80;
+const MAP_DUN={field:'field',vault:'vault',mine:'mine'};
+const P2={elf:'엘프 왕국',desert:'사막 제국',north:'북방 부족'};
+const REG_FOG=[null,['어스름 숲의 안개가 걷혔다!','q:요정의 빛이 남아 있을지도 모른다.'],['드워프 협곡의 안개가 걷혔다!','q:망치 소리가 그리웠던 땅이다.'],['서리 무덤의 안개가 걷혔다!','q@moved:…알도르가 잠든 곳이군.'],['잿불 심연의 안개가 걷혔다!','q:마계의 문이 저 너머에 있다.'],['왕도 아스테리온이 모습을 드러냈다!','q@moved:300년 만이다, 주인.']];
+/* 규칙 (웹·앱 같음) */
+const mapRegCleared=r=>S.best>10*(r+1);/* 그 지역 군단장을 처음 쓰러뜨림 */
+const mapAllClear=()=>S.best>MAXLAND;/* 왕도(60)를 깸 → 에르단 전체 */
+const mapEntered=r=>S.best>=10*r+1;
+const mapSeen=st=>st<=S.best+1||mapAllClear()||mapRegCleared(Math.floor((st-1)/10));/* 안개 밖 영지(가 본 곳 + 다음 1곳) */
+const mapTaken=st=>st<S.stage;/* 이번 회차에 되찾음 (지름길 시작 앞 영지 포함) */
+const mapExplore=()=>{let n=0;for(let st=1;st<=MAXLAND;st++)if(mapSeen(st)&&st<=Math.max(S.best,0))n++;return mapAllClear()?MAXLAND:Math.min(MAXLAND,n)};
+/* 그림: 지도 탭을 처음 열 때 불러옴 */
+const WMI={ok:false,n:0};function wmLoad(){if(WMI.loading)return;WMI.loading=1;const L=(k,src)=>{const im=new Image();im.onload=()=>{WMI[k]=im;WMI.n++;if(WMI.n>=8){WMI.ok=true;wmDirty=1}};im.src=src};
+ L('lit','assets/map/world_map.jpg');L('dark','assets/map/world_map_dark.jpg');for(let i=1;i<=6;i++)L('fog'+i,'assets/map/fog_'+i+'.png');
+ L2('kael','assets/portraits/portrait_kael_idle.png');for(const id of BOSSID)L2(id,'assets/portraits/portrait_'+id+'_idle.png');L2('baltasar','assets/portraits/portrait_baltasar_idle.png')}
+function L2(k,src){const im=new Image();im.onload=()=>{WMI[k]=im};im.src=src}
 const mc=$('mc'),mctx=mc.getContext('2d');let MW=0,MH=0;
-function resizeM(){const r=mc.getBoundingClientRect(),d=Math.min(2,window.devicePixelRatio||1);if(!r.width)return;MW=r.width;MH=r.height;mc.width=MW*d;mc.height=MH*d;mctx.setTransform(d,0,0,d,0,0)}
+function resizeM(){const r=mc.getBoundingClientRect(),d=Math.min(2,window.devicePixelRatio||1);if(!r.width)return;MW=r.width;MH=r.height;mc.width=Math.round(MW*d);mc.height=Math.round(MH*d);mctx.setTransform(d,0,0,d,0,0)}
 new ResizeObserver(resizeM).observe(mc);
 const CAPIMG={};for(const k of['locked','open']){const im=new Image();im.onload=()=>CAPIMG[k]=im;im.src='assets/map/capital_'+k+'.png'}
-const RNODE=['erdan','dusk','canyon','frost','ash','capital'].map(r=>{const o={};for(const t of['enemy','boss']){const im=new Image();im.onload=()=>o[t]=im;im.src='assets/map/'+r+'_'+t+'.png'}return o});/* 지역별 노드. 없으면 공용 노드 */
-const MAPNODE={ok:false};(()=>{let n=0;for(const k of['captured','enemy','boss','current']){const im=new Image();im.onload=()=>{if(++n===4)MAPNODE.ok=true};im.src='assets/ui/node_'+k+'.png';MAPNODE[k]=im}})();
+const RNODE=['erdan','dusk','canyon','frost','ash','capital'].map(r=>{const o={};for(const t of['boss']){const im=new Image();im.onload=()=>o[t]=im;im.src='assets/map/'+r+'_'+t+'.png'}return o});
+/* 캐시: 점령 판 + (되찾은 곳만) 탈환 판 = 땅 / 어둠 구름 층 — 영지를 되찾거나 회차가 바뀔 때만 다시 만듦 */
+let wmDirty=1,wmSig='',WLAND=null,WFOG=null,WEMB=[];
+const wmCanvas=()=>{const c=document.createElement('canvas');c.width=MAPW;c.height=MAPH;return c};
+function wmSoft(g,x,y,r,a0){const gr=g.createRadialGradient(x,y,0,x,y,r);gr.addColorStop(0,'rgba(0,0,0,1)');gr.addColorStop(a0||.55,'rgba(0,0,0,1)');gr.addColorStop(1,'rgba(0,0,0,0)');g.fillStyle=gr;g.beginPath();g.arc(x,y,r,0,Math.PI*2);g.fill()}
+function wmHoles(){const h=[],P=MAPPOS.pts,sp=MAPPOS.spot;h.push([sp.village[0],sp.village[1],150]);
+ if(mapAllClear())return null;
+ for(let st=1;st<=Math.min(MAXLAND,S.best+1);st++)h.push([P[st-1][0],P[st-1][1],FOG_R]);
+ for(let r=0;r<6;r++)if(mapRegCleared(r)){for(let j=0;j<10;j++){const p=P[r*10+j];h.push([p[0],p[1],130])}h.push([MAPPOS.ctr[r][0],MAPPOS.ctr[r][1],230])}
+ if(S.chOpen){h.push([sp.tower[0],sp.tower[1]-30,95]);for(const k of['field','vault','mine'])h.push([sp[k][0],sp[k][1],58])}
+ return h}
+function wmBuild(){if(!WMI.ok)return;const P=MAPPOS.pts,sp=MAPPOS.spot;
+ const land=WLAND||(WLAND=wmCanvas()),g=land.getContext('2d');g.globalCompositeOperation='source-over';g.drawImage(WMI.dark,0,0,MAPW,MAPH);
+ if(S.stage>MAXLAND)g.drawImage(WMI.lit,0,0,MAPW,MAPH);
+ else{const m=wmCanvas(),mg=m.getContext('2d');wmSoft(mg,sp.village[0],sp.village[1],130);for(let st=1;st<S.stage;st++)wmSoft(mg,P[st-1][0],P[st-1][1],LAND_R);
+  for(let r=0;r<6;r++)if(S.stage>10*(r+1))wmSoft(mg,MAPPOS.ctr[r][0],MAPPOS.ctr[r][1],210);
+  mg.globalCompositeOperation='source-in';mg.drawImage(WMI.lit,0,0,MAPW,MAPH);g.drawImage(m,0,0)}
+ const fog=WFOG||(WFOG=wmCanvas()),f=fog.getContext('2d');f.globalCompositeOperation='source-over';f.clearRect(0,0,MAPW,MAPH);WEMB=[];
+ const holes=wmHoles();if(!holes)return;
+ let seed=7;const rnd=()=>(seed=(seed*16807)%2147483647)/2147483647;
+ f.fillStyle='rgba(28,14,44,.92)';f.fillRect(0,0,MAPW,MAPH);
+ for(let y=-120;y<MAPH+120;y+=150)for(let x=-160;x<MAPW+160;x+=190){const im=WMI['fog'+(1+Math.floor(rnd()*6))],s=(.85+rnd()*.4)*1.05,w=im.width*s,h=im.height*s;f.drawImage(im,x+(rnd()-.5)*80-w/2+95,y+(rnd()-.5)*60-h/2+75,w,h)}
+ f.globalCompositeOperation='destination-out';for(const[x,y,r]of holes)wmSoft(f,x,y,r);
+ f.globalCompositeOperation='source-atop';for(const[x,y,r]of holes){const gr=f.createRadialGradient(x,y,r*.45,x,y,r*1.15);gr.addColorStop(0,'rgba(255,214,130,0)');gr.addColorStop(.55,'rgba(255,214,130,.5)');gr.addColorStop(1,'rgba(255,214,130,0)');f.fillStyle=gr;f.beginPath();f.arc(x,y,r*1.15,0,Math.PI*2);f.fill()}
+ f.globalCompositeOperation='source-over';
+ /* 불씨: 어둠이 짙은 곳에만 */
+ try{const d=f.getImageData(0,0,MAPW,MAPH).data;for(let i=0;i<400&&WEMB.length<70;i++){const x=Math.floor(rnd()*MAPW),y=Math.floor(rnd()*MAPH);if(d[(y*MAPW+x)*4+3]>235)WEMB.push([x,y,rnd()*6.28,1+rnd()*2])}}catch(e){}}
+function wmCache(){const sig=[S.best,S.stage,S.chOpen?1:0,WMI.ok?1:0].join();if(sig!==wmSig||wmDirty){wmSig=sig;wmDirty=0;wmBuild()}}
+/* 카메라 (지도 좌표 가운데 + 배율) */
+const WCAM={x:MAPW/2,y:MAPH/2,z:1,tx:MAPW/2,ty:MAPH/2,tz:1};let wmZoomR=-1,wmAnims=[],wmTapT=0,wmTapTimer=null,wmCapSeen=-1;
+function wmView(){const vw=MAPW/WCAM.z,vh=vw*MH/MW;let x=WCAM.x-vw/2,y=WCAM.y-vh/2;x=Math.max(0,Math.min(MAPW-vw,x));y=Math.max(0,Math.min(MAPH-vh,y));return{x,y,w:vw,h:vh,s:MW/vw}}
+const wmToS=(v,x,y)=>[(x-v.x)*v.s,(y-v.y)*v.s];
+function wmGo(x,y,z){WCAM.tx=x;WCAM.ty=y;WCAM.tz=z}
+const wmCur=()=>Math.min(MAXLAND,S.stage);
+function wmFocusCur(z){const p=MAPPOS.pts[wmCur()-1];wmGo(p[0],p[1],z||1.25)}
+/* 지도 탭을 열 때: 처음 대사 · 걷힘 연출(처음 1번씩) */
+function mapOpen(){wmLoad();resizeM();wmZoomR=-1;mzClose(true);wmFocusCur(1.25);const k=WCAM;k.x=k.tx;k.y=k.ty;k.z=k.tz;
+ if(!S.mapIntro){S.mapIntro=1;queue(()=>scene('대륙 지도','안개 걷힌 에르단',['q:주인, 이게 에르단 대륙이다. 안개 낀 곳은 아직 마족의 땅이지.','k:우리 마을이 저렇게 작았어?','q:되찾을 때마다 안개가 걷힐 거다. 끝에는 왕도가 있다.','k@smile:…끝까지 가면 은퇴할 수 있겠지?'],'지도를 본다'))}
+ const now=performance.now(),P=MAPPOS.pts;
+ if((S.fogSeen||1)<S.best){for(let st=Math.max(2,(S.fogSeen||1)+1);st<=Math.min(MAXLAND,S.best+1);st++)wmAnims.push({x:P[st-1][0],y:P[st-1][1],t0:now+80*(st-(S.fogSeen||1)),d:800,k:'fog'});S.fogSeen=S.best}
+ if(!S.regSeen)S.regSeen={};let delay=0;
+ for(let r=0;r<6;r++)if(mapRegCleared(r)&&!S.regSeen[r]){S.regSeen[r]=1;const c=MAPPOS.ctr[r],t=now+delay;wmAnims.push({x:c[0],y:c[1],t0:t,d:2000,k:'reg'});
+  setTimeout(()=>{if(curTab==='mp'){wmGo(c[0],c[1],1.35);setTimeout(()=>{if(curTab==='mp'&&wmZoomR<0)wmFocusCur(1.25)},1700)}},delay);
+  const m=REG_FOG[r];if(m)setTimeout(()=>{toast(m[0]);setTimeout(()=>toast('루미나르: '+m[1].replace(/^q(@\w+)?:/,'')),1900)},delay+400);delay+=2200}
+ const cap=landCount();if(wmCapSeen>=0&&cap>wmCapSeen)for(let st=wmCapSeen+1;st<=cap;st++)wmAnims.push({x:P[st-1][0],y:P[st-1][1],t0:now,d:600,k:'cap'});wmCapSeen=cap;save()}
+/* 그리기 */
+function wmFlag(x,y,s,col){const c=ctx;c.save();c.lineCap='round';c.strokeStyle='#fff';c.lineWidth=1.6*s+2;c.beginPath();c.moveTo(x,y);c.lineTo(x,y-11*s);c.stroke();c.strokeStyle='#5a3b22';c.lineWidth=1.6*s;c.beginPath();c.moveTo(x,y);c.lineTo(x,y-11*s);c.stroke();
+ c.beginPath();c.moveTo(x,y-11*s);c.lineTo(x+8*s,y-8.3*s);c.lineTo(x,y-5.6*s);c.closePath();c.fillStyle=col;c.fill();c.strokeStyle='#fff';c.lineWidth=1;c.stroke();ell(x,y,2.2*s,1.1*s,'rgba(0,0,0,.45)');c.restore()}
+function wmPill(t,x,y,fs,bg,fg){ctx.font=`700 ${fs}px "IBM Plex Sans KR",sans-serif`;const w=ctx.measureText(t).width+fs*.9,h=fs*1.5;ctx.fillStyle=bg;rr(x-w/2,y-h/2,w,h,h/2);ctx.fillStyle=fg;ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(t,x,y+.5);ctx.textBaseline='alphabetic'}
 function drawMap(){
  if(!MW)return;const prev=ctx;ctx=mctx;
- ctx.fillStyle='#1a2034';ctx.fillRect(0,0,MW,MH);
- const rows=REGIONS.length,top=10,bottomPad=8,rh=(MH-top-bottomPad)/rows,padX=22,dx=(MW-padX*2)/9,cur=S.stage-1,R=Math.min(dx*.34,11);
- const pts=[];for(let i=0;i<rows;i++)for(let j=0;j<10;j++){const col=i%2?9-j:j;pts.push({x:padX+col*dx,y:top+i*rh+rh*.64,i,j})}
- for(let i=0;i<rows;i++){const r=REGIONS[i];ctx.fillStyle=r.hill;ctx.globalAlpha=.35;rr(4,top+i*rh+2,MW-8,rh-4,10);ctx.globalAlpha=1;
-}
- const regionLabels=()=>{for(let i=0;i<rows;i++){const r=REGIONS[i];
-  ctx.font=`700 12px Hahmlet, serif`;const nw=ctx.measureText(r.n+'  ').width;ctx.font=`500 10px "IBM Plex Sans KR",sans-serif`;const bw=ctx.measureText(r.boss).width,lx=MW/2-(nw+bw)/2,ly=top+i*rh+15;
-  ctx.fillStyle='rgba(13,18,32,.72)';rr(lx-8,ly-12,nw+bw+16,17,8);
-  ctx.textAlign='left';ctx.fillStyle='#dfe5f2';ctx.font=`700 12px Hahmlet, serif`;ctx.fillText(r.n,lx,ly);ctx.fillStyle='#97a2c3';ctx.font=`500 10px "IBM Plex Sans KR",sans-serif`;ctx.fillText(r.boss,lx+nw,ly)}};
- ctx.lineWidth=3;for(let k=0;k<pts.length-1;k++){ctx.strokeStyle=k<cur?'#5fae6b':'#4a2232';ctx.beginPath();ctx.moveTo(pts[k].x,pts[k].y);ctx.lineTo(pts[k+1].x,pts[k+1].y);ctx.stroke()}
- const NI=MAPNODE;pts.forEach((p,k)=>{const lord=p.j===9,rad=lord?R*1.25:R;
-  /* 왕도 마지막 칸(알현실) = 성 아이콘 크게 */
-  if(k===pts.length-1){const done=cur>=MAXLAND,cap=CAPIMG[done?'open':'locked'],z=Math.min(rh*1.05,64);if(k===cur){const pr=z*.42+Math.sin(T*4)*2;ctx.strokeStyle='#ffc94a';ctx.lineWidth=2.5;ctx.beginPath();ctx.arc(p.x,p.y-z*.12,pr,0,Math.PI*2);ctx.stroke()}
-   if(cap)ctx.drawImage(cap,p.x-z/2,p.y-z*.7,z,z);else{ctx.fillStyle=done?'#ffc94a':'#6a5a8c';ctx.beginPath();ctx.moveTo(p.x-14,p.y+8);ctx.lineTo(p.x-14,p.y-6);ctx.lineTo(p.x-7,p.y+1);ctx.lineTo(p.x,p.y-12);ctx.lineTo(p.x+7,p.y+1);ctx.lineTo(p.x+14,p.y-6);ctx.lineTo(p.x+14,p.y+8);ctx.fill()}return}
-  if(NI.ok){const rn=RNODE[p.i]&&RNODE[p.i][lord?'boss':'enemy'],im=k<cur?NI.captured:rn||(k===cur?NI.current:lord?NI.boss:NI.enemy),z=Math.min(rh*.78,rad*(k===cur?2.9:rn?(lord?2.5:2.4):2.4));if(k===cur){const pr=rad+5+Math.sin(T*4)*2;ctx.globalAlpha=.5;ctx.strokeStyle='#ffc94a';ctx.lineWidth=2.5;ctx.beginPath();ctx.arc(p.x,p.y,pr,0,Math.PI*2);ctx.stroke();ctx.globalAlpha=1}ctx.drawImage(im,p.x-z/2,p.y-z*.62-(k===cur?Math.abs(Math.sin(T*3))*3:0),z,z);return}
-  if(k<cur){ell(p.x,p.y,rad,rad,'#5fae6b');ctx.strokeStyle='#eaffea';ctx.lineWidth=1.8;ctx.beginPath();ctx.moveTo(p.x-rad*.4,p.y);ctx.lineTo(p.x-rad*.05,p.y+rad*.35);ctx.lineTo(p.x+rad*.45,p.y-rad*.35);ctx.stroke()}
-  else{ell(p.x,p.y,rad,rad,k===cur?'#7a2b3a':'#4a1f2c');ctx.fillStyle='#c25a6a';ctx.beginPath();ctx.moveTo(p.x-rad*.5,p.y-rad*.1);ctx.lineTo(p.x-rad*.7,p.y-rad*.75);ctx.lineTo(p.x-rad*.15,p.y-rad*.3);ctx.moveTo(p.x+rad*.15,p.y-rad*.3);ctx.lineTo(p.x+rad*.7,p.y-rad*.75);ctx.lineTo(p.x+rad*.5,p.y-rad*.1);ctx.fill()}
-  if(lord){ctx.strokeStyle=k<cur?'#ffc94a':'#ff6b7d';ctx.lineWidth=2;ctx.beginPath();ctx.arc(p.x,p.y,rad+2,0,Math.PI*2);ctx.stroke()}
-  if(k===cur){const pr=rad+5+Math.sin(T*4)*2;ctx.strokeStyle='#ffc94a';ctx.lineWidth=2.5;ctx.beginPath();ctx.arc(p.x,p.y,pr,0,Math.PI*2);ctx.stroke()}});
- regionLabels();
- 
- ctx=prev;
-}
+ const a=Math.min(1,.12),C=WCAM;C.x+=(C.tx-C.x)*a*1.6;C.y+=(C.ty-C.y)*a*1.6;C.z+=(C.tz-C.z)*a*1.6;
+ if(!WMI.ok){ctx.fillStyle='#1a1028';ctx.fillRect(0,0,MW,MH);ctx.fillStyle='#c9b8e8';ctx.font='600 13px "IBM Plex Sans KR",sans-serif';ctx.textAlign='center';ctx.fillText('지도를 펼치는 중…',MW/2,MH/2);ctx=prev;return}
+ wmCache();const v=wmView(),s=v.s,P=MAPPOS.pts,sp=MAPPOS.spot,zoom=wmZoomR>=0,now=performance.now();
+ ctx.drawImage(WLAND,v.x,v.y,v.w,v.h,0,0,MW,MH);
+ /* 2부 땅: 옅은 회색 바다 안개 (왕도를 깨면 조금 더 또렷) */
+ const clr=mapAllClear();for(const k of['elf','desert','north']){const[x,y,r]=sp[k],[px,py]=wmToS(v,x,y),R=r*1.7*s,g=ctx.createRadialGradient(px,py,0,px,py,R);g.addColorStop(0,`rgba(225,230,240,${clr?.42:.62})`);g.addColorStop(1,'rgba(225,230,240,0)');ctx.fillStyle=g;ctx.fillRect(px-R,py-R,R*2,R*2)}
+ /* 영지 점 · 군단장 · 왕도 */
+ const fs=Math.round(Math.max(9.5,Math.min(12,MW*.028)));
+ for(let st=1;st<=MAXLAND;st++){if(!mapSeen(st))continue;const[x,y]=P[st-1],[px,py]=wmToS(v,x,y),taken=mapTaken(st),r=Math.floor((st-1)/10),lord=st%10===0,k=Math.max(1.1,Math.min(1.7,s*1.3));
+  if(st===MAXLAND){const z=Math.max(44,56*s),im=CAPIMG[S.stage>MAXLAND?'open':'locked'];if(im)ctx.drawImage(im,px-z/2,py-z*.75,z,z);if(S.stage>MAXLAND)wmPill('왕궁 뜰',px,py+fs*1.3,fs-1,'rgba(255,201,74,.92)','#3a2a00')}
+  else if(lord){const z=Math.max(30,40*s),im=RNODE[r].boss;if(im)ctx.drawImage(im,px-z/2,py-z*.72,z,z);if(taken)wmFlag(px+z*.28,py-z*.35,k,'#3fbf5a')}
+  else wmFlag(px,py,k,taken?'#3fbf5a':'#d23a3a');
+  if(zoom&&r===wmZoomR)wmPill(terrName(st),px,py+fs*1.25,fs-1,'rgba(10,8,18,.72)','#fff')}
+ /* 어둠 구름 */
+ if(WFOG){ctx.drawImage(WFOG,v.x,v.y,v.w,v.h,0,0,MW,MH);for(const[x,y,ph,sz]of WEMB){const[px,py]=wmToS(v,x,y),al=.35+.45*Math.max(0,Math.sin(T*1.7+ph));ctx.fillStyle=`rgba(255,${80+Math.floor(60*al)},60,${al})`;ctx.beginPath();ctx.arc(px,py,sz*Math.min(1.6,s),0,Math.PI*2);ctx.fill()}}
+ /* 명소 표시: 시련의 탑(잠김 🔒) · 요일 던전(오늘 반짝) */
+ {const[tx,ty]=wmToS(v,sp.tower[0],sp.tower[1]);if(!S.chOpen)wmPill('🔒 시련의 탑',tx,ty-6,fs-1,'rgba(10,8,18,.7)','#d8d0ee');
+  if(S.chOpen){const open=dunOpenK();for(const k of['field','vault','mine']){const[dx,dy]=wmToS(v,sp[k][0],sp[k][1]),on=open.includes(k);
+   if(on){const pr=(14+Math.sin(T*4)*3)*Math.max(1,s);ctx.save();ctx.globalAlpha=.55+.3*Math.sin(T*4);ctx.strokeStyle='#ffe08a';ctx.lineWidth=2.5;ctx.beginPath();ctx.arc(dx,dy,pr,0,Math.PI*2);ctx.stroke();ctx.restore();
+    for(let i=0;i<4;i++){const an=T*1.5+i*1.57,rr2=pr+6;ctx.fillStyle='rgba(255,240,170,.9)';ctx.beginPath();ctx.arc(dx+Math.cos(an)*rr2,dy+Math.sin(an)*rr2,1.6,0,Math.PI*2);ctx.fill()}}
+   wmPill((on?'오늘 · ':'')+DUNS[k].n,dx,dy+18*Math.max(1,s),fs-1.5,on?'rgba(255,201,74,.95)':'rgba(20,16,30,.6)',on?'#3a2a00':'rgba(220,220,235,.75)')}}}
+ /* 카엘 (지금 위치) */
+ {const[x,y]=P[wmCur()-1],[px,py]=wmToS(v,x,y),R=Math.max(13,17*Math.min(1.5,s)),by=py-R-6-Math.abs(Math.sin(T*3))*3;
+  ell(px,py,R*.8,R*.28,'rgba(0,0,0,.4)');const g=ctx.createRadialGradient(px,by,R*.6,px,by,R*2.1);g.addColorStop(0,'rgba(255,214,110,.55)');g.addColorStop(1,'rgba(255,214,110,0)');ctx.fillStyle=g;ctx.beginPath();ctx.arc(px,by,R*2.1,0,Math.PI*2);ctx.fill();
+  ctx.save();ctx.beginPath();ctx.arc(px,by,R,0,Math.PI*2);ctx.fillStyle='#2a2216';ctx.fill();ctx.clip();if(WMI.kael)ctx.drawImage(WMI.kael,px-R*1.15,by-R*1.05,R*2.3,R*2.3);ctx.restore();
+  ctx.lineWidth=3;ctx.strokeStyle='#ffc94a';ctx.beginPath();ctx.arc(px,by,R,0,Math.PI*2);ctx.stroke();ctx.strokeStyle=`rgba(255,201,74,${.4+.3*Math.sin(T*4)})`;ctx.lineWidth=2;ctx.beginPath();ctx.arc(px,by,R+4+Math.sin(T*4)*2,0,Math.PI*2);ctx.stroke()}
+ /* 지역 이름 (전체 지도) */
+ if(!zoom)for(let r=0;r<6;r++){const c=MAPPOS.ctr[r],[px,py]=wmToS(v,c[0],c[1]-(r===0?150:r===5?60:110));wmPill(mapEntered(r)?REGIONS[r].n:'???',px,py,fs,'rgba(8,6,14,.6)','#fff')}
+ /* 연출: 걷힘(금빛 번쩍 + 흩어지는 구름) · 되찾음(밝은 땅 번짐) */
+ wmAnims=wmAnims.filter(an=>now<an.t0+an.d);for(const an of wmAnims){const t=(now-an.t0)/an.d;if(t<0)continue;const[px,py]=wmToS(v,an.x,an.y),big=an.k==='reg',R=(big?260:an.k==='cap'?LAND_R:FOG_R)*s*(.3+t*.9);
+  ctx.save();ctx.globalAlpha=Math.max(0,1-t);const g=ctx.createRadialGradient(px,py,0,px,py,R);g.addColorStop(0,an.k==='cap'?'rgba(170,255,170,.55)':'rgba(255,230,150,.75)');g.addColorStop(1,'rgba(255,230,150,0)');ctx.fillStyle=g;ctx.beginPath();ctx.arc(px,py,R,0,Math.PI*2);ctx.fill();
+  if(an.k!=='cap')for(let i=0;i<(big?14:7);i++){const ang=i*2.4+an.x,d=R*(.6+t*.8);ctx.fillStyle='rgba(40,18,60,.75)';ctx.beginPath();ctx.arc(px+Math.cos(ang)*d,py+Math.sin(ang)*d,(big?9:5)*(1-t)*Math.max(1,s),0,Math.PI*2);ctx.fill()}ctx.restore()}
+ ctx=prev}
+/* 누르기: 전체 지도에서는 지역을 눌러 확대, 확대 화면에서만 점을 누름(누르는 영역 최소 32px) */
+mc.addEventListener('click',e=>{if(!MW||!WMI.ok)return;const r=mc.getBoundingClientRect(),sx=e.clientX-r.left,sy=e.clientY-r.top,v=wmView(),mx=v.x+sx/v.s,my=v.y+sy/v.s,now=Date.now();
+ if(now-wmTapT<300){clearTimeout(wmTapTimer);wmTapT=0;wmZoomR=-1;mzClose(true);wmGo(MAPW/2,MAPH/2,1);return}wmTapT=now;
+ clearTimeout(wmTapTimer);wmTapTimer=setTimeout(()=>wmTap(mx,my,v),260)});
+function wmTap(mx,my,v){const sp=MAPPOS.spot,hit=(k)=>Math.hypot(mx-sp[k][0],my-sp[k][1])<Math.max(sp[k][2],22/v.s);
+ /* 확대 화면: 점 먼저 */
+ if(wmZoomR>=0){let best=0,bd=1e9;for(let st=wmZoomR*10+1;st<=wmZoomR*10+10;st++){const p=MAPPOS.pts[st-1],d=Math.hypot(mx-p[0],my-p[1]);if(d<bd){bd=d;best=st}}
+  if(best&&bd*v.s<=20){if(!mapSeen(best))return toast('아직 안개에 덮여 있어요');const i=Math.floor((best-1)/10)+1,j=(best-1)%10+1;
+   return toast(`${i}-${j} ${terrName(best)} · ${best===wmCur()&&S.stage<=MAXLAND?'지금 싸우는 곳':mapTaken(best)?'이번 회차에 되찾음 ✓':'마족 점령지'}${best%10===0?' · 군단장':''}`)}}
+ for(const k of['elf','desert','north'])if(hit(k)){toast('2부 「흩어진 동맹」에서 열려요');setTimeout(()=>toast('루미나르: 바다 건너에도 마족에 맞서는 이들이 있다.'),1900);return}
+ if(hit('village'))return setTab('vl');
+ if(hit('tower')){if(!S.chOpen)return toast('영지 '+CH_OPEN+'을 되찾으면 열려요');return chSheet()}
+ for(const k of['field','vault','mine'])if(S.chOpen&&hit(k))return chSheet();
+ if(hit('capital')&&mapEntered(5))return mzOpen(5);
+ if(wmZoomR>=0){wmZoomR=-1;mzClose(true);return wmGo(MAPW/2,MAPH/2,1)}
+ let r=-1,bd=1e9;MAPPOS.ctr.forEach((c,i)=>{const d=Math.hypot(mx-c[0],my-c[1]);if(d<bd){bd=d;r=i}});
+ if(r<0)return;if(!mapEntered(r))return toast('아직 안개에 덮여 있어요');mzOpen(r)}
+/* 지역 확대 + 아래 반 창 */
+/* 지역 확대 배율: 기본 1.8배, 점이 가까운 지역은 점 사이가 화면에서 34px 이상 되게 더 크게 */
+const wmDmin=MAPPOS.ctr.map((_,r)=>{let mn=1e9;for(let a=0;a<10;a++)for(let b=a+1;b<10;b++){const p=MAPPOS.pts[r*10+a],q=MAPPOS.pts[r*10+b];mn=Math.min(mn,Math.hypot(p[0]-q[0],p[1]-q[1]))}return mn});
+const wmZoomFor=r=>Math.max(1.8,Math.min(3,34*MAPW/(Math.max(1,MW)*wmDmin[r])));
+/* 지역 점들의 가운데(확대할 때 화면 가운데에 둠) */
+const wmRegMid=r=>{let x=0,y=0;for(let j=0;j<10;j++){x+=MAPPOS.pts[r*10+j][0];y+=MAPPOS.pts[r*10+j][1]}return[x/10,y/10]};
+function mzOpen(r){wmZoomR=r;$('p-mp').classList.add('mzon');const pg=$('p-mp'),wrap=document.querySelector('.mapwrap');$('p-mz').hidden=false;
+ /* 아래 창에 가리지 않게: 지도 윗부분이 화면 위에 오도록 내리고, 지역은 창 위에 보이는 부분의 가운데에 */
+ pg.scrollTo({top:Math.max(0,wrap.offsetTop-pg.querySelector('.phead').offsetHeight-6),behavior:'smooth'});
+ const z=wmZoomFor(r),m=wmRegMid(r),vis=Math.max(120,Math.min(MH,$('p-mz').getBoundingClientRect().top-(pg.querySelector('.phead').getBoundingClientRect().bottom+6))),sc=MW/(MAPW/z);
+ wmGo(m[0],m[1]+(MH/2-vis/2)/sc,z);const R=REGIONS[r],got=Array.from({length:10},(_,j)=>mapTaken(r*10+j+1)).filter(Boolean).length,bid=r<5?BOSSID[r]:'baltasar';
+ $('mzT').textContent=R.n;
+ $('mzBody').innerHTML=`<div class="mzh"><img class="mzf" src="assets/portraits/portrait_${bid}_idle.png" alt="" onerror="this.remove()"><div><b>${R.boss}</b><small>되찾은 영지 ${got}/10 (이번 회차)</small><div class="xp"><div style="width:${got*10}%"></div></div></div></div>
+  <div class="mzl">${Array.from({length:10},(_,j)=>{const st=r*10+j+1,seen=mapSeen(st),tk=mapTaken(st),cur=st===wmCur()&&S.stage<=MAXLAND;return`<div class="mzr${cur?' cur':''}"><i>${r+1}-${j+1}</i><span>${seen?terrName(st):'???'}</span><em>${j===9?'군단장':'성주'}</em><b>${cur?'⚔ 지금':tk?'✓':seen?'':'🌫'}</b></div>`}).join('')}</div>
+  ${R.lore.map(para).join('')}<button class="buy ghost" id="mzAll" style="width:100%">전체 지도</button>`;
+ $('mzAll').onclick=()=>{wmZoomR=-1;mzClose(true);wmGo(MAPW/2,MAPH/2,1)};$('p-mz').scrollTop=0}
+function mzClose(quiet){$('p-mz').hidden=true;$('p-mp').classList.remove('mzon');if(!quiet&&wmZoomR>=0){wmZoomR=-1;wmGo(MAPW/2,MAPH/2,1)}}
+$('mzX').onclick=()=>mzClose(false);
+/* 위쪽 탐험 막대 · 다음 목표 */
+let mapSig='';
+function renderMapInfo(){const ex=mapExplore(),c=landCount(),st=wmCur(),r=region(st),i=Math.floor((st-1)/10)+1,j=(st-1)%10+1;
+ const sig=[ex,c,S.stage,S.best].join();if(sig===mapSig)return;mapSig=sig;
+ $('mapBar').innerHTML=`<span class="mbx"><b>대륙 탐험 ${Math.round(ex/MAXLAND*100)}%</b><i><i style="width:${ex/MAXLAND*100}%"></i></i></span><span class="mbr">이번 회차 <b>${c}/${MAXLAND}</b></span><button class="mbk" id="mapRank2" aria-label="랭킹">🏆</button>`;
+ $('mapRank2').onclick=e=>{e.stopPropagation();rankSheet()};
+ $('mapNext').innerHTML=S.stage>MAXLAND?'🏰 1부 완결 · 왕궁 뜰에서 사냥 중':`다음: <b>${r.n} ${i}-${j}</b> · ${terrName(st)} · ${j===10?(i===6?'마왕 발타사르':'군단장 '+r.boss.split(' ').pop()):'마족 성주'} <i>›</i>`}
+$('mapNext').onclick=()=>{const r=Math.floor((wmCur()-1)/10);if(mapEntered(r))mzOpen(r)};
 
 /* ---------- 저장 · 방치 보상 ---------- */
 let noSave=false;
