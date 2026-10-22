@@ -57,18 +57,23 @@ class EqPage extends StatelessWidget {
 
   // ── 성유물 상자 (웹 .box: 레벨·경험치·확률·자동·열기·10연속) ──
   Widget _box() {
-    final s = g.state, c = g.calc, maxed = s.boxLv >= 10, odds = c.odds(), cost = c.boxCost();
+    final s = g.state, c = g.calc, odds = c.odds(), cost = c.boxCost();
     final tb = g.acts.ticketN('box'), t10 = g.acts.ticketN('box10');
     final can = (s.gold >= cost || tb > 0) && g.acts.pending == null;
     return KdBox(children: [
       Row(crossAxisAlignment: CrossAxisAlignment.baseline, textBaseline: TextBaseline.alphabetic, children: [
-        Expanded(child: Text('성유물 상자 Lv.${s.boxLv}${maxed ? ' (최대)' : ''}', style: KdText.display(16))),
-        Text(maxed ? '최대 레벨' : '${s.boxXp} / ${c.xpNeed()}', style: KdText.figure(13, color: KdColors.muted, weight: FontWeight.w400)),
+        Expanded(child: Text('성유물 상자 Lv.${s.boxLv}', style: KdText.display(16))),
+        Text('${s.boxXp} / ${c.xpNeed()}', style: KdText.figure(13, color: KdColors.muted, weight: FontWeight.w400)),
       ]),
-      XpBar(maxed ? 1 : s.boxXp / c.xpNeed()),
-      Wrap(spacing: 10, runSpacing: 4, children: [
+      XpBar(s.boxXp / c.xpNeed()),
+      Wrap(spacing: 10, runSpacing: 4, crossAxisAlignment: WrapCrossAlignment.center, children: [
         for (var i = 0; i < itemGrades.length; i++)
-          oddsChip(gradeColor(i), '${itemGrades[i].n} ${odds[i] < 1 ? odds[i].toStringAsFixed(2) : odds[i].toStringAsFixed(1)}%'),
+          if (odds[i] > 0 || i < 6) oddsChip(gradeColor(i), '${itemGrades[i].n} ${_oddsTxt(odds[i])}%'),
+        GestureDetector(
+          key: const ValueKey('oddsAll'),
+          onTap: () => _oddsSheet(),
+          child: Text('레벨별 확률표', style: KdText.body(12, color: KdColors.gold).copyWith(decoration: TextDecoration.underline, decorationColor: KdColors.gold)),
+        ),
       ]),
       Wrap(spacing: 14, runSpacing: 8, children: [
         _toggle('약한 장비 바로 판매', 'autoSell'),
@@ -92,6 +97,44 @@ class EqPage extends StatelessWidget {
       const KdNote('10연속은 영웅 등급 이상 1개 확정이에요. 등급별 확률은 위와 같아요. 더 좋은 장비는 바로 장착하고 나머지는 팔아요.'),
       const KdNote('행상인 피트의 성유물은 카엘만 착용해요.'),
     ]);
+  }
+
+  static String _oddsTxt(num v) => v < 1 ? v.toStringAsFixed(2) : v.toStringAsFixed(1);
+
+  /// 레벨별 확률표 (유료 확률형 아이템 확률 공개, 웹 oddsSheet)
+  void _oddsSheet() {
+    final c = g.calc, cur = g.state.boxLv;
+    final ls = {1, 5, 10, 11, 15, 20, 30, 50, cur}.toList()..sort();
+    TableRow row(String lv, List<num> o, {bool hi = false}) => TableRow(
+          decoration: BoxDecoration(color: hi ? const Color(0x1FFFC94A) : null, border: const Border(bottom: BorderSide(color: Color(0x0FFFFFFF)))),
+          children: [
+            Padding(padding: const EdgeInsets.symmetric(vertical: 5), child: Text(lv, style: KdText.figure(11.5, color: hi ? const Color(0xFFFFE7A6) : KdColors.muted, weight: FontWeight.w400))),
+            for (final v in o)
+              Text(v > 0 ? _oddsTxt(v) : '—', textAlign: TextAlign.right, style: KdText.figure(11.5, color: hi ? const Color(0xFFFFE7A6) : KdColors.fg, weight: FontWeight.w400)),
+          ],
+        );
+    g.openSheet((ctx) => KdSheetBody(
+          eyebrow: '성유물 상자',
+          title: '레벨별 확률표',
+          children: [
+            Table(
+              key: const ValueKey('oddsTable'),
+              defaultVerticalAlignment: TableCellVerticalAlignment.middle,
+              columnWidths: const {0: FlexColumnWidth(.8)},
+              children: [
+                TableRow(children: [
+                  Text('Lv', style: KdText.body(11.5, color: KdColors.muted)),
+                  for (var i = 0; i < itemGrades.length; i++)
+                    Text(itemGrades[i].n, textAlign: TextAlign.right, style: KdText.body(11.5, color: gradeColor(i), weight: FontWeight.w600)),
+                ]),
+                for (final l in ls) row('$l', c.odds(l), hi: l == cur),
+                row('끝', c.odds(9999)),
+              ],
+            ),
+            const KdNote('단위 %. 상자 레벨은 끝이 없고, Lv.11부터 좋은 등급이 조금씩 더 잘 나오지만 「끝」 줄을 넘지 않아요. 「태초」는 Lv.11부터 나와요. 다음 레벨까지 상자 (지금 레벨 × 10)번.'),
+          ],
+          acts: KdActs(buttons: [KdAct('닫기', primary: true, onTap: () => Navigator.of(ctx).pop())]),
+        ));
   }
 
   Widget _toggle(String label, String key) {

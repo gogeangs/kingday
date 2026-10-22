@@ -55,6 +55,7 @@ final List<Deco> badges = [
   Deco('part1', '1부 완결', '마왕 발타사르 처치', (c) => orNum(c.s.raw['capClears'], 0) >= 1),
   Deco('tower25', '탑 25층', '시련의 탑 25층', (c) => _top(c) >= 25),
   Deco('tower100', '탑의 주인', '시련의 탑 100층', (c) => _top(c) >= 100),
+  Deco('primal', '태초의 손길', '태초 장비 착용', (c) => c.s.eq.values.any((it) => it is Map && asNum(it['g']) >= 6)),
   const Deco('goblin', '고블린 사냥꾼', '황금 고블린 희귀 전리품', _no, rare: true),
   const Deco('champ', '시즌 챔피언', '시즌 랭킹 1위 보상', _no, rk: true),
   const Deco('top10', '시즌 10강', '시즌 랭킹 2~10위 보상', _no, rk: true),

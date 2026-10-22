@@ -117,12 +117,19 @@ void main() {
     expect(((now - seasonZero) / 6048e5).floor() + 1, fx['misc']['curWeek']);
   });
 
+  test('성유물 상자 레벨별 확률 (상한 없음 · 태초, RELIC_BOX.md)', () {
+    final c = calcFor('fresh');
+    for (final e in fx['misc']['odds'] as List) {
+      same(c.odds(e[0] as int), e[1], 'odds Lv.${e[0]}');
+    }
+  });
+
   test('카드 동료·전체 동료 목록 순서', () {
     same(GameCalc.cardIds(), fx['misc']['cardIds'], 'CARDIDS');
     same(comps.keys.toList(), fx['misc']['compIds'], 'COMP');
   });
 
-  for (final name in ['fresh', 'mid', 'late', 'old', 'g1', 'g2', 'g3', 'g4', 'tr']) {
+  for (final name in ['fresh', 'mid', 'late', 'old', 'g1', 'g2', 'g3', 'g4', 'tr', 'box']) {
     group('저장 데이터 「$name」', () {
       late Map<String, dynamic> sc;
       setUp(() => sc = (fx['scenarios'] as Map)[name] as Map<String, dynamic>);

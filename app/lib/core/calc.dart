@@ -109,13 +109,20 @@ class GameCalc {
   int xpNeed() => s.boxLv * 10;
 
   /// odds(): 성유물 등급별 확률(%)
-  List<num> odds() {
-    final w = [for (var g = 0; g < baseOdds.length; g++) baseOdds[g] * math.pow(1 + .35 * (s.boxLv - 1), g)];
+  /// 성유물 상자 확률 (docs/content/RELIC_BOX.md 3-2, 웹 boxF·primalP·odds):
+  /// Lv.10까지 그대로, Lv.11부터 배수 F가 5.7에 수렴 + 새 등급 「태초」(최대 5%). 레벨 상한 없음.
+  /// 돌려주는 값: 일반~신화 6개 + 태초 = 7개 (%)
+  static num boxF(int l) => l <= 10 ? 1 + .35 * (l - 1) : 4.15 + 1.55 * (1 - math.pow(.9, l - 10));
+  static num primalP(int l) => l <= 10 ? 0 : 5 * (1 - math.pow(.93, l - 10));
+  List<num> odds([int? lv]) {
+    final l = lv ?? s.boxLv, f = boxF(l);
+    final w = [for (var g = 0; g < baseOdds.length; g++) baseOdds[g] * math.pow(f, g)];
     num t = w.first;
     for (var i = 1; i < w.length; i++) {
       t = t + w[i];
     }
-    return [for (final x in w) x / t * 100];
+    final p = primalP(l);
+    return [for (final x in w) x / t * (100 - p), p];
   }
 
   static num score(Relic? it) => it == null ? 0 : it.atk * 6 + it.hp;
@@ -502,10 +509,10 @@ class GameCalc {
   // ───────────── 난수가 드는 것 ─────────────
   /// rollItem(fg): 성유물 상자에서 나오는 장비. fg 를 주면 그 등급으로 고정(난수는 똑같이 소모).
   Relic rollItem(KdRandom rng, [int? fg]) {
-    final o = odds();
+    final o = odds(), last = o.last > 0 ? o.length - 1 : o.length - 2;
     var r = rng.next() * 100;
     var g = 0;
-    for (; g < 5; g++) {
+    for (; g < last; g++) {
       if (r < o[g]) break;
       r -= o[g];
     }

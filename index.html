@@ -386,6 +386,8 @@ canvas{display:block;width:100%;height:100%}
 .xp{height:6px;background:var(--panel2);border-radius:3px;overflow:hidden}
 .xp div{height:100%;background:var(--gold)}
 .odds{display:flex;flex-wrap:wrap;gap:4px 10px;font-size:12px;font-variant-numeric:tabular-nums}
+.oddsall{border:0;background:none;color:var(--gold);font:inherit;font-size:12px;text-decoration:underline;padding:0;cursor:pointer}
+.oddtbl{overflow-x:auto;margin:4px 0}.oddtbl table{border-collapse:collapse;width:100%;font-size:11.5px;font-variant-numeric:tabular-nums;letter-spacing:-.02em}.oddtbl th,.oddtbl td{padding:5px 2px;text-align:right;border-bottom:1px solid rgba(255,255,255,.06);white-space:nowrap}.oddtbl th:first-child,.oddtbl td:first-child{text-align:left;color:var(--muted)}.oddtbl tr.cur td{background:rgba(255,201,74,.12);color:#ffe7a6}
 .odds span::before{content:"";display:inline-block;width:7px;height:7px;border-radius:2px;background:var(--c);margin-right:4px}
 .toggles{display:flex;gap:8px 14px;flex-wrap:wrap}
 .tg{display:flex;align-items:center;gap:6px;font-size:13px;color:var(--muted);cursor:pointer}
@@ -640,7 +642,7 @@ const ICONS={
 };
 const svg=k=>`<svg viewBox="0 0 24 24" aria-hidden="true">${ICONS[k]}</svg>`;
 const SLOTS=[{k:'weapon',n:'검 장식',a:1,h:0},{k:'helm',n:'모자',a:0,h:1},{k:'armor',n:'작업복',a:0,h:1.6},{k:'gloves',n:'장갑',a:.6,h:.3},{k:'boots',n:'장화',a:.3,h:.6},{k:'ring',n:'반지',a:.5,h:.4}];
-const GRADES=[{n:'일반',c:'#b9c0cf',m:1},{n:'고급',c:'#6fd17a',m:1.6},{n:'희귀',c:'#5aa9ff',m:2.5},{n:'영웅',c:'#b77cff',m:4},{n:'전설',c:'#ffb03b',m:6.5},{n:'신화',c:'#ff5d73',m:11}];
+const GRADES=[{n:'일반',c:'#b9c0cf',m:1},{n:'고급',c:'#6fd17a',m:1.6},{n:'희귀',c:'#5aa9ff',m:2.5},{n:'영웅',c:'#b77cff',m:4},{n:'전설',c:'#ffb03b',m:6.5},{n:'신화',c:'#ff5d73',m:11},{n:'태초',c:'#8ff3ff',m:18}];
 const BASE_ODDS=[70,22,6,1.6,.35,.05];
 const REGIONS=[
  {n:'에르단 평원',sky:['#3d5f94','#9ab8cf'],hill:'#36624a',hill2:'#4f7d55',ground:'#4f7a3a',kind:'slime',col:'#8fbf4f',mn:'역병 점액',boss:'역병의 군단장 모르바스',
@@ -1008,7 +1010,10 @@ const monAtk=(st,b)=>4*Math.pow(BAL.atkG,st-1)*(b?(isDemon(st)?BAL.demAtk:isLord
 const reward=(st,b)=>3*Math.pow(BAL.goldG,st-1)*(b?10:1);
 const boxCost=()=>Math.floor(20*Math.pow(BAL.boxG,S.stage-1));
 const xpNeed=()=>S.boxLv*10;
-function odds(){const w=BASE_ODDS.map((b,g)=>b*Math.pow(1+.35*(S.boxLv-1),g));const t=w.reduce((a,b)=>a+b);return w.map(x=>x/t*100)}
+/* 성유물 상자 확률 (docs/content/RELIC_BOX.md 3-2): Lv.10까지 그대로, Lv.11부터 배수 F가 5.7에 수렴 + 새 등급 「태초」(최대 5%). 레벨 상한 없음 */
+const boxF=L=>L<=10?1+.35*(L-1):4.15+1.55*(1-Math.pow(.9,L-10));
+const primalP=L=>L<=10?0:5*(1-Math.pow(.93,L-10));
+function odds(L){L=L||S.boxLv;const F=boxF(L),w=BASE_ODDS.map((b,g)=>b*Math.pow(F,g)),t=w.reduce((a,b)=>a+b),p=primalP(L);return[...w.map(x=>x/t*(100-p)),p]}
 const score=it=>it?it.atk*6+it.hp:0;
 const itemPrice=k=>{const c=CROPS.find(x=>x.k===k)||GOODS.find(x=>x.k===k);return Math.max(1,Math.floor(c.sell*Math.pow(1.16,S.best-1)))};
 const GEM_PLOTS=[50,100,150,200];/* 황금 이삭으로 여는 추가 밭 한 줄(4칸). 은퇴해도 유지 */
@@ -1113,17 +1118,18 @@ function intro(){queue(()=>scene('왕이 되는 그날까지 · 프롤로그','�
 
 /* ---------- 장비 ---------- */
 function rollItem(fg){
- const o=odds();let r=Math.random()*100,g=0;for(;g<5;g++){if(r<o[g])break;r-=o[g]}if(fg!=null)g=fg;
+ const o=odds(),last=o[o.length-1]>0?o.length-1:o.length-2;let r=Math.random()*100,g=0;for(;g<last;g++){if(r<o[g])break;r-=o[g]}if(fg!=null)g=fg;
  const sl=SLOTS[Math.floor(Math.random()*SLOTS.length)],lv=Math.max(1,S.stage+Math.floor(Math.random()*4)-2),m=GRADES[g].m,v=()=>.9+Math.random()*.2;
  return{slot:sl.k,g,lv,atk:Math.round(3*m*lv*sl.a*v()),hp:Math.round(20*m*lv*sl.h*v()),price:Math.floor(boxCost()*.25*(1+g))}
 }
 const slotName=k=>SLOTS.find(s=>s.k===k).n;
 function statLine(it){const m=enMul(it.slot),p=[];if(it.atk)p.push('공격 +'+fmt(it.atk*m));if(it.hp)p.push('체력 +'+fmt(it.hp*m));return p.join(' · ')}
 const enTag=k=>enLv(k)?`<span class="ent">대장간 +${enLv(k)} 적용</span>`:'';
-function gainBoxXp(){if(S.boxLv>=10)return;S.boxXp++;if(S.boxXp>=xpNeed()){S.boxXp=0;S.boxLv++;
+function gainBoxXp(){S.boxXp++;if(S.boxXp>=xpNeed()){S.boxXp=0;S.boxLv++;
   if(S.boxLv===5)queue(()=>scene('성유물 상자 Lv.5','단골 대접',['m:피트|단골 대접이야. 이번 물건은 진짜 진품이라고. …이번엔 진짜.','k@flustered:지난번엔 가짜였어요?','m:피트|자, 자! 영웅 등급이 더 잘 나오게 해 놨어!'],'…믿어 볼게요'));
   else if(S.boxLv===10)queue(()=>scene('성유물 상자 Lv.10','왕국 최고의 상인',['m:피트|형씨 덕분에 내가 왕국 최고의 상인이 됐어. 이제 내 상자엔 신화 등급도 들어 있다고!','q@proud:…저 상인, 처음부터 주인의 재능을 알아본 거로군.','m:피트|아니, 난 돈 냄새를 맡았지.'],'그럴 줄 알았어요'));
-  else toast('피트가 더 좋은 물건을 들여왔어요. 성유물 상자 Lv.'+S.boxLv)}}
+  else if(S.boxLv===11)queue(()=>scene('성유물 상자 Lv.11','태초의 물건',['m:피트|형씨, 큰일 났어. 마계 상인한테서 「태초」라는 물건을 들여왔는데… 나도 처음 봐.','k@surprised:그걸 팔아도 돼요?','m:피트|팔면 안 되는 물건일수록 잘 팔리지!','sys:이제 성유물 상자에서 신화보다 높은 「태초」 등급이 나와요. 상자 레벨이 오를수록 조금씩 잘 나와요.'],'…조심해서 열게요'));
+  else toast((S.boxLv>10?'피트가 더 귀한 물건을 들여왔어요':'피트가 더 좋은 물건을 들여왔어요')+'. 성유물 상자 Lv.'+S.boxLv)}}
 let pending=null;
 let touched=false;addEventListener('pointerdown',()=>{touched=true},{once:true,capture:true});
 const haptic=p=>{try{if(touched&&S.vib!==false&&navigator.vibrate&&(!navigator.userActivation||navigator.userActivation.hasBeenActive))navigator.vibrate(p)}catch(e){}};
@@ -1142,7 +1148,7 @@ function card(it,cap,vs){
  if(!it)return`<div class="card"><span class="cap">${cap}</span><span class="relicic" style="opacity:.45"><img class="fr" src="assets/ui/frame_normal.png" alt="" onerror="this.remove()"></span><span class="t" style="color:var(--muted)">비어 있음</span><span class="s">빈 칸</span></div>`;
  const G=GRADES[it.g];return`<div class="card" style="--c:${G.c}"><span class="cap">${cap}</span>${relicIcon(it)}<span class="g">${G.n}</span><span class="t">${slotName(it.slot)} Lv.${it.lv}</span>${statCmp(it,vs)}${enTag(it.slot)}</div>`
 }
-const LUMQ=['흥, 내 격에는 한참 못 미친다.','그럭저럭… 봐줄 만하군.','오호, 제법이다!','이건 왕의 물건이다. 당장 걸쳐라!','300년 만에 보는 물건이군…!','신화… 주인, 이건 운명이다.'];
+const LUMQ=['흥, 내 격에는 한참 못 미친다.','그럭저럭… 봐줄 만하군.','오호, 제법이다!','이건 왕의 물건이다. 당장 걸쳐라!','300년 만에 보는 물건이군…!','신화… 주인, 이건 운명이다.','…태초의 빛. 주인, 이건 신들이 남긴 것이다.'];
 function statCmp(it,vs){const m=enMul(it.slot),row=(n,k)=>{const v=(it[k]||0)*m,d=vs===undefined?0:v-((vs&&vs[k])||0)*m;return`<span class="sl"><i>${n}</i><b>+${fmt(v)}</b>${vs===undefined||Math.abs(d)<1?'':`<em class="${d>0?'up':'dn'}">${d>0?'▲':'▼'}${fmt(Math.abs(d))}</em>`}</span>`};return`<span class="s2">${row('공격','atk')}${row('체력','hp')}</span>`}
 function showItem(it,cur){
  const d=(score(it)-score(cur))*enMul(it.slot);
@@ -1406,7 +1412,7 @@ function renderMapInfo(){
 /* ---------- 공통 렌더 ---------- */
 let toastT;function toast(m){const t=$('toast');try{t.classList.toggle('hi',!$('modal').hidden||(!!curTab&&(!HALF.includes(curTab)||!!S.pgFull)))}catch(e){}t.textContent=m;t.style.opacity=1;clearTimeout(toastT);toastT=setTimeout(()=>t.style.opacity=0,2000)}
 let eqSig='',upSig='',boxSig='';
-const FRAMES=['normal','uncommon','rare','epic','legendary','mythic'];
+const FRAMES=['normal','uncommon','rare','epic','legendary','mythic','primal'];
 const SLOTIMG={weapon:'slot_weapon',helm:'slot_hat',armor:'slot_armor',gloves:'slot_gloves',boots:'slot_boots',ring:'slot_ring'};
 let forgeSig='';
 function slotSheet(k){const sl=SLOTS.find(x=>x.k===k),it=S.eq[k],l=enLv(k),mx=l>=EN_MAX,c=enCost(l),ore=S.items.ore||0,open=!!S.bld.mine;
@@ -1473,12 +1479,19 @@ window.addEventListener('pointerup',()=>{if(upHold&&!upHold.rep){const k=upHold.
 $('upgs').addEventListener('click',e=>{if(e.detail!==0)return;const b=e.target.closest('[data-upk]');if(b)upFire(b.dataset.upk)});
 $('upgs').addEventListener('contextmenu',e=>{if(e.target.closest('[data-upk]'))e.preventDefault()});
 document.querySelectorAll('#upMul [data-mul]').forEach(b=>b.onclick=()=>{S.upMul=b.dataset.mul==='max'?'max':+b.dataset.mul;upSig='';renderAll();save()});
+const oddsTxt=v=>v<1?v.toFixed(2):v.toFixed(1);
 function renderBox(){
- $('boxLv').textContent='성유물 상자 Lv.'+S.boxLv+(S.boxLv>=10?' (최대)':'');
- $('boxXpT').textContent=S.boxLv>=10?'최대 레벨':S.boxXp+' / '+xpNeed();
- $('boxXp').style.width=(S.boxLv>=10?100:S.boxXp/xpNeed()*100)+'%';
- const o=odds();$('odds').innerHTML=GRADES.map((g,i)=>`<span style="--c:${g.c}">${g.n} ${o[i]<1?o[i].toFixed(2):o[i].toFixed(1)}%</span>`).join('');
+ $('boxLv').textContent='성유물 상자 Lv.'+S.boxLv;
+ $('boxXpT').textContent=S.boxXp+' / '+xpNeed();
+ $('boxXp').style.width=(S.boxXp/xpNeed()*100)+'%';
+ const o=odds();$('odds').innerHTML=GRADES.map((g,i)=>o[i]>0||i<6?`<span style="--c:${g.c}">${g.n} ${oddsTxt(o[i])}%</span>`:'').join('')+`<button class="oddsall" id="oddsAll">레벨별 확률표</button>`;
+ $('oddsAll').onclick=oddsSheet;
 }
+/* 레벨별 확률표 (유료 확률형 아이템 확률 공개) */
+function oddsSheet(){const Ls=[...new Set([1,5,10,11,15,20,30,50,S.boxLv])].sort((a,b)=>a-b);
+ $('sheet').innerHTML=`<div class="eyebrow">성유물 상자</div><h2>레벨별 확률표</h2><div class="oddtbl"><table><thead><tr><th>Lv</th>${GRADES.map(g=>`<th style="color:${g.c}">${g.n}</th>`).join('')}</tr></thead><tbody>${Ls.map(L=>{const o=odds(L);return`<tr class="${L===S.boxLv?'cur':''}"><td>${L}</td>${o.map(v=>`<td>${v>0?oddsTxt(v):'—'}</td>`).join('')}</tr>`}).join('')}<tr><td>끝</td>${odds(9999).map(v=>`<td>${oddsTxt(v)}</td>`).join('')}</tr></tbody></table></div>
+ <p class="note">단위 %. 상자 레벨은 끝이 없고, Lv.11부터 좋은 등급이 조금씩 더 잘 나오지만 「끝」 줄을 넘지 않아요. 「태초」는 Lv.11부터 나와요. 다음 레벨까지 상자 (지금 레벨 × 10)번.</p>
+ <div class="acts one"><button class="pri" id="mGo">닫기</button></div>`;$('modal').hidden=false;$('mGo').onclick=closeModal}
 function renderAll(){
  if(!S)return;const r=region(S.stage);
  numFlash('gold',S.gold,true);$('gem').textContent=fmt(S.gem||0);$('gemDot').hidden=!(MISSIONS.some(misCan)||misCan(null)||(subOn()&&S.sub.last!==today()));attHud();
@@ -2520,6 +2533,7 @@ const BADGES=[
  {k:'part1',n:'1부 완결',d:'마왕 발타사르 처치',ok:()=>(S.capClears||0)>=1},
  {k:'tower25',n:'탑 25층',d:'시련의 탑 25층',ok:()=>(S.tower&&S.tower.top||0)>=25},
  {k:'tower100',n:'탑의 주인',d:'시련의 탑 100층',ok:()=>(S.tower&&S.tower.top||0)>=100},
+ {k:'primal',n:'태초의 손길',d:'태초 장비 착용',ok:()=>Object.values(S.eq).some(it=>it&&it.g>=6)},
  {k:'goblin',n:'고블린 사냥꾼',d:'황금 고블린 희귀 전리품',ok:()=>false,rare:1},
  {k:'champ',n:'시즌 챔피언',d:'시즌 랭킹 1위 보상',ok:()=>false,rk:1},
  {k:'top10',n:'시즌 10강',d:'시즌 랭킹 2~10위 보상',ok:()=>false,rk:1},

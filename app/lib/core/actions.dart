@@ -137,17 +137,16 @@ class GameActions {
   }
 
   // ════════════════════ 장비 ════════════════════
-  /// gainBoxXp(): 상자를 열 때마다 경험치, 다 차면 상자 레벨 업 (최대 10)
+  /// gainBoxXp(): 상자를 열 때마다 경험치, 다 차면 상자 레벨 업 (상한 없음, RELIC_BOX.md)
   void gainBoxXp() {
-    if (s.boxLv >= 10) return;
     s.boxXp = s.boxXp + 1;
     if (s.boxXp >= c.xpNeed()) {
       s.boxXp = 0;
       s.boxLv = s.boxLv + 1;
-      if (s.boxLv == 5 || s.boxLv == 10) {
+      if (s.boxLv == 5 || s.boxLv == 10 || s.boxLv == 11) {
         out.add(ActBoxLevelScene(s.boxLv));
       } else {
-        _toast('피트가 더 좋은 물건을 들여왔어요. 성유물 상자 Lv.${s.boxLv}');
+        _toast('${s.boxLv > 10 ? '피트가 더 귀한 물건을 들여왔어요' : '피트가 더 좋은 물건을 들여왔어요'}. 성유물 상자 Lv.${s.boxLv}');
       }
     }
   }

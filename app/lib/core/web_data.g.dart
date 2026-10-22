@@ -18,11 +18,12 @@ const wGrades = [
   {'n': '영웅', 'c': '#b77cff', 'm': 4},
   {'n': '전설', 'c': '#ffb03b', 'm': 6.5},
   {'n': '신화', 'c': '#ff5d73', 'm': 11},
+  {'n': '태초', 'c': '#8ff3ff', 'm': 18},
 ];
 
 const wBaseOdds = [70, 22, 6, 1.6, 0.35, 0.05];
 
-const wFrames = ['normal', 'uncommon', 'rare', 'epic', 'legendary', 'mythic'];
+const wFrames = ['normal', 'uncommon', 'rare', 'epic', 'legendary', 'mythic', 'primal'];
 
 const wRelicT = [1, 2, 3];
 
@@ -1197,6 +1198,7 @@ const wLumq = [
   '이건 왕의 물건이다. 당장 걸쳐라!',
   '300년 만에 보는 물건이군…!',
   '신화… 주인, 이건 운명이다.',
+  '…태초의 빛. 주인, 이건 신들이 남긴 것이다.',
 ];
 
 const wSaveKey = 'acorn-idle-v1';
