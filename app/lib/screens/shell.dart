@@ -285,7 +285,7 @@ class _Tabs extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final dots = {GameTab.pt: g.ptDot, GameTab.vl: g.vlDot};
+    final dots = {GameTab.pt: g.ptDot, GameTab.vl: g.vlDot, GameTab.mp: g.chDot};
     return Container(
       padding: EdgeInsets.fromLTRB(8, 5, 8, math.max(6, bottom - 18)),
       decoration: const BoxDecoration(

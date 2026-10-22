@@ -6,11 +6,13 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 
 import '../core/calc.dart';
+import '../core/challenge.dart';
 import '../core/data.dart';
 import '../game/controller.dart';
 import '../ui/image_store.dart';
 import '../ui/theme.dart';
 import '../ui/widgets.dart';
+import 'challenge_sheet.dart';
 import 'social_sheets.dart';
 
 const _rNode = ['erdan', 'dusk', 'canyon', 'frost', 'ash', 'capital'];
@@ -30,7 +32,29 @@ class MpPage extends StatelessWidget {
         child: ClipRRect(borderRadius: BorderRadius.circular(11), child: CustomPaint(painter: _MapPainter(g), size: Size.infinite)),
       ),
       const SizedBox(height: 12),
-      KdBuy(text: '🏆 랭킹 보기', minWidth: 0, onTap: () => openRanking(g)),
+      // 랭킹 · 도전 (영지 20 탈환 전에는 잠김, 할 일이 남으면 노란 점)
+      Row(children: [
+        Expanded(child: KdBuy(text: '🏆 랭킹 보기', minWidth: 0, onTap: () => openRanking(g))),
+        const SizedBox(width: 8),
+        Expanded(
+          child: Stack(clipBehavior: Clip.none, children: [
+            SizedBox(
+              width: double.infinity,
+              child: KdBuy(minWidth: 0, onTap: () => openChallenge(g), extra: null, text: g.calc.chOpen ? '⚔ 도전' : '⚔ 도전 🔒'),
+            ),
+            if (g.chDot)
+              Positioned(
+                top: -3,
+                right: -3,
+                child: Container(
+                  width: 10,
+                  height: 10,
+                  decoration: BoxDecoration(color: const Color(0xFFFFD23A), shape: BoxShape.circle, border: Border.all(color: Colors.white), boxShadow: const [BoxShadow(color: Color(0xFFFFD23A), blurRadius: 6)]),
+                ),
+              ),
+          ]),
+        ),
+      ]),
       const SizedBox(height: 12),
       KdBox(children: [
         s.stage > maxLand

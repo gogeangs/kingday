@@ -37,6 +37,10 @@ class GameState {
         'tickets': {'box': 0, 'box10': 0},
         // 왕도·1부 엔딩 (docs/content/CAPITAL.md 7장)
         'capClears': 0, 'capBonus': 0, 'ending1': 0,
+        // 도전: 시련의 탑·요일 던전 (docs/content/CHALLENGE.md 7장) — chOpen·tower·dun.star 는 은퇴해도 유지
+        'chOpen': 0,
+        'tower': {'top': 0, 'day': ''},
+        'dun': {'d': '', 'used': 0, 'ad': 0, 'star': {'mine': <String, dynamic>{}, 'field': <String, dynamic>{}, 'vault': <String, dynamic>{}}, 'seen': <String, dynamic>{}},
         'v': 3,
       };
 
@@ -74,6 +78,10 @@ class GameState {
       }
       if (asNum(f['best']) > cap1) f['best'] = cap1;
     }
+    // 도전: 별 기록 3종·소개 대사 기록이 빠진 저장도 채움 (웹 hydrate)
+    final dun = asMap(f['dun'])!;
+    dun['star'] = <String, dynamic>{'mine': <String, dynamic>{}, 'field': <String, dynamic>{}, 'vault': <String, dynamic>{}, ...?asMap(dun['star'])};
+    if (!truthy(dun['seen'])) dun['seen'] = <String, dynamic>{};
     if (asNum(f['stage']) > last) f['stage'] = last;
     return g;
   }

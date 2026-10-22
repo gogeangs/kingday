@@ -10,6 +10,7 @@ library;
 import 'dart:math' as math;
 
 import '../core/calc.dart';
+import '../core/challenge.dart';
 import '../core/data.dart';
 import '../core/fmt.dart';
 import '../core/js.dart';
@@ -38,6 +39,7 @@ class Mon {
     required this.x, required this.lane, required this.hp, required this.max, required this.atk,
     this.boss = false, this.lord = false, required this.cd, this.alt = false, this.gob = false,
     this.mv, this.cdm, this.life, this.dem = false, this.ghost, this.guard = false,
+    this.ri, this.balt = false, this.shell = false,
   });
   num x, lane, hp, max, atk, cd;
   bool boss, lord, alt, gob;
@@ -56,6 +58,35 @@ class Mon {
   bool flee = false, gone = false;
   num? tx, barY;
   num y = 0;
+
+  /// 도전: 그림을 고를 지역(ri) · 탑 100층 발타사르 그림(balt, 2단계 없음) · 시련 「단단한 껍질」(받는 피해 −50%)
+  int? ri;
+  bool balt, shell;
+}
+
+/// 도전 전투 상태 (웹 CH). 들어가도 S.stage·S.wave 는 그대로, 나오면 원래 영지 전투로 돌아감
+class ChState {
+  ChState.tower(this.f) : mode = 'tower', k = '', l = 0, ms = 0, gobAt = 1e9, info = towerInfo(f) {
+    lim = info!.lim;
+  }
+  ChState.dun(this.k, this.l, this.ms, this.gobAt) : mode = 'dun', f = 0, info = null {
+    lim = 30;
+    t = dunT;
+  }
+  final String mode;
+  final int f;
+  final TowerInfo? info;
+  num lim = 30;
+
+  /// 'fight' 싸우는 중 · 'win'/'lose' 탑 결과 · 'done' 던전 끝
+  String st = 'fight';
+  // 던전
+  final String k;
+  final int l, ms;
+  num t = 0, sp = 0;
+  final num gobAt;
+  int kills = 0;
+  bool gob = false, gobOut = false;
 }
 
 class FloatText {
@@ -204,6 +235,29 @@ class DemonWinEvent extends BattleEvent {
   final int bonus;
 }
 
+/// 탑 층 돌파: [first] 처음 돌파, [r] 보상, [unlocked] 새로 얻은 배지·테두리 이름
+class TowerWinEvent extends BattleEvent {
+  TowerWinEvent(this.f, this.first, this.r, this.unlocked);
+  final int f;
+  final bool first;
+  final Reward r;
+  final List<String> unlocked;
+}
+
+class TowerLoseEvent extends BattleEvent {
+  TowerLoseEvent(this.f);
+  final int f;
+}
+
+/// 던전 끝 (별 0이면 입장권 돌려줌)
+class DunEndEvent extends BattleEvent {
+  DunEndEvent(this.k, this.l, this.kills, this.star, this.r, this.gob, this.newStar3);
+  final String k;
+  final int l, kills, star;
+  final Reward? r;
+  final bool gob, newStar3;
+}
+
 class FightResetEvent extends BattleEvent {
   FightResetEvent(this.msg);
   final String msg;
@@ -261,6 +315,207 @@ class BattleSim {
   GameState get s => c.s;
 
   bool fxOk(String k) => fxLoaded.contains(k);
+
+  // ───────────── 도전 (웹 CH) ─────────────
+  ChState? ch;
+  String get fightMode => ch?.mode ?? 'field';
+
+  /// 시련 규칙 「회복 금지」면 회복 효과 0 (웹 healOk)
+  bool healOk() => !(ch != null && ch!.mode == 'tower' && ch!.info!.rule == 0);
+
+  /// 그릴 배경 지역: 탑은 그림이 없으면 서리 무덤(3)을 어둡게 (웹 chRi)
+  int chRi() => ch == null ? 0 : ch!.mode == 'tower' ? 3 : dunDef(ch!.k).ri;
+
+  void _chPartyReset() {
+    skx.shield = skx.honey = skx.feast = skx.guts = skx.sym = 0;
+    for (final id in c.members()) {
+      final p = party[id];
+      if (p == null) continue;
+      p.hp = c.stats(id).hp;
+      p.down = false;
+      p.bsh = 0;
+    }
+    seal = null;
+    talk = null;
+    holdT = 0;
+    warn = null;
+    banner = null;
+  }
+
+  void _chBegin(ChState st) {
+    mons = [];
+    _chPartyReset();
+    ch = st;
+    spawnT = .6;
+  }
+
+  /// 도전에서 나가기 → 원래 영지 전투 (웹 chExit)
+  void chExit() {
+    ch = null;
+    mons = [];
+    _chPartyReset();
+    spawnT = .8;
+  }
+
+  void towerStart(int f) => _chBegin(ChState.tower(f));
+
+  /// 던전 입장 (입장권은 부르는 쪽에서 씀)
+  void dunStart(String k) => _chBegin(ChState.dun(k, c.dunL(), c.dunMs(), k == 'vault' ? 40 + rng.next() * 80 : 1e9));
+
+  void _chSpawn() {
+    final h = ch!;
+    if (h.st != 'fight') return;
+    if (h.mode == 'tower') return _towerSpawn();
+    _dunSpawn();
+  }
+
+  void _towerSpawn() {
+    final i = ch!.info!, a = i.art, n = i.rule == 1 ? 2 : 1;
+    ch!.st = 'fight';
+    mons = [
+      for (var j = 0; j < n; j++)
+        Mon(x: w + 70 + j * 50, lane: n > 1 ? const [.4, .72][j] : .55, hp: i.hp, max: i.hp, atk: i.atk, boss: true, lord: a.lord || a.balt,
+            balt: a.balt, ghost: a.ghost, guard: a.guard, ri: a.ri, shell: i.rule == 3, cd: .8 + j * .3, mv: .55)
+    ];
+    bossT = i.lim;
+    events.add(SoundEvent('boss'));
+    if (i.gate) {
+      warn = Warn(true, '⚠ ${i.f}층 수문장! ⚠');
+      shakeT = .6;
+      say('q', '수문장이다. 주인, 집중해라.');
+    } else if (i.rule >= 0) {
+      final r = towerRules[i.rule];
+      banner = StageBanner('시련 · ${r.n}', r.d)..t = 2.4;
+      shakeT = .3;
+    } else {
+      warn = Warn(false, '⚔ ${i.f}층 ⚔')..t = 1.2;
+      shakeT = .3;
+    }
+  }
+
+  void _towerWin() {
+    final f = ch!.f, first = f > c.towerTop();
+    ch!.st = 'win';
+    mons = mons.where((m) => m.dead > 0).toList();
+    final r = <String, num>{};
+    final had = {for (final k in const ['tower25', 'tower100']) k: c.bdHas(k), 'f_tower': c.pfHas('tower')};
+    if (first) {
+      r['gold'] = jsFloor(towerGold(f));
+      r['ore'] = towerOre(f);
+      if (f % 10 == 0) r['gem'] = towerGem;
+      c.rwGive(r);
+      c.towerS['top'] = f;
+    }
+    c.pfCheck();
+    final un = <String>[
+      if (!had['tower25']! && c.bdHas('tower25')) '배지 「탑 25층」',
+      if (!had['f_tower']! && c.pfHas('tower')) '테두리 「시련의 탑」',
+      if (!had['tower100']! && c.bdHas('tower100')) '배지 「탑의 주인」',
+    ];
+    events.add(HapticEvent(const [40, 30, 60]));
+    banner = StageBanner('$f층 돌파!', first ? '처음 돌파 보상' : '다시 돌파');
+    say('k', f % 10 == 0 ? '수문장도 별거 아니네… 아마도.' : '다음 층으로!');
+    events.add(TowerWinEvent(f, first, r, un));
+  }
+
+  void _towerLose() {
+    final f = ch!.f;
+    ch!.st = 'lose';
+    mons = [];
+    _chPartyReset();
+    events.add(TowerLoseEvent(f));
+  }
+
+  /// 전멸·시간 초과 (웹 chLose)
+  void _chLose() {
+    final h = ch!;
+    if (h.mode == 'tower') {
+      if (h.st == 'fight') _towerLose();
+      return;
+    }
+    if (h.st == 'fight') dunEnd();
+  }
+
+  void _dunSpawn() {
+    final h = ch!, d = dunDef(h.k), st = h.ms, mx = GameCalc.monHp(st, false) * dunHpM, atk = GameCalc.monAtk(st, false) * dunAtkM;
+    final n = 1 + (rng.next() < .6 ? 1 : 0) + (rng.next() < .3 ? 1 : 0);
+    const lanes = [.45, .82, .12, .65];
+    final base = mons.length;
+    for (var i = 0; i < n; i++) {
+      mons.add(Mon(x: w + 60 + i * 40, lane: lanes[(base + i) % 4], hp: mx, max: mx, atk: atk, cd: .8 + i * .35, alt: d.alt, ri: d.mri, mv: 1));
+    }
+    if (h.k == 'vault' && !h.gobOut && dunT - h.t >= h.gobAt) {
+      h.gobOut = true;
+      final gh = mx * 5;
+      mons.insert(0, Mon(x: w + 30, lane: .3, hp: gh, max: gh, atk: 0, cd: 1e9, gob: true, mv: 1.4, life: 12));
+      banner = StageBanner('황금 고블린 출현!', '잡으면 금고 보상 +20%');
+      events.add(SoundEvent('gob'));
+      shakeT = .3;
+    }
+  }
+
+  /// 던전 타이머·끊김 없는 스폰. 끝나면 true (그 프레임 나머지 처리 건너뜀)
+  bool _chDunStep(num dt) {
+    final h = ch!;
+    if (h.st != 'fight') return false;
+    h.t -= dt;
+    if (h.t <= 0) {
+      dunEnd();
+      return true;
+    }
+    final live = mons.where((m) => m.hp > 0 && m.dead == 0 && !m.gob).length;
+    if (live < dunLive) {
+      h.sp -= dt;
+      if (h.sp <= 0) {
+        h.sp = dunSp;
+        _dunSpawn();
+      }
+    }
+    return false;
+  }
+
+  void _chKill(Mon m, num sc) {
+    spawnFx('coin', m.x, m.y - 26 * sc, 34 * sc, .6, -60 * sc);
+    final h = ch!;
+    if (h.mode == 'tower') {
+      if (h.st == 'fight' && m.boss && !mons.any((o) => o.boss && o.hp > 0 && o.dead == 0)) _towerWin();
+      return;
+    }
+    if (m.gob) {
+      h.gob = true;
+      addFloat(m.x, m.y - 50 * sc, '금고 보상 +20%', 0xFFFFE27A, 16);
+      events.add(HapticEvent(const [30, 30, 30]));
+      return;
+    }
+    h.kills++;
+    addFloat(m.x, m.y - 30 * sc, '${h.kills}', 0xFFFFE08A, 13);
+    final si = dunStars.indexOf(h.kills);
+    if (si >= 0) {
+      banner = StageBanner('★' * (si + 1), '${h.kills}마리 처치')..t = 1.4;
+      events.add(HapticEvent(const [30]));
+    }
+  }
+
+  /// 던전 끝: 별 판정·보상·기록 (별 0 → 입장권 환불) 후 영지 전투로 (웹 dunEnd)
+  void dunEnd() {
+    final h = ch;
+    if (h == null || h.mode != 'dun' || h.st != 'fight') return;
+    final star = h.kills >= dunStars[2] ? 3 : h.kills >= dunStars[1] ? 2 : h.kills >= dunStars[0] ? 1 : 0;
+    h.st = 'done';
+    Reward? r;
+    var newStar3 = false;
+    if (star == 0) {
+      final d = c.dunDay();
+      d['used'] = math.max(0, orNum(d['used'], 0) - 1);
+    } else {
+      r = c.dunReward(h.k, h.l, dunRate[star], h.gob);
+      c.rwGive(r);
+      newStar3 = star == 3;
+      c.setDunStar(h.k, h.l, star);
+    }
+    chExit();
+    events.add(DunEndEvent(h.k, h.l, h.kills, star, r, h.gob, newStar3));
+  }
 
   // ───────────── 배치 ─────────────
   BattleLayout layout() {
@@ -505,7 +760,7 @@ class BattleSim {
             tj = j;
           }
         }
-        if (tj != null) {
+        if (tj != null && healOk()) {
           final q = party[tj]!;
           if (q.down) {
             q.down = false;
@@ -573,7 +828,7 @@ class BattleSim {
         final k = c.skPow(id);
         for (final j in c.members()) {
           final q = party[j];
-          if (q == null || q.down) continue;
+          if (q == null || q.down || !healOk()) continue;
           q.hp = math.min(c.stats(j).hp, q.hp + c.stats(j).hp * .15 * k);
           spawnFx('heal', pos[j]!, py[j]! - 24 * sc, 56 * sc, .6);
         }
@@ -628,12 +883,14 @@ class BattleSim {
     for (final j in c.members()) {
       final q = party[j];
       if (q == null) continue;
-      if (q.down) {
-        q.down = false;
-        q.hp = 0;
+      if (healOk()) {
+        if (q.down) {
+          q.down = false;
+          q.hp = 0;
+        }
+        final mx = c.stats(j).hp;
+        q.hp = math.min(mx, q.hp + c.stats(j).hp * ratio);
       }
-      final mx = c.stats(j).hp;
-      q.hp = math.min(mx, q.hp + c.stats(j).hp * ratio);
       spawnFx('heal', pos[j]!, py[j]! - 24 * sc, fxSize, .6);
     }
   }
@@ -696,6 +953,7 @@ class BattleSim {
   // ───────────── 마물 ─────────────
   void hitMon(Mon m, num d, bool cr, num sc) {
     if (m.vul > 0) d *= m.vulM;
+    if (m.shell) d *= .5;
     m.hp -= d;
     m.hit = .12;
     final fx = m.x + (rng.next() - .5) * 10 * sc;
@@ -705,6 +963,7 @@ class BattleSim {
   }
 
   void spawn() {
+    if (ch != null) return _chSpawn();
     if (s.stage > maxLand && s.wave >= 10) s.wave = 0; // 61 왕궁 뜰: 보스 없이 계속
     final st = c.fightSt();
     if (s.wave >= 10) {
@@ -838,6 +1097,7 @@ class BattleSim {
   }
 
   void resetFight(String msg) {
+    if (ch != null) return _chLose();
     final dem = mons.any((m) => m.dem);
     skx.shield = skx.honey = skx.feast = skx.guts = skx.sym = 0;
     for (final id in c.members()) {
@@ -955,6 +1215,7 @@ class BattleSim {
       }
     }
     mons = mons.where((m) => !m.gone).toList();
+    if (ch != null && ch!.mode == 'dun' && _chDunStep(dt)) return;
     if (mons.isEmpty) {
       engaged = false;
       bgX += dt * 90;
@@ -989,9 +1250,11 @@ class BattleSim {
       }
       engaged = alive.isNotEmpty && alive[0].x <= alive[0].tx! + 1;
       if (!engaged && alive.isNotEmpty) bgX += dt * 90;
-      for (final id in ids) {
-        final p = party[id]!;
-        if (!p.down) p.hp = math.min(c.stats(id).hp, p.hp + c.stats(id).hp * .01 * dt);
+      if (healOk()) {
+        for (final id in ids) {
+          final p = party[id]!;
+          if (!p.down) p.hp = math.min(c.stats(id).hp, p.hp + c.stats(id).hp * .01 * dt);
+        }
       }
       if (engaged) {
         _membersAttack(dt, l, alive);
@@ -999,6 +1262,11 @@ class BattleSim {
         _monstersAttack(dt, l, alive);
       }
       for (final m in mons) {
+        if (ch != null && m.hp <= 0 && m.dead == 0 && !m.flee) {
+          m.dead = m.gob ? .5 : .35;
+          _chKill(m, sc);
+          continue;
+        }
         if (m.hp <= 0 && m.dead == 0 && m.gob && !m.flee) {
           m.dead = .5;
           _gobDrop(m, sc);
@@ -1051,7 +1319,7 @@ class BattleSim {
         }
       }
       final job = jobOf[id];
-      if (job == 'cook') {
+      if (job == 'cook' && healOk()) {
         String? low;
         num lr = .9;
         for (final j in ids) {
@@ -1324,7 +1592,7 @@ class BattleSim {
   }
 
   /// 보스 남은 시간 한도 (성주 30초, 군단장 40초, 마왕 60초)
-  num get bossLimit => GameCalc.bossLim(c.fightSt());
+  num get bossLimit => ch != null ? ch!.lim : GameCalc.bossLim(c.fightSt());
   Mon? get boss {
     for (final m in mons) {
       if (m.boss) return m;

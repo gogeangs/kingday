@@ -391,13 +391,20 @@ class GameCalc {
   /// goldX(x): 황금 이삭 → 골드 바꾸기
   num goldX(GoldExchange x) => math.max(100, jsFloor(goldRate() * 3600 * x.h));
 
+  /// 방치 보상: sec초 동안의 골드 (방치 보상·탑 보급·고블린 금고가 같이 씀, 웹 idleGold)
+  num idleGold(num sec) {
+    final tpk = monHp(fightSt(), false) / _dps() + 1.2;
+    return sec / tpk * reward(fightSt(), false) * .5 * memMul() * (subOn() ? 1.5 : 1);
+  }
+
+  num idleGoldPerSec() => idleGold(1);
+
   /// offline(): 게임을 꺼 둔 동안 쌓인 골드. 60초 미만이면 0.
   ({num sec, num cap, num gold}) offlineReward() {
     final cap = (6 + s.bldLv('inn')) * 3600;
     final sec = math.min(cap, (now - s.last) / 1000);
     if (sec < 60) return (sec: sec, cap: cap, gold: 0);
-    final tpk = monHp(fightSt(), false) / _dps() + 1.2;
-    final g = jsFloor(sec / tpk * reward(fightSt(), false) * .5 * memMul() * (subOn() ? 1.5 : 1));
+    final g = jsFloor(idleGold(sec));
     return (sec: sec, cap: cap, gold: g > 0 ? g : 0);
   }
 

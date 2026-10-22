@@ -1160,6 +1160,7 @@ const wAds = {
   'farm': {'n': 2, 't': '자라는 작물 바로 키우기'},
   'offline': {'n': 2, 't': '방치 보상 2배'},
   'att': {'n': 1, 't': '출석 보상 2배'},
+  'dun': {'n': 1, 't': '던전 입장권 +1'},
 };
 
 const wPacks = [
@@ -1471,7 +1472,14 @@ const wGobRare = {'badge': 0.005, 'frame': 0.002};
 
 const wBgImg = {'0': 'erdan', '1': 'dusk', '2': 'canyon', '3': 'frost', '4': 'ash', '5': 'capital'};
 
-const wBgFull = {'dusk': true, 'canyon': true, 'frost': true, 'ash': true, 'capital': true};
+const wBgFull = {
+  'dusk': true,
+  'canyon': true,
+  'frost': true,
+  'ash': true,
+  'capital': true,
+  'tower': true,
+};
 
 const wDeco = ['windmill', 'trees', 'spires', 'graves', 'volcano', 'spires'];
 
