@@ -392,7 +392,7 @@ class _WorldPainter extends CustomPainter {
     // 어둠 구름 + 불씨
     c.drawImageRect(_MapCache.fog!, src, dst, Paint()..filterQuality = FilterQuality.medium);
     for (final (x, y, ph, sz) in _MapCache.embers) {
-      final p = toS(x, y), al = .35 + .45 * math.max(0, math.sin(t * 1.7 + ph));
+      final p = toS(x, y), al = .35 + .45 * math.max(0.0, math.sin(t * 1.7 + ph));
       c.drawCircle(p, sz * math.min(1.6, sc), Paint()..color = Color.fromRGBO(255, 80 + (60 * al).floor(), 60, al));
     }
     // 명소: 시련의 탑(잠김 🔒) · 요일 던전(오늘 반짝)
@@ -423,7 +423,7 @@ class _WorldPainter extends CustomPainter {
     }
     // 카엘 (지금 위치): 초상화 원 + 금빛 고리, 통통 튐
     {
-      final q = mapPts[cc.mapCur() - 1], p = toS(q.$1, q.$2), rr = math.max(13.0, 17 * math.min(1.5, sc)), by = p.dy - rr - 6 - (math.sin(t * 3)).abs() * 3, ctr = Offset(p.dx, by);
+      final q = mapPts[cc.mapCur() - 1], p = toS(q.$1, q.$2), rr = math.max(13.0, 17 * math.min(1.5, sc)).toDouble(), by = p.dy - rr - 6 - (math.sin(t * 3)).abs() * 3, ctr = Offset(p.dx, by);
       c.drawOval(Rect.fromCenter(center: p, width: rr * 1.6, height: rr * .56), Paint()..color = const Color(0x66000000));
       c.drawCircle(ctr, rr * 2.1, Paint()..shader = ui.Gradient.radial(ctr, rr * 2.1, const [Color(0x8CFFD66E), Color(0x00FFD66E)], const [.28, 1]));
       c.drawCircle(ctr, rr, Paint()..color = const Color(0xFF2A2216));
