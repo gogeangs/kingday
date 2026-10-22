@@ -1419,10 +1419,12 @@ function photoImg(){const d=photoData();if(!d)return null;if(!PHOTO||PHOTO.src!=
 const pubFace=()=>S.face&&COMP[S.face]&&owned(S.face)?S.face:'kael';
 const myFace=()=>S.facePhoto&&photoData()?'photo':pubFace();
 function drawMyFace(){faceTo($('faceCv'),myFace());const c=$('pfCv');if(c&&c.isConnected)faceTo(c,myFace());document.querySelectorAll('canvas[data-fc="photo"]').forEach(x=>faceTo(x,'photo'))}
-function pickPhoto(done){const inp=document.createElement('input');inp.type='file';inp.accept='image/*';inp.onchange=()=>{const f=inp.files&&inp.files[0];if(!f)return;const url=URL.createObjectURL(f),im=new Image();
+/* 아이폰 사파리: 화면에 붙지 않은 파일 입력칸은 고른 뒤 change 가 안 올 때가 있음 → 화면 밖에 붙였다가 끝나면 뗌 */
+function pickPhoto(done){const old=$('photoIn');if(old)old.remove();const inp=document.createElement('input');inp.type='file';inp.accept='image/*';inp.id='photoIn';inp.style.cssText='position:fixed;left:-9999px;top:0;width:1px;height:1px;opacity:0';document.body.appendChild(inp);
+ let got=false;const go=()=>{if(got)return;const f=inp.files&&inp.files[0];if(!f)return;got=true;inp.remove();const url=URL.createObjectURL(f),im=new Image();
  im.onload=()=>{const N=192,c=document.createElement('canvas');c.width=c.height=N;const x=c.getContext('2d'),m=Math.min(im.width,im.height);x.drawImage(im,(im.width-m)/2,(im.height-m)/2,m,m,0,0,N,N);URL.revokeObjectURL(url);
   try{localStorage.setItem(PHOTO_KEY,c.toDataURL('image/jpeg',.85));PHOTO=null;S.facePhoto=true;save();photoImg();drawMyFace();toast('내 사진으로 바꿨어요 · 이 기기에서만 보여요')}catch(e){toast('사진을 저장하지 못했어요')}done&&done()};
- im.onerror=()=>{URL.revokeObjectURL(url);toast('사진을 열 수 없어요')};im.src=url};inp.click()}
+ im.onerror=()=>{URL.revokeObjectURL(url);toast('이 사진은 열 수 없어요. 다른 사진(JPG·PNG)을 골라 주세요')};im.src=url};inp.onchange=go;inp.oninput=go;inp.click()}
 /* 초상화 얼굴. 크기는 화면 배치 크기(clientWidth)로 재서 등장 애니메이션(회전·축소) 중에도 바르게. 초상화가 아직 안 불러졌으면 전투 그림 대신 비워 두고, 불러지면 다시 그림 */
 function faceTo(c,id){if(!c)return;if(id==='photo'){const ph=photoImg();if(ph){const w=c.clientWidth||48,h=c.clientHeight||48,d=Math.min(2,window.devicePixelRatio||1);c.width=w*d;c.height=h*d;const pc=c.getContext('2d');pc.setTransform(d,0,0,d,0,0);const k=Math.max(w/ph.width,h/ph.height),dw=ph.width*k,dh=ph.height*k;pc.drawImage(ph,(w-dw)/2,(h-dh)/2,dw,dh);return}id='kael'}const w=c.clientWidth||c.getBoundingClientRect().width||48,h=c.clientHeight||c.getBoundingClientRect().height||48,d=Math.min(2,window.devicePixelRatio||1);c.width=w*d;c.height=h*d;const pc=c.getContext('2d');pc.setTransform(d,0,0,d,0,0);
  const pim=pfImg(id);if(pim){pc.drawImage(pim,0,0,512,512,-w*.12,-h*.02,w*1.24,h*1.24);return}
@@ -2207,13 +2209,15 @@ const SB={url:'https://xqrdqigdwfyoaalqalfc.supabase.co',key:'sb_publishable_b0V
 const sbOn=()=>!!(SB.url&&SB.key);
 let sbAuth=(()=>{try{return JSON.parse(localStorage.getItem('kd-sb'))||null}catch(e){return null}})();
 const sbSave=()=>{try{localStorage.setItem('kd-sb',JSON.stringify(sbAuth))}catch(e){}};
+/* 서버 요청은 10초 넘으면 끊음 (전파가 약하거나 막힌 곳에서 창이 멈춰 있지 않게) */
+const sbFetch=(u,o)=>{const c=typeof AbortController!=='undefined'?new AbortController():null;const t=c?setTimeout(()=>c.abort(),10000):0;return fetch(u,c?{...o,signal:c.signal}:o).finally(()=>clearTimeout(t))};
 async function sbLogin(){if(sbAuth&&sbAuth.access_token&&sbAuth.expires_at*1000>Date.now()+60000)return sbAuth;
  const h={'apikey':SB.key,'Content-Type':'application/json'};let res;
- if(sbAuth&&sbAuth.refresh_token)res=await fetch(SB.url+'/auth/v1/token?grant_type=refresh_token',{method:'POST',headers:h,body:JSON.stringify({refresh_token:sbAuth.refresh_token})});
- if(!res||!res.ok)res=await fetch(SB.url+'/auth/v1/signup',{method:'POST',headers:h,body:JSON.stringify({})});
+ if(sbAuth&&sbAuth.refresh_token)res=await sbFetch(SB.url+'/auth/v1/token?grant_type=refresh_token',{method:'POST',headers:h,body:JSON.stringify({refresh_token:sbAuth.refresh_token})});
+ if(!res||!res.ok)res=await sbFetch(SB.url+'/auth/v1/signup',{method:'POST',headers:h,body:JSON.stringify({})});
  if(!res.ok)throw new Error('auth '+res.status);const j=await res.json();
  sbAuth={access_token:j.access_token,refresh_token:j.refresh_token,expires_at:j.expires_at||Math.floor(Date.now()/1000)+(j.expires_in||3600),uid:j.user&&j.user.id};sbSave();return sbAuth}
-async function sbRpc(fn,args){const a=await sbLogin();const res=await fetch(SB.url+'/rest/v1/rpc/'+fn,{method:'POST',headers:{'apikey':SB.key,'Authorization':'Bearer '+a.access_token,'Content-Type':'application/json'},body:JSON.stringify(args||{})});
+async function sbRpc(fn,args){const a=await sbLogin();const res=await sbFetch(SB.url+'/rest/v1/rpc/'+fn,{method:'POST',headers:{'apikey':SB.key,'Authorization':'Bearer '+a.access_token,'Content-Type':'application/json'},body:JSON.stringify(args||{})});
  if(!res.ok)throw new Error(fn+' '+res.status);return res.json()}
 const rkMeta=()=>({p_frame:S.pf||'wood',p_badge:S.badge||'',p_title:RANKS[rankIdx()].n});
 let rkSent=0,rkBusy=false,faceSent=null;
@@ -2235,8 +2239,8 @@ function nickSheet(after){$('sheet').innerHTML=`<div class="eyebrow">프로필</
  <input class="nickin" id="nickIn" maxlength="10" value="${S.nickTemp?'':(S.nick||'')}" placeholder="예: 은퇴하고픈농부" autocomplete="off"><p class="note nickerr" id="nickErr"></p>
  <div class="acts"><button id="mX">취소</button><button class="pri" id="nickOk">정하기</button></div>`;$('modal').hidden=false;$('mX').onclick=closeModal;
  $('nickOk').onclick=async()=>{const n=$('nickIn').value.trim();$('nickOk').disabled=true;$('nickErr').textContent='확인하는 중…';
-  try{const r=await sbRpc('kd_set_nick',{p_nick:n,...rkMeta()});if(r==='ok'){S.nick=n;S.nickTemp=false;save();rkSent=0;await rankSubmit(true);toast('닉네임을 「'+n+'」(으)로 정했어요');mailFetch();(after||rankSheet)()}else{$('nickErr').textContent=NICKERR[r]||'다시 시도해 주세요';$('nickOk').disabled=false}}
-  catch(e){$('nickErr').textContent='인터넷 연결이 필요해요';$('nickOk').disabled=false}}}
+  try{if(!S.nick)await sbEnsure();const r=await sbRpc('kd_set_nick',{p_nick:n,...rkMeta()});if(r==='ok'){S.nick=n;S.nickTemp=false;save();rkSent=0;await rankSubmit(true);toast('닉네임을 「'+n+'」(으)로 정했어요');mailFetch();(after||rankSheet)()}else{$('nickErr').textContent=NICKERR[r]||'다시 시도해 주세요';$('nickOk').disabled=false}}
+  catch(e){const m=String(e&&e.message||e);$('nickErr').textContent=!navigator.onLine?'인터넷 연결이 필요해요':/abort/i.test(m)||/Failed to fetch|Load failed|NetworkError/i.test(m)?'서버에 연결하지 못했어요. 잠시 뒤 다시 해 주세요':'서버 오류가 났어요 ('+m.slice(0,40)+')';$('nickOk').disabled=false}}}
 const rkBan=()=>rkTab==='goblin'?'<div class="hdban" style="--hb:url(assets/ui/hd_goblin.png);--hp:4.8%;--hs:18px"><span>고블린 랭킹</span></div>':'<div class="hdban" style="--hb:url(assets/ui/hd_rank.png)"><span>랭킹</span></div>';
 const GOBI='<img class="gobi" src="assets/ui/icon_goblin.png" alt="">';
 const GOBREW=[['1위','이삭 100 · 고블린 사냥꾼 배지'],['2~10위','이삭 50'],['상위 30%','이삭 20']];
@@ -2400,7 +2404,7 @@ function profileSheet(){S.pfSeen=1;const nw=S.pfNew||{};S.pfNew={};pfCheck();con
  <div class="sec">대표 배지 <small>${BADGES.filter(b=>bdHas(b.k)).length+attBds().length} / ${BADGES.length+attBds().length}</small></div>
  <div class="pfgrid">${attBds().map(k=>{const on=S.badge===k;return`<button class="pfc bd${on?' on':''} rare" data-bd="${k}"><span class="pv"><img class="pfr" data-k="${k}" src="${bdSrc(k)}" alt="" onerror="bdErr(this)"></span><b>${BDN(k)}</b>${nw['b_'+k]?'<i class="nwb">NEW</i>':''}<small>${on?'다는 중':'달기'}</small></button>`}).join('')}${BADGES.map(b=>{const has=bdHas(b.k),on=S.badge===b.k;return`<button class="pfc bd${on?' on':''}${has?'':' lock'}${b.rare||b.rk?' rare':''}" data-bd="${b.k}"><span class="pv"><img class="pfr" src="assets/profile/badge_${b.k}.png" alt="">${has?'':'<img class="lk" src="assets/ui/icon_lock.png" alt="잠김">'}${b.rk?'<em class="rkt">랭킹</em>':''}</span><b>${b.n}</b>${nw['b_'+b.k]?'<i class="nwb">NEW</i>':''}<small>${on?'다는 중':has?'달기':'🔒 '+b.d}</small></button>`}).join('')}</div>
  <div class="acts three"><button id="pfSet">⚙ 설정</button><button id="pfRank">🏆 랭킹</button><button class="pri" id="mGo">닫기</button></div>`;
- $('modal').hidden=false;drawMyFace();document.querySelectorAll('[data-fc]').forEach(c=>{if(c.dataset.fc!=='photo')faceTo(c,c.dataset.fc);else if(photoData())faceTo(c,'photo')});$('mGo').onclick=closeModal;$('pfSet').onclick=()=>settingsSheet();$('pfRank').onclick=()=>rankSheet();if($('pfNick'))$('pfNick').onclick=async()=>{if(!S.nick)await sbEnsure();nickSheet(()=>profileSheet())};
+ $('modal').hidden=false;drawMyFace();document.querySelectorAll('[data-fc]').forEach(c=>{if(c.dataset.fc!=='photo')faceTo(c,c.dataset.fc);else if(photoData())faceTo(c,'photo')});$('mGo').onclick=closeModal;$('pfSet').onclick=()=>settingsSheet();$('pfRank').onclick=()=>rankSheet();if($('pfNick'))$('pfNick').onclick=()=>{if(!S.nick)sbEnsure();nickSheet(()=>profileSheet())};
  document.querySelectorAll('[data-bd]').forEach(b=>b.onclick=()=>{const k=b.dataset.bd,f=BADGES.find(x=>x.k===k);if(!bdHas(k))return toast(f.rk?f.d+'로 우편함에 도착해요':f.rare?'황금 고블린을 잡으면 아주 드물게 얻어요':f.d+' 달성 시 얻어요');S.badge=S.badge===k?null:k;pfCheck();save();profileSheet()});
  document.querySelectorAll('[data-face]').forEach(b=>b.onclick=()=>{const k=b.dataset.face;if(k==='photo'){if(!photoData())return pickPhoto(()=>profileSheet());S.facePhoto=true}else{S.face=k==='kael'?null:k;S.facePhoto=false;faceSync()}save();drawMyFace();profileSheet()});
  if($('fcNew'))$('fcNew').onclick=()=>pickPhoto(()=>profileSheet());if($('fcDel'))$('fcDel').onclick=()=>{try{localStorage.removeItem(PHOTO_KEY)}catch(e){}PHOTO=null;S.facePhoto=false;save();drawMyFace();toast('사진을 지웠어요');profileSheet()};
