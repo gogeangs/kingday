@@ -100,12 +100,12 @@
 ```
 
 ## 남은 그림 5장 (2026-10-23 다시 작성)
-- 화풍 맞추기용 첨부: V-5·V-5B는 `assets/ui/item_fish.png`·`dish_stew.png`·`buff_atk.png`, V-6은 `assets/ui/trait_branch_farm.png`, V-13은 `assets/profile/badge_retire5.png`, V-14는 `assets/profile/frame_retire.png`.
+- 화풍 맞추기용 첨부(게임용 축소본 말고 **원본**): V-5는 `art/source/dishes.png`·`art/source/ui_icons_concept.png`, V-5B는 `art/source/buff_atk.png`·`art/source/dishes.png`, V-6은 `art/source/retire/trait_branches.png`, V-13은 `art/source/retire/badge_retire5.png`, V-14는 `art/source/retire/frame_retire.png`.
 - 받은 뒤 처리: 칸별로 잘라 아이콘 256, 배지 160, 테두리는 `frame_tower.png`과 같은 자리(256×296), imagequant.
 
 ### V-5 재료·요리 아이콘 4개 → `assets/ui/item_{egg,milk}.png`, `assets/ui/dish_{soup,pancake}.png`
 ```
-[첨부 그림] 우리 게임의 기존 아이콘이야(생선·스튜·버프). 이 그림들과 똑같은 화풍·크기감·외곽선으로 그려 줘.
+[첨부 그림] 우리 게임의 기존 요리·아이템 그림 모음이야(여러 그림이 한 장에 모여 있음). 이 그림들과 똑같은 화풍·크기감·외곽선으로 그려 줘.
 
 [공통 규칙]
 - 모바일 방치형 RPG 「왕이 되는 그날까지」의 아이템 아이콘
@@ -123,7 +123,7 @@
 
 ### V-5B 새 요리 버프 아이콘 2개 → `assets/ui/buff_{hp,sk}.png`
 ```
-[첨부 그림] 우리 게임의 기존 버프 아이콘이야(빵 + 위쪽 화살표). 같은 방식으로 「요리 + 효과 상징」을 합친 아이콘을 그려 줘.
+[첨부 그림] 1번은 우리 게임의 기존 버프 아이콘(빵 + 위쪽 화살표), 2번은 기존 요리 그림 모음이야. 1번과 같은 방식으로 「요리 + 효과 상징」을 합친 아이콘을 그려 줘.
 
 [공통 규칙]
 - 모바일 방치형 RPG 「왕이 되는 그날까지」의 버프 아이콘
@@ -139,7 +139,7 @@
 
 ### V-6 축복 아이콘 5개 → `assets/ui/bless_{gold,brave,work,earth,luck}.png`
 ```
-[첨부 그림] 우리 게임의 기존 문장 아이콘이야. 이 그림과 같은 화풍·테두리 느낌으로 그려 줘.
+[첨부 그림] 우리 게임의 기존 문장 3개야. 이 그림과 같은 화풍·메달 테두리 느낌으로 그려 줘.
 
 [공통 규칙]
 - 모바일 방치형 RPG 「왕이 되는 그날까지」의 축복 아이콘 (별빛 예배당에서 받는 축복)
