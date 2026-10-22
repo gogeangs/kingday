@@ -244,6 +244,11 @@ void main() {
         expect(find.text('카엘의 은퇴 일기'), findsOneWidget);
         await press('일기 펼치기');
         await frames();
+        // 고른 탭·갈래는 창을 닫아도 남음(웹 diaryTab·diaryBr) → 앞 시험에서 고른 것이 남아 있을 수 있어 처음으로 돌림
+        await tester.tap(find.byKey(const ValueKey('dyTab-tr')));
+        await frames(2);
+        await tester.tap(find.byKey(const ValueKey('dyBr-sword')));
+        await frames(2);
         expect(find.text('날 선 괭이'), findsOneWidget);
         await tester.tap(find.byKey(const ValueKey('dyTr-sharp')));
         await frames(2);
