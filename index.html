@@ -1772,7 +1772,7 @@ function chSheet(){if(!chCan()&&!S.chOpen)return toast('영지 '+CH_OPEN+'을 �
   <div class="btns"><button class="buy pri" id="chTw">도전하기</button><button class="buy" id="chSp" ${supplyCan()?'':'disabled'}>${supplyCan()?'🎁 탑 보급 받기':'보급 받음 · 내일 다시'}</button></div>
   <p class="note chn">탑 보급: 방치 보상 ${supplyMin()}분 어치 골드 + 광석 ${supplyOre()} (하루 1번, 최고 층이 높을수록 많이)</p></div>
  <div class="chcard"><div class="chh"><span class="chi">📅</span><b>요일 던전</b><small>입장권 <b>${dl}/${DUN_TK+(d.ad?1:0)}</b></small></div>
-  ${open.map(k=>{const D=DUNS[k],b=dunBest(k);return`<div class="dunrow"><img class="dunimg" src="assets/ui/dun_${k}.png" alt="" onerror="this.remove()"><div class="dunt"><b>${D.ic} ${D.n}</b><small>단계 ${L} · 최고 ${'★'.repeat(dunStar(k,L))||'—'} · 보상 ${D.rw}</small></div><div class="dunb"><button class="buy pri" data-dun="${k}" ${dl?'':'disabled'}>입장</button>${sweepOk(k)?`<button class="buy" data-sw="${k}" ${dl?'':'disabled'}>소탕</button>`:''}</div></div>`}).join('')}
+  ${open.map(k=>{const D=DUNS[k],b=dunBest(k);return`<div class="dunrow"><img class="dunimg" src="assets/ui/dun_${k}.jpg" alt="" onerror="this.remove()"><div class="dunt"><b>${D.ic} ${D.n}</b><small>단계 ${L} · 최고 ${'★'.repeat(dunStar(k,L))||'—'} · 보상 ${D.rw}</small></div><div class="dunb"><button class="buy pri" data-dun="${k}" ${dl?'':'disabled'}>입장</button>${sweepOk(k)?`<button class="buy" data-sw="${k}" ${dl?'':'disabled'}>소탕</button>`:''}</div></div>`}).join('')}
   <p class="note chn">3분 동안 ${DUN_STAR.join(' / ')}마리 → ★1 / ★2 / ★3. 별이 없으면 입장권을 돌려줘요. ★3 단계는 소탕 가능${new Date().getDay()===0?' · 일요일은 셋 다 열려요':''}</p>
   ${!d.ad&&adLeft('dun')?`<button class="buy ad" id="chAd" style="width:100%">▶ 광고 보고 입장권 +1</button>`:''}</div>
  <div class="acts one"><button class="pri" id="mGo">닫기</button></div>`;
@@ -2359,7 +2359,7 @@ const PFRAMES=[
  {k:'season',n:'시즌 왕관',d:'시즌 랭킹 1위 보상',ok:()=>false,rk:1,tall:1},
  {k:'conquer',n:'정복자',d:'영지 50곳 탈환 · 명예의 전당 보상',ok:()=>false,rk:1,tall:1},
  {k:'capital',n:'왕도의 별',d:'마왕 발타사르 처치 (1부 완결)',ok:()=>(S.capClears||0)>=1,tall:1},
- {k:'tower',n:'시련의 탑',d:'시련의 탑 50층',ok:()=>(S.tower&&S.tower.top||0)>=50}];
+ {k:'tower',n:'시련의 탑',d:'시련의 탑 50층',ok:()=>(S.tower&&S.tower.top||0)>=50,tall:1}];
 const pfTall=k=>(PFRAMES.find(f=>f.k===k)||{}).tall?' tall':'';
 const stat=(k,n)=>{if(!S.stat)S.stat={};S.stat[k]=(S.stat[k]||0)+n},st=k=>(S.stat&&S.stat[k])||0;
 const BADGES=[
