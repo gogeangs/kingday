@@ -807,11 +807,12 @@ class GameController extends ChangeNotifier {
           'q@proud:주인, 원정대의 힘이 가득 찼다! 빛나는 초상화를 눌러 봐라.',
           'sys:초상화 둘레의 금색 고리가 다 차면 특수 스킬을 쓸 수 있어요. 오른쪽 아래 AUTO를 켜 두면 알아서 써요. 초상화를 길게 누르면 스킬 설명이 나와요.',
         ], '알겠어', onGo: () => state.raw['autoSkill'] = was);
-      case StageClearedEvent(:final chapter, :final clearedStage):
+      case StageClearedEvent(:final chapter):
         sound('clear');
         if (chapter) _chapter();
-        _capStory(clearedStage);
         save();
+      case CapStoryEvent(:final kind):
+        _capStory(kind);
       case DemonWinEvent(:final bonus):
         sound('fanfare');
         if (!truthy(state.raw['ending1'])) {
@@ -963,33 +964,25 @@ class GameController extends ChangeNotifier {
   bool get _quietStory => orNum(state.raw['retires'], 0) >= 2;
 
   // ── 왕도 아스테리온 · 1부 엔딩 (docs/content/CAPITAL.md) ──
-  /// 웹 capChapter(): 처음 한 번은 「왕도로 가는 길」 + 지역 소개, 그 뒤로는 알림 한 줄
-  void _capChapter() {
-    if (truthy(state.done['capRoad'])) {
-      toast('왕도 아스테리온 진입 · 알현실까지 10곳');
-      return;
-    }
-    state.done['capRoad'] = true;
-    final r = regions.last;
-    scene('다섯 군단을 몰아내다', '왕도로 가는 길', const [
-      'sys:다섯 군단이 모두 물러났다. 안개 너머로 왕도 아스테리온의 성벽이 보인다.',
-      'q@moved:…300년 만이다. 저 성문 안에 주인의 왕좌가 있다.',
-      'k:왕좌 말고 은퇴 서류는 없을까?',
-      'q:왕이 되면 은퇴 서류는 주인이 직접 쓰면 된다.',
-      'k@smile:…그 말, 이상하게 설득력 있네.',
-    ], '성문으로 간다');
-    scene('마지막 지역 · 왕도', r.n, [...r.lore, 'sys:이 땅의 지배자 · ${r.boss} · 홀수 영지는 군단장의 잔영, 짝수 영지는 마왕 근위대장'], '진격한다');
-  }
-
-  /// 웹 capStory(st0): 56 도서관 · 57 알도르 잔영 이야기 (처음 한 번)
-  void _capStory(int st0) {
-    if (st0 == 56 && !truthy(state.done['cap56'])) {
-      state.done['cap56'] = true;
-      scene('왕립 도서관', '불탄 책장 사이', const ['sys:불탄 책장 사이에서 낡은 초상화를 발견했다. 성검을 든 젊은 왕.', 'q@moved:…이 얼굴은.', 'k:아는 사람이야?', 'q:……아니다. 가자.'], '계속 간다');
-    }
-    if (st0 == 57 && !truthy(state.done['cap57'])) {
-      state.done['cap57'] = true;
-      scene('왕비의 정원', '잔영이 흩어지다', const ['q@moved:알도르. 이번엔 편히 잠들어라.', 'k:…루미나르, 괜찮아?', 'q:괜찮다. 칼은 울지 않는다.'], '…가자');
+  /// 웹 capChapter()·capStory(): 처음 왕도 입장은 「왕도로 가는 길」 + 지역 소개, 다시 들어오면 알림 한 줄, 56·57 이야기
+  void _capStory(String kind) {
+    switch (kind) {
+      case 'roadAgain':
+        toast('왕도 아스테리온 진입 · 알현실까지 10곳');
+      case 'road':
+        final r = regions.last;
+        scene('다섯 군단을 몰아내다', '왕도로 가는 길', const [
+          'sys:다섯 군단이 모두 물러났다. 안개 너머로 왕도 아스테리온의 성벽이 보인다.',
+          'q@moved:…300년 만이다. 저 성문 안에 주인의 왕좌가 있다.',
+          'k:왕좌 말고 은퇴 서류는 없을까?',
+          'q:왕이 되면 은퇴 서류는 주인이 직접 쓰면 된다.',
+          'k@smile:…그 말, 이상하게 설득력 있네.',
+        ], '성문으로 간다');
+        scene('마지막 지역 · 왕도', r.n, [...r.lore, 'sys:이 땅의 지배자 · ${r.boss} · 홀수 영지는 군단장의 잔영, 짝수 영지는 마왕 근위대장'], '진격한다');
+      case 'cap56':
+        scene('왕립 도서관', '불탄 책장 사이', const ['sys:불탄 책장 사이에서 낡은 초상화를 발견했다. 성검을 든 젊은 왕.', 'q@moved:…이 얼굴은.', 'k:아는 사람이야?', 'q:……아니다. 가자.'], '계속 간다');
+      case 'cap57':
+        scene('왕비의 정원', '잔영이 흩어지다', const ['q@moved:알도르. 이번엔 편히 잠들어라.', 'k:…루미나르, 괜찮아?', 'q:괜찮다. 칼은 울지 않는다.'], '…가자');
     }
   }
 
@@ -1055,7 +1048,11 @@ class GameController extends ChangeNotifier {
   /// 웹 chapter(): 새 지역에 들어설 때 군단 소개
   void _chapter() {
     final st = state.stage, r = GameCalc.region(st), i = GameCalc.regionIndex(st);
-    if (GameCalc.isCap(st)) return _capChapter();
+    if (GameCalc.isCap(st)) {
+      final k = truthy(state.done['capRoad']) ? 'roadAgain' : 'road';
+      state.done['capRoad'] = true;
+      return _capStory(k);
+    }
     if (_quietStory) {
       toast('제${i + 1}군단 점령지 · ${r.n} 진입');
       return;

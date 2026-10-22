@@ -191,6 +191,12 @@ class GoblinLootEvent extends BattleEvent {
 
 class SkillTutorialEvent extends BattleEvent {}
 
+/// 왕도 이야기 (웹 capChapter·capStory): 'road' 처음 왕도 입장 · 'roadAgain' 다시 입장 · 'cap56' · 'cap57'
+class CapStoryEvent extends BattleEvent {
+  CapStoryEvent(this.kind);
+  final String kind;
+}
+
 /// 마왕 발타사르 처치 (웹 bossDemonWin): [first] 첫 처치, [bonus] 재탈환 추억
 class DemonWinEvent extends BattleEvent {
   DemonWinEvent(this.first, this.bonus);
@@ -1218,7 +1224,19 @@ class BattleSim {
       toast('$bn 처치');
       banner = StageBanner('$tn 탈환!', dem ? '마왕을 몰아냈다' : lord ? '군단장을 쓰러뜨렸다' : gh ? '잔영을 걷어냈다' : '영지를 되찾았다');
       say('k', dem ? '…끝났다. 진짜로.' : lord ? '됐다… 이제 진짜 은퇴해도 되지?' : '여기 흙, 다시 살아나겠네.');
-      events.add(StageClearedEvent(cleared, lord, s.stage <= maxLand && (s.stage - 1) % 10 == 0));
+      final chapter = s.stage <= maxLand && (s.stage - 1) % 10 == 0;
+      // 왕도 이야기 표시 여부는 웹처럼 여기서 정함 (처음 한 번만 장면, 그 뒤는 알림)
+      if (chapter && GameCalc.isCap(s.stage)) {
+        events.add(CapStoryEvent(truthy(s.done['capRoad']) ? 'roadAgain' : 'road'));
+        s.done['capRoad'] = true;
+      }
+      for (final (st0, k) in const [(56, 'cap56'), (57, 'cap57')]) {
+        if (cleared == st0 && !truthy(s.done[k])) {
+          s.done[k] = true;
+          events.add(CapStoryEvent(k));
+        }
+      }
+      events.add(StageClearedEvent(cleared, lord, chapter && !GameCalc.isCap(s.stage)));
       runStoryEvents();
     } else {
       s.wave = s.wave + 1;

@@ -10,6 +10,7 @@ import 'dart:ui' as ui;
 import 'package:flame/components.dart' show Vector2;
 import 'package:flame/game.dart';
 import 'package:flutter/painting.dart';
+import 'package:flutter/services.dart';
 
 import '../core/calc.dart';
 import '../core/data.dart';
@@ -92,7 +93,9 @@ class BattleGame extends FlameGame {
           paths.add('monsters/${goblinSheet.id}_$a.png');
         }
       }
-      await Future.wait(paths.map((p) async {
+      // 아직 안 들어온 그림(왕도 배경·몬스터 등)은 부르지 않음 — 앱에 들어 있는 그림 목록으로 확인
+      final have = await _assetList();
+      await Future.wait(paths.where((p) => have == null || have.contains('assets/game/$p')).map((p) async {
         try {
           final im = await images.load(p);
           _img[p] = im;
@@ -107,6 +110,17 @@ class BattleGame extends FlameGame {
           _img['monsters/${goblinSheet.id}_$a.png'] = await images.load('monsters/${goblinSheet.id}_$a.png');
         } catch (_) {}
       }
+    }
+  }
+
+  Set<String>? _assets;
+  Future<Set<String>?> _assetList() async {
+    if (_assets != null) return _assets;
+    try {
+      final m = await AssetManifest.loadFromAssetBundle(rootBundle);
+      return _assets = m.listAssets().toSet();
+    } catch (_) {
+      return null;
     }
   }
 
