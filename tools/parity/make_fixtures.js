@@ -83,6 +83,9 @@ SAVES.tr = Object.assign(J(SAVES.late), {
   plots: [{ k: 'wheat', at: NOW - 40 * 1000 }, { k: 'carrot', at: NOW - 200 * 1000 }, null, { k: 'pumpkin', at: NOW - 900 * 1000 }],
 });
 
+// 성유물 상자 Lv.10 넘은 저장 (docs/content/RELIC_BOX.md): 확률·뽑기에 태초 등급
+SAVES.box = Object.assign(J(SAVES.late), { boxLv: 27, boxXp: 55, capClears: 0 });
+
 function setSave(name) {
   w.setNow(NOW);
   const s = F('hydrate')(J(SAVES[name]));
@@ -197,6 +200,7 @@ for (const name of ['mid', 'late', 'old']) {
 
 out.misc.cardIds = IDS;
 // 랭킹: 영지 이름·시즌 끝·주차·서버에 보내는 꾸미기 정보
+out.misc.odds = [1, 5, 9, 10, 11, 12, 15, 20, 30, 50, 9999].map((L) => [L, J(F('odds')(L))]);
 out.misc.stgName = [1, 2, 10, 11, 37, 50, 51, 99].map((n) => [n, F('stgName')(n)]);
 out.misc.seasonEnd = F('seasonEnd')();
 out.misc.curWeek = F('curWeek')();
