@@ -37,7 +37,9 @@ html,body{height:100%;height:100dvh}
 body{word-break:keep-all;overflow-wrap:break-word;line-break:strict;background:#0a0d16;color:var(--fg);font-family:var(--f-body);padding:0;margin:0;
   overflow:hidden;-webkit-tap-highlight-color:transparent;user-select:none}
 .app{height:100%;height:100dvh;max-width:480px;margin:0 auto;display:flex;flex-direction:column;background:var(--bg);position:relative;overflow:hidden}
-.hud{display:flex;align-items:center;gap:10px;padding-top:max(8px,env(safe-area-inset-top,0px));padding-bottom:8px;flex:0 0 auto;padding-left:max(12px,env(safe-area-inset-left,0px));padding-right:max(12px,env(safe-area-inset-right,0px));background:linear-gradient(#0d1220,#141a29);border-bottom:1px solid #2a3350;z-index:6}
+/* 아이폰(iOS 26~): 시계 줄 아래 일정 높이를 흐리게 덮음 → 시계 줄이 겹치는 기기에서만 상단 바를 그만큼(최대 22px) 더 내림. PC·안드로이드는 그대로 */
+:root{--topx:min(22px,env(safe-area-inset-top,0px))}
+.hud{display:flex;align-items:center;gap:10px;padding-top:max(8px,calc(env(safe-area-inset-top,0px) + var(--topx)));padding-bottom:8px;flex:0 0 auto;padding-left:max(12px,env(safe-area-inset-left,0px));padding-right:max(12px,env(safe-area-inset-right,0px));background:linear-gradient(#0d1220,#141a29);border-bottom:1px solid #2a3350;z-index:6}
 .face{position:relative;width:48px;height:48px;border-radius:50%;border:2px solid var(--gold);background:radial-gradient(circle at 50% 35%,#3b5a8a,#1a2440);overflow:hidden;flex:0 0 auto;padding:0;cursor:pointer}
 .face canvas{width:100%;height:100%}
 .face.newpf::before{content:"꾸미기";position:absolute;left:50%;top:auto;bottom:-6px;transform:translateX(-50%);z-index:3;background:#ff5a6e;color:#fff;font-size:9.5px;font-weight:700;line-height:14px;padding:0 5px;border-radius:8px;white-space:nowrap;animation:pfbob 1.2s ease-in-out infinite}
@@ -110,7 +112,7 @@ body{word-break:keep-all;overflow-wrap:break-word;line-break:strict;background:#
 .upr .buy{touch-action:manipulation;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}.upr.upflash{animation:upfl .35s ease-out}@keyframes upfl{0%{box-shadow:0 0 0 2px var(--gold)}100%{box-shadow:0 0 0 0 transparent}}
 .upmul{display:flex;gap:6px;align-items:center;justify-content:flex-end;font-size:12px;color:var(--muted)}.upmul button{min-width:46px;padding:5px 10px;border-radius:999px;border:1px solid var(--line);background:var(--panel2);color:var(--fg);font:inherit;font-weight:700;cursor:pointer}.upmul button.on{background:var(--gold);color:#1a1206;border-color:var(--gold)}
 .ngoal{display:flex;align-items:center;gap:12px;padding:12px;border-radius:14px;background:var(--panel2);border:1px solid var(--line)}.ngoal .cfr{flex:0 0 64px;width:64px;height:64px}.ngoal .info{flex:1;min-width:0;display:flex;flex-direction:column;gap:4px}.ngoal .info b{font-size:15px}.ngoal .info small{color:var(--muted);font-size:12.5px}.ngoal .xp{height:6px}.ngoal .buy{flex:0 0 auto}
-.toast.hi{top:calc(8px + env(safe-area-inset-top,0px))}
+.toast.hi{top:calc(8px + env(safe-area-inset-top,0px) + var(--topx))}
 .dot.opt{background:#ffc94a;border-color:#6b4f12;width:8px;height:8px}
 .rkfab{top:58px}.rkfab .dday{position:absolute;bottom:-7px;left:50%;transform:translateX(-50%);font-style:normal;font-size:9.5px;font-weight:800;line-height:14px;padding:0 5px;border-radius:7px;background:#ff5a6e;color:#fff;white-space:nowrap}
 .pgshade{position:absolute;left:0;right:0;top:0;height:min(38%,300px);z-index:5;cursor:pointer}
@@ -496,7 +498,7 @@ button:focus-visible,input:focus-visible{outline:2px solid var(--gold);outline-o
 .acts button{font-family:var(--f-display);font-weight:700;font-size:16px;border-radius:12px;padding:11px;cursor:pointer;border:1px solid var(--line);background:var(--panel2);color:var(--fg)}
 .acts button:disabled{opacity:.45;cursor:default}
 .acts .pri{background:var(--gold);color:var(--gold-ink);border-color:var(--gold)}
-.toast{position:fixed;left:50%;top:calc(76px + env(safe-area-inset-top,0px));text-wrap:balance;transform:translateX(-50%);width:max-content;max-width:min(340px,calc(100vw - 32px));background:rgba(20,26,41,.94);border:1px solid rgba(255,201,74,.55);padding:6px 13px;border-radius:12px;font-size:12.5px;z-index:30;text-align:center;transition:opacity .3s;pointer-events:none;box-shadow:0 6px 16px rgba(0,0,0,.4)}
+.toast{position:fixed;left:50%;top:calc(76px + env(safe-area-inset-top,0px) + var(--topx));text-wrap:balance;transform:translateX(-50%);width:max-content;max-width:min(340px,calc(100vw - 32px));background:rgba(20,26,41,.94);border:1px solid rgba(255,201,74,.55);padding:6px 13px;border-radius:12px;font-size:12.5px;z-index:30;text-align:center;transition:opacity .3s;pointer-events:none;box-shadow:0 6px 16px rgba(0,0,0,.4)}
 @media (prefers-reduced-motion:reduce){.open:active{transform:none}}
 </style>
 </head>
