@@ -13,7 +13,7 @@ import '../ui/theme.dart';
 import '../ui/widgets.dart';
 import 'social_sheets.dart';
 
-const _rNode = ['erdan', 'dusk', 'canyon', 'frost', 'ash'];
+const _rNode = ['erdan', 'dusk', 'canyon', 'frost', 'ash', 'capital'];
 
 class MpPage extends StatelessWidget {
   const MpPage(this.g, {super.key});
