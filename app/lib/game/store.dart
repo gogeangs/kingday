@@ -27,6 +27,7 @@ class IapStore {
     'p5': 'kd_gem_3280',
     'p6': 'kd_gem_6480',
     'starter': 'kd_starter',
+    'chief': 'kd_chief',
     'sub': 'kd_sub_monthly',
   };
 

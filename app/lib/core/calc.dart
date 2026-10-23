@@ -53,6 +53,11 @@ class GameCalc {
   bool Function()? bakeProbe;
   bool get _bake => bakeProbe?.call() ?? bakeActive;
 
+  /// 카엘 촌장 스킬 「다 함께 울력」 공격·공속 배수 (웹 ULB). 전투 시뮬레이션이 [ulProbe] 로 알려 준다.
+  ({num a, num s})? Function()? ulProbe;
+  num get _ulA => ulProbe?.call()?.a ?? 1;
+  num get _ulS => ulProbe?.call()?.s ?? 1;
+
   // ───────────── 영지 ─────────────
   /// 61 이상은 왕도에 머묾 (웹 region: % 대신 최댓값)
   static RegionDef region(int st) => regions[regionIndex(st)];
@@ -194,11 +199,11 @@ class GameCalc {
   int starMax(String id) => gr(id).max;
   bool owned(String id) => id == 'kael' || (isRec(id) ? recStar(id) > 0 : s.isJoined(id));
   bool cardOpen(String id) => isRec(id) ? s.isJoined(storyOf[recruits[id]!.job]!) : s.isJoined(id);
-  num starMul(String id) => id == 'kael' ? 1 : gr(id).mul * starMulTable[recStar(id)];
+  num starMul(String id) => id == 'kael' || id == chiefId ? 1 : gr(id).mul * starMulTable[recStar(id)];
 
   /// skPow(id): 모집 동료 스킬 강화 (★3 1.3배, ★5 1.6배)
   num skPow(String id) {
-    if (!isRec(id)) return 1;
+    if (!isRec(id) && id != chiefId) return 1;
     final st = recStar(id);
     return st >= 5 ? 1.6 : st >= 3 ? 1.3 : 1;
   }
@@ -222,7 +227,7 @@ class GameCalc {
   // ───────────── 편성 ─────────────
   /// slotMember(j): 그 직업 자리에 출전 중인 동료
   String? slotMember(String j) {
-    if (j == 'kael') return 'kael';
+    if (j == 'kael') return chiefOn() ? chiefId : 'kael';
     final p = s.party;
     final pk = p?[j];
     if (pk is String && pk.isNotEmpty && owned(pk)) return pk;
@@ -261,9 +266,9 @@ class GameCalc {
     }
     final fm = 1 + .06 * s.bldLv('mine'), m = allMul();
     return Stats(
-      (10 + s.upLv('atk') * 3 + ga * fm) * (buff('atk') ? 1.2 : 1) * m * trAtk() * this.vBrave(),
+      (10 + s.upLv('atk') * 3 + ga * fm) * (buff('atk') ? 1.2 : 1) * m * trAtk() * this.vBrave() * _ulA,
       (100 + s.upLv('hp') * 20 + gh * fm) * (1 + .05 * s.bldLv('diner')) * m * trHp() * this.vHp(),
-      (1 + s.upLv('spd') * .05) * (buff('spd') ? 1.2 : 1),
+      (1 + s.upLv('spd') * .05) * (buff('spd') ? 1.2 : 1) * _ulS,
       (5 + s.upLv('crit')) / 100 + (buff('crit') ? .1 : 0),
     );
   }
@@ -298,14 +303,33 @@ class GameCalc {
     final l = orNum(s.lv[id], 1);
     final m = allMul() * cwMul(id) * starMul(id), g = math.pow(compGrow, l - 1), gs = gearSum();
     return Stats(
-      (base.atk * g + gs.a * bless) * (1 + .08 * s.bldLv('apiary')) * (buff('atk') ? 1.2 : 1) * m * trAtk() * this.vBrave(),
+      (base.atk * g + gs.a * bless) * (1 + .08 * s.bldLv('apiary')) * (buff('atk') ? 1.2 : 1) * m * trAtk() * this.vBrave() * _ulA,
       (base.hp * g + gs.h * bless) * (1 + .05 * s.bldLv('diner')) * m * trHp() * this.vHp(),
-      base.aps! * (buff('spd') ? 1.2 : 1) * (_bake ? 1.3 : 1),
+      base.aps! * (buff('spd') ? 1.2 : 1) * (_bake ? 1.3 : 1) * _ulS,
       .05 + (buff('crit') ? .1 : 0),
     );
   }
 
-  Stats stats(String id) => id == 'kael' ? kStats() : cStats(id);
+  /// 카엘 촌장: 카엘 능력치(장비·칭호 공유) × 별 보너스 (웹 chStats)
+  Stats chStats() {
+    final t = kStats(), b = 1 + chiefBonus[recStar(chiefId)];
+    return Stats(t.atk * b, t.hp * b, t.aps, t.crit);
+  }
+
+  Stats stats(String id) => id == 'kael' ? kStats() : id == chiefId ? chStats() : cStats(id);
+
+  // ───────────── 유니크 동료 카엘 촌장 (docs/companions/KAEL_CHIEF.md) ─────────────
+  static const chiefId = 'kael_chief', chiefRet = 10, chiefWon = 500;
+  static const chiefBonus = [0, .05, .075, .1, .125, .15];
+
+  /// 황금 이삭 상품의 덤 유니크 카드 (웹 UCARD_PK)
+  static const ucardPack = {'p2': 2, 'p3': 5, 'p4': 12, 'p5': 35, 'p6': 70};
+  static num chPct(int st) => 10 + 2.5 * (math.max(1, st) - 1);
+  num vpChief() => owned(chiefId) ? 1 + chPct(recStar(chiefId)) / 100 : 1;
+  bool chiefOn() => owned(chiefId) && s.party?['kael'] == chiefId;
+  bool chiefShop() => orNum(s.raw['retires'], 0) >= 1 && !owned(chiefId);
+  int get ucard => orNum(s.raw['ucard'], 0).toInt();
+  bool chiefCan() => owned(chiefId) && recStar(chiefId) < starMax(chiefId) && ucard >= (starNeed(chiefId) ?? 1 << 30);
 
   /// cPow(id): 동료 한 명 전투력 (편성 추천에 씀)
   num cPow(String id) {

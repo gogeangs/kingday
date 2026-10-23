@@ -82,7 +82,7 @@ extension VillageCalc on GameCalc {
   List<String> wkIds(String k) {
     final w = work[k];
     if (w is! List) return [];
-    return [for (final id in w) if (id is String && id.isNotEmpty && id != 'kael' && comps.containsKey(id) && owned(id)) id].take(wkSlots(k)).toList();
+    return [for (final id in w) if (id is String && id.isNotEmpty && id != 'kael' && id != GameCalc.chiefId && comps.containsKey(id) && owned(id)) id].take(wkSlots(k)).toList();
   }
 
   /// 건물 k의 일꾼 효과 합(0.4 = +40%). 생산·비용·시간·방치 골드 계산은 모두 이 함수로
@@ -150,6 +150,7 @@ extension VillageCalc on GameCalc {
   /// 생산 배수: 전설 동료 마을 스킬 × 은퇴 특성 × (1+일꾼) × 일꾼의 축복
   num prodMul(String b) =>
       (b == 'mine' ? vpMine() : b == 'dock' ? vpFish() : b == 'apiary' ? vpHoney() : 1) *
+      vpChief() *
       trProd() *
       (1 + workBonus(b)) *
       (blOn('work') && const ['dock', 'apiary', 'mine', 'ranch'].contains(b) ? 1.5 : 1);

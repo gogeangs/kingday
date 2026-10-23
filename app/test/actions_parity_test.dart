@@ -78,6 +78,18 @@ void main() {
             a.buySub();
           case 'subclaim':
             a.claimSub();
+          case 'chief':
+            a.buyChief();
+          case 'chiefchk':
+            a.chiefCheck();
+          case 'chiefup':
+            a.chiefUp();
+          case 'kseat':
+            a.setKaelSeat(o[1]);
+          case 'ucard':
+            s.raw['ucard'] = num.parse(o[1]);
+          case 'retires':
+            s.raw['retires'] = num.parse(o[1]);
           case 'adbox':
             a.adBoxGive();
           case 'adgem':

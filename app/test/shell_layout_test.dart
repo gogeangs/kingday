@@ -193,6 +193,38 @@ void main() {
         await frames(2);
         expect(find.textContaining('되찾은 영지'), findsNothing);
         g.setTab(null);
+
+        // 유니크 카엘 촌장: 첫 은퇴 뒤 상점 상품 → 맞이하기 장면 → 카엘 자리 → 정보 창 · 카엘 자리 창
+        final ret0 = g.state.raw['retires'];
+        g.state.raw['retires'] = 1;
+        g.setTab(GameTab.sh);
+        await frames(2);
+        expect(find.text('카엘 촌장 맞이하기'), findsOneWidget);
+        g.act((a) => a.buyChief());
+        await frames();
+        expect(find.text('은퇴하면 더 바빠진다'), findsOneWidget);
+        await tester.ensureVisible(find.text('카엘 자리에 출전'));
+        await frames(1);
+        await tester.tap(find.text('카엘 자리에 출전'));
+        await frames();
+        expect(g.calc.slotMember('kael'), 'kael_chief');
+        g.state.raw['ucard'] = 30;
+        g.setTab(GameTab.pt);
+        g.state.raw['ptTab'] = 'card';
+        g.refresh();
+        await frames(2);
+        expect(find.textContaining('유니크 카드 30 / 20'), findsOneWidget);
+        chiefSheet(g);
+        await frames();
+        expect(find.text('다 함께 울력'), findsOneWidget);
+        await closeTop();
+        kaelSeatSheet(g);
+        await frames();
+        expect(find.text('누가 출전할까요?'), findsOneWidget);
+        await closeTop();
+        g.state.raw['ptTab'] = 'form';
+        g.state.raw['retires'] = ret0; // 아래 은퇴 시험이 보는 이야기 창이 그대로 나오게
+        g.setTab(null);
         await frames(2);
 
         // 상자 열기 → 비교 창 → 장착

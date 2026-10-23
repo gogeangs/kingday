@@ -313,6 +313,21 @@ void main() {
         }, sc['worldmap'], 'worldmap');
       });
 
+      test('유니크 카엘 촌장 (새벽 종소리·카엘 자리·별 올리기)', () {
+        final c = calcFor(name);
+        same({
+          'vp': c.vpChief(),
+          'on': c.chiefOn(),
+          'shop': c.chiefShop(),
+          'can': c.chiefCan(),
+          'pct': [for (var st = 1; st <= 5; st++) GameCalc.chPct(st)],
+          'prod': [for (final b in const ['mine', 'dock', 'apiary', 'ranch', 'farm']) c.prodMul(b)],
+          'slot': c.slotMember('kael'),
+          'mem': c.members(),
+          'pow': c.power(),
+        }, sc['chief'], 'chief');
+      });
+
       test('마을 난수 (주문·축복 고르기·길 위 동료·다른 주문)', () {
         final c = calcFor(name), r = sc['vrand'] as Map<String, dynamic>, rng = Mulberry32(5151);
         final a = GameActions(c, rng: rng);
@@ -378,6 +393,7 @@ void main() {
         // 웹 retire(p): 은퇴 + 은퇴 횟수 보상(retRwCheck → 받은 게 있으면 pfCheck)
         final c = calcFor(name)..retire(5);
         if (c.retRwCheck() != null) c.pfCheck();
+        GameActions(c).chiefCheck(); // 은퇴 10번이면 카엘 촌장 합류 (웹 retire 끝의 chiefCheck)
         same(jsonDecode(jsonEncode(c.s.raw)), sc['retired'], 'retired S');
       });
 

@@ -56,6 +56,7 @@ Map<String, dynamic> snapshot(BattleSim b, int f) {
     'skx': {
       'shield': b.skx.shield, 'honey': b.skx.honey, 'feast': b.skx.feast, 'bake': b.skx.bake,
       'mount': b.skx.mount, 'mountK': b.skx.mountK, 'wall': b.skx.wall,
+      'ul': b.skx.ul, 'ulA': b.skx.ulA, 'ulS': b.skx.ulS,
     },
     'nFloats': b.floats.length, 'nFx': b.fxs.length, 'nProj': b.proj.length,
     'quip': b.quip?.txt, 'banner': b.banner?.txt, 'cut': b.cut?.id, 'warn': b.warn != null,

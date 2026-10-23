@@ -107,6 +107,12 @@ SAVES.vill2 = Object.assign(J(SAVES.vill), {
   plots: [{ k: 'wheat', at: NOW - 20 * 1000 }, { k: 'pumpkin', at: NOW - 400 * 1000 }],
 });
 
+// 유니크 카엘 촌장: 카엘 자리 출전 · ★3 · 유니크 카드 45장
+SAVES.chief = Object.assign(J(SAVES.vill), {
+  joined: Object.assign(J(SAVES.vill.joined), { kael_chief: true }), rec: Object.assign(J(SAVES.vill.rec || {}), { kael_chief: 3 }),
+  party: Object.assign(J(SAVES.vill.party || {}), { kael: 'kael_chief' }), ucard: 45, retires: 3,
+});
+
 function setSave(name) {
   w.setNow(NOW);
   const s = F('hydrate')(J(SAVES[name]));
@@ -147,7 +153,7 @@ for (const name of Object.keys(SAVES)) {
     eff:MEMT.map(t=>[t.e(1),t.e(t.c.length)])})`);
   sc.comp = {};
   for (const id of COMPS) {
-    sc.comp[id] = run(`({stats:${id === 'kael' ? 'kStats()' : `cStats('${id}')`},cPow:cPow('${id}'),owned:owned('${id}'),
+    sc.comp[id] = run(`({stats:stats('${id}'),cPow:cPow('${id}'),owned:owned('${id}'),
       recStar:${id === 'kael' ? 0 : `recStar('${id}')`},starMul:starMul('${id}'),skPow:skPow('${id}'),
       cardOpen:${id === 'kael' ? false : `cardOpen('${id}')`},starNeed:${id === 'kael' ? null : `(starNeed('${id}')??null)`},
       starMax:${id === 'kael' ? null : `starMax('${id}')`},cwLv:cwLv('${id}'),cwMul:cwMul('${id}')})`);
@@ -176,6 +182,8 @@ for (const name of Object.keys(SAVES)) {
   // 대륙 지도 규칙 (안개·이번 회차·탐험·어둠 지울 원)
   sc.worldmap = run(`({seen:Array.from({length:60},(_,i)=>mapSeen(i+1)),taken:Array.from({length:60},(_,i)=>mapTaken(i+1)),
     entered:[0,1,2,3,4,5].map(mapEntered),cleared:[0,1,2,3,4,5].map(mapRegCleared),all:mapAllClear(),explore:mapExplore(),cur:wmCur(),holes:wmHoles()})`);
+  // 유니크 카엘 촌장
+  sc.chief = run(`({vp:vpChief(),on:chiefOn(),shop:chiefShop(),can:chiefCan(),pct:[1,2,3,4,5].map(chPct),prod:['mine','dock','apiary','ranch','farm'].map(prodMul),slot:slotMember('kael'),mem:members(),pow:power()})`);
   // 마을 난수: 주문 새로 만들기 · 축복 고르기 · 오늘 길 위 동료
   setSave(name);
   w.setSeed(5151);

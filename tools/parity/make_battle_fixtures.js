@@ -43,6 +43,8 @@ const CASES = [
   ['rares', withTut(base.late, { stage: 66, best: 68, wave: 2, rec: Object.assign({}, base.late.rec || {}, { toby: 3, kara: 3, beryl: 4 }), lv: Object.assign({}, base.late.lv || {}, { toby: 60, kara: 60, beryl: 60 }), party: { miner: 'beryl', fisher: 'toby', keeper: 'riel', cook: 'kara' } }), 200, 240],
   ['commons', withTut(base.late, { stage: 66, best: 68, wave: 2, rec: Object.assign({}, base.late.rec || {}, { mora: 3, melo: 3, pori: 3 }), lv: Object.assign({}, base.late.lv || {}, { mora: 60, melo: 60, pori: 60 }), party: { miner: 'bron', fisher: 'mora', keeper: 'melo', cook: 'pori' } }), 200, 240],
   ['commons2', withTut(base.late, { stage: 66, best: 68, wave: 2, rec: Object.assign({}, base.late.rec || {}, { rollo: 3, crab: 3, birch: 3, gram: 3 }), lv: Object.assign({}, base.late.lv || {}, { rollo: 60, crab: 60, birch: 60, gram: 60 }), party: { miner: 'rollo', fisher: 'crab', keeper: 'birch', cook: 'gram' } }), 200, 240],
+  // 유니크 카엘 촌장 ★3 (다 함께 울력)
+  ['chief', withTut(base.chief, { stage: 66, best: 68, wave: 2 }), 200, 120],
 ];
 
 const out = { now: NOW, w: W, ht: HT, dt: DT, snap: SNAP, cases: {} };
@@ -50,7 +52,7 @@ for (const [name, save, gob, secs] of CASES) {
   w.setNow(NOW);
   w.setS(F('hydrate')(J(save)));
   w.run(`W=${W};Ht=${HT};P={};mons=[];spawnT=.5;bgX=0;T=0;floats=[];proj=[];fxs=[];bossT=0;engaged=false;quip=null;quipT=6;flash=0;cut=null;warn=null;shakeT=0;banner=null;gobT=${gob};
-    for(const k in SKX)SKX[k]=0;SKX.mountK=1;`);
+    for(const k in SKX)SKX[k]=0;SKX.mountK=1;ULB.t=0;ULB.a=1;ULB.s=1;`);
   w.setSeed(20261020);
   const snaps = [];
   const frames = Math.round(secs / DT);
@@ -67,7 +69,7 @@ for (const [name, save, gob, secs] of CASES) {
         P:Object.fromEntries(Object.entries(P).map(([k,p])=>[k,[p.hp,p.down,p.sg||0,p.cd,p.swing,p.hit]])),
         mons:mons.map(m=>[m.x,m.hp,m.dead,!!m.boss,!!m.gob,!!m.alt,!!m.flee,m.cd,m.bind||0,m.psn||0,m.slow||0,m.vul||0,m.brn||0,m.kb||0]),
         engaged,bgX,spawnT,gobT,bossT,shakeT,flash,
-        skx:{shield:SKX.shield,honey:SKX.honey,feast:SKX.feast,bake:SKX.bake,mount:SKX.mount,mountK:SKX.mountK,wall:SKX.wall},
+        skx:{shield:SKX.shield,honey:SKX.honey,feast:SKX.feast,bake:SKX.bake,mount:SKX.mount,mountK:SKX.mountK,wall:SKX.wall,ul:ULB.t,ulA:ULB.a,ulS:ULB.s},
         nFloats:floats.length,nFx:fxs.length,nProj:proj.length,quip:quip?quip.txt:null,banner:banner?banner.txt:null,cut:cut?cut.id:null,warn:!!warn})`)));
     }
   }
