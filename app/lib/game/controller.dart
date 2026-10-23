@@ -1342,7 +1342,7 @@ class GameController extends ChangeNotifier {
   void upGo() {
     upHintK = calc.upBest();
     upHintAt = DateTime.now().millisecondsSinceEpoch;
-    setTab(GameTab.up);
+    if (tab != GameTab.up) setTab(GameTab.up);
   }
 
   /// 할 일을 누르면 그곳으로 (웹 guideNow().go). k: 'g0'~'g8' · 'up:..' · 'b:..'
