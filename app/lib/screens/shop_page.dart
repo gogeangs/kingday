@@ -356,7 +356,7 @@ class _ShopPageState extends State<ShopPage> {
                 WidgetSpan(alignment: PlaceholderAlignment.middle, child: kdImg(gemIcon, w: 16, h: 16)),
                 TextSpan(text: '${subscription['now']} + 30일간 매일 '),
                 WidgetSpan(alignment: PlaceholderAlignment.middle, child: kdImg(gemIcon, w: 16, h: 16)),
-                TextSpan(text: '${subscription['day']}\n+ 매일 유니크 카드 1장 · 방치 보상 +50%'),
+                TextSpan(text: '${subscription['day']}\n+ 3일마다 유니크 카드 1장 · 방치 보상 +50%'),
               ])),
         btn: subOn
             ? KdBuy(kind: BuyKind.claim, minWidth: 0, text: gotToday ? '받음' : '+${subscription['day']} 받기', onTap: gotToday ? null : () => g.act((x) => x.claimSub()))

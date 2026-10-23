@@ -6966,7 +6966,7 @@ const CHIEF = 'kael_chief',
   CHIEF_B = [0, 0.05, 0.075, 0.1, 0.125, 0.15],
   CHIEF_RET = 10,
   CHIEF_PK = { k: 'chief', n: '카엘 촌장 맞이하기', won: 500 },
-  UCARD_PK = { p2: 2, p3: 5, p4: 12, p5: 35, p6: 70 },
+  UCARD_PK = { p2: 1, p3: 3, p4: 6, p5: 16, p6: 30 } /* 2026-10-23 줄임: ★3 약 20만 원 · ★5 약 100만 원 */,
   ULB = { t: 0, a: 1, s: 1 };
 const chPct = st => 10 + 2.5 * (Math.max(1, st) - 1),
   vpChief = () => (owned(CHIEF) ? 1 + chPct(recStar(CHIEF)) / 100 : 1);
@@ -8333,22 +8333,28 @@ function buyStarter() {
     );
   });
 }
+/* 정기 배송 유니크 카드: 3일마다 1장 (배송 받은 횟수 1·4·7…번째, 30일에 10장) */
+function subCard() {
+  S.sub.cn = (+S.sub.cn || 0) + 1;
+  if (S.sub.cn % 3 !== 1) return 0;
+  S.ucard = (S.ucard || 0) + 1;
+  return 1;
+}
+const subCardTxt = u => (u ? ' · 유니크 카드 +1' : ' · 유니크 카드까지 ' + (3 - ((S.sub.cn - 1) % 3)) + '일');
 function buySub() {
   pay('sub', SUB.won, () => {
     const base = Math.max(Date.now(), S.sub.until || 0);
     S.sub.until = base + SUB.days * 864e5;
     S.sub.last = today();
     S.gem += SUB.now + SUB.day;
-    S.ucard = (S.ucard || 0) + 1;
-    toast('정기 배송 시작! 황금 이삭 +' + (SUB.now + SUB.day) + ' · 유니크 카드 +1');
+    toast('정기 배송 시작! 황금 이삭 +' + (SUB.now + SUB.day) + subCardTxt(subCard()));
   });
 }
 function claimSub() {
   if (!subOn() || S.sub.last === today()) return;
   S.sub.last = today();
   S.gem += SUB.day;
-  S.ucard = (S.ucard || 0) + 1;
-  toast('피트의 마차가 도착했어요. 황금 이삭 +' + SUB.day + ' · 유니크 카드 +1');
+  toast('피트의 마차가 도착했어요. 황금 이삭 +' + SUB.day + subCardTxt(subCard()));
   shopSig = '';
   renderAll();
 }
@@ -8389,7 +8395,7 @@ function renderShop() {
   const gemI = '<img src="assets/gem/ui_gem.png" alt="" style="width:16px;height:16px;vertical-align:-3px" onerror="this.remove()">';
   const subTxt = subOn()
     ? `남은 기간 ${subLeft()}일 · ${S.sub.last === today() ? '오늘 배송 받음' : '오늘 배송이 도착했어요'}`
-    : `구매 즉시 ${gemI}${SUB.now} + 30일간 매일 ${gemI}${SUB.day}<br>+ 매일 유니크 카드 1장 · 방치 보상 +50%`;
+    : `구매 즉시 ${gemI}${SUB.now} + 30일간 매일 ${gemI}${SUB.day}<br>+ 3일마다 유니크 카드 1장 · 방치 보상 +50%`;
   const subBtn = subOn()
     ? S.sub.last === today()
       ? `<button class="buy claim" disabled>받음</button>`
@@ -10153,7 +10159,7 @@ function chiefSheet() {
  <p class="cdd">${c.desc}</p>${how}<div class="kv"><span>능력치</span><b>카엘 능력치 +${CHIEF_B[Math.max(1, st)] * 100}%${has ? ' · 공격 ' + fmt(t.atk) + ' · 체력 ' + fmt(t.hp) : ''}</b></div><div class="kv"><span>장비·칭호</span><b>카엘 것을 그대로 써요</b></div>
  <div class="skl"><img src="assets/skills/skill_${id}.png" alt="" onerror="this.remove()"><div><b>${SKILLS[id].n}</b><span>${SKILLS[id].d}</span></div></div>${vpBox(id)}
  <div class="kv"><span>${UCIMG} 유니크 카드</span><b>${has ? (mx ? '별을 모두 모았어요 · ' + n + '장' : n + ' / ' + need + '장 (★' + (st + 1) + ')') : n + '장 모아 둠'}</b></div>
- ${has && !mx ? `<div class="xp"><div style="width:${Math.min(100, (n / need) * 100)}%"></div></div>` : ''}<p class="note">유니크 카드는 황금 이삭 상품(5,500원 이상)의 덤, 피트의 정기 배송(매일 1장), 랭킹 시즌 보상으로 받아요. 원하는 유니크 동료를 골라 별을 올려요.</p>
+ ${has && !mx ? `<div class="xp"><div style="width:${Math.min(100, (n / need) * 100)}%"></div></div>` : ''}<p class="note">유니크 카드는 황금 이삭 상품(5,500원 이상)의 덤, 피트의 정기 배송(3일마다 1장), 랭킹 시즌 보상으로 받아요. 원하는 유니크 동료를 골라 별을 올려요.</p>
  <div class="acts">${has ? (on ? `<button id="cdGo">카엘로 바꾸기</button>` : `<button id="cdGo">카엘 자리에 출전</button>`) : `<button id="mX">닫기</button>`}${has ? `<button class="pri${chiefCan() ? ' glow' : ''}" id="cdUp" ${chiefCan() ? '' : 'disabled'}>${mx ? '★ 모두 모음' : '★ 올리기'}</button>` : chiefShop() ? `<button class="pri" id="cdShop">상점 가기</button>` : ''}</div>` +
     (has ? '<button id="mX" hidden></button>' : '');
   $('modal').hidden = false;

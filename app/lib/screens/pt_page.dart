@@ -762,7 +762,7 @@ void chiefSheet(GameController g) {
               VillageSkillBox(c, id),
               KdKv('유니크 카드', has ? (mx ? '$n장 · ★ 모두 모음' : '$n / $need장') : '$n장 모아 둠'),
               if (has && !mx) XpBar(n / need),
-              const KdNote('유니크 카드는 황금 이삭 상품(5,500원 이상)의 덤, 피트의 정기 배송(매일 1장), 랭킹 시즌 보상으로 받아요. 원하는 유니크 동료를 골라 별을 올려요.'),
+              const KdNote('유니크 카드는 황금 이삭 상품(5,500원 이상)의 덤, 피트의 정기 배송(3일마다 1장), 랭킹 시즌 보상으로 받아요. 원하는 유니크 동료를 골라 별을 올려요.'),
             ],
             acts: KdActs(buttons: [
               if (has)
