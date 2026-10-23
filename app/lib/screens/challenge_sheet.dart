@@ -82,6 +82,39 @@ class _ChSheet extends StatelessWidget {
                     minWidth: 0,
                     onTap: c.supplyCan() ? g.claimSupply : null)),
           ]),
+          // 자동으로 계속 오르기 (웹 #chAuto, 2026-10-24)
+          StatefulBuilder(
+            builder: (_, set) {
+              final on = g.towerAutoOn;
+              return GestureDetector(
+                behavior: HitTestBehavior.opaque,
+                onTap: () => set(() => g.towerAutoOn = !on),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 6),
+                  child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                    Container(
+                      width: 18,
+                      height: 18,
+                      margin: const EdgeInsets.only(top: 1),
+                      decoration: BoxDecoration(
+                        color: on ? KdColors.gold : Colors.transparent,
+                        border: Border.all(color: on ? KdColors.gold : KdColors.muted, width: 1.5),
+                        borderRadius: BorderRadius.circular(4),
+                      ),
+                      child: on ? const Icon(Icons.check, size: 14, color: KdColors.goldInk) : null,
+                    ),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                        Text('자동으로 계속 오르기', style: KdText.body(13)),
+                        Text('수문장·시련 층 앞과 실패에서 멈춰요', style: KdText.body(12, color: KdColors.muted)),
+                      ]),
+                    ),
+                  ]),
+                ),
+              );
+            },
+          ),
           Text('탑 보급: 방치 보상 ${c.supplyMin()}분 어치 골드 + 광석 ${c.supplyOre()} (하루 1번, 최고 층이 높을수록 많이)',
               style: KdText.body(11.5, color: KdColors.muted, height: 1.4)),
         ]),
