@@ -4,22 +4,19 @@
     python3 tools/primal_sim.py 4 3        # 플레이 4시간까지, 안마다 3번
     python3 tools/primal_sim.py 4 3 1안    # 한 안만
 
-안마다 index.html 의 primalP 줄만 바꾼 사본(_primal_<안>.html)을 잠깐 만들어 띄우고 끝나면 지움.
+안마다 index.html 의 primalP·primalOn 줄만 바꾼 사본(_primal_<안>.html)을 잠깐 만들어 띄우고 끝나면 지움.
 """
 import asyncio, json, os, re, sys
 from playwright.async_api import async_playwright
 
 H = sys.argv[1] if len(sys.argv) > 1 else '6'
 N = int(sys.argv[2]) if len(sys.argv) > 2 else 3
-ORIG = 'const primalP=L=>L<=10?0:5*(1-Math.pow(.93,L-10));'
-GATE = '(S.best>50||(S.retires||0)>0)'
-B50 = 'S.best>50'
-RET = '(S.retires||0)>0'
+ORIG = "const primalP=L=>L<=30?0:5*(1-Math.pow(.93,L-30)),primalOn=()=>(S.retires||0)>0;"
 PLANS = {k: v for k, v in {
-    '지금': ORIG,
-    '1안 상자 Lv.21부터': 'const primalP=L=>L<=20?0:5*(1-Math.pow(.93,L-20));',
-    '2안 영지 50 탈환 뒤': f'const primalP=L=>L<=10||!({B50})?0:5*(1-Math.pow(.93,L-10));',
-    '3안 섞기 (상자 Lv.31부터 + 첫 은퇴 뒤)': f'const primalP=L=>L<=30||!{RET}?0:5*(1-Math.pow(.93,L-30));',
+    '지금 (3안: Lv.31부터 + 첫 은퇴 뒤)': ORIG,
+    '예전 (Lv.11부터)': 'const primalP=L=>L<=10?0:5*(1-Math.pow(.93,L-10)),primalOn=()=>true;',
+    '1안 상자 Lv.21부터': 'const primalP=L=>L<=20?0:5*(1-Math.pow(.93,L-20)),primalOn=()=>true;',
+    '2안 영지 50 탈환 뒤': 'const primalP=L=>L<=10?0:5*(1-Math.pow(.93,L-10)),primalOn=()=>S.best>50;',
 }.items() if len(sys.argv) < 4 or k.startswith(sys.argv[3])}
 
 

@@ -122,11 +122,20 @@ class PtPage extends StatelessWidget {
                   Text(j == 'kael' ? '카엘' : jobName[j]!, style: KdText.body(12, weight: FontWeight.w600)),
                 ]),
               ),
-              Text(
-                id == null ? '합류 전' : id == 'kael' ? '용사' : '${comps[id]!.n} ${'★' * c.recStar(id)}',
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: KdText.body(11.5, color: KdColors.muted),
+              // ★★★ 대신 ★3, 길면 두 줄까지 (웹 .seat small, UX 점검 14)
+              SizedBox(
+                width: double.infinity,
+                child: Text.rich(
+                  TextSpan(children: [
+                    TextSpan(text: id == null ? '합류 전' : id == 'kael' ? '용사' : comps[id]!.n),
+                    if (id != null && id != 'kael' && c.recStar(id) > 0)
+                      TextSpan(text: ' ★${c.recStar(id)}', style: const TextStyle(color: KdColors.gold, fontSize: 11)),
+                  ]),
+                  maxLines: 2,
+                  textAlign: TextAlign.center,
+                  overflow: TextOverflow.ellipsis,
+                  style: KdText.body(11.5, color: KdColors.muted, height: 1.2),
+                ),
               ),
             ]),
           ),

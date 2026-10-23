@@ -103,15 +103,13 @@ class VlPage extends StatelessWidget {
       _LvBar(g),
       if (todos.isNotEmpty) ...[
         const SizedBox(height: 8),
-        SizedBox(
-          height: 34,
-          child: ListView(scrollDirection: Axis.horizontal, children: [
-            for (final (k, t, go) in todos) ...[
-              _Chip(t, gold: k == 'lv', onTap: go),
-              if (k == 'farm') _Chip('모두 수확', all: true, onTap: () => g.act((a) => a.harvestReplant())),
-            ],
-          ]),
-        ),
+        // 좁은 폭에서 잘리지 않게 줄바꿈 (웹 .vtodo flex-wrap, UX 점검 12)
+        Wrap(runSpacing: 6, children: [
+          for (final (k, t, go) in todos) ...[
+            _Chip(t, gold: k == 'lv', onTap: go),
+            if (k == 'farm') _Chip('모두 수확', all: true, onTap: () => g.act((a) => a.harvestReplant())),
+          ],
+        ]),
       ],
       const SizedBox(height: 10),
       VillageMap(g),
@@ -1025,6 +1023,8 @@ class _Farm extends StatelessWidget {
   Widget build(BuildContext context) {
     final a = g.acts, c = g.calc, s = g.state;
     a.ensurePlots();
+    // 처음 밭(첫 수확 전)에는 「심기·수확」만 (웹 farmFirst, UX 점검 16)
+    final first = orNum(asMap(s.raw['stat'])?['harv'], 0) <= 0;
     final edit = g.plotEdit, gp = s.gemPlots.toInt();
     final nGrow = s.plots.where((p) => c.plotState(p).st == 'grow').length;
     final anyReady = s.plots.any((p) => c.plotState(p).st == 'ready');
@@ -1044,28 +1044,31 @@ class _Farm extends StatelessWidget {
         final w = (cs.maxWidth - 18) / 4;
         return Wrap(spacing: 6, runSpacing: 6, children: [
           for (var i = 0; i < s.plots.length; i++) SizedBox(width: w, child: _plot(i, w)),
-          if (gp < gemPlotCost.length) SizedBox(width: w, child: _gemPlot(w, gemPlotCost[gp])),
+          if (!first && gp < gemPlotCost.length) SizedBox(width: w, child: _gemPlot(w, gemPlotCost[gp])),
         ]);
       }),
-      if (gemPlotCost.length - gp > 1) KdNote('🔒 황금 밭 ${gemPlotCost.length - gp - 1}칸 더 열 수 있어요 · 앞의 밭부터 차례로', center: true),
+      if (!first && gemPlotCost.length - gp > 1) KdNote('🔒 황금 밭 ${gemPlotCost.length - gp - 1}칸 더 열 수 있어요 · 앞의 밭부터 차례로', center: true),
       Row(children: [
-        Expanded(
-          child: KdBuy(
-            text: edit ? '지정 끝내기' : '밭 지정',
-            kind: BuyKind.ghost,
-            minWidth: 0,
-            onTap: () {
-              g.plotEdit = !edit;
-              g.refresh();
-            },
+        if (!first) ...[
+          Expanded(
+            child: KdBuy(
+              text: edit ? '지정 끝내기' : '밭 지정',
+              kind: BuyKind.ghost,
+              minWidth: 0,
+              onTap: () {
+                g.plotEdit = !edit;
+                g.refresh();
+              },
+            ),
           ),
-        ),
-        const SizedBox(width: 6),
+          const SizedBox(width: 6),
+        ],
         Expanded(child: KdBuy(text: '모두 심기', kind: BuyKind.ghost, minWidth: 0, onTap: anyEmpty && !edit ? () => g.act((a) => a.plantAll()) : null)),
         const SizedBox(width: 6),
         Expanded(child: KdBuy(kind: BuyKind.claim, text: '모두 수확', minWidth: 0, onTap: anyReady ? () => g.act((a) => a.harvestAll()) : null)),
       ]),
-      if (nGrow > 0) ...[
+      if (first) const KdNote('빈 밭을 눌러 씨앗을 심고, 다 자라면 눌러 수확해요. 첫 수확을 하면 밭 지정·바로 키우기가 열려요.'),
+      if (nGrow > 0 && !first) ...[
         KdBuy(
           kind: BuyKind.gem,
           minWidth: 0,

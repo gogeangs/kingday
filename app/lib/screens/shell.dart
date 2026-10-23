@@ -40,7 +40,7 @@ class GameShell extends ConsumerWidget {
                 child: Column(children: [
                   ValueListenableBuilder<int>(valueListenable: g.ui, builder: (_, __, ___) => _Hud(g, top: pad.top)),
                   Expanded(child: _StageArea(g)),
-                  ValueListenableBuilder<int>(valueListenable: g.ui, builder: (_, __, ___) => _Tabs(g, bottom: pad.bottom)),
+                  KeyedSubtree(key: g.tabsKey, child: ValueListenableBuilder<int>(valueListenable: g.ui, builder: (_, __, ___) => _Tabs(g, bottom: pad.bottom))),
                 ]),
               ),
               _ToastView(g, top: pad.top),
@@ -287,7 +287,7 @@ class _StageArea extends StatelessWidget {
           // 반쯤 열린 창 위 빈 곳을 누르면 닫힘 (웹 .pgshade)
           if (half) Positioned(left: 0, right: 0, top: 0, height: top, child: GestureDetector(behavior: HitTestBehavior.opaque, onTap: () => g.setTab(null))),
           if (t != null)
-            Positioned(left: 0, right: 0, top: top, bottom: 0, child: PageSheet(key: ValueKey(t), g: g, tab: t, half: half)),
+            Positioned(left: 0, right: 0, top: top, bottom: 0, child: KeyedSubtree(key: g.pageKey, child: PageSheet(key: ValueKey(t), g: g, tab: t, half: half))),
         ]);
       });
 }
@@ -337,8 +337,8 @@ class _Tabs extends StatelessWidget {
             Text(t.label, style: KdText.display(12, color: on ? KdColors.gold : KdColors.muted).copyWith(height: 1.2)),
           ]),
         ),
-        // 원정대 점은 금색(선택), 마을 점은 빨강
-        if (dot) Positioned(top: n > 1 ? 0 : 3, right: n > 1 ? 4 : 10, child: _Dot(opt: t == GameTab.pt || t == GameTab.up, n: n)),
+        // 점 규칙(UX 점검 10): 원정대·단련·지도(할 수 있는 일)는 금색, 마을(받을 보상)은 빨강
+        if (dot) Positioned(top: n > 1 ? 0 : 3, right: n > 1 ? 4 : 10, child: _Dot(opt: t == GameTab.pt || t == GameTab.up || t == GameTab.mp, n: n)),
       ]),
     );
   }
@@ -356,9 +356,22 @@ class _ToastView extends StatelessWidget {
         builder: (ctx, msg, __) {
           // 전투 화면: 초상화 줄 바로 위 (영지 이름표·보스 막대를 가리지 않게). 창이 열려 있으면 맨 위
           double? bottom;
+          double? yOf(GlobalKey k) {
+            final rb = k.currentContext?.findRenderObject();
+            return rb is RenderBox && rb.hasSize && rb.attached ? rb.localToGlobal(Offset.zero).dy : null;
+          }
+          final h = MediaQuery.sizeOf(ctx).height;
           if (!g.toastHigh && g.tab == null) {
-            final rb = g.partyRowKey.currentContext?.findRenderObject();
-            if (rb is RenderBox && rb.hasSize && rb.attached) bottom = MediaQuery.sizeOf(ctx).height - rb.localToGlobal(Offset.zero).dy + 8;
+            final y = yOf(g.partyRowKey);
+            if (y != null) bottom = h - y + 8;
+          } else if (!g.modalOpen && g.tab != null) {
+            // 탭이 열려 있으면 위쪽 재화 줄을 가리지 않게: 탭 창 바로 위, 창이 화면을 다 덮으면 아래 탭 줄 바로 위 (웹 toastPos)
+            final py = yOf(g.pageKey), ty = yOf(g.tabsKey);
+            if (py != null && py > 90) {
+              bottom = h - py + 8;
+            } else if (ty != null) {
+              bottom = h - ty + 10;
+            }
           }
           return Positioned(
           left: 16,

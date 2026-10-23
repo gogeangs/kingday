@@ -293,14 +293,16 @@ class _Buffs extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final now = g.calc.now, chips = <Widget>[];
+    // (그림, 이름, 남은 시간, 스킬?) — 3개 이상이면 이름은 빼고 그림 + 시간만 한 줄로 (웹 .buff.sm, UX 점검 9)
+    final now = g.calc.now, items = <(Widget, String, String, bool)>[];
     for (final b in buffName.keys) {
       if (!g.calc.buff(b)) continue;
       final dish = recipes.firstWhere((r) => r.buff == b).k;
-      chips.add(_chip(
+      items.add((
         Image.asset('assets/game/ui/buff_$b.png', width: 26, height: 26,
             errorBuilder: (_, __, ___) => kdImg('assets/game/ui/dish_$dish.png', w: 26, h: 26)),
-        '${buffName[b]} ${mmss((asNum(g.state.buffs[b]) - now) / 1000)}',
+        buffName[b]!,
+        mmss((asNum(g.state.buffs[b]) - now) / 1000),
         false,
       ));
     }
@@ -309,27 +311,30 @@ class _Buffs extends StatelessWidget {
     if (bk.isNotEmpty) {
       final left = ((orNum(asMap(g.state.raw['bless'])?['until'], 0) - now) / 1000).ceil();
       final h = left ~/ 3600, hm = h > 0 ? '$h:${'${left % 3600 ~/ 60}'.padLeft(2, '0')}:${'${left % 60}'.padLeft(2, '0')}' : mmss(left);
-      chips.add(_chip(kdImg('assets/game/ui/bless_$bk.png', w: 26, h: 26), '${blessDef(bk).s} $hm', false));
+      items.add((kdImg('assets/game/ui/bless_$bk.png', w: 26, h: 26), blessDef(bk).s, hm, false));
     }
     final sk = g.sim.skx;
     for (final (v, id) in [(sk.shield, 'bron'), (sk.honey, 'riel'), (sk.feast, 'margo')]) {
-      if (v > 0) chips.add(_chip(kdImg('assets/game/skills/skill_$id.png', w: 26, h: 26), '${skills[id]!.n} ${v.ceil()}초', true));
+      if (v > 0) items.add((kdImg('assets/game/skills/skill_$id.png', w: 26, h: 26), skills[id]!.n, '${v.ceil()}초', true));
     }
-    if (chips.isEmpty) return const SizedBox();
-    return Wrap(alignment: WrapAlignment.center, spacing: 4, runSpacing: 4, children: chips);
+    if (items.isEmpty) return const SizedBox();
+    final sm = items.length >= 3;
+    return Wrap(alignment: WrapAlignment.center, spacing: sm ? 3 : 4, runSpacing: 4, children: [
+      for (final (icon, n, t, skill) in items) _chip(icon, sm ? t : '$n $t', skill, sm),
+    ]);
   }
 
-  Widget _chip(Widget icon, String t, bool skill) => Container(
-        padding: const EdgeInsets.fromLTRB(2, 2, 8, 2),
+  Widget _chip(Widget icon, String t, bool skill, bool sm) => Container(
+        padding: EdgeInsets.fromLTRB(sm ? 1 : 2, 2, sm ? 6 : 8, 2),
         decoration: BoxDecoration(
           color: const Color(0x8C000000),
           border: Border.all(color: skill ? const Color(0xFF9CC3FF) : const Color(0x99FFC94A)),
           borderRadius: BorderRadius.circular(999),
         ),
         child: Row(mainAxisSize: MainAxisSize.min, children: [
-          SizedBox(width: 22, height: 18, child: OverflowBox(maxWidth: 26, maxHeight: 26, child: icon)),
-          const SizedBox(width: 4),
-          Text(t, style: KdText.figure(11, color: skill ? const Color(0xFFDBE8FF) : KdColors.gold, weight: FontWeight.w400)),
+          SizedBox(width: sm ? 20 : 22, height: 18, child: OverflowBox(maxWidth: sm ? 22 : 26, maxHeight: sm ? 22 : 26, child: icon)),
+          SizedBox(width: sm ? 2 : 4),
+          Text(t, style: KdText.figure(sm ? 10.5 : 11, color: skill ? const Color(0xFFDBE8FF) : KdColors.gold, weight: FontWeight.w400)),
         ]),
       );
 }

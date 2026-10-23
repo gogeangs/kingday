@@ -60,6 +60,7 @@ enum GameTab {
   final String? icon;
 
   /// 반쯤 열리는 창 (웹 HALF)
+  /// 마을·지도는 지도 그림·아래 창이 좁아져 반 열림에서 뺌 (UX 점검 11: 해 보고 되돌림)
   bool get half => this == eq || this == pt || this == up || this == sh;
 
   /// 탭 줄에 보이는 이름
@@ -347,34 +348,36 @@ class GameController extends ChangeNotifier {
                     textAlign: TextAlign.center, style: KdText.body(12, color: const Color(0xFFFFC94A))),
               ]),
             ),
-            if (adN > 0)
-              KdBuy(
-                kind: BuyKind.ad,
-                minWidth: 0,
-                text: '▶ 광고 보고 2배 · 오늘 $adN회',
-                // 창을 닫고 「닫힌 다음」 광고를 띄움 (바로 부르면 창이 아직 열린 것으로 보여 광고가 안 뜸)
-                onTap: () => chainSheet(c, () => watchAd('offline', twice)),
+            // 2배 받기는 작은 줄 두 개, 기본은 「받기」 하나 (웹 .dblrow, UX 점검 5)
+            Row(children: [
+              if (adN > 0) ...[
+                Expanded(
+                  child: _DblBtn(
+                    text: '▶ 광고 2배',
+                    sub: '· $adN회',
+                    // 창을 닫고 「닫힌 다음」 광고를 띄움 (바로 부르면 창이 아직 열린 것으로 보여 광고가 안 뜸)
+                    onTap: () => chainSheet(c, () => watchAd('offline', twice)),
+                  ),
+                ),
+                const SizedBox(width: 6),
+              ],
+              Expanded(
+                child: _DblBtn(
+                  icon: gemIcon,
+                  text: '이삭 $gemOffline로 2배',
+                  onTap: () {
+                    if (!acts.spendGem(gemOffline)) {
+                      _flush();
+                      return;
+                    }
+                    twice();
+                    Navigator.of(c).pop();
+                  },
+                ),
               ),
+            ]),
           ],
           acts: KdActs(buttons: [
-            KdAct(
-              '2배 받기',
-              onTap: () {
-                if (!acts.spendGem(gemOffline)) {
-                  _flush();
-                  return;
-                }
-                twice();
-                Navigator.of(c).pop();
-              },
-              child: FittedBox(
-                fit: BoxFit.scaleDown,
-                child: Row(mainAxisSize: MainAxisSize.min, children: [
-                  Text('2배 받기 · ', style: KdText.display(15, color: const Color(0xFFFFE08A))),
-                  iconNum(gemIcon, '$gemOffline', size: 16, style: KdText.figure(15, color: const Color(0xFFFFE08A))),
-                ]),
-              ),
-            ),
             KdAct('받기', primary: true, onTap: () => Navigator.of(c).pop()),
           ]),
         );
@@ -448,7 +451,27 @@ class GameController extends ChangeNotifier {
   /// 원정대 초상화 줄 (알림을 그 바로 위에 띄움)
   final partyRowKey = GlobalKey();
 
+  /// 열린 탭 창·아래 탭 줄 (탭이 열려 있으면 알림을 그 바로 위에, UX 점검 2)
+  final pageKey = GlobalKey(), tabsKey = GlobalKey();
+
+  /// 이야기 창(scene·탈환 보고서)이 떠 있는 동안 알림은 모아 두었다가 닫으면 보여 줌 (웹 sceneOn·toastHold, 3회차 리뷰 14)
+  bool sceneOn = false;
+  final List<String> _toastHold = [];
+
+  void _sceneDone() {
+    sceneOn = false;
+    if (_toastHold.isEmpty) return;
+    final h = List.of(_toastHold);
+    _toastHold.clear();
+    Timer(const Duration(milliseconds: 200), () => h.forEach(toast));
+  }
+
   void toast(String m) {
+    if (sceneOn && modalOpen) {
+      if (!_toastHold.contains(m)) _toastHold.add(m);
+      if (_toastHold.length > 3) _toastHold.removeAt(0);
+      return;
+    }
     if (toastMsg.value != null) {
       if (m == toastMsg.value || _toastQ.contains(m)) return;
       _toastQ.add(m);
@@ -559,7 +582,10 @@ class GameController extends ChangeNotifier {
   /// 웹 scene(eyebrow,title,paras,btn,alt,illust): 이야기 창. 대기열에 넣는다.
   void scene(String eyebrow, String title, List<String> paras, String btn,
       {String? altLabel, VoidCallback? onGo, VoidCallback? onAlt, String? illust, String? illustFace, Widget? titleWidget, bool closable = false}) {
-    queue((ctx) => showKdSheet<void>(ctx, closable: closable, builder: (c) {
+    queue((ctx) async {
+      sceneOn = true;
+      try {
+        await showKdSheet<void>(ctx, closable: closable, builder: (c) {
           return KdSheetBody(
             illust: illust,
             illustFace: illustFace,
@@ -579,7 +605,11 @@ class GameController extends ChangeNotifier {
               }),
             ]),
           );
-        }));
+        });
+      } finally {
+        _sceneDone();
+      }
+    });
   }
 
   // ── 매 프레임 ──
@@ -612,6 +642,7 @@ class GameController extends ChangeNotifier {
       _vlTick();
       calc.pfCheck();
       chCheck();
+      _nwFlush();
       refresh();
     }
   }
@@ -626,6 +657,44 @@ class GameController extends ChangeNotifier {
     _rpFlush();
   }
 
+  // ── 새 소식 (UX 점검 4, 웹 nwAdd/nwFlush): 새로 열린 것 안내가 한꺼번에 생기면 한 장으로 ──
+  final _nwBuf = <({ReportItem r, VoidCallback? later, VoidCallback one})>[];
+  void _nwAdd(ReportItem r, {VoidCallback? later, required VoidCallback one}) => _nwBuf.add((r: r, later: later, one: one));
+
+  /// 1개면 원래 창 그대로, 2개 이상이면 칸마다 「보러 가기」. 고르지 않은 것은 나중에(later)
+  void _nwFlush() {
+    // 제목 화면에서는 모아 두기만 (처음 들어올 때 탑·새 빈터가 따로 뜨지 않게, 웹 nwFlush)
+    if (_nwBuf.isEmpty || titleOpen) return;
+    final b = List.of(_nwBuf);
+    _nwBuf.clear();
+    if (b.length == 1) return b.first.one();
+    void later(int skip) {
+      for (var i = 0; i < b.length; i++) {
+        if (i != skip) b[i].later?.call();
+      }
+    }
+
+    queue((ctx) async {
+      sceneOn = true;
+      try {
+        await showKdSheet<void>(ctx, builder: (c) => ReportSheet(
+              items: [for (final x in b) x.r],
+              onDone: () {
+                Navigator.of(c).pop();
+                later(-1);
+              },
+              onGo: (i) {
+                Navigator.of(c).pop();
+                later(i);
+                b[i].r.go?.call();
+              },
+            ));
+      } finally {
+        _sceneDone();
+      }
+    });
+  }
+
   // ── 탈환 보고서 (docs/content/FIRST_DAY.md 3-2, 웹 rpAdd/rpFlush) ──
   final _rpBuf = <ReportItem>[];
   void _rpAdd(ReportItem it) => _rpBuf.add(it);
@@ -637,10 +706,17 @@ class GameController extends ChangeNotifier {
     _rpBuf.clear();
     if (b.length == 1) {
       final it = b.first;
-      scene(it.eb, it.t, it.p, it.btn, titleWidget: it.titleWidget);
+      scene(it.eb, it.t, it.p, it.btn, titleWidget: it.titleWidget, onGo: it.go);
       return;
     }
-    queue((ctx) => showKdSheet<void>(ctx, builder: (c) => ReportSheet(items: b, onDone: () => Navigator.of(c).pop())));
+    queue((ctx) async {
+      sceneOn = true;
+      try {
+        await showKdSheet<void>(ctx, builder: (c) => ReportSheet(items: b, onDone: () => Navigator.of(c).pop()));
+      } finally {
+        _sceneDone();
+      }
+    });
   }
 
   // ── 누르면 일어나는 일 (core/actions.dart) ──
@@ -677,8 +753,8 @@ class GameController extends ChangeNotifier {
               'k@flustered:지난번엔 가짜였어요?',
               'm:피트|자, 자! 영웅 등급이 더 잘 나오게 해 놨어!',
             ], '…믿어 볼게요');
-          } else if (lv == 11) {
-            scene('성유물 상자 Lv.11', '태초의 물건', [
+          } else if (lv == 31) {
+            scene('새 등급', '태초의 물건', [
               'm:피트|형씨, 큰일 났어. 마계 상인한테서 「태초」라는 물건을 들여왔는데… 나도 처음 봐.',
               'k@surprised:그걸 팔아도 돼요?',
               'm:피트|팔면 안 되는 물건일수록 잘 팔리지!',
@@ -791,7 +867,9 @@ class GameController extends ChangeNotifier {
 
   String vbTab(String k) {
     final t = vbTabs(k), m = vbTabM[k];
-    return m != null && t.contains(m) ? m : t.first;
+    if (m != null && t.contains(m)) return m;
+    // 아직 안 지은 건물은 「정보」(재건 버튼) 탭부터 (3회차 리뷰 11: 식당이 부엌 탭으로 열림)
+    return state.bldLv(k) <= 0 && t.contains('info') ? 'info' : t.first;
   }
 
   /// 건물 고르기: 마을 탭으로 가서 아래 건물 창을 연다 (웹 vlSelect)
@@ -871,29 +949,28 @@ class GameController extends ChangeNotifier {
       if (truthy(done['vo_$k']) || !calc.bldOpen(k)) continue;
       done['vo_$k'] = 1;
       final b = buildingDef(k), mv = k == 'forge' && state.bldLv('forge') > 0;
-      scene(
-        mv ? '마을 · 이사' : '마을 · 새 빈터',
-        mv ? '브론의 대장간 이사' : b.n,
-        mv
-            ? forgeMoveLines
-            : [
-                ...villageOpenLines[k]!,
-                'sys:마을에 ${b.n} 빈터가 열렸어요. ${k == 'forge' ? '재건하면 성유물·동료 무기를 강화할 수 있어요.' : '마을 탭에서 재건해요.'}',
-              ],
-        '마을에서 보기',
-        altLabel: '나중에',
-        onGo: () => vlSelect(k),
-      );
+      final eb = mv ? '마을 · 이사' : '마을 · 새 빈터', t = mv ? '브론의 대장간 이사' : b.n;
+      final ps = mv
+          ? forgeMoveLines
+          : [
+              ...villageOpenLines[k]!,
+              'sys:마을에 ${b.n} 빈터가 열렸어요. ${k == 'forge' ? '재건하면 성유물·동료 무기를 강화할 수 있어요.' : '마을 탭에서 재건해요.'}',
+            ];
+      _nwAdd((face: reportFace(ps), eb: eb, t: t, p: ps, btn: '마을에서 보기', titleWidget: null, go: () => vlSelect(k)),
+          one: () => scene(eb, t, ps, '마을에서 보기', altLabel: '나중에', onGo: () => vlSelect(k)));
     }
     if (!truthy(state.raw['workIntro']) && calc.restIds().isNotEmpty && state.bldLv('inn') > 0) {
       state.raw['workIntro'] = 1;
-      scene('마을 일꾼', '쉬는 동료에게 일을', const [
+      const ps = [
         'm:마르타|원정 안 나가는 동료들, 마을에서 놀고먹기만 할 거냐? 일 좀 시켜.',
         'k:다들 쉬고 싶을 텐데…',
         'q:주인이 쉬고 싶은 거겠지.',
         'k@flustered:…들켰네.',
         'sys:출전하지 않는 동료를 건물 일꾼으로 넣으면 건물 효과가 올라요. 직업이 맞으면 2배!',
-      ], '추천 일꾼 넣기', altLabel: '나중에', onGo: () => act((a) => a.wkAuto(false)));
+      ];
+      void go() => act((a) => a.wkAuto(false));
+      _nwAdd((face: reportFace(ps), eb: '마을 일꾼', t: '쉬는 동료에게 일을', p: ps, btn: '추천 일꾼 넣기', titleWidget: null, go: go),
+          one: () => scene('마을 일꾼', '쉬는 동료에게 일을', ps, '추천 일꾼 넣기', altLabel: '나중에', onGo: go));
     }
   }
 
@@ -954,6 +1031,24 @@ class GameController extends ChangeNotifier {
   }
 
   /// 장비 비교 창 (웹 showItem) — 고르기 전에는 닫히지 않음
+  /// 약한 장비를 10번 팔면 한 번만 「약한 장비는 바로 팔까요?」 (웹 sellAsk, 3회차 리뷰 12 · done.sellN·sellAsk)
+  void _sellAsk() {
+    final d = state.done;
+    if (truthy(state.raw['autoSell']) || truthy(d['sellAsk'])) return;
+    d['sellN'] = orNum(d['sellN'], 0) + 1;
+    if (orNum(d['sellN'], 0) < 10) return;
+    d['sellAsk'] = 1;
+    scene('피트의 제안', '약한 장비는 바로 팔까요?', const [
+      'm:피트|형씨, 약한 물건 파느라 손목 나가겠어. 지금 것보다 약한 건 내가 알아서 사 갈까?',
+      'sys:켜 두면 지금 장비보다 약하거나 같은 장비는 창 없이 바로 팔아요. 장비 탭 「약한 장비 바로 판매」에서 언제든 바꿀 수 있어요.',
+    ], '바로 팔기 켜기', altLabel: '괜찮아요', onGo: () {
+      state.raw['autoSell'] = true;
+      toast('약한 장비 바로 판매 켜짐');
+      save();
+      refresh();
+    });
+  }
+
   Future<void> showItemSheet(BuildContext ctx, Relic it, Relic? cur,
           {({num gold, num gem, String? card, List<(String, String)> rare})? gob}) =>
       showKdSheet<void>(ctx, closable: false, builder: (c) {
@@ -968,6 +1063,7 @@ class GameController extends ChangeNotifier {
           Navigator.of(c).pop();
           sound('coin');
           act((a) => a.sell(it));
+          if (weak) _sellAsk();
         });
         final eqBtn = KdAct('장착', primary: !weak, onTap: () {
           Navigator.of(c).pop();
@@ -1081,7 +1177,8 @@ class GameController extends ChangeNotifier {
         }
       case StoryEvent(:final id):
         final ev = storyEvents.firstWhere((x) => x.id == id);
-        _rpAdd((face: reportFace(ev.lines), eb: ev.eyebrow, t: ev.title, p: ev.lines, btn: ev.button, titleWidget: null));
+        // 마르타 「밭으로 간다」: 마을 밭을 열어 줌 (웹 EVENTS marta.go)
+        _rpAdd((face: reportFace(ev.lines), eb: ev.eyebrow, t: ev.title, p: ev.lines, btn: ev.button, titleWidget: null, go: id == 'marta' ? () => vlSelect('farm') : null));
       case RankUpEvent(:final rankIdx, :final gem):
         sound('fanfare');
         final r = ranks[rankIdx];
@@ -1104,6 +1201,7 @@ class GameController extends ChangeNotifier {
             kdImg('assets/game/ui/${rankImg[rankIdx]}.png', w: 96, h: 96),
             Text('${r.n} 카엘', textAlign: TextAlign.center, style: const TextStyle(fontFamily: 'Hahmlet', fontSize: 22, fontWeight: FontWeight.w700)),
           ]),
+          go: null,
         ));
       case GemEvent(:final n, :final why):
         // 웹: 군단장 첫 처치 이삭은 2.3초 뒤 (「○○ 처치」 알림에 덮이지 않게) + 진동
@@ -1117,8 +1215,8 @@ class GameController extends ChangeNotifier {
         final was = state.raw['autoSkill'];
         state.raw['autoSkill'] = false;
         scene('특수 스킬', '동료들의 힘이 모였다', [
-          'q@proud:주인, 원정대의 힘이 가득 찼다! 빛나는 초상화를 눌러 봐라.',
-          'sys:초상화 둘레의 금색 고리가 다 차면 특수 스킬을 쓸 수 있어요. 오른쪽 아래 AUTO를 켜 두면 알아서 써요. 초상화를 길게 누르면 스킬 설명이 나와요.',
+          'q@proud:주인, 원정대의 힘이 가득 찼다! 빛나는 초상화가 특수 스킬이다. 지금은 알아서 쓰고 있다.',
+          'sys:초상화 둘레의 금색 고리가 다 차면 특수 스킬이 나가요. 오른쪽 아래 「자동」을 끄면 빛나는 초상화를 직접 눌러 쓸 수 있어요. 초상화를 길게 누르면 스킬 설명이 나와요.',
         ], '알겠어', onGo: () => state.raw['autoSkill'] = was);
       case StageClearedEvent(:final chapter):
         sound('clear');
@@ -1153,7 +1251,29 @@ class GameController extends ChangeNotifier {
     if (calc.chOpen || !calc.chCan()) return;
     state.raw['chOpen'] = 1;
     save();
-    scene('새로운 도전', '시련의 탑', const [
+    void mpDot() {
+      // 「나중에」: 지도 탭에 빨간 점 (웹 dotSeen2.mp 지움, 3회차 리뷰 13)
+      asMap(state.raw['dotSeen2'])?.remove('mp');
+      refresh();
+    }
+
+    // 다른 새 소식과 같은 때 생기면 「새 소식」 한 장으로 (웹 chCheck nwAdd)
+    _nwAdd(
+      (
+        face: 'assets/game/portraits/portrait_luminar_proud.png',
+        eb: '새로운 도전',
+        t: '시련의 탑 · 요일 던전',
+        p: const [
+          'q:시련의 탑이다. 300년 전 에르단의 왕들은 왕관을 쓰기 전에 이 탑을 올랐지.',
+          'm:브론|탑 말고 내 폐광도 좀 봐 줘. 요일마다 광석이 쏟아진다고.',
+          'sys:지도 탭의 「⚔ 도전」에서 시련의 탑과 요일 던전에 들어갈 수 있어요.',
+        ],
+        btn: '도전 보러 가기',
+        titleWidget: null,
+        go: () => openChallenge(this),
+      ),
+      later: mpDot,
+      one: () => scene('새로운 도전', '시련의 탑', const [
       'sys:들판 끝에 오래된 석탑이 서 있다. 꼭대기가 구름에 가려 보이지 않는다.',
       'q:시련의 탑이다. 300년 전 에르단의 왕들은 왕관을 쓰기 전에 이 탑을 올랐지.',
       'k:꼭대기가 어디야?',
@@ -1161,11 +1281,8 @@ class GameController extends ChangeNotifier {
       'k@flustered:…그럼 은퇴는 언제 해?',
       'm:브론|탑 말고 내 폐광도 좀 봐 줘. 요일마다 광석이 쏟아진다고.',
       'sys:지도 탭의 「⚔ 도전」에서 시련의 탑과 요일 던전에 들어갈 수 있어요.',
-    ], '도전 보러 가기', altLabel: '나중에', onGo: () => openChallenge(this), onAlt: () {
-      // 「나중에」: 지도 탭에 빨간 점 (웹 dotSeen2.mp 지움)
-      asMap(state.raw['dotSeen2'])?.remove('mp');
-      refresh();
-    });
+      ], '나중에 (지도에서 보기)', altLabel: '도전 보러 가기', onAlt: () => openChallenge(this), onGo: mpDot),
+    );
   }
 
   /// 지도 탭·도전 버튼 노란 점
@@ -1348,7 +1465,7 @@ class GameController extends ChangeNotifier {
   /// 할 일을 누르면 그곳으로 (웹 guideNow().go). k: 'g0'~'g8' · 'up:..' · 'b:..'
   void guideGo(String k) {
     if (k.startsWith('up:')) return upGo();
-    if (k.startsWith('b:')) return vlSelect(k.substring(2));
+    if (k.startsWith('b:')) return vlSelect(k.substring(2), tab: 'info');
     switch (int.tryParse(k.substring(1)) ?? -1) {
       case 0:
         hintBoxAt = DateTime.now().millisecondsSinceEpoch;
@@ -1519,6 +1636,7 @@ class GameController extends ChangeNotifier {
     if (rw != null) queue((_) async => toast(retRwText(rw)));
     if (!_quietStory) _chapter();
     _rpFlush();
+    act((a) => a.primalIntro());
     refresh();
   }
 
@@ -1666,6 +1784,7 @@ class GameController extends ChangeNotifier {
         kdImg('assets/game/portraits/portrait_${bossIds[i]}_idle.png', w: 120, h: 120),
         Text(r.n, textAlign: TextAlign.center, style: const TextStyle(fontFamily: 'Hahmlet', fontSize: 22, fontWeight: FontWeight.w700)),
       ]),
+      go: null,
     ));
   }
 
@@ -1814,6 +1933,32 @@ class _AdCountdownState extends State<_AdCountdown> {
             const SizedBox(height: 6),
             Text('초 뒤 보상을 받아요', style: KdText.body(14, color: Colors.white)),
           ]),
+        ),
+      );
+}
+
+/// 방치 보상 창의 작은 「2배」 버튼 (웹 .dblrow button)
+class _DblBtn extends StatelessWidget {
+  const _DblBtn({required this.text, this.sub, this.icon, required this.onTap});
+  final String text;
+  final String? sub, icon;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) => Pressable(
+        onTap: onTap,
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 7),
+          alignment: Alignment.center,
+          decoration: BoxDecoration(color: KdColors.panel2, borderRadius: BorderRadius.circular(10), border: Border.all(color: KdColors.line)),
+          child: FittedBox(
+            fit: BoxFit.scaleDown,
+            child: Row(mainAxisSize: MainAxisSize.min, children: [
+              if (icon != null) ...[kdImg(icon!, w: 14, h: 14), const SizedBox(width: 3)],
+              Text(text, style: KdText.body(12.5, color: const Color(0xFFFFE08A), weight: FontWeight.w700)),
+              if (sub != null) ...[const SizedBox(width: 4), Text(sub!, style: KdText.body(11, color: KdColors.muted))],
+            ]),
+          ),
         ),
       );
 }

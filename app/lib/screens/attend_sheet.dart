@@ -21,28 +21,27 @@ bool attDot(GameController g) => attEligible(g) && g.acts.attStatusAt(g.calc.tod
 /// 상단 바 아이콘·자동으로 열 때: 처음 한 번은 피트 소개 장면
 void openAttend(GameController g, {bool queued = false}) {
   final a = g.acts.attA();
-  if (orNum(a['intro'], 0) == 0) {
+  // 처음 한 번 피트 대사는 따로 창을 띄우지 않고 출석부 위에 (웹 attIntroNow, UX 점검 4)
+  final intro = orNum(a['intro'], 0) == 0;
+  if (intro) {
     a['intro'] = 1;
     g.save();
-    g.scene('피트의 출석부', '출석부가 생겼어요', const [
-      'm:피트|어서 와요, 영주님! 오늘부터 출석부를 만들었어요. 하루 한 번 얼굴만 보여 주시면 선물을 챙겨 드릴게요.',
-      'k@smile:얼굴만 보여 주면 된다고? 그건 은퇴하고도 할 수 있겠네.',
-      'q:주인, 출석도 왕의 덕목이다.',
-    ], '출석부 열기', onGo: () => g.queue((ctx) => showKdSheet<void>(ctx, builder: (c) => AttendSheet(g, c))));
-    return;
   }
   if (queued) {
-    g.queue((ctx) => showKdSheet<void>(ctx, builder: (c) => AttendSheet(g, c)));
+    g.queue((ctx) => showKdSheet<void>(ctx, builder: (c) => AttendSheet(g, c, intro: intro)));
   } else {
-    g.openSheet<void>((c) => AttendSheet(g, c));
+    g.openSheet<void>((c) => AttendSheet(g, c, intro: intro));
   }
 }
 
 /// 마지막으로 본 탭 (S.att.tab, 웹과 같은 저장)
 class AttendSheet extends StatefulWidget {
-  const AttendSheet(this.g, this.sheet, {super.key, this.just, this.adRows});
+  const AttendSheet(this.g, this.sheet, {super.key, this.just, this.adRows, this.intro = false});
   final GameController g;
   final BuildContext sheet;
+
+  /// 처음 연 날: 피트 소개 대사를 맨 위에
+  final bool intro;
 
   /// 방금 받은 결과 (도장 애니메이션·대사), 광고로 한 번 더 받은 줄
   final AttResult? just;
@@ -263,6 +262,10 @@ class _AttendSheetState extends State<AttendSheet> {
     return KdSheetBody(
       titleWidget: const HdBanner('hd_attend', '피트의 출석부'),
       children: [
+        if (widget.intro) ...const [
+          Para('m:피트|어서 와요, 영주님! 오늘부터 출석부를 만들었어요. 하루 한 번 얼굴만 보여 주시면 선물을 챙겨 드릴게요.'),
+          Para('k@smile:얼굴만 보여 주면 된다고? 그건 은퇴하고도 할 수 있겠네.'),
+        ],
         Row(children: [tabBtn('w', '7일'), const SizedBox(width: 6), tabBtn('m', '한달')]),
         board,
         KdNote(tab == 'w'
@@ -281,16 +284,16 @@ class _AttendSheetState extends State<AttendSheet> {
             ]),
           ),
       ],
-      acts: KdActs(buttons: [
-        KdAct('닫기', onTap: () => Navigator.of(widget.sheet).pop()),
-        st == 'back'
-            ? const KdAct('날짜를 확인해 주세요', primary: true)
-            : !done
-                ? KdAct('출석하기', primary: true, onTap: _claim)
-                : adOk
-                    ? KdAct('▶ 광고 보고 한 번 더 받기', primary: true, onTap: _ad)
-                    : const KdAct('내일 또 만나요', primary: true),
-      ]),
+      // 받은 뒤에는 노란 버튼이 「닫기」, 광고는 보조 버튼 (웹 attSheet, UX 점검 6)
+      acts: KdActs(buttons: done && st != 'back'
+          ? [
+              adOk ? KdAct('▶ 광고로 한 번 더', onTap: _ad) : const KdAct('내일 또 만나요'),
+              KdAct('닫기', primary: true, onTap: () => Navigator.of(widget.sheet).pop()),
+            ]
+          : [
+              KdAct('닫기', onTap: () => Navigator.of(widget.sheet).pop()),
+              st == 'back' ? const KdAct('날짜를 확인해 주세요', primary: true) : KdAct('출석하기', primary: true, onTap: _claim),
+            ]),
     );
   }
 }

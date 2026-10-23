@@ -64,6 +64,18 @@ class UpPage extends StatelessWidget {
         ],
       ]),
       const SizedBox(height: 12),
+      // 숫자 단위 aa·ab 안내 (웹 helpNote('bigu'), UX 점검 13)
+      if (g.state.gold >= 1e15 || upgrades.any((u) => g.state.upLv(u.k) < u.max && g.calc.upgradeCost(u.k, g.state.upLv(u.k)) >= 1e15)) ...[
+        HelpNote(
+          k: 'bigu',
+          title: '숫자 단위 aa·ab는?',
+          seen: g.helpSeen,
+          open: g.helpOpen,
+          body: Text('K = 천 · M = 백만 · B = 10억 · T = 1조. 그보다 크면 알파벳 두 글자 aa(1,000T) → ab(1,000aa) → ac … 처럼 한 칸 갈 때마다 1,000배예요.',
+              style: KdText.body(12.5, color: KdColors.muted)),
+        ),
+        const SizedBox(height: 8),
+      ],
       for (final u in upgrades) ...[_UpRow(g, u, best: u.k == best), const SizedBox(height: 8)],
       const SizedBox(height: 4),
       _RetireBox(g),
@@ -138,8 +150,14 @@ class _UpRowState extends State<_UpRow> {
     String? next;
     if (!mx) {
       s.up[u.k] = l + 1;
-      next = _val(u.k, g.calc.kStats());
+      final n = g.calc.kStats();
       s.up[u.k] = l;
+      next = _val(u.k, n);
+      // 후반에 숫자가 커서 「454K → 454K」처럼 차이가 안 보이면 오르는 비율로 (웹 upGain, UX 점검 13)
+      if (next == _val(u.k, t) && (u.k == 'atk' || u.k == 'hp')) {
+        final x = u.k == 'atk' ? t.atk : t.hp, y = u.k == 'atk' ? n.atk : n.hp, p = x > 0 ? (y / x - 1) * 100 : 0;
+        next = p >= .01 ? '+${p.toStringAsFixed(p >= 1 ? 1 : 2)}%' : '+0.01% 미만';
+      }
     }
     final plan = g.acts.upPlan(u);
     final can = !mx && s.gold >= g.calc.upgradeCost(u.k, l);
@@ -275,7 +293,8 @@ class _RetireBox extends StatelessWidget {
           KdBuy(
             key: const ValueKey('diaryBtn'),
             text: '은퇴 일기',
-            kind: BuyKind.ghost,
+            // 노란 버튼은 하나만: 은퇴할 수 없고 찍을 포인트가 있을 때만 노란색 (웹 diaryBtn .alt, UX 점검 15)
+            kind: !can && mp > 0 ? BuyKind.gold : BuyKind.ghost,
             minWidth: 0,
             onTap: g.openDiary,
           ),

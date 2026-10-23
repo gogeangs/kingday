@@ -105,7 +105,7 @@ class EqPage extends StatelessWidget {
   /// 레벨별 확률표 (유료 확률형 아이템 확률 공개, 웹 oddsSheet)
   void _oddsSheet() {
     final c = g.calc, cur = g.state.boxLv;
-    final ls = {1, 5, 10, 11, 15, 20, 30, 50, cur}.toList()..sort();
+    final ls = {1, 5, 10, 20, 31, 40, 50, cur}.toList()..sort();
     TableRow row(String lv, List<num> o, {bool hi = false}) => TableRow(
           decoration: BoxDecoration(color: hi ? const Color(0x1FFFC94A) : null, border: const Border(bottom: BorderSide(color: Color(0x0FFFFFFF)))),
           children: [
@@ -128,11 +128,11 @@ class EqPage extends StatelessWidget {
                   for (var i = 0; i < itemGrades.length; i++)
                     Text(itemGrades[i].n, textAlign: TextAlign.right, style: KdText.body(11.5, color: gradeColor(i), weight: FontWeight.w600)),
                 ]),
-                for (final l in ls) row('$l', c.odds(l), hi: l == cur),
-                row('끝', c.odds(9999)),
+                for (final l in ls) row('$l', c.odds(l, true), hi: l == cur),
+                row('끝', c.odds(9999, true)),
               ],
             ),
-            const KdNote('단위 %. 상자 레벨은 끝이 없고, Lv.11부터 좋은 등급이 조금씩 더 잘 나오지만 「끝」 줄을 넘지 않아요. 「태초」는 Lv.11부터 나와요. 다음 레벨까지 상자 (지금 레벨 × 10)번.'),
+            KdNote('단위 %. 상자 레벨은 끝이 없고, Lv.11부터 좋은 등급이 조금씩 더 잘 나오지만 「끝」 줄을 넘지 않아요. 「태초」는 첫 은퇴를 한 뒤 Lv.31부터 나와요${c.primalOn() ? '' : ' (아직 은퇴 전이라 지금은 안 나와요)'}. 다음 레벨까지 상자 (지금 레벨 × 10)번.'),
           ],
           acts: KdActs(buttons: [KdAct('닫기', primary: true, onTap: () => Navigator.of(ctx).pop())]),
         ));
