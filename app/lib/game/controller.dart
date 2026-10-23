@@ -936,6 +936,21 @@ class GameController extends ChangeNotifier {
       showKdSheet<void>(ctx, closable: false, builder: (c) {
         final d = (GameCalc.score(it) - GameCalc.score(cur)) * calc.enMul(it.slot);
         final mood = it.g < 1 ? 'angry' : it.g >= 4 ? 'moved' : 'proud';
+        // 새 장비가 더 약하면 노란(주) 버튼은 「판매」, 루미나르도 팔라고 함 (웹 showItem weak · lumWeak)
+        final weak = cur != null && d < 0;
+        final quote = weak
+            ? (it.g >= 3 ? 'q@proud:등급은 좋다만 지금 것보다 약하다. 팔아라.' : 'q@angry:흥, 지금 것보다 약하군. 팔아서 골드로 바꿔라.')
+            : 'q@$mood:${lumQuotes[it.g]}';
+        final sellBtn = KdAct('판매 +${fmt(it.price)}', primary: weak, onTap: () {
+          Navigator.of(c).pop();
+          sound('coin');
+          act((a) => a.sell(it));
+        });
+        final eqBtn = KdAct('장착', primary: !weak, onTap: () {
+          Navigator.of(c).pop();
+          sound('equip');
+          act((a) => a.equip(it));
+        });
         Widget gl(Widget icon, String b, String sm, Color col) => Container(
               width: 62,
               padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 2),
@@ -973,20 +988,9 @@ class GameController extends ChangeNotifier {
                 textAlign: TextAlign.center,
                 style: TextStyle(
                     fontFamily: 'Hahmlet', fontSize: 17, fontWeight: FontWeight.w700, color: d > 0 ? const Color(0xFF7BE08F) : d < 0 ? const Color(0xFFFF6B7D) : null)),
-            Para('q@$mood:${lumQuotes[it.g]}'),
+            Para(quote),
           ],
-          acts: KdActs(buttons: [
-            KdAct('판매 +${fmt(it.price)}', onTap: () {
-              Navigator.of(c).pop();
-              sound('coin');
-              act((a) => a.sell(it));
-            }),
-            KdAct('장착', primary: true, onTap: () {
-              Navigator.of(c).pop();
-              sound('equip');
-              act((a) => a.equip(it));
-            }),
-          ]),
+          acts: KdActs(buttons: weak ? [eqBtn, sellBtn] : [sellBtn, eqBtn]),
         );
       });
 

@@ -1322,15 +1322,17 @@ function card(it,cap,vs){
  const G=GRADES[it.g];return`<div class="card" style="--c:${G.c}"><span class="cap">${cap}</span>${relicIcon(it)}<span class="g">${G.n}</span><span class="t">${slotName(it.slot)} Lv.${it.lv}</span>${statCmp(it,vs)}${enTag(it.slot)}</div>`
 }
 const LUMQ=['흥, 내 격에는 한참 못 미친다.','그럭저럭… 봐줄 만하군.','오호, 제법이다!','이건 왕의 물건이다. 당장 걸쳐라!','300년 만에 보는 물건이군…!','신화… 주인, 이건 운명이다.','…태초의 빛. 주인, 이건 신들이 남긴 것이다.'];
+/* 새 장비가 지금 것보다 약할 때 루미나르 (FIRST_DAY 1): 등급이 높아도 약하면 팔라고 함 */
+const lumWeak=g=>g>=3?'q@proud:등급은 좋다만 지금 것보다 약하다. 팔아라.':'q@angry:흥, 지금 것보다 약하군. 팔아서 골드로 바꿔라.';
 function statCmp(it,vs){const m=enMul(it.slot),row=(n,k)=>{const v=(it[k]||0)*m,d=vs===undefined?0:v-((vs&&vs[k])||0)*m;return`<span class="sl"><i>${n}</i><b>+${fmt(v)}</b>${vs===undefined||Math.abs(d)<1?'':`<em class="${d>0?'up':'dn'}">${d>0?'▲':'▼'}${fmt(Math.abs(d))}</em>`}</span>`};return`<span class="s2">${row('공격','atk')}${row('체력','hp')}</span>`}
 function showItem(it,cur){
- const d=(score(it)-score(cur))*enMul(it.slot);
+ const d=(score(it)-score(cur))*enMul(it.slot),weak=!!cur&&d<0;/* 더 약하면 노란(주) 버튼은 「판매」 */
  $('sheet').innerHTML=`<h2>성유물을 얻었어요</h2><div class="cmp">${card(it,'새 장비',cur||null)}${card(cur,'착용 중')}</div>
- <div class="diff ${d>0?'up':d<0?'down':''}">전투력 ${d>=0?'▲':'▼'} ${fmt(Math.abs(d))}</div>${para('q@'+(it.g<1?'angry':it.g>=4?'moved':'proud')+':'+LUMQ[it.g])}
- <div class="acts"><button id="mSell">판매 +${fmt(it.price)}</button><button class="pri" id="mEq">장착</button></div>`;
+ <div class="diff ${d>0?'up':d<0?'down':''}">전투력 ${d>=0?'▲':'▼'} ${fmt(Math.abs(d))}</div>${para(weak?lumWeak(it.g):'q@'+(it.g<1?'angry':it.g>=4?'moved':'proud')+':'+LUMQ[it.g])}
+ <div class="acts">${weak?`<button id="mEq">장착</button><button class="pri" id="mSell">판매 +${fmt(it.price)}</button>`:`<button id="mSell">판매 +${fmt(it.price)}</button><button class="pri" id="mEq">장착</button>`}</div>`;
  $('modal').hidden=false;
  $('mEq').onclick=()=>{const c=S.eq[it.slot];if(c)S.gold+=c.price;S.eq[it.slot]=it;closeModal();flashSlot(it.slot);if(c)toast('이전 장비 판매 +'+fmt(c.price))};
- $('mSell').onclick=()=>{S.gold+=it.price;closeModal()};$('mEq').focus({preventScroll:true});
+ $('mSell').onclick=()=>{S.gold+=it.price;closeModal()};$(weak?'mSell':'mEq').focus({preventScroll:true});
 }
 function closeModal(){$('modal').hidden=true;pending=null;renderAll();pump()}
 
