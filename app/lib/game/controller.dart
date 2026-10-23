@@ -1334,11 +1334,27 @@ class GameController extends ChangeNotifier {
   /// 상자 버튼 깜빡이기 (첫 안내)
   int hintBoxAt = 0;
 
-  void guideGo(int i) {
-    switch (i) {
+  /// 단련 탭 추천 줄 반짝임 (웹 upGo .flash)
+  int upHintAt = 0;
+  String? upHintK;
+
+  /// 웹 upGo(): 단련 탭을 열고 추천 줄을 반짝임
+  void upGo() {
+    upHintK = calc.upBest();
+    upHintAt = DateTime.now().millisecondsSinceEpoch;
+    setTab(GameTab.up);
+  }
+
+  /// 할 일을 누르면 그곳으로 (웹 guideNow().go). k: 'g0'~'g8' · 'up:..' · 'b:..'
+  void guideGo(String k) {
+    if (k.startsWith('up:')) return upGo();
+    if (k.startsWith('b:')) return vlSelect(k.substring(2));
+    switch (int.tryParse(k.substring(1)) ?? -1) {
       case 0:
         hintBoxAt = DateTime.now().millisecondsSinceEpoch;
-      case 1 || 8:
+      case 1:
+        upGo();
+      case 8:
         setTab(GameTab.up);
       case 2:
         toast('원정대가 자동으로 싸워요. 막히면 장비와 단련을 올려요');

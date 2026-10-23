@@ -145,6 +145,9 @@ class _UpRowState extends State<_UpRow> {
     final can = !mx && s.gold >= g.calc.upgradeCost(u.k, l);
     final age = DateTime.now().millisecondsSinceEpoch - _flash;
     final flash = age < 350 ? 1 - age / 350 : 0.0;
+    // 할 일 「추천 강화 하기」로 왔을 때 추천 줄 반짝임 (웹 .upr.flash)
+    final ha = DateTime.now().millisecondsSinceEpoch - g.upHintAt;
+    final hint = g.upHintK == u.k && ha < 1400 ? .5 - .5 * math.cos(ha / 1400 * 6 * math.pi) : 0.0;
     return Stack(clipBehavior: Clip.none, children: [
       Container(
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
@@ -152,7 +155,10 @@ class _UpRowState extends State<_UpRow> {
           color: Color.lerp(KdColors.panel, const Color(0xFF3A3A20), flash),
           borderRadius: BorderRadius.circular(12),
           border: Border.all(color: widget.best ? KdColors.gold : Colors.transparent),
-          boxShadow: widget.best ? const [BoxShadow(color: Color(0x59FFC94A), blurRadius: 14)] : null,
+          boxShadow: [
+            if (widget.best) const BoxShadow(color: Color(0x59FFC94A), blurRadius: 14),
+            if (hint > 0) BoxShadow(color: Color.fromRGBO(255, 201, 74, .85 * hint), spreadRadius: 3 * hint),
+          ],
         ),
         child: Row(children: [
           uiImg(ic, size: 46),

@@ -145,7 +145,7 @@ for (const name of Object.keys(SAVES)) {
     retireTarget:retireTarget(),retirePts:retirePts(),plotCount:plotCount(),landCount:landCount(),vpMine:vpMine(),
     members:members(),power:power(),gemGold:gemGold(),goldRate:goldRate(),goldX:GOLDX.map(goldX),
     buffs:Object.keys(BUFFN).map(k=>buff(k)),subOn:subOn(),gearSum:gearSum(),kStats:kStats(),
-    guide:(S.retires>0||S.best>30)?-1:GUIDE.findIndex((x,j)=>!x.ok()&&!(j<3&&S.best>12))})`);
+    guide:(g=>g?g.k:'')(guideNow())})`);
   sc.retire = run(`({tl:Object.fromEntries(MEMT.map(t=>[t.k,tl(t.k)])),spent:trSpent(),spentB:MEMB.map(b=>trSpent(b.k)),memPts:memPts(),canAny:trCanAny(),
     open:MEMT.map(trOpen),next:MEMT.map(t=>trNext(t)??null),resetGem:trResetGem(),
     start:retStart(false),start1:retStart(true),base:retireBase(),pts:retirePts(),run:retRun(),can:retCan(),purse:[1,6,31].map(retPurse),

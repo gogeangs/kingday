@@ -102,7 +102,7 @@ body{word-break:keep-all;overflow-wrap:break-word;line-break:strict;background:#
 #hPow,#gold{display:inline-block}
 .card .s2{display:flex;flex-direction:column;gap:1px;width:100%;margin-top:2px}.card .sl{display:flex;align-items:baseline;justify-content:center;gap:4px;font-size:12px}.card .sl i{font-style:normal;color:var(--muted)}.card .sl b{font-weight:700}.card .sl em{font-style:normal;font-size:11px;font-weight:700}.card .sl em.up{color:#7be08f}.card .sl em.dn{color:#ff8a7a}
 #forge{padding:8px}.forgebtn{position:relative;display:flex;align-items:center;gap:10px;width:100%;background:none;border:0;color:var(--fg);font:inherit;text-align:left;cursor:pointer;padding:4px}.forgebtn img{width:40px;height:40px;object-fit:contain}.forgebtn span{flex:1;display:flex;flex-direction:column}.forgebtn b{font-family:var(--f-title);font-size:16px}.forgebtn small{color:var(--muted);font-size:12.5px}.forgebtn>i{font-style:normal;color:var(--gold);font-weight:700;font-size:13px}.forgebtn.locked{opacity:.6}.forgebtn .dot{top:2px;right:2px}.fghave{display:flex;justify-content:center;gap:14px;font-size:13px;margin:4px 0 8px}.fghave b{color:var(--gold)}.fgtabs{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:6px}.fgtabs button{position:relative;padding:9px 0;border-radius:10px;border:1px solid var(--line);background:var(--panel2);color:var(--muted);font:inherit;font-weight:700;cursor:pointer}.fgtabs button.on{background:var(--gold);color:var(--gold-ink);border-color:var(--gold)}
-.upr .upic{width:46px;height:46px;flex:0 0 auto}.upr .upv{white-space:nowrap;font-size:12.5px;color:var(--muted)}.upr .upv b{color:var(--fg)}.upr .upv b.nx{color:#7be08f}.upr.best{border-color:var(--gold)!important;box-shadow:0 0 0 1px var(--gold),0 0 14px rgba(255,201,74,.35)}.upr.best::before{content:'추천';position:absolute;top:-8px;left:12px;background:var(--gold);color:#1a1206;font-size:10px;font-weight:800;border-radius:6px;padding:0 6px;line-height:16px}.upr{position:relative}
+.upr.flash{animation:uprflash .45s ease-in-out 3 alternate}@keyframes uprflash{to{box-shadow:0 0 0 3px rgba(255,201,74,.85);transform:scale(1.02)}}.upr .upic{width:46px;height:46px;flex:0 0 auto}.upr .upv{white-space:nowrap;font-size:12.5px;color:var(--muted)}.upr .upv b{color:var(--fg)}.upr .upv b.nx{color:#7be08f}.upr.best{border-color:var(--gold)!important;box-shadow:0 0 0 1px var(--gold),0 0 14px rgba(255,201,74,.35)}.upr.best::before{content:'추천';position:absolute;top:-8px;left:12px;background:var(--gold);color:#1a1206;font-size:10px;font-weight:800;border-radius:6px;padding:0 6px;line-height:16px}.upr{position:relative}
 .rtgain{background:rgba(255,201,74,.1);border:1px solid rgba(255,201,74,.45);border-radius:10px;padding:8px 10px;font-size:13px;text-align:center}.rtgain b{color:var(--gold);font-size:15px}
 .mailbtn{position:absolute;top:8px;right:8px;z-index:4;width:42px;height:42px;padding:0;border-radius:12px;background:rgba(10,14,26,.78);border:1px solid rgba(255,201,74,.55);display:grid;place-items:center;cursor:pointer;font-size:20px}.mailbtn img{width:34px;height:34px;object-fit:contain}.mailbtn .mdot{position:absolute;top:-5px;right:-5px;min-width:17px;height:17px;padding:0 4px;border-radius:9px;background:var(--bad);color:#fff;font-style:normal;font-size:10px;font-weight:800;line-height:17px;text-align:center}
 .stagewrap:has(.mailbtn:not([hidden])) .ovtop{padding-inline:8px 58px}
@@ -127,7 +127,7 @@ body{word-break:keep-all;overflow-wrap:break-word;line-break:strict;background:#
 .mlist{display:flex;flex-direction:column;gap:8px;max-height:52vh;overflow:auto;margin:6px 0}.mitem{display:flex;align-items:center;gap:10px;padding:10px;border-radius:12px;background:rgba(255,255,255,.04);border:1px solid rgba(255,201,74,.25)}.mico{font-size:24px;flex:0 0 auto}.mtx{flex:1;min-width:0;display:flex;flex-direction:column;gap:3px}.mtx b{font-size:14px}.mtx small{color:var(--muted,#9aa6c1);font-size:12.5px}.mtx .mexp{color:#ffc94a;font-size:12px}.mrws{display:flex;flex-wrap:wrap;gap:4px}.mrw{white-space:nowrap;display:inline-flex;align-items:center;gap:3px;font-size:12px;background:rgba(0,0,0,.3);border-radius:8px;padding:2px 6px 2px 2px}.mrw img{width:20px;height:20px;object-fit:contain}.mitem .buy{flex:0 0 auto;padding:8px 14px}
 .toprow{display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:6px;max-width:100%}
 .stagepill{flex:0 0 auto;flex-direction:row!important;gap:8px!important;padding:5px 10px!important;min-width:0!important}.stagepill .sth{flex-direction:column;align-items:flex-start!important;gap:0!important}.stagepill .sth b{font-size:14px}.stagepill .sth small{font-size:11.5px}.pip{width:8px!important;height:5px}
-.guide{flex:0 0 auto;max-width:100%;padding:4px 8px 4px 4px!important}.guide{font-size:12px!important;line-height:1.2;background:rgba(10,14,26,.88)!important;color:#e9f4ea!important;border:1px solid rgba(123,224,143,.6)!important;box-shadow:none}.guide .gtg{font-size:10.5px!important;white-space:nowrap}.guide b{font-size:13px!important}.guide .gtx{font-size:12px;display:none;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:280px}.guide.open .gtx{display:inline}.guide:not(.open){animation:gdpulse 2s ease-in-out infinite}@keyframes gdpulse{50%{box-shadow:0 0 0 4px rgba(123,224,143,.25)}}
+.guide{flex:0 0 auto;max-width:100%;padding:4px 8px 4px 4px!important}.guide{font-size:12px!important;line-height:1.2;background:rgba(10,14,26,.88)!important;color:#e9f4ea!important;border:1px solid rgba(123,224,143,.6)!important;box-shadow:none}.guide .gtg{font-size:10.5px!important;white-space:nowrap}.guide b{font-size:13px!important}.guide{min-width:0}.guide .gtx{font-size:12px;display:block;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:280px}@keyframes gdpulse{50%{box-shadow:0 0 0 4px rgba(123,224,143,.25)}}
 .packs.gemp{gap:6px}.packs.gemp .pack{padding:6px 4px 8px}.packs.gemp .pack img{width:52px!important;height:52px!important}.packs.gemp .pack b{font-size:15px}.packs.gemp .pack small{font-size:11.5px}.packs.gemp .pack .price{font-size:13px;padding:5px 0}.packs.gemp .tag{display:none}
 .fg .cw2{display:flex!important;flex-direction:column;align-items:center;gap:1px}.fg .cw2 i{font-style:normal;display:flex;align-items:center;gap:3px}.buy .bc img,.bc img{width:18px!important;height:18px!important}.gpl{margin-top:-2px;text-align:center}
 .dishrow .dish{width:56px;height:56px;flex:0 0 auto;filter:drop-shadow(0 2px 3px rgba(0,0,0,.4))}
@@ -1437,7 +1437,7 @@ function renderBlds(){
 /* 다음 할 일 안내: 처음 플레이어를 위한 한 줄 길잡이 */
 const GUIDE=[
  {ok:()=>Object.values(S.eq).some(Boolean),t:'성유물 상자를 열어 장비를 얻어요',go:()=>{const q=$('quickBox');if(q){q.classList.add('hint');setTimeout(()=>q.classList.remove('hint'),2500)}}},
- {ok:()=>S.up.atk>=3,t:'단련에서 공격력을 3번 올려요',go:()=>setTab('up')},
+ {ok:()=>UPG.reduce((a,u)=>a+(S.up[u.k]||0),0)>=3,t:'단련에서 추천 강화를 3번 해요',go:()=>upGo()},
  {ok:()=>S.best>10,t:'1-10 성주를 쓰러뜨려요',go:()=>toast('원정대가 자동으로 싸워요. 막히면 장비와 단련을 올려요')},
  {ok:()=>S.bld.inn>=1,t:'마을에 여관을 재건해요',go:()=>{setTab('vl');setTimeout(()=>vlSelect('inn'),50)}},
  {ok:()=>!S.joined.margo||Object.keys(S.lv).some(k=>S.joined[k]&&S.lv[k]>1),t:'원정대에서 동료 레벨을 올려요',go:()=>{ptTab='list';setTab('pt')}},
@@ -1445,8 +1445,19 @@ const GUIDE=[
  {ok:()=>!S.bld.farm||(S.stat&&S.stat.harv>0),t:'밭에 씨앗을 심고 수확해요',go:()=>{setTab('vl');setTimeout(()=>vlSelect('farm'),50)}},
  {ok:()=>Object.values(daily().claim||{}).some(Boolean),t:'피트의 상점에서 오늘의 할 일 보상을 받아요',go:()=>setTab('sh')},
  {ok:()=>S.best<20||(S.retires||0)>0,t:'단련 탭에서 첫 은퇴를 해 봐요',go:()=>setTab('up')}];
-let guideSig='';function renderGuide(){const g=$('guide');if(!g)return;const i=(S.retires>0||S.best>30)?-1:GUIDE.findIndex((x,j)=>!x.ok()&&!(j<3&&S.best>12)),sig=i+'|'+(curTab||'');if(sig===guideSig)return;guideSig=sig;
- if(i<0||S.guideOff){g.hidden=true;return}g.hidden=false;g.innerHTML=`<span class="gtg">할 일</span><span class="gtx">${GUIDE[i].t}</span><b>›</b>`;g.onclick=()=>{if(!g.classList.contains('open')){g.classList.add('open');clearTimeout(g._t);g._t=setTimeout(()=>g.classList.remove('open'),6000);return}g.classList.remove('open');GUIDE[i].go()};if(sig.split('|')[0]!==g._i){g._i=sig.split('|')[0];g.classList.add('open');clearTimeout(g._t);g._t=setTimeout(()=>g.classList.remove('open'),6000)}}
+/* 할 일 길잡이 (FIRST_DAY 3): 늘 문구가 보임. 골드가 가장 싼 강화값의 3배 이상이면 「추천 강화 하기」,
+   영지 30 뒤 첫 은퇴 전까지는 아직 안 지은 건물 「마을에 ○○을 재건해요」. 단련 탭 「추천」 배지와 같은 upBest() */
+const josa=(w,a,b)=>{const c=w.charCodeAt(w.length-1)-0xAC00;return w+(c>=0&&c<11172&&c%28?a:b)};
+function upBest(){const p0=power();let best=null,bv=0;for(const u of UPG){const l=S.up[u.k]||0;if(l>=u.max)continue;S.up[u.k]=l+1;const g=(power()-p0)/u.cost(l);S.up[u.k]=l;if(g>bv){bv=g;best=u.k}}return best}
+function upGo(){const k=upBest();setTab('up');setTimeout(()=>{const e=$('upr-'+k);if(!e)return;e.scrollIntoView&&e.scrollIntoView({block:'center',behavior:'smooth'});e.classList.remove('flash');void e.offsetWidth;e.classList.add('flash')},60)}
+function guideNow(){if((S.retires||0)>0)return null;
+ if(S.best>30){const b=BLD.find(b=>b.open()&&!(S.bld[b.k]>0)&&!((building()&&S.build.k===b.k)||(S.bq||[]).includes(b.k)));return b?{k:'b:'+b.k,t:'마을에 '+josa(b.n,'을','를')+' 재건해요',go:()=>{setTab('vl');setTimeout(()=>vlSelect(b.k),50)}}:null}
+ const i=GUIDE.findIndex((x,j)=>!x.ok()&&!(j<3&&S.best>12));
+ if(i!==0){let mc=Infinity;for(const u of UPG){const l=S.up[u.k]||0;if(l<u.max)mc=Math.min(mc,u.cost(l))}
+  if(S.gold>=mc*3){const k=upBest();if(k)return{k:'up:'+k,t:'추천 강화 하기 · '+UPG.find(u=>u.k===k).n,go:upGo}}}
+ return i<0?null:{k:'g'+i,t:GUIDE[i].t,go:GUIDE[i].go}}
+let guideSig='';function renderGuide(){const g=$('guide');if(!g)return;const G=S.guideOff?null:guideNow(),sig=(G?G.k:'')+'|'+(curTab||'');if(sig===guideSig)return;guideSig=sig;
+ if(!G){g.hidden=true;return}g.hidden=false;g.innerHTML=`<span class="gtg">할 일</span><span class="gtx">${G.t}</span><b>›</b>`;g.onclick=()=>{haptic(8);G.go()}}
 /* 숫자 반짝임: 전투력은 오를 때마다, 골드는 한 번에 크게(10% 이상) 바뀔 때만 */
 /* 숫자 바뀜 (U-2 ⑩): 크게 늘면 0.4초 동안 숫자가 올라가고, 아주 크게(10배 기준 ×1.5↑) 늘면 반짝임 */
 const NF={},NFA={},RM=typeof matchMedia!=='function'||matchMedia('(prefers-reduced-motion:reduce)').matches;
@@ -1729,7 +1740,7 @@ function renderAll(){
  const bs=S.boxLv+':'+S.boxXp;if(bs!==boxSig){boxSig=bs;renderBox()}
  const us=JSON.stringify(S.up)+fmt(power())+(S.upMul||1)+(S.upMul==='max'?fmt(S.gold):'');if(us!==upSig){upSig=us;renderUpg()}
  UPG.forEach(u=>{const b=$('up-'+u.k);if(b&&S.up[u.k]<u.max)b.disabled=S.gold<u.cost(S.up[u.k])});
- if(curTab==='up'){const p0=power();let best=null,bv=0;for(const u of UPG){const l=S.up[u.k];if(l>=u.max||S.gold<u.cost(l))continue;S.up[u.k]++;const g=(power()-p0)/u.cost(l);S.up[u.k]--;if(g>bv){bv=g;best=u.k}}UPG.forEach(u=>{const e=$('upr-'+u.k);if(e)e.classList.toggle('best',u.k===best)})}
+ if(curTab==='up'){const best=upBest();UPG.forEach(u=>{const e=$('upr-'+u.k);if(e)e.classList.toggle('best',u.k===best)})}
  renderParty();renderBlds();renderFarm();renderKitchen();renderVillage();renderShop();renderRetire();renderMapInfo();
  const boss=mons.some(m=>m.boss);
  if(!inCh)$('pips').innerHTML=Array.from({length:10},(_,i)=>`<i class="pip${i<S.wave?' on':''}"></i>`).join('')+(S.stage>MAXLAND?'':`<i class="pip boss${boss?' on':''}" aria-label="보스"></i>`);
