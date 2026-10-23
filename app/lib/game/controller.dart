@@ -936,8 +936,41 @@ class GameController extends ChangeNotifier {
   }
 
   /// 0.4초마다: 주문 채우기 · 편성으로 빠진 일꾼 · 건물 열림 이야기 · 일꾼 처음 열림 (웹 vlTick)
+  // ── 첫 은퇴 권하기 (docs/content/FIRST_WALL.md C안, 웹 retHint/retGo) ──
+  static const retHintLines = [
+    'q@proud:주인, 여기까지 오느라 고생했다. 그런데 마족이 점점 단단해지는 게 느껴지지 않나?',
+    'k@smile:…혹시 그 말은, 이제 은퇴해도 된다는 뜻?',
+    'q:잠깐 쉬었다 오라는 뜻이다. 은퇴하면 「은퇴의 추억」이 쌓여 다음엔 훨씬 강해진다. …다시 끌려 나오겠지만.',
+    'k@flustered:끌려 나오는 건 확정이구나.',
+    'sys:은퇴하면 영지·장비·단련은 처음으로 돌아가고, 마을·동료·상자 레벨은 그대로 남아요. 은퇴의 추억 1개마다 모든 능력치·골드 +5%. 첫 은퇴 뒤에는 상자에서 신화보다 높은 「태초」도 나와요.',
+  ];
+
+  /// 단련 탭 「카엘의 은퇴 계획」 상자
+  final retireKey = GlobalKey();
+
+  /// 단련 탭을 열고 은퇴 계획 상자로 내림 (웹 retGo)
+  void retGo() {
+    if (tab != GameTab.up) setTab(GameTab.up);
+    SchedulerBinding.instance.addPostFrameCallback((_) {
+      final ctx = retireKey.currentContext;
+      if (ctx != null) Scrollable.ensureVisible(ctx, alignment: .5, duration: const Duration(milliseconds: 300));
+    });
+  }
+
+  /// 은퇴 전 처음 영지 25를 되찾으면 한 번 (숫자는 그대로, 은퇴 루프를 일찍 배움)
+  void _retHint() {
+    final d = state.done;
+    if (truthy(d['retHint']) || state.retires > 0 || state.best < 25 || !calc.retCan()) return;
+    d['retHint'] = 1;
+    _nwAdd(
+      (face: 'assets/game/portraits/portrait_luminar_proud.png', eb: '루미나르의 제안', t: '한 번 은퇴해 볼까?', p: retHintLines, btn: '은퇴 계획 보기', titleWidget: null, go: retGo),
+      one: () => scene('루미나르의 제안', '한 번 은퇴해 볼까?', retHintLines, '은퇴 계획 보기', altLabel: '나중에', onGo: retGo),
+    );
+  }
+
   void _vlTick() {
     calc.ordTick(acts.rng);
+    _retHint();
     final back = calc.wkClean();
     if (back.isNotEmpty && tab != GameTab.pt) {
       for (final id in back) {

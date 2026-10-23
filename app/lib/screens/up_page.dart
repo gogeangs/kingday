@@ -78,7 +78,7 @@ class UpPage extends StatelessWidget {
       ],
       for (final u in upgrades) ...[_UpRow(g, u, best: u.k == best), const SizedBox(height: 8)],
       const SizedBox(height: 4),
-      _RetireBox(g),
+      _RetireBox(g, key: g.retireKey),
     ]);
   }
 }
@@ -241,7 +241,7 @@ class _UpRowState extends State<_UpRow> {
 
 /// 카엘의 은퇴 계획 (웹 renderRetire): 요약 + 「은퇴 일기」·「은퇴하기」
 class _RetireBox extends StatelessWidget {
-  const _RetireBox(this.g);
+  const _RetireBox(this.g, {super.key});
   final GameController g;
 
   @override
