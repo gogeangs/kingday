@@ -24,11 +24,13 @@ class SaveStore {
   /// 웹 load(): 저장이 없거나 깨졌으면 새 게임 (웹 start(): hydrate({gold:60}))
   GameState load(int now) {
     final txt = _prefs.getString(wSaveKey);
-    if (txt != null) {
+    if (txt != null && txt.isNotEmpty) {
       try {
-        final s = GameState.fromJson(txt, now, GameCalc.rankIdxOf);
-        if (s.raw['gold'] is num) return s;
-      } catch (_) {/* 깨진 저장은 버리고 새로 */}
+        final d = jsonDecode(txt);
+        if (GameState.looksLikeSave(d)) return GameState.hydrate((d as Map).cast<String, dynamic>(), now, GameCalc.rankIdxOf);
+      } catch (_) {/* 깨진 저장 */}
+      // 웹 load(): 읽지 못한 저장은 새 게임이 덮어쓰기 전에 따로 남겨 둠
+      _prefs.setString('$wSaveKey-bak', txt);
     }
     return GameState.newGame(now, GameCalc.rankIdxOf);
   }
