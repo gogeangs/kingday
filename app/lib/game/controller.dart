@@ -60,7 +60,8 @@ enum GameTab {
   final String? icon;
 
   /// 반쯤 열리는 창 (웹 HALF)
-  bool get half => this == eq || this == pt || this == up || this == sh || this == vl || this == mp; // UX 점검 11: 모든 탭 같은 규칙
+  /// 마을·지도는 지도 그림·아래 창이 좁아져 반 열림에서 뺌 (UX 점검 11: 해 보고 되돌림)
+  bool get half => this == eq || this == pt || this == up || this == sh;
 
   /// 탭 줄에 보이는 이름
   String get label => this == pt ? '원정대' : title;
