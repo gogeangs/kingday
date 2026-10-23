@@ -312,7 +312,11 @@ class GameActions {
   }
 
   /// 추천 단련: 골드 1당 전투력이 가장 많이 오르는 것 (웹 renderAll 의 .best)
-  String? bestUpgrade() {
+  /// 단련 탭 「추천」 배지 = 길잡이와 같은 줄 (calc.upBest)
+  String? bestUpgrade() => c.upBest();
+
+  /// 지금 골드로 살 수 있는 것 중 비용 대비 전투력이 가장 많이 오르는 단련 (긴 플레이 시험의 웹 봇과 같은 고르기)
+  String? bestBuyable() {
     final p0 = c.power();
     String? best;
     num bv = 0;

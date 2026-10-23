@@ -201,7 +201,7 @@ void main() {
         final gs = c.gearSum();
         same({'a': gs.a, 'h': gs.h}, b['gearSum'], 'gearSum');
         same(c.kStats().toJson(), b['kStats'], 'kStats');
-        same(c.guideIndex(), b['guide'], 'guide');
+        same(c.guideNow()?.k ?? '', b['guide'], 'guide');
       });
 
       test('동료별 능력치·별·전투력', () {

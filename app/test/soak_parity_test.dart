@@ -83,7 +83,7 @@ void main() {
         if (f % 27 == 0) a.openBox(true);
         if (f % 150 == 0) {
           s.raw['upMul'] = 'max';
-          final best = a.bestUpgrade();
+          final best = a.bestBuyable();
           if (best != null) a.upFire(best);
         }
         if (f % 900 == 0) {

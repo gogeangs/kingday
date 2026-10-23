@@ -70,7 +70,7 @@ void main() {
         c.power();
         c.produce();
         c.offlineReward();
-        c.guideIndex();
+        c.guideNow();
         c.retireTarget();
         c.boxCost();
         expect(c.offlineReward().gold, greaterThanOrEqualTo(0), reason: '방치 보상이 음수');

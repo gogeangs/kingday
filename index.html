@@ -102,7 +102,7 @@ body{word-break:keep-all;overflow-wrap:break-word;line-break:strict;background:#
 #hPow,#gold{display:inline-block}
 .card .s2{display:flex;flex-direction:column;gap:1px;width:100%;margin-top:2px}.card .sl{display:flex;align-items:baseline;justify-content:center;gap:4px;font-size:12px}.card .sl i{font-style:normal;color:var(--muted)}.card .sl b{font-weight:700}.card .sl em{font-style:normal;font-size:11px;font-weight:700}.card .sl em.up{color:#7be08f}.card .sl em.dn{color:#ff8a7a}
 #forge{padding:8px}.forgebtn{position:relative;display:flex;align-items:center;gap:10px;width:100%;background:none;border:0;color:var(--fg);font:inherit;text-align:left;cursor:pointer;padding:4px}.forgebtn img{width:40px;height:40px;object-fit:contain}.forgebtn span{flex:1;display:flex;flex-direction:column}.forgebtn b{font-family:var(--f-title);font-size:16px}.forgebtn small{color:var(--muted);font-size:12.5px}.forgebtn>i{font-style:normal;color:var(--gold);font-weight:700;font-size:13px}.forgebtn.locked{opacity:.6}.forgebtn .dot{top:2px;right:2px}.fghave{display:flex;justify-content:center;gap:14px;font-size:13px;margin:4px 0 8px}.fghave b{color:var(--gold)}.fgtabs{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:6px}.fgtabs button{position:relative;padding:9px 0;border-radius:10px;border:1px solid var(--line);background:var(--panel2);color:var(--muted);font:inherit;font-weight:700;cursor:pointer}.fgtabs button.on{background:var(--gold);color:var(--gold-ink);border-color:var(--gold)}
-.upr .upic{width:46px;height:46px;flex:0 0 auto}.upr .upv{white-space:nowrap;font-size:12.5px;color:var(--muted)}.upr .upv b{color:var(--fg)}.upr .upv b.nx{color:#7be08f}.upr.best{border-color:var(--gold)!important;box-shadow:0 0 0 1px var(--gold),0 0 14px rgba(255,201,74,.35)}.upr.best::before{content:'추천';position:absolute;top:-8px;left:12px;background:var(--gold);color:#1a1206;font-size:10px;font-weight:800;border-radius:6px;padding:0 6px;line-height:16px}.upr{position:relative}
+.upr.flash{animation:uprflash .45s ease-in-out 3 alternate}@keyframes uprflash{to{box-shadow:0 0 0 3px rgba(255,201,74,.85);transform:scale(1.02)}}.upr .upic{width:46px;height:46px;flex:0 0 auto}.upr .upv{white-space:nowrap;font-size:12.5px;color:var(--muted)}.upr .upv b{color:var(--fg)}.upr .upv b.nx{color:#7be08f}.upr.best{border-color:var(--gold)!important;box-shadow:0 0 0 1px var(--gold),0 0 14px rgba(255,201,74,.35)}.upr.best::before{content:'추천';position:absolute;top:-8px;left:12px;background:var(--gold);color:#1a1206;font-size:10px;font-weight:800;border-radius:6px;padding:0 6px;line-height:16px}.upr{position:relative}
 .rtgain{background:rgba(255,201,74,.1);border:1px solid rgba(255,201,74,.45);border-radius:10px;padding:8px 10px;font-size:13px;text-align:center}.rtgain b{color:var(--gold);font-size:15px}
 .mailbtn{position:absolute;top:8px;right:8px;z-index:4;width:42px;height:42px;padding:0;border-radius:12px;background:rgba(10,14,26,.78);border:1px solid rgba(255,201,74,.55);display:grid;place-items:center;cursor:pointer;font-size:20px}.mailbtn img{width:34px;height:34px;object-fit:contain}.mailbtn .mdot{position:absolute;top:-5px;right:-5px;min-width:17px;height:17px;padding:0 4px;border-radius:9px;background:var(--bad);color:#fff;font-style:normal;font-size:10px;font-weight:800;line-height:17px;text-align:center}
 .stagewrap:has(.mailbtn:not([hidden])) .ovtop{padding-inline:8px 58px}
@@ -127,7 +127,7 @@ body{word-break:keep-all;overflow-wrap:break-word;line-break:strict;background:#
 .mlist{display:flex;flex-direction:column;gap:8px;max-height:52vh;overflow:auto;margin:6px 0}.mitem{display:flex;align-items:center;gap:10px;padding:10px;border-radius:12px;background:rgba(255,255,255,.04);border:1px solid rgba(255,201,74,.25)}.mico{font-size:24px;flex:0 0 auto}.mtx{flex:1;min-width:0;display:flex;flex-direction:column;gap:3px}.mtx b{font-size:14px}.mtx small{color:var(--muted,#9aa6c1);font-size:12.5px}.mtx .mexp{color:#ffc94a;font-size:12px}.mrws{display:flex;flex-wrap:wrap;gap:4px}.mrw{white-space:nowrap;display:inline-flex;align-items:center;gap:3px;font-size:12px;background:rgba(0,0,0,.3);border-radius:8px;padding:2px 6px 2px 2px}.mrw img{width:20px;height:20px;object-fit:contain}.mitem .buy{flex:0 0 auto;padding:8px 14px}
 .toprow{display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:6px;max-width:100%}
 .stagepill{flex:0 0 auto;flex-direction:row!important;gap:8px!important;padding:5px 10px!important;min-width:0!important}.stagepill .sth{flex-direction:column;align-items:flex-start!important;gap:0!important}.stagepill .sth b{font-size:14px}.stagepill .sth small{font-size:11.5px}.pip{width:8px!important;height:5px}
-.guide{flex:0 0 auto;max-width:100%;padding:4px 8px 4px 4px!important}.guide{font-size:12px!important;line-height:1.2;background:rgba(10,14,26,.88)!important;color:#e9f4ea!important;border:1px solid rgba(123,224,143,.6)!important;box-shadow:none}.guide .gtg{font-size:10.5px!important;white-space:nowrap}.guide b{font-size:13px!important}.guide .gtx{font-size:12px;display:none;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:280px}.guide.open .gtx{display:inline}.guide:not(.open){animation:gdpulse 2s ease-in-out infinite}@keyframes gdpulse{50%{box-shadow:0 0 0 4px rgba(123,224,143,.25)}}
+.guide{flex:0 0 auto;max-width:100%;padding:4px 8px 4px 4px!important}.guide{font-size:12px!important;line-height:1.2;background:rgba(10,14,26,.88)!important;color:#e9f4ea!important;border:1px solid rgba(123,224,143,.6)!important;box-shadow:none}.guide .gtg{font-size:10.5px!important;white-space:nowrap}.guide b{font-size:13px!important}.guide{min-width:0}.guide .gtx{font-size:12px;display:block;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:280px}@keyframes gdpulse{50%{box-shadow:0 0 0 4px rgba(123,224,143,.25)}}
 .packs.gemp{gap:6px}.packs.gemp .pack{padding:6px 4px 8px}.packs.gemp .pack img{width:52px!important;height:52px!important}.packs.gemp .pack b{font-size:15px}.packs.gemp .pack small{font-size:11.5px}.packs.gemp .pack .price{font-size:13px;padding:5px 0}.packs.gemp .tag{display:none}
 .fg .cw2{display:flex!important;flex-direction:column;align-items:center;gap:1px}.fg .cw2 i{font-style:normal;display:flex;align-items:center;gap:3px}.buy .bc img,.bc img{width:18px!important;height:18px!important}.gpl{margin-top:-2px;text-align:center}
 .dishrow .dish{width:56px;height:56px;flex:0 0 auto;filter:drop-shadow(0 2px 3px rgba(0,0,0,.4))}
@@ -520,6 +520,14 @@ button:focus-visible,input:focus-visible{outline:2px solid var(--gold);outline-o
 .lore.k{color:#a8e6b0}
 .lore .who{display:block;font-family:var(--f-body);font-size:11px;letter-spacing:.08em;opacity:.75}
 .talk{display:flex;gap:8px;align-items:center;margin:0}
+.rpl{display:flex;flex-direction:column;gap:6px}
+.rpi{display:flex;gap:8px;align-items:center;padding:6px 8px;border-radius:12px;background:rgba(255,255,255,.05);border:1px solid rgba(201,149,42,.35)}
+.rpf{width:40px;height:40px;flex:0 0 auto;border-radius:10px;object-fit:cover;object-position:50% 25%;background:radial-gradient(circle at 50% 40%,#2c4a7a,#141a29);border:2px solid #c9952a}
+.rpm{flex:1 1 auto;min-width:0}
+.rpe{font-size:11px;color:var(--gold);letter-spacing:.06em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rpt{font-size:14px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rpb{flex:0 0 auto;font-size:12px;padding:6px 8px;min-height:32px}
+.rpd{display:flex;flex-direction:column;gap:6px;padding:0 2px 4px}
 .talk .pface{width:44px;height:44px;flex:0 0 auto;border-radius:12px;background:radial-gradient(circle at 50% 40%,#2c4a7a,#141a29);border:2px solid #c9952a;object-fit:cover;object-position:50% 20%}
 .talk.m .pface{border-color:#ffd9a8;object-position:50% 30%}
 .talk.q .pface{background:radial-gradient(circle at 50% 50%,#203a66,#0d1220);border-color:#5ab4ff;object-position:50% 40%}
@@ -1271,23 +1279,33 @@ function para(p){
  return`<p class="lore">${p}</p>`}
 function scene(eyebrow,title,paras,btn,alt,illust){
  $('sheet').innerHTML=`${illust?`<img class="illust il-${illust}" src="assets/illust/illust_${illust}.jpg" alt="" onerror="this.remove()">`:''}<div class="eyebrow">${eyebrow}</div><h2>${title}</h2>${paras.map(para).join('')}<div class="acts ${alt&&alt.label?'':'one'}">${alt&&alt.label?`<button id="mAlt">${alt.label}</button>`:''}<button class="pri" id="mGo">${btn}</button></div>`;
- $('modal').hidden=false;$('mGo').focus({preventScroll:true});$('mGo').onclick=()=>{closeModal();alt&&alt.go&&alt.go()};if(alt&&alt.label)$('mAlt').onclick=closeModal;
+ $('modal').hidden=false;$('mGo').focus({preventScroll:true});$('mGo').onclick=()=>{closeModal();alt&&alt.go&&alt.go()};if(alt&&alt.label)$('mAlt').onclick=()=>{closeModal();alt.no&&alt.no()};
 }
+/* 탈환 보고서 (FIRST_DAY 2): 같은 순간 생긴 이야기 창(군단 소개·동료 합류·주민 이벤트·칭호 상승)을 모아
+   1개면 그 창 그대로, 2개 이상이면 「탈환 보고서」 한 장. 칸마다 얼굴 + 한 줄, 대사는 「자세히 보기」로 펼침 */
+let rpBuf=[];
+function rpFace(ps){for(const p of ps)if(p.startsWith('m:')){let w=p.slice(2).split('|')[0].split('@')[0];if(NPCID[w])return'assets/portraits/portrait_'+NPCID[w]+'_idle.png'}return'assets/portraits/portrait_kael_idle.png'}
+function rpAdd(it){rpBuf.push(it);if(rpBuf.length===1)Promise.resolve().then(rpFlush)}
+function rpFlush(){const b=rpBuf;rpBuf=[];if(!b.length)return;
+ if(b.length===1){const it=b[0];queue(()=>scene(it.eb,it.th||it.t,it.p,it.btn));return}
+ queue(()=>{$('sheet').innerHTML=`<div class="eyebrow">영지 소식</div><h2>탈환 보고서</h2><div class="rpl">${b.map((it,i)=>`<div class="rpi"><img class="rpf" src="${it.face}" alt="" onerror="this.style.visibility='hidden'"><div class="rpm"><div class="rpe">${it.eb}</div><div class="rpt">${it.t}</div></div><button class="rpb" data-i="${i}">자세히 보기</button></div><div class="rpd" id="rpd${i}" hidden>${it.p.map(para).join('')}</div>`).join('')}</div><div class="acts one"><button class="pri" id="mGo">계속</button></div>`;
+  $('modal').hidden=false;$('mGo').focus({preventScroll:true});$('mGo').onclick=closeModal;
+  for(const x of $('sheet').querySelectorAll('.rpb'))x.onclick=()=>{const d=$('rpd'+x.dataset.i);d.hidden=!d.hidden;x.textContent=d.hidden?'자세히 보기':'접기';haptic(8)}})}
 /* 두 번째 은퇴부터는 다시 나오는 이야기 창(은퇴 직후·지역 이야기·칭호 상승)을 알림 한 줄로 */
 const quietStory=()=>(S.retires||0)>=2;
 /* 왕도 입장: 처음 한 번은 「왕도로 가는 길」 + 지역 소개, 그 뒤로는 알림 한 줄 */
 function capChapter(){if(S.done.capRoad){toast('왕도 아스테리온 진입 · 알현실까지 10곳');return}S.done.capRoad=true;const r=REGIONS[REGIONS.length-1];
  queue(()=>scene('다섯 군단을 몰아내다','왕도로 가는 길',['sys:다섯 군단이 모두 물러났다. 안개 너머로 왕도 아스테리온의 성벽이 보인다.','q@moved:…300년 만이다. 저 성문 안에 주인의 왕좌가 있다.','k:왕좌 말고 은퇴 서류는 없을까?','q:왕이 되면 은퇴 서류는 주인이 직접 쓰면 된다.','k@smile:…그 말, 이상하게 설득력 있네.'],'성문으로 간다'));
  queue(()=>scene('마지막 지역 · 왕도',`<img class="bossportrait demp" src="assets/portraits/portrait_baltasar_idle.png" alt="" onerror="this.remove()">`+r.n,[...r.lore,'sys:이 땅의 지배자 · '+r.boss+' · 홀수 영지는 군단장의 잔영, 짝수 영지는 마왕 근위대장'],'진격한다'))}
-function chapter(){const st=S.stage;if(isCap(st))return capChapter();if(quietStory()){const r=region(st),i=Math.floor((st-1)/10)%5;toast('제'+(i+1)+'군단 점령지 · '+r.n+' 진입');return}queue(()=>{const r=region(st),i=Math.floor((st-1)/10)%5;scene('제'+(i+1)+'군단 · 점령지',`<img class="bossportrait" src="assets/portraits/portrait_${BOSSID[i]}_idle.png" alt="" onerror="this.remove()">`+r.n,[...r.lore,'sys:이 땅의 지배자 · '+r.boss],'진격한다')})}
-function events(){for(const e of EVENTS)if(S.stage>=e.at&&!S.done[e.id]){S.done[e.id]=true;e.act();syncParty();queue(()=>scene(e.eb,e.t,e.p,e.btn))}
- const ri=rankIdx();if(ri>S.rankSeen){S.rankSeen=ri;const r=RANKS[ri],gg=ri>(S.gemRank||0);if(gg){S.gemRank=ri;S.gem=(S.gem||0)+RANK_GEM};if(quietStory())toast('칭호 상승: '+r.n+' · 능력치 +4%'+(gg?' · 황금 이삭 +'+RANK_GEM:''));else queue(()=>scene('칭호 상승',uiImg(RANKIMG[ri],'rankbig')+r.n+' 카엘',['되찾은 영지가 '+r.at+'곳에 이르자, 사람들이 카엘을 '+r.n+'(이)라고 부르기 시작했다.','k@flustered:'+r.k,'q@proud:하하! 한 걸음 더 왕좌에 가까워졌다!','sys:모든 원정대 능력치 +4%'+(gg?' · 황금 이삭 +'+RANK_GEM:'')],'…알겠어요'))}
- renderAll()}
+function chapter(){const st=S.stage;if(isCap(st))return capChapter();if(quietStory()){const r=region(st),i=Math.floor((st-1)/10)%5;toast('제'+(i+1)+'군단 점령지 · '+r.n+' 진입');return}{const r=region(st),i=Math.floor((st-1)/10)%5;rpAdd({face:'assets/portraits/portrait_'+BOSSID[i]+'_idle.png',eb:'제'+(i+1)+'군단 · 점령지',t:r.n,th:`<img class="bossportrait" src="assets/portraits/portrait_${BOSSID[i]}_idle.png" alt="" onerror="this.remove()">`+r.n,p:[...r.lore,'sys:이 땅의 지배자 · '+r.boss],btn:'진격한다'})}}
+function events(){for(const e of EVENTS)if(S.stage>=e.at&&!S.done[e.id]){S.done[e.id]=true;e.act();syncParty();rpAdd({face:rpFace(e.p),eb:e.eb,t:e.t,p:e.p,btn:e.btn})}
+ const ri=rankIdx();if(ri>S.rankSeen){S.rankSeen=ri;const r=RANKS[ri],gg=ri>(S.gemRank||0);if(gg){S.gemRank=ri;S.gem=(S.gem||0)+RANK_GEM};if(quietStory())toast('칭호 상승: '+r.n+' · 능력치 +4%'+(gg?' · 황금 이삭 +'+RANK_GEM:''));else rpAdd({face:'assets/ui/'+RANKIMG[ri]+'.png',eb:'칭호 상승',t:r.n+' 카엘',th:uiImg(RANKIMG[ri],'rankbig')+r.n+' 카엘',p:['되찾은 영지가 '+r.at+'곳에 이르자, 사람들이 카엘을 '+r.n+'(이)라고 부르기 시작했다.','k@flustered:'+r.k,'q@proud:하하! 한 걸음 더 왕좌에 가까워졌다!','sys:모든 원정대 능력치 +4%'+(gg?' · 황금 이삭 +'+RANK_GEM:'')],btn:'…알겠어요'})}
+ rpFlush();renderAll()}
 function intro(){queue(()=>scene('왕이 되는 그날까지 · 프롤로그','밭에 박힌 쇠막대',[
  '마계의 문이 열려 왕국이 무너진 날, 농부 카엘은 밭에 박힌 녹슨 쇠막대를 뽑아 마물을 막아 냈다.',
  'q@moved:…드디어 나를 뽑는 자가 나타났군. 300년 기다렸다, 주인. 이제 왕이 되러 가자.',
  'k@surprised:누구세요? 그리고 전 농부인데요.',
- 'sys:빼앗긴 영지를 되찾고, 동료를 모아 마을을 다시 세우세요.'],'일단 마을부터 지키자',null,'prologue'));chapter()}
+ 'sys:빼앗긴 영지를 되찾고, 동료를 모아 마을을 다시 세우세요.'],'일단 마을부터 지키자',null,'prologue'));chapter();rpFlush()}
 
 /* ---------- 장비 ---------- */
 function rollItem(fg){
@@ -1322,15 +1340,17 @@ function card(it,cap,vs){
  const G=GRADES[it.g];return`<div class="card" style="--c:${G.c}"><span class="cap">${cap}</span>${relicIcon(it)}<span class="g">${G.n}</span><span class="t">${slotName(it.slot)} Lv.${it.lv}</span>${statCmp(it,vs)}${enTag(it.slot)}</div>`
 }
 const LUMQ=['흥, 내 격에는 한참 못 미친다.','그럭저럭… 봐줄 만하군.','오호, 제법이다!','이건 왕의 물건이다. 당장 걸쳐라!','300년 만에 보는 물건이군…!','신화… 주인, 이건 운명이다.','…태초의 빛. 주인, 이건 신들이 남긴 것이다.'];
+/* 새 장비가 지금 것보다 약할 때 루미나르 (FIRST_DAY 1): 등급이 높아도 약하면 팔라고 함 */
+const lumWeak=g=>g>=3?'q@proud:등급은 좋다만 지금 것보다 약하다. 팔아라.':'q@angry:흥, 지금 것보다 약하군. 팔아서 골드로 바꿔라.';
 function statCmp(it,vs){const m=enMul(it.slot),row=(n,k)=>{const v=(it[k]||0)*m,d=vs===undefined?0:v-((vs&&vs[k])||0)*m;return`<span class="sl"><i>${n}</i><b>+${fmt(v)}</b>${vs===undefined||Math.abs(d)<1?'':`<em class="${d>0?'up':'dn'}">${d>0?'▲':'▼'}${fmt(Math.abs(d))}</em>`}</span>`};return`<span class="s2">${row('공격','atk')}${row('체력','hp')}</span>`}
 function showItem(it,cur){
- const d=(score(it)-score(cur))*enMul(it.slot);
+ const d=(score(it)-score(cur))*enMul(it.slot),weak=!!cur&&d<0;/* 더 약하면 노란(주) 버튼은 「판매」 */
  $('sheet').innerHTML=`<h2>성유물을 얻었어요</h2><div class="cmp">${card(it,'새 장비',cur||null)}${card(cur,'착용 중')}</div>
- <div class="diff ${d>0?'up':d<0?'down':''}">전투력 ${d>=0?'▲':'▼'} ${fmt(Math.abs(d))}</div>${para('q@'+(it.g<1?'angry':it.g>=4?'moved':'proud')+':'+LUMQ[it.g])}
- <div class="acts"><button id="mSell">판매 +${fmt(it.price)}</button><button class="pri" id="mEq">장착</button></div>`;
+ <div class="diff ${d>0?'up':d<0?'down':''}">전투력 ${d>=0?'▲':'▼'} ${fmt(Math.abs(d))}</div>${para(weak?lumWeak(it.g):'q@'+(it.g<1?'angry':it.g>=4?'moved':'proud')+':'+LUMQ[it.g])}
+ <div class="acts">${weak?`<button id="mEq">장착</button><button class="pri" id="mSell">판매 +${fmt(it.price)}</button>`:`<button id="mSell">판매 +${fmt(it.price)}</button><button class="pri" id="mEq">장착</button>`}</div>`;
  $('modal').hidden=false;
  $('mEq').onclick=()=>{const c=S.eq[it.slot];if(c)S.gold+=c.price;S.eq[it.slot]=it;closeModal();flashSlot(it.slot);if(c)toast('이전 장비 판매 +'+fmt(c.price))};
- $('mSell').onclick=()=>{S.gold+=it.price;closeModal()};$('mEq').focus({preventScroll:true});
+ $('mSell').onclick=()=>{S.gold+=it.price;closeModal()};$(weak?'mSell':'mEq').focus({preventScroll:true});
 }
 function closeModal(){$('modal').hidden=true;pending=null;renderAll();pump()}
 
@@ -1417,7 +1437,7 @@ function renderBlds(){
 /* 다음 할 일 안내: 처음 플레이어를 위한 한 줄 길잡이 */
 const GUIDE=[
  {ok:()=>Object.values(S.eq).some(Boolean),t:'성유물 상자를 열어 장비를 얻어요',go:()=>{const q=$('quickBox');if(q){q.classList.add('hint');setTimeout(()=>q.classList.remove('hint'),2500)}}},
- {ok:()=>S.up.atk>=3,t:'단련에서 공격력을 3번 올려요',go:()=>setTab('up')},
+ {ok:()=>UPG.reduce((a,u)=>a+(S.up[u.k]||0),0)>=3,t:'단련에서 추천 강화를 3번 해요',go:()=>upGo()},
  {ok:()=>S.best>10,t:'1-10 성주를 쓰러뜨려요',go:()=>toast('원정대가 자동으로 싸워요. 막히면 장비와 단련을 올려요')},
  {ok:()=>S.bld.inn>=1,t:'마을에 여관을 재건해요',go:()=>{setTab('vl');setTimeout(()=>vlSelect('inn'),50)}},
  {ok:()=>!S.joined.margo||Object.keys(S.lv).some(k=>S.joined[k]&&S.lv[k]>1),t:'원정대에서 동료 레벨을 올려요',go:()=>{ptTab='list';setTab('pt')}},
@@ -1425,8 +1445,20 @@ const GUIDE=[
  {ok:()=>!S.bld.farm||(S.stat&&S.stat.harv>0),t:'밭에 씨앗을 심고 수확해요',go:()=>{setTab('vl');setTimeout(()=>vlSelect('farm'),50)}},
  {ok:()=>Object.values(daily().claim||{}).some(Boolean),t:'피트의 상점에서 오늘의 할 일 보상을 받아요',go:()=>setTab('sh')},
  {ok:()=>S.best<20||(S.retires||0)>0,t:'단련 탭에서 첫 은퇴를 해 봐요',go:()=>setTab('up')}];
-let guideSig='';function renderGuide(){const g=$('guide');if(!g)return;const i=(S.retires>0||S.best>30)?-1:GUIDE.findIndex((x,j)=>!x.ok()&&!(j<3&&S.best>12)),sig=i+'|'+(curTab||'');if(sig===guideSig)return;guideSig=sig;
- if(i<0||S.guideOff){g.hidden=true;return}g.hidden=false;g.innerHTML=`<span class="gtg">할 일</span><span class="gtx">${GUIDE[i].t}</span><b>›</b>`;g.onclick=()=>{if(!g.classList.contains('open')){g.classList.add('open');clearTimeout(g._t);g._t=setTimeout(()=>g.classList.remove('open'),6000);return}g.classList.remove('open');GUIDE[i].go()};if(sig.split('|')[0]!==g._i){g._i=sig.split('|')[0];g.classList.add('open');clearTimeout(g._t);g._t=setTimeout(()=>g.classList.remove('open'),6000)}}
+/* 할 일 길잡이 (FIRST_DAY 3): 늘 문구가 보임. 골드가 가장 싼 강화값의 3배 이상이면 「추천 강화 하기」,
+   영지 30 뒤 첫 은퇴 전까지는 아직 안 지은 건물 「마을에 ○○을 재건해요」. 단련 탭 「추천」 배지와 같은 upBest()
+   upBest: 지금 살 수 있는 것이 있으면 그중에서, 하나도 없으면 전체에서 비용 대비 전투력이 가장 많이 오르는 단련 */
+const josa=(w,a,b)=>{const c=w.charCodeAt(w.length-1)-0xAC00;return w+(c>=0&&c<11172&&c%28?a:b)};
+function upBest(){const p0=power(),can=UPG.some(u=>(S.up[u.k]||0)<u.max&&S.gold>=u.cost(S.up[u.k]||0));let best=null,bv=0;for(const u of UPG){const l=S.up[u.k]||0;if(l>=u.max||(can&&S.gold<u.cost(l)))continue;S.up[u.k]=l+1;const g=(power()-p0)/u.cost(l);S.up[u.k]=l;if(g>bv){bv=g;best=u.k}}return best}
+function upGo(){const k=upBest();if(curTab!=='up')setTab('up');setTimeout(()=>{const e=$('upr-'+k);if(!e)return;e.scrollIntoView&&e.scrollIntoView({block:'center',behavior:'smooth'});e.classList.remove('flash');void e.offsetWidth;e.classList.add('flash')},60)}
+function guideNow(){if((S.retires||0)>0)return null;
+ if(S.best>30){const b=BLD.find(b=>b.open()&&!(S.bld[b.k]>0)&&!((building()&&S.build.k===b.k)||(S.bq||[]).includes(b.k)));return b?{k:'b:'+b.k,t:'마을에 '+josa(b.n,'을','를')+' 재건해요',go:()=>{setTab('vl');setTimeout(()=>vlSelect(b.k),50)}}:null}
+ const i=GUIDE.findIndex((x,j)=>!x.ok()&&!(j<3&&S.best>12));
+ if(i!==0){let mc=Infinity;for(const u of UPG){const l=S.up[u.k]||0;if(l<u.max)mc=Math.min(mc,u.cost(l))}
+  if(S.gold>=mc*3){const k=upBest();if(k)return{k:'up:'+k,t:'추천 강화 하기 · '+UPG.find(u=>u.k===k).n,go:upGo}}}
+ return i<0?null:{k:'g'+i,t:GUIDE[i].t,go:GUIDE[i].go}}
+let guideSig='';function renderGuide(){const g=$('guide');if(!g)return;const G=S.guideOff?null:guideNow(),sig=(G?G.k:'')+'|'+(curTab||'');if(sig===guideSig)return;guideSig=sig;
+ if(!G){g.hidden=true;return}g.hidden=false;g.innerHTML=`<span class="gtg">할 일</span><span class="gtx">${G.t}</span><b>›</b>`;g.onclick=()=>{haptic(8);G.go()}}
 /* 숫자 반짝임: 전투력은 오를 때마다, 골드는 한 번에 크게(10% 이상) 바뀔 때만 */
 /* 숫자 바뀜 (U-2 ⑩): 크게 늘면 0.4초 동안 숫자가 올라가고, 아주 크게(10배 기준 ×1.5↑) 늘면 반짝임 */
 const NF={},NFA={},RM=typeof matchMedia!=='function'||matchMedia('(prefers-reduced-motion:reduce)').matches;
@@ -1586,7 +1618,7 @@ function retire(p,one){
  if(extra.length&&!(quietStory()&&!sc))queue(()=>{toast(extra.join(' · '))});
  chiefCheck();
  if(rw)queue(()=>{toast(retRwText(rw))});
- if(!quietStory())chapter();renderAll()}
+ if(!quietStory())chapter();rpFlush();renderAll()}
 /* ---- 은퇴 일기 창 ---- */
 let diaryTab='tr',diaryBr='sword';
 function diaryOpen(){if(!S.diaryIntro){S.diaryIntro=1;save();closeModal();queue(()=>scene('은퇴 일기','카엘의 은퇴 일기',['sys:카엘의 서랍 깊은 곳에서 손때 묻은 일기장이 나왔다.','k@smile:은퇴할 때마다 적어 둔 거야. 다음엔 더 빨리 은퇴하려고.','q:…그 일기, 전부 싸운 이야기뿐이다만.','k:그러니까 다음엔 더 잘 싸워서 더 빨리 끝내야지.','sys:은퇴의 추억만큼 추억 포인트가 생겨요. 써도 추억 효과는 그대로예요'],'일기 펼치기',{go:()=>diarySheet()}));return}diarySheet()}
@@ -1709,7 +1741,7 @@ function renderAll(){
  const bs=S.boxLv+':'+S.boxXp;if(bs!==boxSig){boxSig=bs;renderBox()}
  const us=JSON.stringify(S.up)+fmt(power())+(S.upMul||1)+(S.upMul==='max'?fmt(S.gold):'');if(us!==upSig){upSig=us;renderUpg()}
  UPG.forEach(u=>{const b=$('up-'+u.k);if(b&&S.up[u.k]<u.max)b.disabled=S.gold<u.cost(S.up[u.k])});
- if(curTab==='up'){const p0=power();let best=null,bv=0;for(const u of UPG){const l=S.up[u.k];if(l>=u.max||S.gold<u.cost(l))continue;S.up[u.k]++;const g=(power()-p0)/u.cost(l);S.up[u.k]--;if(g>bv){bv=g;best=u.k}}UPG.forEach(u=>{const e=$('upr-'+u.k);if(e)e.classList.toggle('best',u.k===best)})}
+ if(curTab==='up'){const best=upBest();UPG.forEach(u=>{const e=$('upr-'+u.k);if(e)e.classList.toggle('best',u.k===best)})}
  renderParty();renderBlds();renderFarm();renderKitchen();renderVillage();renderShop();renderRetire();renderMapInfo();
  const boss=mons.some(m=>m.boss);
  if(!inCh)$('pips').innerHTML=Array.from({length:10},(_,i)=>`<i class="pip${i<S.wave?' on':''}"></i>`).join('')+(S.stage>MAXLAND?'':`<i class="pip boss${boss?' on':''}" aria-label="보스"></i>`);
@@ -2069,7 +2101,7 @@ const rwText=r=>Object.keys(RWN).filter(k=>r[k]).map(k=>RWN[k][0]+' +'+fmt(r[k])
 const chRi=()=>!CH?0:CH.mode==='tower'?3:DUNS[CH.k].ri;/* 배경 지역: 탑은 그림이 없으면 서리 무덤을 어둡게 */
 /* 도전 해금: 영지 20 탈환 때 한 번 */
 function chCheck(){if(S.chOpen||!chCan())return;S.chOpen=1;save();
- queue(()=>scene('새로운 도전','시련의 탑',['sys:들판 끝에 오래된 석탑이 서 있다. 꼭대기가 구름에 가려 보이지 않는다.','q:시련의 탑이다. 300년 전 에르단의 왕들은 왕관을 쓰기 전에 이 탑을 올랐지.','k:꼭대기가 어디야?','q:없다. 오를수록 높아진다.','k@flustered:…그럼 은퇴는 언제 해?','m:브론|탑 말고 내 폐광도 좀 봐 줘. 요일마다 광석이 쏟아진다고.','sys:지도 탭의 「⚔ 도전」에서 시련의 탑과 요일 던전에 들어갈 수 있어요.'],'도전 보러 가기',{go:()=>chSheet()}))}
+ queue(()=>scene('새로운 도전','시련의 탑',['sys:들판 끝에 오래된 석탑이 서 있다. 꼭대기가 구름에 가려 보이지 않는다.','q:시련의 탑이다. 300년 전 에르단의 왕들은 왕관을 쓰기 전에 이 탑을 올랐지.','k:꼭대기가 어디야?','q:없다. 오를수록 높아진다.','k@flustered:…그럼 은퇴는 언제 해?','m:브론|탑 말고 내 폐광도 좀 봐 줘. 요일마다 광석이 쏟아진다고.','sys:지도 탭의 「⚔ 도전」에서 시련의 탑과 요일 던전에 들어갈 수 있어요.'],'도전 보러 가기',{label:'나중에',go:()=>chSheet(),no:()=>{if(S.dotSeen2)delete S.dotSeen2.mp;renderAll()}}))}
 const chDot=()=>!!S.chOpen&&(supplyCan()||dunLeft()>0);
 function chPartyReset(){SKX.shield=SKX.honey=SKX.feast=SKX.guts=SKX.sym=0;ULB.t=0;for(const id of members()){if(!P[id])continue;P[id].hp=stats(id).hp;P[id].down=false;P[id].bsh=0}seal=null;talk=null;holdT=0;warn=null;banner=null}
 /* 추억 속 원정대 (CHALLENGE.md 11장): 탑·던전에서는 원정대 힘을 「지금」과 「역대 최고」 중 센 쪽으로.

@@ -305,6 +305,9 @@ class Para extends StatelessWidget {
     '그로마크': 'gromak', '알도르': 'aldor', '이그니스': 'ignis', '발타사르': 'baltasar',
   };
 
+  /// 이름 → 초상화 id (없으면 null)
+  static String? npcId(String name) => _npc[name];
+
   /// guessMood(w,t): 표정이 없으면 대사로 짐작
   static String guessMood(String w, String t) {
     bool has(String re) => RegExp(re).hasMatch(t);

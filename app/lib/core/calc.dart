@@ -764,11 +764,11 @@ class GameCalc {
     return done;
   }
 
-  // ───────────── 다음 할 일 안내 (웹 GUIDE / renderGuide) ─────────────
+  // ───────────── 다음 할 일 안내 (웹 GUIDE / guideNow, docs/content/FIRST_DAY.md 3-3) ─────────────
   /// 처음 하는 사람을 위한 안내 문구 (순서대로 하나씩)
   static const guideTexts = [
     '성유물 상자를 열어 장비를 얻어요',
-    '단련에서 공격력을 3번 올려요',
+    '단련에서 추천 강화를 3번 해요',
     '1-10 성주를 쓰러뜨려요',
     '마을에 여관을 재건해요',
     '원정대에서 동료 레벨을 올려요',
@@ -778,12 +778,11 @@ class GameCalc {
     '단련 탭에서 첫 은퇴를 해 봐요',
   ];
 
-  /// 지금 보여 줄 안내 번호. 다 했거나(은퇴했거나 31영지 이상) 없으면 -1
+  /// 기본 안내 번호. 다 했으면 -1 (웹 GUIDE.findIndex)
   int guideIndex() {
-    if (s.retires > 0 || s.best > 30) return -1;
     final checks = <bool Function()>[
       () => s.eq.values.any(truthy),
-      () => s.upLv('atk') >= 3,
+      () => upgrades.fold<num>(0, (a, u) => a + s.upLv(u.k)) >= 3,
       () => s.best > 10,
       () => s.bldLv('inn') >= 1,
       () => !s.isJoined('margo') || s.lv.keys.any((k) => s.isJoined(k) && orNum(s.lv[k], 0) > 1),
@@ -796,6 +795,61 @@ class GameCalc {
       if (!checks[j]() && !(j < 3 && s.best > 12)) return j;
     }
     return -1;
+  }
+
+  /// 비용 대비 전투력이 가장 많이 오르는 단련 — 지금 살 수 있는 것이 있으면 그중에서, 없으면 전체에서.
+  /// 단련 탭 「추천」 배지와 길잡이가 같이 씀 (웹 upBest)
+  String? upBest() {
+    final p0 = power();
+    final can = upgrades.any((u) => s.upLv(u.k) < u.max && s.gold >= upgradeCost(u.k, s.upLv(u.k)));
+    String? best;
+    num bv = 0;
+    for (final u in upgrades) {
+      final l = s.upLv(u.k);
+      if (l >= u.max || (can && s.gold < upgradeCost(u.k, l))) continue;
+      s.up[u.k] = l + 1;
+      final g = (power() - p0) / upgradeCost(u.k, l);
+      s.up[u.k] = l;
+      if (g > bv) {
+        bv = g;
+        best = u.k;
+      }
+    }
+    return best;
+  }
+
+  /// 지금 보여 줄 할 일 (웹 guideNow). k: 'g0'~'g8' 기본 안내 · 'up:atk' 추천 강화 · 'b:inn' 재건. 없으면 null
+  ({String k, String t})? guideNow() {
+    if (s.retires > 0) return null;
+    if (s.best > 30) {
+      final bd = building();
+      final q = s.raw['bq'] is List ? s.raw['bq'] as List : const [];
+      for (final b in buildings) {
+        if (!bldOpen(b.k) || s.bldLv(b.k) > 0 || (bd != null && bd['k'] == b.k) || q.contains(b.k)) continue;
+        return (k: 'b:${b.k}', t: '마을에 ${josa(b.n, '을', '를')} 재건해요');
+      }
+      return null;
+    }
+    final i = guideIndex();
+    if (i != 0) {
+      num mc = double.infinity;
+      for (final u in upgrades) {
+        final l = s.upLv(u.k);
+        if (l < u.max) mc = math.min(mc, upgradeCost(u.k, l));
+      }
+      if (s.gold >= mc * 3) {
+        final k = upBest();
+        if (k != null) return (k: 'up:$k', t: '추천 강화 하기 · ${upgrades.firstWhere((u) => u.k == k).n}');
+      }
+    }
+    return i < 0 ? null : (k: 'g$i', t: guideTexts[i]);
+  }
+
+  /// 받침에 따라 을/를·이/가 (웹 josa)
+  static String josa(String w, String a, String b) {
+    if (w.isEmpty) return w;
+    final c = w.codeUnitAt(w.length - 1) - 0xAC00;
+    return w + (c >= 0 && c < 11172 && c % 28 != 0 ? a : b);
   }
 
   // ───────────── 은퇴 ─────────────

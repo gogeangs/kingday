@@ -298,6 +298,11 @@ void main() {
         }
 
         // 은퇴 일기 (docs/content/RETIRE.md): 처음 대사 → 특성 찍기 → 갈래·탭 바꾸기 → 초기화 확인
+        // 앞에서 대기열에 쌓인 창(지도 첫 대사 등)이 남아 있으면 먼저 닫음 (탈환 보고서로 창 수·차례가 바뀜)
+        for (var i = 0; i < 8 && g.navKey.currentState!.canPop(); i++) {
+          g.navKey.currentState!.pop();
+          await frames();
+        }
         g.state.memory = 40;
         g.setTab(GameTab.up);
         await frames(2);

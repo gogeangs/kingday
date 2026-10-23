@@ -38,7 +38,7 @@ class StageTop extends StatelessWidget {
       label = '${dunDef(h.k).n} · 단계 ${h.l}';
       sub = '⏱ ${mmss(math.max(0, h.t))} · ${h.kills}마리${h.pm >= pkShow ? ' · 추억 ×${pmText(h.pm)}' : ''}';
     }
-    final gi = g.state.raw['guideOff'] == true ? -1 : g.calc.guideIndex();
+    final gd = g.state.raw['guideOff'] == true ? null : g.calc.guideNow();
     // 오른쪽 위에 우편함·랭킹 버튼이 있으면 그만큼 비움 (웹 .ovtop padding-inline:8px 58px)
     return Padding(
         padding: const EdgeInsets.fromLTRB(8, 0, 58, 0), // 오른쪽 위 버튼 줄(상점은 늘 있음)
@@ -72,7 +72,7 @@ class StageTop extends StatelessWidget {
             )),
             if (h != null) _ChBtn('나가기', onTap: g.chExitTap),
             if (h != null && h.mode == 'tower' && h.st == 'win') _ChBtn('다음 층 ▶', gold: true, onTap: g.chNextTap),
-            if (gi >= 0 && h == null) _GuidePill(g, gi),
+            if (gd != null && h == null) _GuidePill(g, gd.k, gd.t),
             ]),
             if (boss != null) ...[const SizedBox(height: 6), IgnorePointer(child: _BossBar(g, boss))],
             const SizedBox(height: 6),
@@ -129,41 +129,18 @@ class _ChBtn extends StatelessWidget {
       );
 }
 
-/// 다음 할 일 (웹 .guide): 바뀌면 6초 동안 펼쳐 보여 주고, 접힌 걸 누르면 펼침, 펼친 걸 누르면 그곳으로
-class _GuidePill extends StatefulWidget {
-  const _GuidePill(this.g, this.i);
+/// 다음 할 일 (웹 .guide, FIRST_DAY 3-3): 문구는 늘 보이고 넘치면 말줄임. 누르면 그곳으로
+class _GuidePill extends StatelessWidget {
+  const _GuidePill(this.g, this.k, this.t);
   final GameController g;
-  final int i;
+  final String k, t;
 
   @override
-  State<_GuidePill> createState() => _GuidePillState();
-}
-
-class _GuidePillState extends State<_GuidePill> {
-  int? _shown;
-  int _openUntil = 0;
-
-  int get _now => DateTime.now().millisecondsSinceEpoch;
-
-  @override
-  Widget build(BuildContext context) {
-    if (_shown != widget.i) {
-      _shown = widget.i;
-      _openUntil = _now + 6000;
-    }
-    final open = _now < _openUntil;
-    final pulse = open ? 1.0 : .75 + .25 * math.sin(widget.g.sim.time * 3);
-    return GestureDetector(
-      onTap: () {
-        if (!open) {
-          setState(() => _openUntil = _now + 6000);
-          return;
-        }
-        setState(() => _openUntil = 0);
-        widget.g.guideGo(widget.i);
-      },
-      child: Opacity(
-        opacity: pulse,
+  Widget build(BuildContext context) => GestureDetector(
+        onTap: () {
+          g.haptic(const [8]);
+          g.guideGo(k);
+        },
         child: Container(
           padding: const EdgeInsets.fromLTRB(4, 4, 8, 4),
           decoration: BoxDecoration(
@@ -177,20 +154,15 @@ class _GuidePillState extends State<_GuidePill> {
               decoration: BoxDecoration(color: KdColors.good, borderRadius: BorderRadius.circular(999)),
               child: Text('할 일', style: KdText.body(10.5, color: const Color(0xFF0D1A10), weight: FontWeight.w600, height: 1.2)),
             ),
-            if (open) ...[
-              const SizedBox(width: 6),
-              Flexible(
-                child: Text(GameCalc.guideTexts[widget.i],
-                    maxLines: 1, overflow: TextOverflow.ellipsis, style: KdText.body(12, color: const Color(0xFFE9F4EA), height: 1.2)),
-              ),
-            ],
+            const SizedBox(width: 6),
+            Flexible(
+              child: Text(t, maxLines: 1, overflow: TextOverflow.ellipsis, style: KdText.body(12, color: const Color(0xFFE9F4EA), height: 1.2)),
+            ),
             const SizedBox(width: 6),
             Text('›', style: KdText.body(13, color: KdColors.good, weight: FontWeight.w600, height: 1.1)),
           ]),
         ),
-      ),
-    );
-  }
+      );
 }
 
 class _BossBar extends StatelessWidget {
