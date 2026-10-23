@@ -9,7 +9,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../core/data.dart';
-import '../core/fmt.dart';
 import '../core/profile_data.dart';
 import 'attend_sheet.dart';
 import '../game/controller.dart';
