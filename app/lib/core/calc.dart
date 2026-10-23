@@ -120,15 +120,17 @@ class GameCalc {
   /// Lv.10까지 그대로, Lv.11부터 배수 F가 5.7에 수렴 + 새 등급 「태초」(최대 5%). 레벨 상한 없음.
   /// 돌려주는 값: 일반~신화 6개 + 태초 = 7개 (%)
   static num boxF(int l) => l <= 10 ? 1 + .35 * (l - 1) : 4.15 + 1.55 * (1 - math.pow(.9, l - 10));
-  static num primalP(int l) => l <= 10 ? 0 : 5 * (1 - math.pow(.93, l - 10));
-  List<num> odds([int? lv]) {
+  /// 「태초」는 첫 은퇴 뒤, 상자 Lv.31부터 (FIRST_DAY 3-4 3안). 확률표(tbl)는 은퇴 전에도 레벨별 값
+  static num primalP(int l) => l <= 30 ? 0 : 5 * (1 - math.pow(.93, l - 30));
+  bool primalOn() => s.retires > 0;
+  List<num> odds([int? lv, bool tbl = false]) {
     final l = lv ?? s.boxLv, f = boxF(l);
     final w = [for (var g = 0; g < baseOdds.length; g++) baseOdds[g] * math.pow(f, g)];
     num t = w.first;
     for (var i = 1; i < w.length; i++) {
       t = t + w[i];
     }
-    final p = primalP(l);
+    final p = tbl || primalOn() ? primalP(l) : 0;
     return [for (final x in w) x / t * (100 - p), p];
   }
 

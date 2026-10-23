@@ -24,7 +24,7 @@ class ActToast extends ActResult {
   final String msg;
 }
 
-/// 성유물 상자 레벨 장면 (Lv.5·Lv.10)
+/// 성유물 상자 레벨 장면 (Lv.5·Lv.10, 31 = 태초가 처음 열림)
 class ActBoxLevelScene extends ActResult {
   ActBoxLevelScene(this.lv);
   final int lv;
@@ -144,14 +144,23 @@ class GameActions {
   }
 
   // ════════════════════ 장비 ════════════════════
+  /// 태초가 처음 열릴 때 피트 대사: 상자 Lv.31 + 첫 은퇴 뒤, 둘 중 나중에 채워지는 때 한 번 (웹 primalIntro)
+  void primalIntro() {
+    if (truthy(s.done['primalIntro']) || s.boxLv < 31 || !c.primalOn()) return;
+    s.done['primalIntro'] = 1;
+    out.add(ActBoxLevelScene(31));
+  }
+
   /// gainBoxXp(): 상자를 열 때마다 경험치, 다 차면 상자 레벨 업 (상한 없음, RELIC_BOX.md)
   void gainBoxXp() {
     s.boxXp = s.boxXp + 1;
     if (s.boxXp >= c.xpNeed()) {
       s.boxXp = 0;
       s.boxLv = s.boxLv + 1;
-      if (s.boxLv == 5 || s.boxLv == 10 || s.boxLv == 11) {
+      if (s.boxLv == 5 || s.boxLv == 10) {
         out.add(ActBoxLevelScene(s.boxLv));
+      } else if (s.boxLv >= 31 && c.primalOn() && !truthy(s.done['primalIntro'])) {
+        primalIntro();
       } else {
         _toast('${s.boxLv > 10 ? '피트가 더 귀한 물건을 들여왔어요' : '피트가 더 좋은 물건을 들여왔어요'}. 성유물 상자 Lv.${s.boxLv}');
       }

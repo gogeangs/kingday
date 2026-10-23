@@ -251,7 +251,7 @@ for (const name of ['mid', 'late', 'old']) {
 
 out.misc.cardIds = IDS;
 // 랭킹: 영지 이름·시즌 끝·주차·서버에 보내는 꾸미기 정보
-out.misc.odds = [1, 5, 9, 10, 11, 12, 15, 20, 30, 50, 9999].map((L) => [L, J(F('odds')(L))]);
+out.misc.odds = [1, 5, 9, 10, 11, 12, 15, 20, 30, 31, 35, 50, 9999].map((L) => [L, J(F('odds')(L, true))]); // 확률표 값(은퇴 전에도 태초 칸 보임)
 out.misc.stgName = [1, 2, 10, 11, 37, 50, 51, 99].map((n) => [n, F('stgName')(n)]);
 out.misc.seasonEnd = F('seasonEnd')();
 out.misc.curWeek = F('curWeek')();

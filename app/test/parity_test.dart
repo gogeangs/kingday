@@ -124,7 +124,7 @@ void main() {
   test('성유물 상자 레벨별 확률 (상한 없음 · 태초, RELIC_BOX.md)', () {
     final c = calcFor('fresh');
     for (final e in fx['misc']['odds'] as List) {
-      same(c.odds(e[0] as int), e[1], 'odds Lv.${e[0]}');
+      same(c.odds(e[0] as int, true), e[1], 'odds Lv.${e[0]}');
     }
   });
 

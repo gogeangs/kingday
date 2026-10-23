@@ -751,8 +751,8 @@ class GameController extends ChangeNotifier {
               'k@flustered:지난번엔 가짜였어요?',
               'm:피트|자, 자! 영웅 등급이 더 잘 나오게 해 놨어!',
             ], '…믿어 볼게요');
-          } else if (lv == 11) {
-            scene('성유물 상자 Lv.11', '태초의 물건', [
+          } else if (lv == 31) {
+            scene('새 등급', '태초의 물건', [
               'm:피트|형씨, 큰일 났어. 마계 상인한테서 「태초」라는 물건을 들여왔는데… 나도 처음 봐.',
               'k@surprised:그걸 팔아도 돼요?',
               'm:피트|팔면 안 되는 물건일수록 잘 팔리지!',
@@ -1634,6 +1634,7 @@ class GameController extends ChangeNotifier {
     if (rw != null) queue((_) async => toast(retRwText(rw)));
     if (!_quietStory) _chapter();
     _rpFlush();
+    act((a) => a.primalIntro());
     refresh();
   }
 
