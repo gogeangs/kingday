@@ -222,11 +222,107 @@ class PtPage extends StatelessWidget {
       ...bench,
       for (final j in jobSlots.where((j) => j != 'kael' && c.slotMember(j) == null)) storyOf[j]!,
     ];
+    final grid = g.state.raw['ptGrid'] == true;
+    Widget seg(String k, String n) => GestureDetector(
+          onTap: () {
+            g.state.raw['ptGrid'] = k == 'grid';
+            g.refresh();
+          },
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+            color: (k == 'grid') == grid ? KdColors.gold : null,
+            child: Text(n,
+                style: KdText.body(12.5, color: (k == 'grid') == grid ? KdColors.goldInk : KdColors.muted, weight: (k == 'grid') == grid ? FontWeight.w700 : FontWeight.w400)),
+          ),
+        );
     return [
-      const KdNote('동료를 누르면 자세한 정보·스킬·출전을 볼 수 있어요.'),
+      Row(children: [
+        const Expanded(child: KdNote('동료를 누르면 자세한 정보·스킬·출전을 볼 수 있어요.')),
+        const SizedBox(width: 8),
+        Container(
+          clipBehavior: Clip.antiAlias,
+          decoration: BoxDecoration(border: Border.all(color: KdColors.line), borderRadius: BorderRadius.circular(10)),
+          child: Row(mainAxisSize: MainAxisSize.min, children: [seg('list', '목록'), seg('grid', '격자')]),
+        ),
+      ]),
       const SizedBox(height: 8),
-      for (final id in ids) _crow(id),
+      if (grid)
+        LayoutBuilder(builder: (_, cs) {
+          final w = (cs.maxWidth - 16) / 3;
+          return Wrap(spacing: 8, runSpacing: 8, children: [for (final id in ids) SizedBox(width: w, child: _gcell(id))]);
+        })
+      else
+        for (final id in ids) _crow(id),
     ];
+  }
+
+  /// 격자 칸 (U-1, 웹 gcell): 얼굴 + 등급 테두리 + ★ + Lv. 출전 중 금테, 🔨 일꾼, ★ 올리기 가능 노란 점, 합류 전 어둡게 ???
+  Widget _gcell(String id) {
+    final c = g.calc, cd = comps[id]!, has = c.owned(id), kael = id == 'kael', chief = id == GameCalc.chiefId;
+    final on = kael || (chief ? c.chiefOn() : c.slotMember(jobOf[id]!) == id);
+    final wk = !kael && !chief && c.working()[id] != null;
+    final up = chief ? c.chiefCan() : c.cardReady().contains(id);
+    final named = has || chief;
+    final sub = kael
+        ? ranks[c.rankIdx()].n
+        : has
+            ? '${chief ? '' : 'Lv.${orNum(g.state.lv[id], 1)} '}${'★' * c.recStar(id)}'
+            : chief
+                ? '유니크'
+                : '합류 전';
+    return GestureDetector(
+      onTap: !named
+          ? null
+          : () => kael
+              ? g.setTab(GameTab.eq)
+              : chief
+                  ? chiefSheet(g)
+                  : compSheet(g, id),
+      child: Opacity(
+        opacity: has || chief ? 1 : .5,
+        child: Container(
+          padding: const EdgeInsets.fromLTRB(4, 10, 4, 7),
+          decoration: BoxDecoration(
+            color: KdColors.panel2,
+            border: Border.all(color: on && has ? KdColors.gold : KdColors.line),
+            borderRadius: BorderRadius.circular(12),
+            boxShadow: on && has ? const [BoxShadow(color: Color(0x40FFC94A), blurRadius: 10)] : null,
+          ),
+          child: Stack(clipBehavior: Clip.none, children: [
+            Column(mainAxisSize: MainAxisSize.min, children: [
+              Center(child: CompFrame(id, w: 56, h: 66, hidden: !named, dim: chief && !has)),
+              const SizedBox(height: 4),
+              Text(named ? cd.n : '???', maxLines: 1, overflow: TextOverflow.ellipsis, style: KdText.display(13.5)),
+              Text(sub, maxLines: 1, overflow: TextOverflow.ellipsis, style: KdText.body(12.5, color: KdColors.muted)),
+            ]),
+            if (up)
+              Positioned(
+                top: -4,
+                right: 2,
+                child: Container(
+                  width: 10,
+                  height: 10,
+                  decoration: BoxDecoration(color: const Color(0xFFFFD23A), shape: BoxShape.circle, border: Border.all(color: Colors.white), boxShadow: const [BoxShadow(color: Color(0xFFFFD23A), blurRadius: 6)]),
+                ),
+              ),
+            if (wk) const Positioned(top: -6, left: 2, child: Text('🔨', style: TextStyle(fontSize: 13))),
+            if (on && has && !kael)
+              Positioned(
+                top: -8,
+                left: 0,
+                right: 0,
+                child: Center(
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 5),
+                    decoration: BoxDecoration(color: KdColors.gold, borderRadius: BorderRadius.circular(6)),
+                    child: Text('출전', style: KdText.body(10.5, color: KdColors.goldInk, weight: FontWeight.w700, height: 1.4)),
+                  ),
+                ),
+              ),
+          ]),
+        ),
+      ),
+    );
   }
 
   Widget _crow(String id) {
