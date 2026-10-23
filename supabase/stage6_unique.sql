@@ -1,5 +1,5 @@
 -- 6단계: 유니크 등급 · 카엘 촌장 (2026-10-23, docs/companions/KAEL_CHIEF.md)
--- ① 랭킹 시즌 보상에 유니크 카드(ucard)를 더함: 1위 30 · 2~10위 15 · 상위 10% 8 · 상위 50% 3 · 참여 1
+-- ① 랭킹 시즌 보상에 유니크 카드(ucard)를 더함: 1위 15 · 2~10위 8 · 상위 10% 4 · 상위 50% 2 · 참여 1 (2026-10-23 줄임)
 --    (황금 이삭·동료 카드·테두리·배지는 그대로. 이 SQL을 실행한 뒤 정산되는 시즌부터 적용)
 -- ② 프로필 얼굴에 카엘 촌장(kael_chief)을 고를 수 있게 밑줄(_) 허용
 -- Supabase → SQL Editor 에 통째로 붙여 넣고 Run. 여러 번 실행해도 안전.
@@ -25,10 +25,10 @@ begin
       s || '시즌 랭킹 보상 · ' || rk || '위',
       s || '시즌을 ' || rk || '위로 마쳤어요. (참여 ' || tot || '명)',
       case
-        when rk = 1 then '{"gem":500,"frame":"season","badge":"champ","ucard":30}'::jsonb
-        when rk <= 10 then '{"gem":300,"badge":"top10","ucard":15}'::jsonb
-        when rk <= ceil(tot * 0.1) then '{"gem":150,"cards":30,"ucard":8}'::jsonb
-        when rk <= ceil(tot * 0.5) then '{"gem":50,"ucard":3}'::jsonb
+        when rk = 1 then '{"gem":500,"frame":"season","badge":"champ","ucard":15}'::jsonb
+        when rk <= 10 then '{"gem":300,"badge":"top10","ucard":8}'::jsonb
+        when rk <= ceil(tot * 0.1) then '{"gem":150,"cards":30,"ucard":4}'::jsonb
+        when rk <= ceil(tot * 0.5) then '{"gem":50,"ucard":2}'::jsonb
         else '{"gem":20,"ucard":1}'::jsonb
       end,
       'season:' || s
