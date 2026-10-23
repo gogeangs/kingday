@@ -669,6 +669,23 @@ body {
   width: 16px;
   height: 16px;
 }
+/* 작은 버튼은 보이는 크기는 그대로, 손가락이 닿는 범위만 44px 안팎으로 넓힘 (2026-10-24 대표님 결정) */
+.helpq,
+#cardOdds,
+#oddsAll,
+#pfNick,
+.crc .buy.sm {
+  position: relative;
+}
+.helpq::after,
+#cardOdds::after,
+#oddsAll::after,
+#pfNick::after,
+.crc .buy.sm::after {
+  content: '';
+  position: absolute;
+  inset: -12px -6px;
+}
 .crall {
   align-self: center;
   font: inherit;
@@ -2199,7 +2216,7 @@ table.codds th {
   object-fit: contain;
 }
 .attc > span {
-  font-size: 10.5px;
+  font-size: 11px;
   word-break: keep-all;
 }
 .attw .attc.big {
@@ -2221,7 +2238,7 @@ table.codds th {
   height: 18px;
 }
 .attm .attc > em {
-  font-size: 9px;
+  font-size: 11px;
 }
 .attm .attc > span {
   display: none;
@@ -3270,7 +3287,7 @@ table.codds th {
   position: absolute;
   top: -8px;
   left: 10px;
-  font-size: 10px;
+  font-size: 11px;
   font-weight: 700;
   background: var(--bad);
   color: #fff;
@@ -3337,7 +3354,7 @@ table.codds th {
   position: absolute;
   top: -7px;
   right: 6px;
-  font-size: 10px;
+  font-size: 11px;
   font-weight: 700;
   background: var(--bad);
   color: #fff;
@@ -4082,7 +4099,7 @@ canvas {
   background: rgba(10, 14, 26, 0.82);
   z-index: 2;
   pointer-events: none;
-  font-size: 10px;
+  font-size: 11px;
   color: var(--fg);
   font-family: var(--f-body);
   font-weight: 600;
@@ -4259,7 +4276,7 @@ canvas {
   text-align: center;
   font-family: var(--f-body);
   font-weight: 700;
-  font-size: 10px;
+  font-size: 11px;
   line-height: 1.5;
   background: rgba(0, 0, 0, 0.65);
   border-radius: 999px;
@@ -4273,7 +4290,7 @@ canvas {
   position: absolute;
   top: 6%;
   right: 8%;
-  font-size: 10px;
+  font-size: 11px;
   font-weight: 700;
   color: #fff;
   background: linear-gradient(#ff9a3a, #c95a10);
@@ -4373,7 +4390,7 @@ canvas {
 .slot .lv.em {
   font-family: var(--f-body);
   font-weight: 600;
-  font-size: 9.5px;
+  font-size: 11px;
   color: #c9cbd6;
   bottom: 17%;
   left: 18%;
