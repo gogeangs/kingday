@@ -99,7 +99,7 @@
 - 시즌 끝 우편: 「원정 일지 시즌 ○ — 받지 못한 보상이에요」
 
 ## 6. 필요한 그림 (ChatGPT, 3장)
-첨부: 원본 `art/source/challenge/hd_challenge.png`(배너), `art/source/retire/frame_retire.png`(테두리)
+첨부: S-1 `art/source/challenge/hd_challenge.png`(배너) · S-2 `art/source/retire/frame_retire.png`(테두리) · S-3 `art/source/gem/gem_pack_3.png`·`art/source/gold_packs.png`(상점 상품 그림)
 
 ### S-1 원정 일지 배너 → `assets/ui/hd_pass.png` (720×208)
 ```
@@ -135,7 +135,7 @@
 
 ### S-3 상점 성장 패키지 그림 → `assets/ui/pack_growth.png` (256)
 ```
-[첨부 그림] 우리 게임의 기존 UI 그림이야. 같은 화풍으로 그려 줘.
+[첨부 그림] 우리 게임 상점의 기존 상품 그림(황금 이삭 꾸러미·골드 꾸러미)이야. 같은 화풍·크기감으로 그려 줘.
 
 [공통 규칙]
 - 모바일 방치형 RPG 「왕이 되는 그날까지」의 상점 상품 아이콘
