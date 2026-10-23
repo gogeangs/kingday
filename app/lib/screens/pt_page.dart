@@ -202,11 +202,24 @@ class PtPage extends StatelessWidget {
   // ════════ 동료 목록 ════════
   List<Widget> _list() {
     final c = g.calc;
+    // 카엘(·촌장) → 출전 중(자리 순) → 대기·일꾼(등급 높은 순 → 별 → 전투력) → 아직 합류 전 (웹 partyOrder)
+    const grk = {'legend': 3, 'epic': 2, 'rare': 1, 'common': 0};
+    final on = [for (final j in jobSlots.where((j) => j != 'kael')) c.slotMember(j)].whereType<String>().toList();
+    final bench = stableSorted(
+      [for (final j in jobSlots.where((j) => j != 'kael')) ...c.jobMembers(j)].where((x) => !on.contains(x)),
+      (a, b) {
+        final g = (grk[gradeOf[b]] ?? 0) - (grk[gradeOf[a]] ?? 0);
+        if (g != 0) return g;
+        final st = c.recStar(b) - c.recStar(a);
+        if (st != 0) return st;
+        return c.cPow(b).compareTo(c.cPow(a));
+      },
+    );
     final ids = <String>[
       'kael',
       if (c.owned(GameCalc.chiefId) || c.chiefShop()) GameCalc.chiefId,
-      for (final j in jobSlots.where((j) => j != 'kael'))
-        ...[c.slotMember(j), ...c.jobMembers(j).where((x) => x != c.slotMember(j))].whereType<String>(),
+      ...on,
+      ...bench,
       for (final j in jobSlots.where((j) => j != 'kael' && c.slotMember(j) == null)) storyOf[j]!,
     ];
     return [
