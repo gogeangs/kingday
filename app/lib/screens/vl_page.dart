@@ -103,15 +103,13 @@ class VlPage extends StatelessWidget {
       _LvBar(g),
       if (todos.isNotEmpty) ...[
         const SizedBox(height: 8),
-        SizedBox(
-          height: 34,
-          child: ListView(scrollDirection: Axis.horizontal, children: [
-            for (final (k, t, go) in todos) ...[
-              _Chip(t, gold: k == 'lv', onTap: go),
-              if (k == 'farm') _Chip('모두 수확', all: true, onTap: () => g.act((a) => a.harvestReplant())),
-            ],
-          ]),
-        ),
+        // 좁은 폭에서 잘리지 않게 줄바꿈 (웹 .vtodo flex-wrap, UX 점검 12)
+        Wrap(runSpacing: 6, children: [
+          for (final (k, t, go) in todos) ...[
+            _Chip(t, gold: k == 'lv', onTap: go),
+            if (k == 'farm') _Chip('모두 수확', all: true, onTap: () => g.act((a) => a.harvestReplant())),
+          ],
+        ]),
       ],
       const SizedBox(height: 10),
       VillageMap(g),

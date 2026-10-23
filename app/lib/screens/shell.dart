@@ -337,8 +337,8 @@ class _Tabs extends StatelessWidget {
             Text(t.label, style: KdText.display(12, color: on ? KdColors.gold : KdColors.muted).copyWith(height: 1.2)),
           ]),
         ),
-        // 원정대 점은 금색(선택), 마을 점은 빨강
-        if (dot) Positioned(top: n > 1 ? 0 : 3, right: n > 1 ? 4 : 10, child: _Dot(opt: t == GameTab.pt || t == GameTab.up, n: n)),
+        // 점 규칙(UX 점검 10): 원정대·단련·지도(할 수 있는 일)는 금색, 마을(받을 보상)은 빨강
+        if (dot) Positioned(top: n > 1 ? 0 : 3, right: n > 1 ? 4 : 10, child: _Dot(opt: t == GameTab.pt || t == GameTab.up || t == GameTab.mp, n: n)),
       ]),
     );
   }

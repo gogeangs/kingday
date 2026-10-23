@@ -270,7 +270,7 @@ canvas{display:block;width:100%;height:100%}
 .pip.boss.on{background:var(--bad);box-shadow:0 0 10px var(--bad)}
 .buffs{display:flex;flex-wrap:wrap;justify-content:center;gap:4px;pointer-events:none}.buffs:empty{display:none}
 .buff{font-size:11px;background:rgba(0,0,0,.55);border:1px solid rgba(255,201,74,.6);color:var(--gold);border-radius:999px;padding:2px 8px 2px 2px;font-variant-numeric:tabular-nums;display:flex;align-items:center;gap:4px}
-.buff img{width:26px;height:26px;margin:-4px 0}
+.buff img{width:26px;height:26px;margin:-4px 0}.buff.sm{padding:2px 6px 2px 1px;gap:2px;font-size:10.5px}.buff.sm img{width:22px;height:22px;margin:-3px 0}
 .bossbar{width:min(320px,92%);background:linear-gradient(rgba(40,8,16,.9),rgba(14,8,20,.9));border:1px solid rgba(255,107,125,.7);border-radius:12px;padding:6px 10px 7px;font-size:12px;display:flex;align-items:center;gap:8px;box-shadow:0 4px 14px rgba(0,0,0,.4)}
 .bossbar.cmd{border-color:#c9a2ff;background:linear-gradient(rgba(36,14,52,.92),rgba(14,8,24,.92));box-shadow:0 0 14px rgba(170,110,255,.35)}
 .bossbar .bb{flex:1;min-width:0;display:flex;flex-direction:column;gap:4px}
@@ -348,6 +348,8 @@ canvas{display:block;width:100%;height:100%}
 .tab[aria-selected="true"]{background:linear-gradient(#5a4515,#2a2010);border-color:var(--gold);color:var(--gold)}
 .tab[aria-selected="true"] img{filter:none}
 .tab .dot{position:absolute;top:3px;right:10px;width:9px;height:9px;border-radius:50%;background:var(--bad);border:1px solid #fff}
+/* 점 규칙 (UX 점검 10): 빨강 = 지금 받을 보상(마을·상점), 노랑 = 할 수 있는 일(원정대·단련·지도). .tab .dot 이 .dot.opt 를 덮던 것 */
+.tab .dot.opt{background:#ffc94a;border-color:#6b4f12}
 .page>*{flex-shrink:0}
 .page{position:absolute;inset:0;z-index:5;background:linear-gradient(#18203a,#141a29 30%);overflow-y:auto;display:flex;flex-direction:column;gap:12px;padding-block:0 28px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
 .phead{position:sticky;top:0;z-index:3;display:flex;align-items:center;justify-content:space-between;padding:12px 16px 10px;margin-inline:-16px;background:#18203a;border-bottom:1px solid rgba(55,67,106,.7);box-shadow:0 6px 10px -6px rgba(0,0,0,.5)}
@@ -439,7 +441,7 @@ canvas{display:block;width:100%;height:100%}
 .vlvbar .vlvn{grid-area:n;font-family:var(--f-display);font-weight:700;font-size:15px;color:var(--gold)}.vlvbar .vlvs{grid-area:s;font-size:12.5px;color:#e9dcb8;text-align:right}
 .vlvbar .vlvx{grid-area:x;height:7px;border-radius:4px;background:rgba(255,255,255,.1);overflow:hidden}.vlvbar .vlvx i{display:block;height:100%;background:linear-gradient(90deg,#d39a1c,#ffd96a)}
 .vlvbar small{grid-area:m;font-size:12px;color:var(--muted)}.vlvbar .dot{position:absolute;top:6px;right:6px}
-.vtodo{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;margin:-4px 0}.vtodo::-webkit-scrollbar{display:none}
+.vtodo{display:flex;flex-wrap:wrap;gap:6px;margin:-4px 0} /* 360폭에서 잘리지 않게 두 줄로 (UX 점검 12) */.vtodo::-webkit-scrollbar{display:none}
 .vchip{flex:0 0 auto;font:inherit;font-size:12.5px;font-weight:700;white-space:nowrap;border-radius:16px;padding:6px 11px;border:1px solid rgba(255,201,74,.45);background:rgba(255,201,74,.12);color:#ffe6a8;cursor:pointer}
 .vchip.all{background:var(--gold);color:var(--gold-ink);border-color:var(--gold)}.vchip.gold{background:linear-gradient(#ffd96a,#d39a1c);color:#2a1a00}
 .vwk{display:flex;gap:8px}.vwk .buy{flex:1}
@@ -1292,6 +1294,17 @@ function rpFlush(){const b=rpBuf;rpBuf=[];if(!b.length)return;
  queue(()=>{$('sheet').innerHTML=`<div class="eyebrow">영지 소식</div><h2>탈환 보고서</h2><div class="rpl">${b.map((it,i)=>`<div class="rpi"><img class="rpf" src="${it.face}" alt="" onerror="this.style.visibility='hidden'"><div class="rpm"><div class="rpe">${it.eb}</div><div class="rpt">${it.t}</div></div><button class="rpb" data-i="${i}">자세히 보기</button></div><div class="rpd" id="rpd${i}" hidden>${it.p.map(para).join('')}</div>`).join('')}</div><div class="acts one"><button class="pri" id="mGo">계속</button></div>`;
   $('modal').hidden=false;sceneOn=true;$('mGo').focus({preventScroll:true});$('mGo').onclick=closeModal;
   for(const x of $('sheet').querySelectorAll('.rpb'))x.onclick=()=>{const d=$('rpd'+x.dataset.i);d.hidden=!d.hidden;x.textContent=d.hidden?'자세히 보기':'접기';haptic(8)}})}
+/* 새 소식 (UX 점검 4): 새로 열린 것(시련의 탑·새 빈터·대장간 이사·마을 일꾼) 안내가 한꺼번에 생기면 한 장으로.
+   1개면 원래 창 그대로(one), 2개 이상이면 칸마다 「보러 가기」. 고르지 않은 것은 나중에(later) */
+let nwBuf=[],nwT=0;
+function nwAdd(it){nwBuf.push(it);if(!nwT)nwT=setTimeout(nwFlush,400)}
+function nwFlush(){nwT=0;const b=nwBuf;nwBuf=[];if(!b.length)return;if(b.length===1){b[0].one();return}
+ queue(()=>{$('sheet').innerHTML=`<div class="eyebrow">영지 소식</div><h2>새 소식</h2><p class="lore sys" style="text-align:center">새로 열린 것이 ${b.length}가지 있어요</p><div class="rpl">${b.map((it,i)=>`<div class="rpi"><img class="rpf" src="${it.face}" alt="" onerror="this.style.visibility='hidden'"><div class="rpm" data-i="${i}" style="cursor:pointer"><div class="rpe">${it.eb}</div><div class="rpt">${it.t} <small style="color:var(--muted)">▾</small></div></div><button class="rpb go" data-g="${i}">보러 가기</button></div><div class="rpd" id="rpd${i}" hidden>${it.p.map(para).join('')}</div>`).join('')}</div><div class="acts one"><button class="pri" id="mGo">나중에 볼게요</button></div>`;
+  $('modal').hidden=false;sceneOn=true;$('mGo').focus({preventScroll:true});
+  const later=skip=>b.forEach((it,i)=>{if(i!==skip&&it.later)it.later()});
+  $('mGo').onclick=()=>{closeModal();later(-1)};
+  for(const x of $('sheet').querySelectorAll('.rpm'))x.onclick=()=>{const d=$('rpd'+x.dataset.i);d.hidden=!d.hidden;haptic(8)};
+  for(const x of $('sheet').querySelectorAll('.rpb.go'))x.onclick=()=>{const i=+x.dataset.g;closeModal();later(i);b[i].go()}})}
 /* 두 번째 은퇴부터는 다시 나오는 이야기 창(은퇴 직후·지역 이야기·칭호 상승)을 알림 한 줄로 */
 const quietStory=()=>(S.retires||0)>=2;
 /* 왕도 입장: 처음 한 번은 「왕도로 가는 길」 + 지역 소개, 그 뒤로는 알림 한 줄 */
@@ -1356,7 +1369,7 @@ function showItem(it,cur){
  $('mEq').onclick=()=>{const c=S.eq[it.slot];if(c)S.gold+=c.price;S.eq[it.slot]=it;closeModal();flashSlot(it.slot);if(c)toast('이전 장비 판매 +'+fmt(c.price))};
  $('mSell').onclick=()=>{S.gold+=it.price;closeModal();if(weak)sellAsk()};$(weak?'mSell':'mEq').focus({preventScroll:true});
 }
-function closeModal(){$('modal').hidden=true;pending=null;sceneOn=false;if(toastHold.length){const h=toastHold;toastHold=[];setTimeout(()=>h.forEach(toast),200)}renderAll();pump()}
+function closeModal(){$("modal").hidden=true;pending=null;sceneOn=false;attIntroNow=false;if(toastHold.length){const h=toastHold;toastHold=[];setTimeout(()=>h.forEach(toast),200)}renderAll();pump()}
 
 /* ---------- 밭 · 부엌 · 마을 ---------- */
 const CROP_ART=['wheat','carrot','pumpkin'],PLOTART=true;/* 성장 단계 그림이 있는 작물 */
@@ -1752,7 +1765,11 @@ function renderAll(){
  renderParty();renderBlds();renderFarm();renderKitchen();renderVillage();renderShop();renderRetire();renderMapInfo();
  const boss=mons.some(m=>m.boss);
  if(!inCh)$('pips').innerHTML=Array.from({length:10},(_,i)=>`<i class="pip${i<S.wave?' on':''}"></i>`).join('')+(S.stage>MAXLAND?'':`<i class="pip boss${boss?' on':''}" aria-label="보스"></i>`);
- const now=Date.now();$('buffs').innerHTML=Object.keys(BUFFN).filter(buff).map(b=>`<span class="buff"><img src="assets/ui/buff_${b}.png" alt="" onerror="this.onerror=()=>this.remove();this.src='assets/ui/dish_${(RECIPES.find(x=>x.buff===b)||{}).k}.png'">${BUFFN[b]} ${mmss((S.buffs[b]-now)/1000)}</span>`).join('')+(blessK()?`<span class="buff bl"><img src="assets/ui/bless_${blessK()}.png" alt="" onerror="this.remove()">${BLS[blessK()].s} ${hms((S.bless.until-now)/1000)}</span>`:'')+[['shield','bron'],['honey','riel'],['feast','margo']].filter(([k])=>SKX[k]>0).map(([k,id])=>`<span class="buff sk"><img src="assets/skills/skill_${id}.png" alt="" onerror="this.remove()">${SKILLS[id].n} ${Math.ceil(SKX[k])}초</span>`).join('');renderAuto();
+ /* 버프가 3개 이상이면 이름은 빼고 그림 + 남은 시간만 (한 줄로, UX 점검 9) */
+ const now=Date.now(),BF=[...Object.keys(BUFFN).filter(buff).map(b=>['',`<img src="assets/ui/buff_${b}.png" alt="" onerror="this.onerror=()=>this.remove();this.src='assets/ui/dish_${(RECIPES.find(x=>x.buff===b)||{}).k}.png'">`,BUFFN[b],mmss((S.buffs[b]-now)/1000)]),
+  ...(blessK()?[[' bl',`<img src="assets/ui/bless_${blessK()}.png" alt="" onerror="this.remove()">`,BLS[blessK()].s,hms((S.bless.until-now)/1000)]]:[]),
+  ...[['shield','bron'],['honey','riel'],['feast','margo']].filter(([k])=>SKX[k]>0).map(([k,id])=>[' sk',`<img src="assets/skills/skill_${id}.png" alt="" onerror="this.remove()">`,SKILLS[id].n,Math.ceil(SKX[k])+'초'])],sm=BF.length>=3;
+ $('buffs').innerHTML=BF.map(([c,i,n,t])=>`<span class="buff${c}${sm?' sm':''}" title="${n}">${i}${sm?'':n+' '}${t}</span>`).join('');renderAuto();
  const ready=S.bld.farm&&S.plots.some(p=>plotState(p).st==='ready');
  {const sd=$('shopDot');if(sd&&(T*2|0)!==sd._t){sd._t=T*2|0;sd.hidden=!dotOn('sh');if(toastCur!==null)toastPos($('toast'))}}{const vd=$('vlDot');if(vd&&(T*2|0)!==vd._t){vd._t=T*2|0;vd.hidden=!dotOn('vl');if(!vd.hidden)dotNum(vd,vReadyN())}}{const pd=$('ptDot');if(pd&&(T*2|0)!==pd._t){pd._t=T*2|0;const a=ptAct();pd.hidden=!a||a===S.dotSeen||curTab==='pt';if(!pd.hidden)dotNum(pd,cardReady().length);if(curTab==='pt'&&a!==S.dotSeen)S.dotSeen=a;const cd=$('ptCardDot');if(cd)cd.hidden=!cardReady().length}}
 }
@@ -1760,7 +1777,7 @@ let curTab=null; // null = 전투 화면
 function setTab(t){if(t===curTab)t=null;setTimeout(()=>{if(toastCur!==null)toastPos($('toast'))},0);if(t==='pt')dotSeen();if(t!=='sh')misOpen=adOpen=false;curTab=t;document.querySelectorAll('.tab').forEach(b=>b.setAttribute('aria-selected',b.dataset.t===t));['eq','pt','up','vl','mp','sh'].forEach(x=>$('p-'+x).hidden=x!==t);pgMode();if(t==='vl'){resizeV();farmSig='';kitSig='';bldSig='';vSig='';vTopSig='';vPreload();requestAnimationFrame(resizeV)}else{$('p-vb').hidden=true;$('p-vl').classList.remove('vbon')}if(t==='mp')mapOpen();else{const z=$('p-mz');if(z)z.hidden=true}if(t==='pt')partySig='';if(t==='sh')shopSig='';if(t==='eq'){eqSig=''}renderAll()}
 document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>setTab(b.dataset.t));
 document.querySelectorAll('[data-close]').forEach(b=>b.onclick=()=>setTab(null));
-const HALF=['eq','pt','up','sh'];
+const HALF=['eq','pt','up','sh','vl','mp'];
 function pgMode(){try{$('pgShade').hidden=!(curTab&&HALF.includes(curTab)&&!S.pgFull)}catch(e){}HALF.forEach(x=>$('p-'+x).classList.toggle('half',!S.pgFull));document.querySelectorAll('.pexp').forEach(b=>{b.textContent=S.pgFull?'⤡':'⤢';b.setAttribute('aria-label',S.pgFull?'반만 보기':'크게 보기')})}
 $('pgShade').onclick=()=>setTab(null);
 HALF.forEach(x=>{const h=$('p-'+x).querySelector('.phead');let sy=null;h.addEventListener('pointerdown',e=>{if($('p-'+x).classList.contains('half')&&!e.target.closest('button')){sy=e.clientY;try{h.setPointerCapture(e.pointerId)}catch(_){}}});h.addEventListener('pointerup',e=>{if(sy!=null&&e.clientY-sy>50)setTab(null);sy=null});h.addEventListener('pointercancel',()=>sy=null);h.style.touchAction='none';const _h=h,c=h.querySelector('.pclose'),b=document.createElement('button');b.className='pexp';b.textContent='⤢';b.onclick=()=>{S.pgFull=!S.pgFull;pgMode();save();if(curTab==='eq')eqSig=''};h.insertBefore(b,c)});
@@ -2107,8 +2124,8 @@ const rwHtml=r=>`<div class="gobloot">${Object.keys(RWN).filter(k=>r[k]).map(k=>
 const rwText=r=>Object.keys(RWN).filter(k=>r[k]).map(k=>RWN[k][0]+' +'+fmt(r[k])).join(' · ');
 const chRi=()=>!CH?0:CH.mode==='tower'?3:DUNS[CH.k].ri;/* 배경 지역: 탑은 그림이 없으면 서리 무덤을 어둡게 */
 /* 도전 해금: 영지 20 탈환 때 한 번 */
-function chCheck(){if(S.chOpen||!chCan())return;S.chOpen=1;save();
- queue(()=>scene('새로운 도전','시련의 탑',['sys:들판 끝에 오래된 석탑이 서 있다. 꼭대기가 구름에 가려 보이지 않는다.','q:시련의 탑이다. 300년 전 에르단의 왕들은 왕관을 쓰기 전에 이 탑을 올랐지.','k:꼭대기가 어디야?','q:없다. 오를수록 높아진다.','k@flustered:…그럼 은퇴는 언제 해?','m:브론|탑 말고 내 폐광도 좀 봐 줘. 요일마다 광석이 쏟아진다고.','sys:지도 탭의 「⚔ 도전」에서 시련의 탑과 요일 던전에 들어갈 수 있어요.'],'나중에 (지도에서 보기)',{label:'도전 보러 가기',go:()=>{if(S.dotSeen2)delete S.dotSeen2.mp;renderAll()},no:()=>chSheet()}))}
+function chCheck(){if(S.chOpen||!chCan())return;S.chOpen=1;save();const mpDot=()=>{if(S.dotSeen2)delete S.dotSeen2.mp;renderAll()};
+ nwAdd({face:'assets/portraits/portrait_luminar_proud.png',eb:'새로운 도전',t:'시련의 탑 · 요일 던전',p:['q:시련의 탑이다. 300년 전 에르단의 왕들은 왕관을 쓰기 전에 이 탑을 올랐지.','m:브론|탑 말고 내 폐광도 좀 봐 줘. 요일마다 광석이 쏟아진다고.','sys:지도 탭의 「⚔ 도전」에서 시련의 탑과 요일 던전에 들어갈 수 있어요.'],go:()=>chSheet(),later:mpDot,one:()=>queue(()=>scene('새로운 도전','시련의 탑',['sys:들판 끝에 오래된 석탑이 서 있다. 꼭대기가 구름에 가려 보이지 않는다.','q:시련의 탑이다. 300년 전 에르단의 왕들은 왕관을 쓰기 전에 이 탑을 올랐지.','k:꼭대기가 어디야?','q:없다. 오를수록 높아진다.','k@flustered:…그럼 은퇴는 언제 해?','m:브론|탑 말고 내 폐광도 좀 봐 줘. 요일마다 광석이 쏟아진다고.','sys:지도 탭의 「⚔ 도전」에서 시련의 탑과 요일 던전에 들어갈 수 있어요.'],'나중에 (지도에서 보기)',{label:'도전 보러 가기',go:mpDot,no:()=>chSheet()}))})}
 const chDot=()=>!!S.chOpen&&(supplyCan()||dunLeft()>0);
 function chPartyReset(){SKX.shield=SKX.honey=SKX.feast=SKX.guts=SKX.sym=0;ULB.t=0;for(const id of members()){if(!P[id])continue;P[id].hp=stats(id).hp;P[id].down=false;P[id].bsh=0}seal=null;talk=null;holdT=0;warn=null;banner=null}
 /* 추억 속 원정대 (CHALLENGE.md 11장): 탑·던전에서는 원정대 힘을 「지금」과 「역대 최고」 중 센 쪽으로.
@@ -2726,8 +2743,10 @@ const VOPEN={forge:['m:브론|광산에서 광석이 나오니 대장간이 있�
 const VMOVE=['m:브론|장비 창고 구석은 답답해서 못 있겠다! 마을에 제대로 된 대장간을 차렸지.','k:원래 거기 있었던 거 아니었어?','m:브론|이제 확장도 된다고. 망치 소리 좀 시끄러워도 참아라!','sys:브론의 대장간이 마을로 옮겨 왔어요. 강화 기록은 그대로예요. 대장간을 확장하면 강화 한도가 늘고 광석이 덜 들어요.'];
 function vlTick(){if(!S||!S.started)return;ordTick();
  for(const k of['forge','market','ranch','chapel']){const b=bldK(k);if(S.done['vo_'+k]||!b.open())continue;S.done['vo_'+k]=1;const mv=k==='forge'&&S.bld.forge>0;
-  queue(()=>scene(mv?'마을 · 이사':'마을 · 새 빈터',mv?'브론의 대장간 이사':b.n,mv?VMOVE:[...VOPEN[k],'sys:마을에 '+b.n+' 빈터가 열렸어요. '+(k==='forge'?'재건하면 성유물·동료 무기를 강화할 수 있어요.':'마을 탭에서 재건해요.')],'마을에서 보기',{label:'나중에',go:()=>vlSelect(k)}))}
- if(!S.workIntro&&restIds().length>0&&S.bld.inn>0){S.workIntro=1;queue(()=>scene('마을 일꾼','쉬는 동료에게 일을',['m:마르타|원정 안 나가는 동료들, 마을에서 놀고먹기만 할 거냐? 일 좀 시켜.','k:다들 쉬고 싶을 텐데…','q:주인이 쉬고 싶은 거겠지.','k@flustered:…들켰네.','sys:출전하지 않는 동료를 건물 일꾼으로 넣으면 건물 효과가 올라요. 직업이 맞으면 2배!'],'추천 일꾼 넣기',{label:'나중에',go:()=>wkAuto(false)}))}}
+  const ps=mv?VMOVE:[...VOPEN[k],'sys:마을에 '+b.n+' 빈터가 열렸어요. '+(k==='forge'?'재건하면 성유물·동료 무기를 강화할 수 있어요.':'마을 탭에서 재건해요.')];
+  nwAdd({face:rpFace(ps),eb:mv?'마을 · 이사':'마을 · 새 빈터',t:mv?'브론의 대장간 이사':b.n,p:ps,go:()=>vlSelect(k),one:()=>queue(()=>scene(mv?'마을 · 이사':'마을 · 새 빈터',mv?'브론의 대장간 이사':b.n,ps,'마을에서 보기',{label:'나중에',go:()=>vlSelect(k)}))})}
+ if(!S.workIntro&&restIds().length>0&&S.bld.inn>0){S.workIntro=1;const ps=['m:마르타|원정 안 나가는 동료들, 마을에서 놀고먹기만 할 거냐? 일 좀 시켜.','k:다들 쉬고 싶을 텐데…','q:주인이 쉬고 싶은 거겠지.','k@flustered:…들켰네.','sys:출전하지 않는 동료를 건물 일꾼으로 넣으면 건물 효과가 올라요. 직업이 맞으면 2배!'];
+  nwAdd({face:rpFace(ps),eb:'마을 일꾼',t:'쉬는 동료에게 일을',p:ps,go:()=>wkAuto(false),one:()=>queue(()=>scene('마을 일꾼','쉬는 동료에게 일을',ps,'추천 일꾼 넣기',{label:'나중에',go:()=>wkAuto(false)}))})}}
 
 $('vbX').onclick=vbClose;$('vbExp').onclick=()=>{vbFull=!vbFull;$('vbExp').textContent=vbFull?'⤡':'⤢';renderVb()};
 $('vlvBar').onclick=vlSheet;$('wkMgr').onclick=wkSheet;
@@ -3200,7 +3219,9 @@ function attGive(r,again){let it=Object.assign({},r),txt='',sub='';
    return{it,row:`<div class="attrw"><img data-k="${k}" src="${bdSrc(k)}" alt="" onerror="bdErr(this)"><span><b>${BDN(k)} 배지</b><small>프로필에서 대표 배지로 달 수 있어요</small></span></div>`}}}
  return{it,row:attRow(it,txt,sub,again)}}
 const attRow=(r,txt,sub,again)=>`<div class="attrw">${attIc(r)}<span><b>${txt}</b>${sub?`<small>${sub}</small>`:''}</span>${again?'<i class="x2">2배</i>':''}</div>`;
-function attOpen(){const a=attA();if(!a.intro){a.intro=1;save();scene('피트의 출석부','출석부가 생겼어요',['m:피트|어서 와요, 영주님! 오늘부터 출석부를 만들었어요. 하루 한 번 얼굴만 보여 주시면 선물을 챙겨 드릴게요.','k@smile:얼굴만 보여 주면 된다고? 그건 은퇴하고도 할 수 있겠네.','q:주인, 출석도 왕의 덕목이다.'],'출석부 열기',{go:attSheet});return}attSheet()}
+/* 처음 한 번 피트 대사는 따로 창을 띄우지 않고 출석부 위에 (UX 점검 4: 다시 접속할 때 창 줄이기) */
+let attIntroNow=false;
+function attOpen(){const a=attA();if(!a.intro){a.intro=1;save();attIntroNow=true}attSheet()}
 function attClaim(){const r=attDo(today());
  if(r==='done')return toast('오늘은 이미 받았어요. 내일 자정에 또 만나요');
  if(r==='back')return toast('날짜가 이상해요. 휴대폰 시간을 확인해 주세요.');
@@ -3225,9 +3246,9 @@ function attSheet(tab){const a=attA();if(tab){a.tab=tab;save()}const tb=a.tab===
  const btn=st==='back'?`<button class="pri" disabled>날짜를 확인해 주세요</button>`:!done?`<button class="pri" id="attGo">출석하기</button>`:adOk?`<button id="attAdB" style="font-size:14px">▶ 광고로 한 번 더</button>`:`<button disabled>내일 또 만나요</button>`;
  $('sheet').innerHTML=`<div class="hdban${ATTIMG.hd_attend?'':' nohd'}" style="--hb:url(assets/ui/hd_attend.png)"><span>피트의 출석부</span></div>
  <div class="fgtabs"><button data-at="w" class="${tb==='w'?'on':''}">7일</button><button data-at="m" class="${tb==='m'?'on':''}">한달</button></div>
- ${board}${st==='back'?'<p class="lore sys">날짜가 이상해요. 휴대폰 시간을 확인해 주세요.</p>':''}${line?para(line):''}${gotHtml}
+ ${attIntroNow?['m:피트|어서 와요, 영주님! 오늘부터 출석부를 만들었어요. 하루 한 번 얼굴만 보여 주시면 선물을 챙겨 드릴게요.','k@smile:얼굴만 보여 주면 된다고? 그건 은퇴하고도 할 수 있겠네.'].map(para).join(''):''}${board}${st==='back'?'<p class="lore sys">날짜가 이상해요. 휴대폰 시간을 확인해 주세요.</p>':''}${line?para(line):''}${gotHtml}
  <div class="acts">${done&&st!=='back'?btn+'<button class="pri" id="mX">닫기</button>':'<button id="mX">닫기</button>'+btn}</div>`;
- $('modal').hidden=false;attJust=null;$('mX').onclick=closeModal;
+ $('modal').hidden=false;attJust=null;$('mX').onclick=()=>{attIntroNow=false;closeModal()};
  document.querySelectorAll('[data-at]').forEach(b=>b.onclick=()=>attSheet(b.dataset.at));
  if($('attGo'))$('attGo').onclick=attClaim;if($('attAdB'))$('attAdB').onclick=attAd}
 /* 배지 그림: 출석 배지는 월별 그림 → 공용 그림 → 그림이 없으면 그려 둔 메달 */

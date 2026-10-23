@@ -22,9 +22,12 @@ String reportFace(List<String> ps) {
 }
 
 class ReportSheet extends StatefulWidget {
-  const ReportSheet({super.key, required this.items, required this.onDone});
+  const ReportSheet({super.key, required this.items, required this.onDone, this.onGo});
   final List<ReportItem> items;
   final VoidCallback onDone;
+
+  /// 「새 소식」(웹 nwFlush): 칸마다 「보러 가기」, 글을 누르면 대사 펼침. 아래 버튼은 「나중에 볼게요」
+  final void Function(int i)? onGo;
 
   @override
   State<ReportSheet> createState() => _ReportSheetState();
@@ -32,6 +35,8 @@ class ReportSheet extends StatefulWidget {
 
 class _ReportSheetState extends State<ReportSheet> {
   final _open = <int>{};
+
+  bool get news => widget.onGo != null;
 
   Widget _row(int i, ReportItem it) {
     final on = _open.contains(i);
@@ -56,20 +61,24 @@ class _ReportSheetState extends State<ReportSheet> {
           ),
           const SizedBox(width: 8),
           Expanded(
-            child: Column(crossAxisAlignment: CrossAxisAlignment.start, mainAxisSize: MainAxisSize.min, children: [
-              Text(it.eb, maxLines: 1, overflow: TextOverflow.ellipsis, style: KdText.body(11, color: KdColors.gold)),
-              Text(it.t, maxLines: 1, overflow: TextOverflow.ellipsis, style: KdText.display(14)),
-            ]),
+            child: GestureDetector(
+              behavior: HitTestBehavior.opaque,
+              onTap: news ? () => setState(() => on ? _open.remove(i) : _open.add(i)) : null,
+              child: Column(crossAxisAlignment: CrossAxisAlignment.start, mainAxisSize: MainAxisSize.min, children: [
+                Text(it.eb, maxLines: 1, overflow: TextOverflow.ellipsis, style: KdText.body(11, color: KdColors.gold)),
+                Text(news ? '${it.t} ▾' : it.t, maxLines: 1, overflow: TextOverflow.ellipsis, style: KdText.display(14)),
+              ]),
+            ),
           ),
           const SizedBox(width: 6),
           Pressable(
-            onTap: () => setState(() => on ? _open.remove(i) : _open.add(i)),
+            onTap: news ? () => widget.onGo!(i) : () => setState(() => on ? _open.remove(i) : _open.add(i)),
             child: Container(
               constraints: const BoxConstraints(minHeight: 32),
               alignment: Alignment.center,
               padding: const EdgeInsets.symmetric(horizontal: 8),
               decoration: BoxDecoration(color: KdColors.panel2, borderRadius: BorderRadius.circular(8), border: Border.all(color: KdColors.line)),
-              child: Text(on ? '접기' : '자세히 보기', style: KdText.body(12)),
+              child: Text(news ? '보러 가기' : on ? '접기' : '자세히 보기', style: KdText.body(12)),
             ),
           ),
         ]),
@@ -87,10 +96,11 @@ class _ReportSheetState extends State<ReportSheet> {
   @override
   Widget build(BuildContext context) => KdSheetBody(
         eyebrow: '영지 소식',
-        title: '탈환 보고서',
+        title: news ? '새 소식' : '탈환 보고서',
         children: [
+          if (news) KdNote('새로 열린 것이 ${widget.items.length}가지 있어요', center: true),
           for (var i = 0; i < widget.items.length; i++) _row(i, widget.items[i]),
         ],
-        acts: KdActs(buttons: [KdAct('계속', primary: true, onTap: widget.onDone)]),
+        acts: KdActs(buttons: [KdAct(news ? '나중에 볼게요' : '계속', primary: true, onTap: widget.onDone)]),
       );
 }
