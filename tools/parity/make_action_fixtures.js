@@ -81,6 +81,13 @@ function op(o) {
     case 'starter': return F('buyStarter')();
     case 'sub': return F('buySub')();
     case 'subclaim': return F('claimSub')();
+    // ── 카엘 촌장 ──
+    case 'chief': return F('buyChief')();
+    case 'chiefchk': return F('chiefCheck')();
+    case 'chiefup': return F('chiefUp')();
+    case 'kseat': return F('setKaelSeat')(a);
+    case 'ucard': return w.run(`S.ucard=${+a}`);
+    case 'retires': return w.run(`S.retires=${+a}`);
     case 'adbox': return w.run('(()=>{S.gold+=boxCost();openBox(false)})()');
     case 'adgem': return w.run('(()=>{S.gem=(S.gem||0)+5})()');
     case 'adcard': return w.run("(()=>{gainCards(3,'shop',1)})()");
@@ -126,6 +133,9 @@ const CASES = {
     'gem:20', 'gx:g1', 'gx:g2', 'gem:5000', 'gx:g1', 'gx:g2', 'gx:g3', 'cp:0', 'cp:1', 'cp:1', 'cp:0',
     'pack:p1', 'pack:p1', 'pack:p6', 'starter', 'starter', 'sub', 'subclaim', 'time:' + 24 * H, 'subclaim', 'subclaim', 'sub',
     'adgem', 'adcard', 'adbox', 'sell', 'gold:0', 'adbox', 'equip']],
+  // 유니크 카엘 촌장: 은퇴 전엔 못 삼 → 첫 은퇴 뒤 500원 → 카엘 자리 → 유니크 카드로 별(덤·정기 배송) → 카엘로 되돌림 / 은퇴 10번 무료
+  chief: [base.mid, ['retires:0', 'chief', 'retires:1', 'chief', 'chief', 'kseat:kael_chief', 'chiefup', 'pack:p2', 'pack:p3', 'pack:p4', 'chiefup', 'sub', 'subclaim', 'time:' + 24 * H, 'subclaim', 'ucard:100', 'chiefup', 'chiefup', 'chiefup', 'chiefup', 'up:hp', 'kseat:kael', 'kseat:kael', 'kseat:kael_chief']],
+  chief10: [base.late, ['chiefchk', 'retires:9', 'chiefchk', 'retires:10', 'chiefchk', 'chiefchk', 'kseat:kael_chief', 'chiefup']],
   // 전설 어부 막례: 카드 모아 맞이하기 → 별 올리기 → 편성 → 낚시터 생선 생산 「물질 대장」
   makrye: [base.mid, ['ensure', 'card:makrye:29', 'rec:makrye', 'card:makrye:30', 'rec:makrye', 'set:fisher:makrye', 'time:' + 10 * M, 'card:makrye:40', 'rec:makrye', 'time:' + 30 * M, 'auto', 'card:makrye:999', 'rec:makrye', 'rec:makrye', 'rec:makrye', 'rec:makrye', 'time:' + 2 * H, 'lv:makrye', 'cw:makrye']],
   // 말봉(꿀 생산)·덕배(요리 시간)·페피·안단테: 맞이하기·별·편성·생산·요리

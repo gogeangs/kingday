@@ -90,6 +90,7 @@ class GameController extends ChangeNotifier {
       // 은퇴 횟수 보상: 업데이트 전에 넘긴 단계는 첫 접속 때 바로 지급 (웹 start → retRwCheck)
       final rw = calc.retRwCheck();
       if (rw != null) queue((_) async => toast(retRwText(rw)));
+      act((a) => a.chiefCheck());
     }
     calc.pfCheck();
     // 웹 start() 끝의 events(): 옛 기록·다른 곳에서 가져온 기록이면 밀린 이야기·칭호를 바로 보여 줌
@@ -685,6 +686,22 @@ class GameController extends ChangeNotifier {
         case ActRecruitScene(:final id):
           final rc = recruits[id]!;
           scene('동료 합류', rc.title, rc.lines, rc.ok, illust: 'join', illustFace: id);
+        case ActChiefScene(:final src):
+          scene(
+              '유니크 동료',
+              '은퇴하면 더 바빠진다',
+              [
+                '새벽 종소리가 마을에 길게 울려 퍼졌다. 초록 모자를 쓴 할아버지가 성검을 지팡이처럼 짚고 걸어왔다.',
+                'k@surprised:저게… 나야?',
+                'm:카엘 촌장@laugh|껄껄! 은퇴하면 더 바빠진다, 이 녀석아.',
+                'q@moved:…주인, 결국 은퇴는 하는군. 쉬지는 못하는 모양이지만.',
+                if (src == 'retire') 'sys:은퇴 ${GameCalc.chiefRet}번을 채워 카엘 촌장이 찾아왔어요.',
+                'sys:유니크 동료 · 카엘 자리에서 카엘 대신 출전해요. 장비·칭호는 카엘 것을 그대로 써요.',
+                'sys:마을 스킬 「새벽 종소리」 마을 건물 생산 +${pctTxt(GameCalc.chPct(1))}% (출전 안 해도 적용)',
+              ],
+              '카엘 자리에 출전',
+              altLabel: '나중에',
+              onGo: () => act((a) => a.setKaelSeat(GameCalc.chiefId)));
       }
     }
   }
@@ -1413,6 +1430,7 @@ class GameController extends ChangeNotifier {
       scene('몇 년 뒤', '…다시 끌려 나오다', sc ?? retDefault, '괭이 대신 검을 든다', illust: 'retire');
       if (extra.isNotEmpty) queue((_) async => toast(extra.join(' · ')));
     }
+    act((a) => a.chiefCheck());
     if (rw != null) queue((_) async => toast(retRwText(rw)));
     if (!_quietStory) _chapter();
     refresh();

@@ -13,7 +13,7 @@
 2. Google Play Console 가입 → 앱 만들기 → 내부 테스트에 AAB 올리기 (§2)
 3. Google Cloud에 안드로이드 OAuth 클라이언트 추가 → Supabase에 클라이언트 ID 추가 (§3)
 4. AdMob 앱·광고 단위 만들기 (§4)
-5. Play Console에 상품 8개 등록 → 서비스 계정 연결 → Supabase에 SQL 실행·Edge Function 배포 (§5)
+5. Play Console에 상품 9개 등록 → 서비스 계정 연결 → Supabase에 SQL 실행·Edge Function 배포 (§5)
 6. (iOS) Apple Developer 가입 → 앱·상품·애플 로그인 → Codemagic (§6)
 7. 스토어 등록정보·개인정보처리방침·콘텐츠 등급 (§7, `docs/STORE_LISTING.md`, `docs/PRIVACY_POLICY.md`)
 
@@ -98,6 +98,7 @@
 | `kd_gem_3280` | 황금 이삭 3,280 | ₩55,000 |
 | `kd_gem_6480` | 황금 이삭 6,480 | ₩99,000 |
 | `kd_starter` | 첫 거래 특가 | ₩1,200 |
+| `kd_chief` | 카엘 촌장 맞이하기 (유니크 동료, 첫 은퇴 뒤 상점에 열림) | ₩500 (스토어에서 안 되면 그 스토어의 가장 낮은 가격) |
 
 **정기 결제(구독)**: `kd_sub_monthly` 피트의 정기 배송, ₩5,500, 1개월 기본 요금제(자동 갱신).
 
@@ -120,7 +121,7 @@
 ## 6. 아이폰 (나중에)
 1. Apple Developer Program에 가입해 주세요(연 99달러, 조직은 D-U-N-S 번호 필요).
 2. App Store Connect에서 앱을 만들어 주세요. 번들 ID는 `kr.co.project30s.kingday`예요.
-3. 상품 8개를 §5-1과 같은 ID로 등록해 주세요.
+3. 상품 9개를 §5-1과 같은 ID로 등록해 주세요.
 4. **Sign in with Apple**을 켜고, Supabase → Providers → Apple을 켜 주세요. App Store 규정상 구글 로그인이 있으면 애플 로그인도 있어야 해요.
 5. 맥이 없으면 Codemagic(https://codemagic.io) 가입 → 저장소 연결 → 제가 빌드 설정 파일을 만들어 드릴게요.
 

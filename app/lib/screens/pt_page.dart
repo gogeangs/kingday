@@ -1,6 +1,8 @@
 /// 원정대 탭 — 웹 #p-pt (편성 · 동료 · 카드) + 동료 정보 창(compSheet) + 자리 고르기 창(seatSheet)
 library;
 
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 
 import '../core/calc.dart';
@@ -91,10 +93,10 @@ class PtPage extends StatelessWidget {
 
   Widget _seat(String j) {
     final c = g.calc, id = c.slotMember(j);
-    final multi = j != 'kael' && c.jobMembers(j).length > 1, better = j != 'kael' && c.betterBench(j);
+    final multi = j == 'kael' ? c.owned(GameCalc.chiefId) : c.jobMembers(j).length > 1, better = j != 'kael' && c.betterBench(j);
     return GestureDetector(
       onTap: () {
-        if (j == 'kael') return g.setTab(GameTab.eq);
+        if (j == 'kael') return c.owned(GameCalc.chiefId) ? kaelSeatSheet(g) : g.setTab(GameTab.eq);
         if (c.jobMembers(j).length > 1) return seatSheet(g, j);
         g.toast(id != null ? '${comps[id]!.n} · 같은 직업 동료가 더 생기면 바꿀 수 있어요' : '${jobName[j]} 자리 동료가 아직 없어요');
       },
@@ -202,6 +204,7 @@ class PtPage extends StatelessWidget {
     final c = g.calc;
     final ids = <String>[
       'kael',
+      if (c.owned(GameCalc.chiefId) || c.chiefShop()) GameCalc.chiefId,
       for (final j in jobSlots.where((j) => j != 'kael'))
         ...[c.slotMember(j), ...c.jobMembers(j).where((x) => x != c.slotMember(j))].whereType<String>(),
       for (final j in jobSlots.where((j) => j != 'kael' && c.slotMember(j) == null)) storyOf[j]!,
@@ -215,6 +218,28 @@ class PtPage extends StatelessWidget {
 
   Widget _crow(String id) {
     final c = g.calc, cd = comps[id]!;
+    if (id == GameCalc.chiefId) {
+      final has = c.owned(id), on = c.chiefOn();
+      return GestureDetector(
+        onTap: () => chiefSheet(g),
+        child: _crowBox(
+          face: FaceImg(id),
+          title: Wrap(crossAxisAlignment: WrapCrossAlignment.center, spacing: 5, children: [
+            Text(cd.n, style: KdText.display(15)),
+            GradeTag(id),
+            if (has) Stars(c, id),
+          ]),
+          sub: has ? '${on ? '출전' : '대기'} · 카엘 자리 · 카엘 능력치 +${pctTxt(GameCalc.chiefBonus[c.recStar(id)] * 100)}%' : cd.join ?? '',
+          right: has && c.chiefCan()
+              ? KdBuy(text: '★ 올리기', small: true, glow: true, minWidth: 74, onTap: () => g.act((a) => a.chiefUp()))
+              : Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                  decoration: BoxDecoration(border: Border.all(color: KdColors.line), borderRadius: BorderRadius.circular(8)),
+                  child: Text(has ? (on ? '출전' : '대기') : '보기', style: KdText.body(12, color: KdColors.muted)),
+                ),
+        ),
+      );
+    }
     if (!c.owned(id)) {
       return _crowBox(
         locked: true,
@@ -286,6 +311,7 @@ class PtPage extends StatelessWidget {
       return d != 0 ? d : (GameCalc.gr(a).w - GameCalc.gr(b).w).sign.toInt();
     });
     TextSpan gt(String n, int col) => TextSpan(text: n, style: TextStyle(color: Color(col), fontWeight: FontWeight.w700));
+    final uc = c.owned(GameCalc.chiefId) || c.chiefShop() || c.ucard > 0;
     return [
       Text.rich(
         TextSpan(children: [
@@ -300,11 +326,76 @@ class PtPage extends StatelessWidget {
           const TextSpan(
               text: '(★5). 높은 등급일수록 드물게 나오고 기본 능력치가 높아요. 마물·성주·군단장·황금 고블린·오늘의 할 일·피트의 상점에서 카드를 얻어요. '
                   '♡ 희망을 눌러 두면 그 동료 카드가 절반 확률로 나와요. 은퇴해도 카드와 별은 남아요.'),
+          if (uc) ...[
+            const TextSpan(text: ' '),
+            gt('유니크', 0xFF3EE08F),
+            const TextSpan(text: '(★5)는 카드 뽑기에 나오지 않고, 유니크 카드로만 별을 올려요.'),
+          ],
         ]),
         style: KdText.body(12, color: KdColors.muted, height: 1.6),
       ),
+      if (uc) _ucard(),
       for (final id in ids) _ccard(id),
     ];
+  }
+
+  /// 유니크 카드 줄 (웹 ucRow): 카엘 촌장 별 올리기
+  Widget _ucard() {
+    const id = GameCalc.chiefId;
+    final c = g.calc, cd = comps[id]!, has = c.owned(id), stv = c.recStar(id), n = c.ucard;
+    final mx = has && stv >= c.starMax(id), need = c.starNeed(id) ?? 1;
+    final col = compColor(id);
+    return Container(
+      margin: const EdgeInsets.only(top: 8),
+      padding: const EdgeInsets.all(10),
+      decoration: BoxDecoration(color: KdColors.panel2, border: Border.all(color: col.withValues(alpha: .55)), borderRadius: BorderRadius.circular(14)),
+      child: Row(children: [
+        CompFrame(id, dim: !has),
+        const SizedBox(width: 10),
+        Expanded(
+          child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+            Wrap(crossAxisAlignment: WrapCrossAlignment.center, spacing: 5, runSpacing: 2, children: [
+              Text(cd.n, style: KdText.display(15)),
+              GradeTag(id),
+              Text('카엘 자리', style: KdText.body(11.5, color: KdColors.muted)),
+              if (stv > 0) Stars(c, id),
+            ]),
+            Padding(
+              padding: const EdgeInsets.only(top: 3),
+              child: Row(children: [
+                uiImg('village_skill', size: 16),
+                const SizedBox(width: 3),
+                Flexible(child: Text('마을 스킬 · ${villageSkillName[id]}', style: KdText.body(12, color: const Color(0xFFFFC23A)))),
+              ]),
+            ),
+            if (!has)
+              Text('유니크 카드 $n장 모아 둠 · ${cd.join ?? ''}', style: KdText.body(12, color: KdColors.muted))
+            else if (mx)
+              Text('별을 모두 모았어요', style: KdText.body(12, color: KdColors.muted))
+            else ...[
+              const SizedBox(height: 6),
+              XpBar(n / need),
+              const SizedBox(height: 2),
+              Row(children: [
+                uiImg('card_unique', size: 16),
+                const SizedBox(width: 3),
+                Text('유니크 카드 $n / $need', style: KdText.figure(12, color: KdColors.muted, weight: FontWeight.w400)),
+              ]),
+            ],
+          ]),
+        ),
+        const SizedBox(width: 8),
+        SizedBox(
+          width: 92,
+          child: KdBuy(
+            text: has && !mx ? '★ 올리기' : '보기',
+            glow: c.chiefCan(),
+            minWidth: 0,
+            onTap: () => c.chiefCan() ? g.act((a) => a.chiefUp()) : chiefSheet(g),
+          ),
+        ),
+      ]),
+    );
   }
 
   Widget _ccard(String id) {
@@ -508,5 +599,114 @@ void seatSheet(GameController g, String j) {
           const KdNote('교체한 동료는 나간 동료의 체력 비율을 이어받고, 스킬 게이지는 처음부터 채워요.'),
         ],
         acts: KdActs(buttons: [KdAct('닫기', primary: true, onTap: () => Navigator.of(ctx).pop())]),
+      ));
+}
+
+/// 카엘 촌장 정보 창 (웹 chiefSheet): 능력치·스킬·마을 스킬·유니크 카드·출전
+void chiefSheet(GameController g) {
+  const id = GameCalc.chiefId;
+  g.openSheet<void>((ctx) => ValueListenableBuilder<int>(
+        valueListenable: g.ui,
+        builder: (ctx, __, ___) {
+          final c = g.calc, cd = comps[id]!, has = c.owned(id), st = c.recStar(id), mx = st >= c.starMax(id);
+          final need = c.starNeed(id) ?? 1, n = c.ucard, t = c.stats(id), on = c.chiefOn();
+          return KdSheetBody(
+            titleWidget: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+              Text('카엘 자리 · 유니크 동료', textAlign: TextAlign.center, style: KdText.body(12, color: KdColors.gold).copyWith(letterSpacing: 2.4)),
+              const SizedBox(height: 10),
+              Row(children: [
+                CompFrame(id),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                    Text(cd.n, style: KdText.display(22)),
+                    Row(children: [GradeTag(id), if (has) ...[const SizedBox(width: 4), Stars(c, id)]]),
+                    Text('${cd.role}${has ? ' · ${on ? '출전 중' : '대기'}' : ''}', style: KdText.body(12, color: KdColors.muted)),
+                  ]),
+                ),
+              ]),
+            ]),
+            children: [
+              Text(cd.desc, style: KdText.body(13, color: KdColors.muted, height: 1.5)),
+              if (!has)
+                KdKv('맞이하는 법',
+                    '${c.chiefShop() ? '피트의 상점 ₩${GameCalc.chiefWon}' : '첫 은퇴 뒤 피트의 상점'} · 또는 은퇴 ${math.min(orNum(g.state.raw['retires'], 0), GameCalc.chiefRet)} / ${GameCalc.chiefRet}번'),
+              KdKv('능력치', '카엘 능력치 +${pctTxt(GameCalc.chiefBonus[math.max(1, st)] * 100)}%${has ? ' · 공격 ${fmt(t.atk)} · 체력 ${fmt(t.hp)}' : ''}'),
+              KdKv('장비·칭호', '카엘 것을 그대로 써요'),
+              SkillBox(id),
+              VillageSkillBox(c, id),
+              KdKv('유니크 카드', has ? (mx ? '별을 모두 모았어요 · $n장' : '$n / $need장 (★${st + 1})') : '$n장 모아 둠'),
+              if (has && !mx) XpBar(n / need),
+              const KdNote('유니크 카드는 황금 이삭 상품(5,500원 이상)의 덤, 피트의 정기 배송(매일 1장), 랭킹 시즌 보상으로 받아요. 원하는 유니크 동료를 골라 별을 올려요.'),
+            ],
+            acts: KdActs(buttons: [
+              if (has)
+                KdAct(on ? '카엘로 바꾸기' : '카엘 자리에 출전', onTap: () => g.act((a) => a.setKaelSeat(on ? 'kael' : id)))
+              else
+                KdAct('닫기', onTap: () => Navigator.of(ctx).pop()),
+              if (has)
+                KdAct(mx ? '★ 모두 모음' : '★ 올리기', primary: true, onTap: c.chiefCan() ? () => g.act((a) => a.chiefUp()) : null)
+              else if (c.chiefShop())
+                KdAct('상점 가기', primary: true, onTap: () {
+                  Navigator.of(ctx).pop();
+                  g.setTab(GameTab.sh);
+                }),
+            ]),
+          );
+        },
+      ));
+}
+
+/// 카엘 자리 고르기 (웹 kaelSeatSheet): 카엘 · 카엘 촌장
+void kaelSeatSheet(GameController g) {
+  g.openSheet<void>((ctx) => ValueListenableBuilder<int>(
+        valueListenable: g.ui,
+        builder: (ctx, __, ___) {
+          final c = g.calc, cur = c.slotMember('kael');
+          return KdSheetBody(
+            titleWidget: Column(children: [
+              Text('카엘 자리', style: KdText.body(12, color: KdColors.gold).copyWith(letterSpacing: 2.4)),
+              const SizedBox(height: 8),
+              Text('누가 출전할까요?', textAlign: TextAlign.center, style: KdText.display(22)),
+            ]),
+            children: [
+              for (final id in const ['kael', GameCalc.chiefId])
+                GestureDetector(
+                  onTap: () => g.act((a) => a.setKaelSeat(id)),
+                  child: Container(
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: KdColors.panel2,
+                      border: Border.all(color: cur == id ? KdColors.gold : Colors.transparent, width: 2),
+                      borderRadius: BorderRadius.circular(14),
+                    ),
+                    child: Row(children: [
+                      CompFrame(id),
+                      const SizedBox(width: 10),
+                      Expanded(
+                        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                          Wrap(spacing: 4, crossAxisAlignment: WrapCrossAlignment.center, children: [
+                            Text(comps[id]!.n, style: KdText.display(15)),
+                            if (id != 'kael') ...[GradeTag(id), Stars(c, id)],
+                          ]),
+                          Text('${id == 'kael' ? '추수의 일격' : '다 함께 울력 · 새벽 종소리'} · 공격 ${fmt(c.stats(id).atk)} · 체력 ${fmt(c.stats(id).hp)}',
+                              style: KdText.body(12, color: KdColors.muted)),
+                          if (cur == id) Text('출전 중', style: KdText.body(12, color: KdColors.gold, weight: FontWeight.w700)),
+                        ]),
+                      ),
+                    ]),
+                  ),
+                ),
+              const KdNote('장비·칭호·강화는 둘이 함께 써요.'),
+            ],
+            acts: KdActs(buttons: [
+              KdAct('닫기', onTap: () => Navigator.of(ctx).pop()),
+              KdAct('장비 보기', primary: true, onTap: () {
+                Navigator.of(ctx).pop();
+                g.setTab(GameTab.eq);
+              }),
+            ]),
+          );
+        },
       ));
 }

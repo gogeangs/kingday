@@ -77,7 +77,7 @@ class _ShopPageState extends State<ShopPage> {
       );
 
   /// 웹 .pack (3칸 격자 한 칸)
-  Widget _pack({required Widget img, required String big, String? small, required Widget price, String? tag, required VoidCallback onTap, bool compact = false}) =>
+  Widget _pack({required Widget img, required String big, String? small, String? uc, required Widget price, String? tag, required VoidCallback onTap, bool compact = false}) =>
       GestureDetector(
         onTap: onTap,
         child: Stack(clipBehavior: Clip.none, children: [
@@ -95,6 +95,8 @@ class _ShopPageState extends State<ShopPage> {
                 height: 16,
                 child: FittedBox(fit: BoxFit.scaleDown, child: Text(small ?? '', style: KdText.body(compact ? 11.5 : 12, color: KdColors.good))),
               ),
+              if (uc != null)
+                SizedBox(height: 15, child: FittedBox(fit: BoxFit.scaleDown, child: Text(uc, style: KdText.body(11, color: const Color(0xFF3EE08F))))),
               const SizedBox(height: 4),
               Container(
                 width: double.infinity,
@@ -330,6 +332,17 @@ class _ShopPageState extends State<ShopPage> {
         const SizedBox(height: 10),
       ] else
         const SizedBox(height: 6),
+      if (g.calc.chiefShop()) ...[
+        _shopRow(
+          img: 'assets/game/portraits/portrait_kael_chief_laugh.png',
+          title: '카엘 촌장 맞이하기',
+          tag: '유니크',
+          hot: true,
+          info: Text('유니크 동료 ★1 · 카엘 자리에서 출전\n은퇴 ${GameCalc.chiefRet}번이면 무료로 찾아와요 (${orNum(s.raw['retires'], 0)}/${GameCalc.chiefRet})'),
+          btn: KdBuy(minWidth: 0, text: _price('chief', GameCalc.chiefWon), onTap: () => _buy('chief', () => g.act((x) => x.buyChief()))),
+        ),
+        const SizedBox(height: 10),
+      ],
       _shopRow(
         img: 'assets/game/gem/gem_pack_5.png',
         title: subscription['n'] as String,
@@ -341,7 +354,7 @@ class _ShopPageState extends State<ShopPage> {
                 WidgetSpan(alignment: PlaceholderAlignment.middle, child: kdImg(gemIcon, w: 16, h: 16)),
                 TextSpan(text: '${subscription['now']} + 30일간 매일 '),
                 WidgetSpan(alignment: PlaceholderAlignment.middle, child: kdImg(gemIcon, w: 16, h: 16)),
-                TextSpan(text: '${subscription['day']}\n방치 보상 +50%'),
+                TextSpan(text: '${subscription['day']}\n+ 매일 유니크 카드 1장 · 방치 보상 +50%'),
               ])),
         btn: subOn
             ? KdBuy(minWidth: 0, text: gotToday ? '받음' : '+${subscription['day']} 받기', onTap: gotToday ? null : () => g.act((x) => x.claimSub()))
@@ -358,6 +371,7 @@ class _ShopPageState extends State<ShopPage> {
               img: kdImg('assets/game/gem/gem_pack_${i + 1}.png', w: 52, h: 52),
               big: fmt(p.gem),
               small: first ? '+${fmt(p.gem)} 보너스' : null,
+              uc: GameCalc.ucardPack[p.k] != null ? '+유니크 카드 ${GameCalc.ucardPack[p.k]}' : null,
               price: Text(_price(p.k, p.won), style: KdText.figure(13, color: KdColors.goldInk)),
               onTap: () => _buy(p.k, () => g.act((x) => x.buyPack(p.k))),
             );

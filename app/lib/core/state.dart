@@ -30,7 +30,7 @@ class GameState {
         'plots': <dynamic>[], 'seeds': {'wheat': 0, 'carrot': 0, 'pumpkin': 0},
         'items': {'wheat': 0, 'carrot': 0, 'pumpkin': 0, 'fish': 0, 'honey': 0, 'ore': 0, 'egg': 0, 'milk': 0},
         'prod': <String, dynamic>{}, 'buffs': <String, dynamic>{}, 'rankSeen': 0, 'memory': 0, 'retires': 0,
-        'buys': <String, dynamic>{}, 'sub': {'until': 0, 'last': ''}, 'gem': 0, 'gemRank': 0,
+        'buys': <String, dynamic>{}, 'sub': {'until': 0, 'last': ''}, 'ucard': 0, 'gem': 0, 'gemRank': 0,
         'gemLord': <String, dynamic>{},
         'daily': {'d': '', 'kill': 0, 'box': 0, 'harv': 0, 'claim': <String, dynamic>{}},
         // 출석체크 (docs/content/ATTENDANCE.md) — 웹과 같은 필드명
@@ -95,6 +95,10 @@ class GameState {
     // 마을 확장: 광산이 있던 세이브는 브론의 대장간을 Lv.1로 지어 줌(강화 기록 slotEn·cwEn은 그대로)
     final sb = asMap(src['bld']);
     if (!(sb != null && sb['forge'] != null) && f['bld'] is Map && asNum((f['bld'] as Map)['mine']) > 0) (f['bld'] as Map)['forge'] = 1;
+    // 유니크 카드: 0 이상 정수 · 카엘 자리는 카엘 촌장만 저장 (웹 hydrate)
+    f['ucard'] = math.max(0, asNum(f['ucard']).isFinite ? asNum(f['ucard']).floor() : 0);
+    final pty = asMap(f['party']);
+    if (pty != null && pty['kael'] != null && pty['kael'] != 'kael_chief') pty.remove('kael');
     final f0 = freshMap(now);
     for (final k in const ['ordDay', 'bless', 'walkers', 'work']) {
       if (f[k] is! Map) f[k] = f0[k];

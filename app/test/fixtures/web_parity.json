@@ -1326,6 +1326,264 @@
      "at": 1792464800000
     }
    ]
+  },
+  "chief": {
+   "gold": 987000000000000,
+   "stage": 45,
+   "wave": 9,
+   "best": 46,
+   "boxLv": 10,
+   "boxXp": 0,
+   "started": true,
+   "last": 1792393200000,
+   "up": {
+    "atk": 900,
+    "hp": 850,
+    "spd": 40,
+    "crit": 55
+   },
+   "eq": {
+    "weapon": {
+     "slot": "weapon",
+     "g": 5,
+     "lv": 46,
+     "atk": 22000,
+     "hp": 0,
+     "price": 9000000000
+    },
+    "helm": {
+     "slot": "helm",
+     "g": 4,
+     "lv": 45,
+     "atk": 0,
+     "hp": 99000,
+     "price": 5000000000
+    },
+    "armor": {
+     "slot": "armor",
+     "g": 5,
+     "lv": 44,
+     "atk": 0,
+     "hp": 260000,
+     "price": 8000000000
+    },
+    "gloves": {
+     "slot": "gloves",
+     "g": 5,
+     "lv": 46,
+     "atk": 14000,
+     "hp": 30000,
+     "price": 8000000000
+    },
+    "boots": {
+     "slot": "boots",
+     "g": 4,
+     "lv": 47,
+     "atk": 6000,
+     "hp": 60000,
+     "price": 6000000000
+    },
+    "ring": {
+     "slot": "ring",
+     "g": 5,
+     "lv": 45,
+     "atk": 11000,
+     "hp": 40000,
+     "price": 8000000000
+    }
+   },
+   "slotEn": {
+    "weapon": 20,
+    "helm": 18,
+    "armor": 20,
+    "gloves": 15,
+    "boots": 12,
+    "ring": 19
+   },
+   "cwEn": {
+    "haral": 20,
+    "bron": 17,
+    "margo": 12,
+    "riel": 15
+   },
+   "bld": {
+    "inn": 10,
+    "farm": 6,
+    "diner": 10,
+    "dock": 10,
+    "apiary": 9,
+    "mine": 10,
+    "forge": 4,
+    "market": 6,
+    "ranch": 5,
+    "chapel": 5
+   },
+   "joined": {
+    "margo": true,
+    "haral": true,
+    "riel": true,
+    "bron": true,
+    "kael_chief": true
+   },
+   "done": {
+    "marta": true,
+    "margo": true,
+    "haral": true,
+    "riel": true,
+    "bron": true
+   },
+   "lv": {
+    "bron": 60,
+    "haral": 61,
+    "riel": 58,
+    "margo": 55,
+    "brida": 40,
+    "nella": 33,
+    "luka": 20,
+    "daisy": 12,
+    "gordon": 9
+   },
+   "memory": 12,
+   "retires": 3,
+   "rec": {
+    "brida": 3,
+    "luka": 1,
+    "nella": 5,
+    "gordon": 2,
+    "daisy": 4,
+    "kael_chief": 3
+   },
+   "cards": {
+    "brida": 70,
+    "luka": 29,
+    "nella": 0,
+    "gordon": 15,
+    "daisy": 79,
+    "bron": 3
+   },
+   "party": {
+    "miner": "brida",
+    "fisher": "nella",
+    "keeper": "riel",
+    "cook": "luka",
+    "kael": "kael_chief"
+   },
+   "buffs": {
+    "spd": 1792465740000,
+    "hp": 1792465500000,
+    "sk": 1792465320000
+   },
+   "items": {
+    "wheat": 520,
+    "carrot": 120,
+    "pumpkin": 55,
+    "fish": 2000,
+    "honey": 1500,
+    "ore": 980,
+    "egg": 12,
+    "milk": 3
+   },
+   "prod": {
+    "dock": 1792462200000,
+    "apiary": 1792462200000,
+    "mine": 1792462200000,
+    "egg": 1792464600000,
+    "milk": 1792464420000
+   },
+   "gem": 5000,
+   "v": 3,
+   "capClears": 0,
+   "work": {
+    "mine": [
+     "gordon"
+    ],
+    "dock": [
+     "haral",
+     "margo"
+    ],
+    "apiary": [
+     "daisy"
+    ],
+    "market": [
+     "nella"
+    ],
+    "inn": [
+     "bron"
+    ]
+   },
+   "orders": [
+    {
+     "who": "pete",
+     "need": {
+      "fish": 40,
+      "egg": 10
+     },
+     "gold": 0,
+     "extra": {
+      "k": "gem",
+      "n": 4
+     },
+     "at": 0
+    },
+    {
+     "at": 1792467000000
+    },
+    {
+     "who": "marta",
+     "need": {
+      "wheat": 500
+     },
+     "gold": 0,
+     "extra": {
+      "k": "ore",
+      "n": 12
+     },
+     "at": 0
+    },
+    {
+     "who": "daisy",
+     "need": {
+      "honey": 60
+     },
+     "gold": 0,
+     "extra": {
+      "k": "seed",
+      "n": 1
+     },
+     "at": 0
+    }
+   ],
+   "ordDay": {
+    "d": "2026-10-20",
+    "gem": 5,
+    "skip": {
+     "1": 1
+    }
+   },
+   "bless": {
+    "d": "2026-10-20",
+    "used": 1,
+    "ad": 0,
+    "k": "gold",
+    "until": 1792467600000,
+    "opts": []
+   },
+   "vlv": 3,
+   "ep": {
+    "2": 1
+   },
+   "walkers": {
+    "d": "2026-10-20",
+    "ids": [
+     "bron",
+     "gordon",
+     "nella"
+    ]
+   },
+   "keepOrder": 1,
+   "workIntro": 1,
+   "workDot": "2026-10-20",
+   "ucard": 45
   }
  },
  "scenarios": {
@@ -1394,6 +1652,7 @@
      "until": 0,
      "last": ""
     },
+    "ucard": 0,
     "gem": 0,
     "gemRank": 0,
     "gemLord": {},
@@ -2126,6 +2385,24 @@
      "cardOpen": false,
      "starNeed": 30,
      "starMax": 3,
+     "cwLv": 0,
+     "cwMul": 1
+    },
+    "kael_chief": {
+     "stats": {
+      "atk": 10,
+      "hp": 100,
+      "aps": 1,
+      "crit": 0.05
+     },
+     "cPow": 168,
+     "owned": false,
+     "recStar": 0,
+     "starMul": 1,
+     "skPow": 1,
+     "cardOpen": false,
+     "starNeed": 0,
+     "starMax": 5,
      "cwLv": 0,
      "cwMul": 1
     },
@@ -3973,6 +4250,31 @@
      ]
     ]
    },
+   "chief": {
+    "vp": 1,
+    "on": false,
+    "shop": false,
+    "can": false,
+    "pct": [
+     10,
+     12.5,
+     15,
+     17.5,
+     20
+    ],
+    "prod": [
+     1,
+     1,
+     1,
+     1,
+     1
+    ],
+    "slot": "kael",
+    "mem": [
+     "kael"
+    ],
+    "pow": 168
+   },
    "vrand": {
     "orders": [],
     "opts": [],
@@ -4513,6 +4815,7 @@
      "until": 0,
      "last": ""
     },
+    "ucard": 0,
     "gem": 50,
     "gemRank": 0,
     "gemLord": {},
@@ -4757,6 +5060,7 @@
      "until": 1793329200000,
      "last": "2026-10-19"
     },
+    "ucard": 0,
     "gem": 77,
     "gemRank": 0,
     "gemLord": {},
@@ -5539,6 +5843,24 @@
      "starMax": 3,
      "cwLv": 1,
      "cwMul": 1.08
+    },
+    "kael_chief": {
+     "stats": {
+      "atk": 3352.344576,
+      "hp": 11432.288,
+      "aps": 1.5,
+      "crit": 0.17
+     },
+     "cPow": 55363.85382528,
+     "owned": false,
+     "recStar": 0,
+     "starMul": 1,
+     "skPow": 1,
+     "cardOpen": false,
+     "starNeed": 0,
+     "starMax": 5,
+     "cwLv": 0,
+     "cwMul": 1
     },
     "luka": {
      "stats": {
@@ -7643,6 +7965,35 @@
      ]
     ]
    },
+   "chief": {
+    "vp": 1,
+    "on": false,
+    "shop": true,
+    "can": false,
+    "pct": [
+     10,
+     12.5,
+     15,
+     17.5,
+     20
+    ],
+    "prod": [
+     1,
+     1,
+     1,
+     1,
+     1
+    ],
+    "slot": "kael",
+    "mem": [
+     "bron",
+     "kael",
+     "haral",
+     "daisy",
+     "margo"
+    ],
+    "pow": 88865
+   },
    "vrand": {
     "orders": [],
     "opts": [],
@@ -8300,6 +8651,7 @@
      "until": 1793329200000,
      "last": "2026-10-19"
     },
+    "ucard": 0,
     "gem": 127,
     "gemRank": 0,
     "gemLord": {},
@@ -8600,6 +8952,7 @@
      "until": 0,
      "last": ""
     },
+    "ucard": 0,
     "gem": 5000,
     "gemRank": 0,
     "gemLord": {},
@@ -9378,6 +9731,24 @@
      "starMax": 3,
      "cwLv": 12,
      "cwMul": 1.96
+    },
+    "kael_chief": {
+     "stats": {
+      "atk": 544826.88,
+      "hp": 6409209.6,
+      "aps": 3.5999999999999996,
+      "crit": 0.7
+     },
+     "cPow": 59230405.785599984,
+     "owned": false,
+     "recStar": 0,
+     "starMul": 1,
+     "skPow": 1,
+     "cardOpen": false,
+     "starNeed": 0,
+     "starMax": 5,
+     "cwLv": 0,
+     "cwMul": 1
     },
     "luka": {
      "stats": {
@@ -11709,6 +12080,35 @@
      ]
     ]
    },
+   "chief": {
+    "vp": 1,
+    "on": false,
+    "shop": true,
+    "can": false,
+    "pct": [
+     10,
+     12.5,
+     15,
+     17.5,
+     20
+    ],
+    "prod": [
+     1.75,
+     1,
+     1,
+     1,
+     1
+    ],
+    "slot": "kael",
+    "mem": [
+     "brida",
+     "kael",
+     "nella",
+     "riel",
+     "luka"
+    ],
+    "pow": 105398472
+   },
    "vrand": {
     "orders": [],
     "opts": [],
@@ -12329,6 +12729,7 @@
      "until": 0,
      "last": ""
     },
+    "ucard": 0,
     "gem": 5200,
     "gemRank": 0,
     "gemLord": {},
@@ -12582,6 +12983,7 @@
      "until": 0,
      "last": ""
     },
+    "ucard": 0,
     "gem": 0,
     "gemRank": 0,
     "gemLord": {},
@@ -13314,6 +13716,24 @@
      "cardOpen": false,
      "starNeed": 30,
      "starMax": 3,
+     "cwLv": 0,
+     "cwMul": 1
+    },
+    "kael_chief": {
+     "stats": {
+      "atk": 16.64,
+      "hp": 104,
+      "aps": 1,
+      "crit": 0.05
+     },
+     "cPow": 214.032,
+     "owned": false,
+     "recStar": 0,
+     "starMul": 1,
+     "skPow": 1,
+     "cardOpen": false,
+     "starNeed": 0,
+     "starMax": 5,
      "cwLv": 0,
      "cwMul": 1
     },
@@ -15176,6 +15596,31 @@
      ]
     ]
    },
+   "chief": {
+    "vp": 1,
+    "on": false,
+    "shop": false,
+    "can": false,
+    "pct": [
+     10,
+     12.5,
+     15,
+     17.5,
+     20
+    ],
+    "prod": [
+     1,
+     1,
+     1,
+     1,
+     1
+    ],
+    "slot": "kael",
+    "mem": [
+     "kael"
+    ],
+    "pow": 214
+   },
    "vrand": {
     "orders": [],
     "opts": [],
@@ -15716,6 +16161,7 @@
      "until": 0,
      "last": ""
     },
+    "ucard": 0,
     "gem": 50,
     "gemRank": 0,
     "gemLord": {},
@@ -15896,6 +16342,7 @@
      "until": 0,
      "last": ""
     },
+    "ucard": 0,
     "gem": 0,
     "gemRank": 0,
     "gemLord": {},
@@ -16629,6 +17076,24 @@
      "cardOpen": true,
      "starNeed": 30,
      "starMax": 3,
+     "cwLv": 0,
+     "cwMul": 1
+    },
+    "kael_chief": {
+     "stats": {
+      "atk": 26,
+      "hp": 104,
+      "aps": 1,
+      "crit": 0.05
+     },
+     "cPow": 273,
+     "owned": false,
+     "recStar": 0,
+     "starMul": 1,
+     "skPow": 1,
+     "cardOpen": false,
+     "starNeed": 0,
+     "starMax": 5,
      "cwLv": 0,
      "cwMul": 1
     },
@@ -18513,6 +18978,32 @@
      ]
     ]
    },
+   "chief": {
+    "vp": 1,
+    "on": false,
+    "shop": false,
+    "can": false,
+    "pct": [
+     10,
+     12.5,
+     15,
+     17.5,
+     20
+    ],
+    "prod": [
+     1,
+     1,
+     1,
+     1,
+     1
+    ],
+    "slot": "kael",
+    "mem": [
+     "kael",
+     "margo"
+    ],
+    "pow": 383
+   },
    "vrand": {
     "orders": [],
     "opts": [],
@@ -19091,6 +19582,7 @@
      "until": 0,
      "last": ""
     },
+    "ucard": 0,
     "gem": 50,
     "gemRank": 0,
     "gemLord": {},
@@ -19262,6 +19754,7 @@
      "until": 0,
      "last": ""
     },
+    "ucard": 0,
     "gem": 0,
     "gemRank": 0,
     "gemLord": {},
@@ -20000,6 +20493,24 @@
      "cardOpen": true,
      "starNeed": 30,
      "starMax": 3,
+     "cwLv": 0,
+     "cwMul": 1
+    },
+    "kael_chief": {
+     "stats": {
+      "atk": 20.520000000000003,
+      "hp": 108,
+      "aps": 1,
+      "crit": 0.05
+     },
+     "cPow": 242.67600000000002,
+     "owned": false,
+     "recStar": 0,
+     "starMul": 1,
+     "skPow": 1,
+     "cardOpen": false,
+     "starNeed": 0,
+     "starMax": 5,
      "cwLv": 0,
      "cwMul": 1
     },
@@ -21977,6 +22488,32 @@
      ]
     ]
    },
+   "chief": {
+    "vp": 1,
+    "on": false,
+    "shop": false,
+    "can": false,
+    "pct": [
+     10,
+     12.5,
+     15,
+     17.5,
+     20
+    ],
+    "prod": [
+     1,
+     1,
+     1,
+     1,
+     1
+    ],
+    "slot": "kael",
+    "mem": [
+     "kael",
+     "margo"
+    ],
+    "pow": 361
+   },
    "vrand": {
     "orders": [],
     "opts": [],
@@ -22555,6 +23092,7 @@
      "until": 0,
      "last": ""
     },
+    "ucard": 0,
     "gem": 50,
     "gemRank": 0,
     "gemLord": {},
@@ -22732,6 +23270,7 @@
      "until": 0,
      "last": ""
     },
+    "ucard": 0,
     "gem": 0,
     "gemRank": 0,
     "gemLord": {},
@@ -23473,6 +24012,24 @@
      "cardOpen": true,
      "starNeed": 30,
      "starMax": 3,
+     "cwLv": 0,
+     "cwMul": 1
+    },
+    "kael_chief": {
+     "stats": {
+      "atk": 21.28,
+      "hp": 112.00000000000001,
+      "aps": 1,
+      "crit": 0.05
+     },
+     "cPow": 251.66400000000002,
+     "owned": false,
+     "recStar": 0,
+     "starMul": 1,
+     "skPow": 1,
+     "cardOpen": false,
+     "starNeed": 0,
+     "starMax": 5,
      "cwLv": 0,
      "cwMul": 1
     },
@@ -25545,6 +26102,32 @@
      ]
     ]
    },
+   "chief": {
+    "vp": 1,
+    "on": false,
+    "shop": false,
+    "can": false,
+    "pct": [
+     10,
+     12.5,
+     15,
+     17.5,
+     20
+    ],
+    "prod": [
+     1,
+     1,
+     1,
+     1,
+     1
+    ],
+    "slot": "kael",
+    "mem": [
+     "kael",
+     "margo"
+    ],
+    "pow": 375
+   },
    "vrand": {
     "orders": [],
     "opts": [],
@@ -26123,6 +26706,7 @@
      "until": 0,
      "last": ""
     },
+    "ucard": 0,
     "gem": 50,
     "gemRank": 0,
     "gemLord": {},
@@ -26302,6 +26886,7 @@
      "until": 0,
      "last": ""
     },
+    "ucard": 0,
     "gem": 0,
     "gemRank": 0,
     "gemLord": {},
@@ -27037,6 +27622,24 @@
      "cardOpen": true,
      "starNeed": 30,
      "starMax": 3,
+     "cwLv": 0,
+     "cwMul": 1
+    },
+    "kael_chief": {
+     "stats": {
+      "atk": 10.8,
+      "hp": 108,
+      "aps": 1,
+      "crit": 0.05
+     },
+     "cPow": 181.44000000000003,
+     "owned": false,
+     "recStar": 0,
+     "starMul": 1,
+     "skPow": 1,
+     "cardOpen": false,
+     "starNeed": 0,
+     "starMax": 5,
      "cwLv": 0,
      "cwMul": 1
     },
@@ -29006,6 +29609,32 @@
      ]
     ]
    },
+   "chief": {
+    "vp": 1,
+    "on": false,
+    "shop": false,
+    "can": false,
+    "pct": [
+     10,
+     12.5,
+     15,
+     17.5,
+     20
+    ],
+    "prod": [
+     1,
+     1,
+     1,
+     1,
+     1
+    ],
+    "slot": "kael",
+    "mem": [
+     "kael",
+     "margo"
+    ],
+    "pow": 312
+   },
    "vrand": {
     "orders": [],
     "opts": [],
@@ -29582,6 +30211,7 @@
      "until": 0,
      "last": ""
     },
+    "ucard": 0,
     "gem": 50,
     "gemRank": 0,
     "gemLord": {},
@@ -29839,6 +30469,7 @@
      "until": 0,
      "last": ""
     },
+    "ucard": 0,
     "gem": 5000,
     "gemRank": 0,
     "gemLord": {},
@@ -30641,6 +31272,24 @@
      "starMax": 3,
      "cwLv": 12,
      "cwMul": 1.96
+    },
+    "kael_chief": {
+     "stats": {
+      "atk": 3146375.2320000003,
+      "hp": 33648350.4,
+      "aps": 3.5999999999999996,
+      "crit": 0.7
+     },
+     "cPow": 361172913.92179185,
+     "owned": false,
+     "recStar": 0,
+     "starMul": 1,
+     "skPow": 1,
+     "cardOpen": false,
+     "starNeed": 0,
+     "starMax": 5,
+     "cwLv": 0,
+     "cwMul": 1
     },
     "luka": {
      "stats": {
@@ -32511,6 +33160,35 @@
     "cur": 47,
     "holes": null
    },
+   "chief": {
+    "vp": 1,
+    "on": false,
+    "shop": true,
+    "can": false,
+    "pct": [
+     10,
+     12.5,
+     15,
+     17.5,
+     20
+    ],
+    "prod": [
+     2.38,
+     1.3599999999999999,
+     1.3599999999999999,
+     1.3599999999999999,
+     1.3599999999999999
+    ],
+    "slot": "kael",
+    "mem": [
+     "brida",
+     "kael",
+     "nella",
+     "riel",
+     "luka"
+    ],
+    "pow": 624761580
+   },
    "vrand": {
     "orders": [],
     "opts": [],
@@ -33079,14 +33757,15 @@
     "eq": {},
     "autoSell": false,
     "autoOpen": false,
-    "last": 1792393200000,
+    "last": 1792465200000,
     "best": 61,
     "started": true,
     "joined": {
      "margo": true,
      "haral": true,
      "riel": true,
-     "bron": true
+     "bron": true,
+     "kael_chief": true
     },
     "done": {
      "marta": true,
@@ -33166,6 +33845,7 @@
      "until": 0,
      "last": ""
     },
+    "ucard": 0,
     "gem": 5300,
     "gemRank": 0,
     "gemLord": {},
@@ -33293,7 +33973,8 @@
      "luka": 1,
      "nella": 5,
      "gordon": 2,
-     "daisy": 4
+     "daisy": 4,
+     "kael_chief": 1
     },
     "cards": {
      "brida": 70,
@@ -33527,6 +34208,7 @@
      "until": 0,
      "last": ""
     },
+    "ucard": 0,
     "gem": 5000,
     "gemRank": 0,
     "gemLord": {},
@@ -34305,6 +34987,24 @@
      "starMax": 3,
      "cwLv": 12,
      "cwMul": 1.96
+    },
+    "kael_chief": {
+     "stats": {
+      "atk": 544826.88,
+      "hp": 6409209.6,
+      "aps": 3.5999999999999996,
+      "crit": 0.7
+     },
+     "cPow": 59230405.785599984,
+     "owned": false,
+     "recStar": 0,
+     "starMul": 1,
+     "skPow": 1,
+     "cardOpen": false,
+     "starNeed": 0,
+     "starMax": 5,
+     "cwLv": 0,
+     "cwMul": 1
     },
     "luka": {
      "stats": {
@@ -36636,6 +37336,35 @@
      ]
     ]
    },
+   "chief": {
+    "vp": 1,
+    "on": false,
+    "shop": true,
+    "can": false,
+    "pct": [
+     10,
+     12.5,
+     15,
+     17.5,
+     20
+    ],
+    "prod": [
+     1.75,
+     1,
+     1,
+     1,
+     1
+    ],
+    "slot": "kael",
+    "mem": [
+     "brida",
+     "kael",
+     "nella",
+     "riel",
+     "luka"
+    ],
+    "pow": 105398472
+   },
    "vrand": {
     "orders": [],
     "opts": [],
@@ -37256,6 +37985,7 @@
      "until": 0,
      "last": ""
     },
+    "ucard": 0,
     "gem": 5200,
     "gemRank": 0,
     "gemLord": {},
@@ -37575,6 +38305,7 @@
      "until": 0,
      "last": ""
     },
+    "ucard": 0,
     "gem": 5000,
     "gemRank": 0,
     "gemLord": {},
@@ -38419,6 +39150,24 @@
      "starMax": 3,
      "cwLv": 12,
      "cwMul": 1.96
+    },
+    "kael_chief": {
+     "stats": {
+      "atk": 454022.39999999997,
+      "hp": 9581768.351999998,
+      "aps": 3.5999999999999996,
+      "crit": 0.6
+     },
+     "cPow": 70881999.85151999,
+     "owned": false,
+     "recStar": 0,
+     "starMul": 1,
+     "skPow": 1,
+     "cardOpen": false,
+     "starNeed": 0,
+     "starMax": 5,
+     "cwLv": 0,
+     "cwMul": 1
     },
     "luka": {
      "stats": {
@@ -40781,6 +41530,35 @@
      ]
     ]
    },
+   "chief": {
+    "vp": 1,
+    "on": false,
+    "shop": true,
+    "can": false,
+    "pct": [
+     10,
+     12.5,
+     15,
+     17.5,
+     20
+    ],
+    "prod": [
+     2.24,
+     1.36,
+     1.46,
+     1,
+     1
+    ],
+    "slot": "kael",
+    "mem": [
+     "brida",
+     "kael",
+     "nella",
+     "riel",
+     "luka"
+    ],
+    "pow": 120920796
+   },
    "vrand": {
     "orders": [
      {
@@ -41470,6 +42248,7 @@
      "until": 0,
      "last": ""
     },
+    "ucard": 0,
     "gem": 5200,
     "gemRank": 0,
     "gemLord": {},
@@ -41864,6 +42643,7 @@
      "until": 0,
      "last": ""
     },
+    "ucard": 0,
     "gem": 5000,
     "gemRank": 0,
     "gemLord": {},
@@ -42704,6 +43484,24 @@
      "starMax": 3,
      "cwLv": 12,
      "cwMul": 1.96
+    },
+    "kael_chief": {
+     "stats": {
+      "atk": 454022.39999999997,
+      "hp": 9581768.351999998,
+      "aps": 3.5999999999999996,
+      "crit": 0.6
+     },
+     "cPow": 70881999.85151999,
+     "owned": false,
+     "recStar": 0,
+     "starMul": 1,
+     "skPow": 1,
+     "cardOpen": false,
+     "starNeed": 0,
+     "starMax": 5,
+     "cwLv": 0,
+     "cwMul": 1
     },
     "luka": {
      "stats": {
@@ -45059,6 +45857,35 @@
      ]
     ]
    },
+   "chief": {
+    "vp": 1,
+    "on": false,
+    "shop": true,
+    "can": false,
+    "pct": [
+     10,
+     12.5,
+     15,
+     17.5,
+     20
+    ],
+    "prod": [
+     1.75,
+     1,
+     1,
+     1,
+     1.23
+    ],
+    "slot": "kael",
+    "mem": [
+     "brida",
+     "kael",
+     "nella",
+     "riel",
+     "luka"
+    ],
+    "pow": 120920796
+   },
    "vrand": {
     "orders": [],
     "opts": [],
@@ -45695,6 +46522,7 @@
      "until": 0,
      "last": ""
     },
+    "ucard": 0,
     "gem": 5200,
     "gemRank": 0,
     "gemLord": {},
@@ -45896,6 +46724,4338 @@
      "chest": 1,
      "retire": 1,
      "retire5": 1
+    }
+   },
+   "pf": {
+    "pfUnl": {
+     "wood": 1,
+     "straw": 1,
+     "harvest": 1,
+     "silver": 1,
+     "gold": 1,
+     "amethyst": 1,
+     "holy": 1,
+     "royal": 1
+    },
+    "bdUnl": {
+     "rebuild": 1,
+     "chest": 1,
+     "retire": 1
+    },
+    "pfNew": {
+     "f_straw": 1,
+     "f_harvest": 1,
+     "f_silver": 1,
+     "f_gold": 1,
+     "f_amethyst": 1,
+     "f_holy": 1,
+     "f_royal": 1,
+     "b_rebuild": 1,
+     "b_chest": 1,
+     "b_retire": 1
+    }
+   },
+   "dailyNext": {
+    "d": "2026-10-21",
+    "kill": 0,
+    "box": 0,
+    "harv": 0,
+    "claim": {},
+    "ad": {}
+   }
+  },
+  "chief": {
+   "hydrated": {
+    "gold": 987000000000000,
+    "stage": 45,
+    "wave": 9,
+    "boxLv": 10,
+    "boxXp": 0,
+    "up": {
+     "atk": 900,
+     "hp": 850,
+     "spd": 40,
+     "crit": 55
+    },
+    "eq": {
+     "weapon": {
+      "slot": "weapon",
+      "g": 5,
+      "lv": 46,
+      "atk": 22000,
+      "hp": 0,
+      "price": 9000000000
+     },
+     "helm": {
+      "slot": "helm",
+      "g": 4,
+      "lv": 45,
+      "atk": 0,
+      "hp": 99000,
+      "price": 5000000000
+     },
+     "armor": {
+      "slot": "armor",
+      "g": 5,
+      "lv": 44,
+      "atk": 0,
+      "hp": 260000,
+      "price": 8000000000
+     },
+     "gloves": {
+      "slot": "gloves",
+      "g": 5,
+      "lv": 46,
+      "atk": 14000,
+      "hp": 30000,
+      "price": 8000000000
+     },
+     "boots": {
+      "slot": "boots",
+      "g": 4,
+      "lv": 47,
+      "atk": 6000,
+      "hp": 60000,
+      "price": 6000000000
+     },
+     "ring": {
+      "slot": "ring",
+      "g": 5,
+      "lv": 45,
+      "atk": 11000,
+      "hp": 40000,
+      "price": 8000000000
+     }
+    },
+    "autoSell": false,
+    "autoOpen": false,
+    "last": 1792393200000,
+    "best": 46,
+    "started": true,
+    "joined": {
+     "margo": true,
+     "haral": true,
+     "riel": true,
+     "bron": true,
+     "kael_chief": true
+    },
+    "done": {
+     "marta": true,
+     "margo": true,
+     "haral": true,
+     "riel": true,
+     "bron": true
+    },
+    "lv": {
+     "bron": 60,
+     "haral": 61,
+     "riel": 58,
+     "margo": 55,
+     "brida": 40,
+     "nella": 33,
+     "luka": 20,
+     "daisy": 12,
+     "gordon": 9
+    },
+    "bld": {
+     "inn": 10,
+     "farm": 6,
+     "diner": 10,
+     "dock": 10,
+     "apiary": 9,
+     "mine": 10,
+     "forge": 4,
+     "market": 6,
+     "ranch": 5,
+     "chapel": 5
+    },
+    "plots": [],
+    "seeds": {
+     "wheat": 0,
+     "carrot": 0,
+     "pumpkin": 0
+    },
+    "items": {
+     "wheat": 520,
+     "carrot": 120,
+     "pumpkin": 55,
+     "fish": 2000,
+     "honey": 1500,
+     "ore": 980,
+     "egg": 12,
+     "milk": 3
+    },
+    "prod": {
+     "dock": 1792462200000,
+     "apiary": 1792462200000,
+     "mine": 1792462200000,
+     "egg": 1792464600000,
+     "milk": 1792464420000
+    },
+    "buffs": {
+     "spd": 1792465740000,
+     "hp": 1792465500000,
+     "sk": 1792465320000
+    },
+    "rankSeen": 0,
+    "memory": 12,
+    "retires": 3,
+    "buys": {},
+    "sub": {
+     "until": 0,
+     "last": ""
+    },
+    "ucard": 45,
+    "gem": 5000,
+    "gemRank": 0,
+    "gemLord": {},
+    "daily": {
+     "d": "",
+     "kill": 0,
+     "box": 0,
+     "harv": 0,
+     "claim": {}
+    },
+    "att": {
+     "last": "",
+     "w": 0,
+     "ym": "",
+     "m": 0,
+     "ad": "",
+     "got": [],
+     "intro": 0,
+     "tab": "w"
+    },
+    "tickets": {
+     "box": 0,
+     "box10": 0
+    },
+    "capClears": 0,
+    "capBonus": 0,
+    "ending1": 0,
+    "chOpen": 0,
+    "tower": {
+     "top": 0,
+     "day": "",
+     "pk": 0
+    },
+    "dun": {
+     "d": "",
+     "used": 0,
+     "ad": 0,
+     "star": {
+      "mine": {},
+      "field": {},
+      "vault": {}
+     },
+     "seen": {}
+    },
+    "mapIntro": 0,
+    "fogSeen": 46,
+    "regSeen": {
+     "0": 1,
+     "1": 1,
+     "2": 1,
+     "3": 1
+    },
+    "trait": {},
+    "trReset": 0,
+    "runStart": 1,
+    "retRw": {},
+    "diaryIntro": 0,
+    "orders": [
+     {
+      "who": "pete",
+      "need": {
+       "fish": 40,
+       "egg": 10
+      },
+      "gold": 0,
+      "extra": {
+       "k": "gem",
+       "n": 4
+      },
+      "at": 0
+     },
+     {
+      "at": 1792467000000
+     },
+     {
+      "who": "marta",
+      "need": {
+       "wheat": 500
+      },
+      "gold": 0,
+      "extra": {
+       "k": "ore",
+       "n": 12
+      },
+      "at": 0
+     },
+     {
+      "who": "daisy",
+      "need": {
+       "honey": 60
+      },
+      "gold": 0,
+      "extra": {
+       "k": "seed",
+       "n": 1
+      },
+      "at": 0
+     }
+    ],
+    "ordDay": {
+     "d": "2026-10-20",
+     "gem": 5,
+     "skip": {
+      "1": 1
+     }
+    },
+    "bless": {
+     "d": "2026-10-20",
+     "used": 1,
+     "ad": 0,
+     "k": "gold",
+     "until": 1792467600000,
+     "opts": []
+    },
+    "vlv": 3,
+    "ep": {
+     "2": 1
+    },
+    "walkers": {
+     "d": "2026-10-20",
+     "ids": [
+      "bron",
+      "gordon",
+      "nella"
+     ]
+    },
+    "keepOrder": 1,
+    "work": {
+     "mine": [
+      "gordon"
+     ],
+     "dock": [
+      "haral",
+      "margo"
+     ],
+     "apiary": [
+      "daisy"
+     ],
+     "market": [
+      "nella"
+     ],
+     "inn": [
+      "bron"
+     ]
+    },
+    "workIntro": 1,
+    "workDot": "2026-10-20",
+    "v": 3,
+    "slotEn": {
+     "weapon": 20,
+     "helm": 18,
+     "armor": 20,
+     "gloves": 15,
+     "boots": 12,
+     "ring": 19
+    },
+    "cwEn": {
+     "haral": 20,
+     "bron": 17,
+     "margo": 12,
+     "riel": 15
+    },
+    "rec": {
+     "brida": 3,
+     "luka": 1,
+     "nella": 5,
+     "gordon": 2,
+     "daisy": 4,
+     "kael_chief": 3
+    },
+    "cards": {
+     "brida": 70,
+     "luka": 29,
+     "nella": 0,
+     "gordon": 15,
+     "daisy": 79,
+     "bron": 3
+    },
+    "party": {
+     "miner": "brida",
+     "fisher": "nella",
+     "keeper": "riel",
+     "cook": "luka",
+     "kael": "kael_chief"
+    }
+   },
+   "basic": {
+    "rankIdx": 5,
+    "memMul": 1.6,
+    "allMul": 1.92,
+    "boxCost": 20008,
+    "xpNeed": 100,
+    "odds": [
+     12.859255750670858,
+     16.772143571946422,
+     18.983017042793907,
+     21.00787219402526,
+     19.071208976138553,
+     11.306502464425003,
+     0
+    ],
+    "retireTarget": 822872,
+    "retirePts": 7,
+    "plotCount": 8,
+    "landCount": 44,
+    "vpMine": 1.75,
+    "members": [
+     "brida",
+     "kael_chief",
+     "nella",
+     "riel",
+     "luka"
+    ],
+    "power": 128008996,
+    "gemGold": 41143.64616194354,
+    "goldRate": 2717.7017796525224,
+    "goldX": [
+     19567452,
+     78269811,
+     234809433
+    ],
+    "buffs": [
+     false,
+     true,
+     false,
+     false,
+     true,
+     true
+    ],
+    "subOn": false,
+    "gearSum": {
+     "a": 233760,
+     "h": 2208320
+    },
+    "kStats": {
+     "atk": 454022.39999999997,
+     "hp": 9581768.351999998,
+     "aps": 3.5999999999999996,
+     "crit": 0.6
+    },
+    "guide": -1
+   },
+   "retire": {
+    "tl": {
+     "sharp": 0,
+     "hat": 0,
+     "critd": 0,
+     "stubborn": 0,
+     "stretch": 0,
+     "climb": 0,
+     "soil": 0,
+     "hands": 0,
+     "carpenter": 0,
+     "seedbag": 0,
+     "stew": 0,
+     "bumper": 0,
+     "purse": 0,
+     "shortcut": 0,
+     "inn": 0,
+     "knack": 0,
+     "memoir": 0,
+     "goblin": 0
+    },
+    "spent": 0,
+    "spentB": [
+     0,
+     0,
+     0
+    ],
+    "memPts": 12,
+    "canAny": true,
+    "open": [
+     true,
+     true,
+     false,
+     false,
+     false,
+     false,
+     true,
+     true,
+     false,
+     false,
+     false,
+     false,
+     true,
+     true,
+     false,
+     false,
+     false,
+     false
+    ],
+    "next": [
+     1,
+     1,
+     2,
+     3,
+     4,
+     2,
+     1,
+     1,
+     1,
+     2,
+     2,
+     3,
+     1,
+     2,
+     2,
+     2,
+     4,
+     3
+    ],
+    "resetGem": 0,
+    "start": 1,
+    "start1": 1,
+    "base": 7,
+    "pts": 7,
+    "run": 44,
+    "can": true,
+    "purse": [
+     0,
+     0,
+     0
+    ],
+    "bossLim": [
+     30,
+     40,
+     60
+    ],
+    "cropT": [
+     60,
+     300,
+     1200
+    ],
+    "crX": 2,
+    "offCapH": 16,
+    "trCook": 0,
+    "trProd": 1,
+    "trBld": 1,
+    "trUp": 1,
+    "eff": [
+     [
+      "원정대 공격 +4%",
+      "원정대 공격 +32%"
+     ],
+     [
+      "원정대 체력 +4%",
+      "원정대 체력 +32%"
+     ],
+     [
+      "치명타 피해 +10%",
+      "치명타 피해 +50%"
+     ],
+     [
+      "보스 제한 시간 +2초",
+      "보스 제한 시간 +6초"
+     ],
+     [
+      "보스·도전 시작 때 스킬 게이지 10%",
+      "보스·도전 시작 때 스킬 게이지 30%"
+     ],
+     [
+      "탑·던전에서 주는 피해 +10%",
+      "탑·던전에서 주는 피해 +50%"
+     ],
+     [
+      "작물 자라는 시간 −5%",
+      "작물 자라는 시간 −30%"
+     ],
+     [
+      "부두·양봉장·광산 생산 +6%",
+      "부두·양봉장·광산 생산 +48%"
+     ],
+     [
+      "건물 공사 시간 −5%",
+      "건물 공사 시간 −30%"
+     ],
+     [
+      "은퇴 직후 씨앗 밀 10 · 당근 5 · 호박 2",
+      "은퇴 직후 씨앗 밀 30 · 당근 15 · 호박 6"
+     ],
+     [
+      "요리 버프 시간 +10%",
+      "요리 버프 시간 +50%"
+     ],
+     [
+      "수확 2배 확률 +5%",
+      "수확 2배 확률 +20%"
+     ],
+     [
+      "은퇴 직후 골드 = 시작 영지 성주 보상 ×20",
+      "은퇴 직후 골드 = 시작 영지 성주 보상 ×100"
+     ],
+     [
+      "은퇴 후 영지 6부터 시작",
+      "은퇴 후 영지 51부터 시작"
+     ],
+     [
+      "방치 보상 최대 시간 +1시간",
+      "방치 보상 최대 시간 +4시간"
+     ],
+     [
+      "단련 비용 −4%",
+      "단련 비용 −20%"
+     ],
+     [
+      "은퇴할 때 받는 추억 +10%",
+      "은퇴할 때 받는 추억 +30%"
+     ],
+     [
+      "황금 고블린 등장 간격 −10%",
+      "황금 고블린 등장 간격 −30%"
+     ]
+    ]
+   },
+   "comp": {
+    "kael": {
+     "stats": {
+      "atk": 454022.39999999997,
+      "hp": 9581768.351999998,
+      "aps": 3.5999999999999996,
+      "crit": 0.6
+     },
+     "cPow": 70881999.85151999,
+     "owned": true,
+     "recStar": 0,
+     "starMul": 1,
+     "skPow": 1,
+     "cardOpen": false,
+     "starNeed": null,
+     "starMax": null,
+     "cwLv": 0,
+     "cwMul": 1
+    },
+    "bron": {
+     "stats": {
+      "atk": 377313.16619757237,
+      "hp": 5162876.839587165,
+      "aps": 0.96,
+      "crit": 0.05
+     },
+     "cPow": 7486169.88346678,
+     "owned": true,
+     "recStar": 1,
+     "starMul": 1,
+     "skPow": 1,
+     "cardOpen": true,
+     "starNeed": 15,
+     "starMax": 3,
+     "cwLv": 17,
+     "cwMul": 2.3600000000000003
+    },
+    "haral": {
+     "stats": {
+      "atk": 430181.7692396573,
+      "hp": 5251002.566287031,
+      "aps": 1.08,
+      "crit": 0.05
+     },
+     "cPow": 8881593.668076122,
+     "owned": true,
+     "recStar": 1,
+     "starMul": 1,
+     "skPow": 1,
+     "cardOpen": true,
+     "starNeed": 15,
+     "starMax": 3,
+     "cwLv": 20,
+     "cwMul": 2.6
+    },
+    "riel": {
+     "stats": {
+      "atk": 354624.52179602353,
+      "hp": 4335265.931066228,
+      "aps": 0.84,
+      "crit": 0.05
+     },
+     "cPow": 7980528.528762957,
+     "owned": true,
+     "recStar": 1,
+     "starMul": 1,
+     "skPow": 1,
+     "cardOpen": true,
+     "starNeed": 15,
+     "starMax": 3,
+     "cwLv": 15,
+     "cwMul": 2.2
+    },
+    "margo": {
+     "stats": {
+      "atk": 307061.76238149236,
+      "hp": 3864982.1040277197,
+      "aps": 0.96,
+      "crit": 0.05
+     },
+     "cPow": 5753011.499743206,
+     "owned": true,
+     "recStar": 1,
+     "starMul": 1,
+     "skPow": 1,
+     "cardOpen": true,
+     "starNeed": 15,
+     "starMax": 3,
+     "cwLv": 12,
+     "cwMul": 1.96
+    },
+    "gordon": {
+     "stats": {
+      "atk": 437383.5890454901,
+      "hp": 5391292.960715469,
+      "aps": 0.8999999999999999,
+      "crit": 0.05
+     },
+     "cPow": 7574736.797764048,
+     "owned": true,
+     "recStar": 2,
+     "starMul": 1.2,
+     "skPow": 1,
+     "cardOpen": true,
+     "starNeed": 30,
+     "starMax": 3,
+     "cwLv": 17,
+     "cwMul": 2.3600000000000003
+    },
+    "daisy": {
+     "stats": {
+      "atk": 598104.6721653355,
+      "hp": 7366625.4418739565,
+      "aps": 0.96,
+      "crit": 0.05
+     },
+     "cPow": 15460053.703730853,
+     "owned": true,
+     "recStar": 4,
+     "starMul": 1.7600000000000002,
+     "skPow": 1.3,
+     "cardOpen": true,
+     "starNeed": null,
+     "starMax": 4,
+     "cwLv": 15,
+     "cwMul": 2.2
+    },
+    "brida": {
+     "stats": {
+      "atk": 694112.6993642038,
+      "hp": 8719075.755949685,
+      "aps": 0.8999999999999999,
+      "crit": 0.05
+     },
+     "cPow": 12175145.594767487,
+     "owned": true,
+     "recStar": 3,
+     "starMul": 1.89,
+     "skPow": 1.3,
+     "cardOpen": true,
+     "starNeed": 160,
+     "starMax": 5,
+     "cwLv": 17,
+     "cwMul": 2.3600000000000003
+    },
+    "nella": {
+     "stats": {
+      "atk": 967333.1617679475,
+      "hp": 11920619.169930806,
+      "aps": 1.2,
+      "crit": 0.05
+     },
+     "cPow": 22333018.857078496,
+     "owned": true,
+     "recStar": 5,
+     "starMul": 2.4,
+     "skPow": 1.6,
+     "cardOpen": true,
+     "starNeed": null,
+     "starMax": 5,
+     "cwLv": 20,
+     "cwMul": 2.6
+    },
+    "makrye": {
+     "stats": {
+      "atk": 542072.94336,
+      "hp": 6676454.055024,
+      "aps": 1.02,
+      "crit": 0.05
+     },
+     "cPow": 10633843.026962064,
+     "owned": false,
+     "recStar": 0,
+     "starMul": 1.35,
+     "skPow": 1,
+     "cardOpen": true,
+     "starNeed": 30,
+     "starMax": 5,
+     "cwLv": 20,
+     "cwMul": 2.6
+    },
+    "malbong": {
+     "stats": {
+      "atk": 458667.29779200006,
+      "hp": 5649243.339168,
+      "aps": 0.84,
+      "crit": 0.05
+     },
+     "cPow": 10373859.951086018,
+     "owned": false,
+     "recStar": 0,
+     "starMul": 1.35,
+     "skPow": 1,
+     "cardOpen": true,
+     "starNeed": 30,
+     "starMax": 5,
+     "cwLv": 15,
+     "cwMul": 2.2
+    },
+    "deokbae": {
+     "stats": {
+      "atk": 408578.43640320003,
+      "hp": 5033076.1737984,
+      "aps": 0.96,
+      "crit": 0.05
+     },
+     "cPow": 7544423.166555341,
+     "owned": false,
+     "recStar": 0,
+     "starMul": 1.35,
+     "skPow": 1,
+     "cardOpen": true,
+     "starNeed": 30,
+     "starMax": 5,
+     "cwLv": 12,
+     "cwMul": 1.96
+    },
+    "peppy": {
+     "stats": {
+      "atk": 437336.7791616,
+      "hp": 5387728.721356799,
+      "aps": 0.96,
+      "crit": 0.05
+     },
+     "cPow": 8075843.391497009,
+     "owned": false,
+     "recStar": 0,
+     "starMul": 1.2,
+     "skPow": 1,
+     "cardOpen": true,
+     "starNeed": 30,
+     "starMax": 5,
+     "cwLv": 17,
+     "cwMul": 2.3600000000000003
+    },
+    "andante": {
+     "stats": {
+      "atk": 407678.109696,
+      "hp": 5021185.897728,
+      "aps": 1.02,
+      "crit": 0.05
+     },
+     "cPow": 11196401.481122458,
+     "owned": false,
+     "recStar": 0,
+     "starMul": 1.2,
+     "skPow": 1,
+     "cardOpen": true,
+     "starNeed": 30,
+     "starMax": 5,
+     "cwLv": 15,
+     "cwMul": 2.2
+    },
+    "toby": {
+     "stats": {
+      "atk": 441660.730368,
+      "hp": 5439790.452095999,
+      "aps": 1.08,
+      "crit": 0.05
+     },
+     "cPow": 9173781.982100736,
+     "owned": false,
+     "recStar": 0,
+     "starMul": 1.1,
+     "skPow": 1,
+     "cardOpen": true,
+     "starNeed": 30,
+     "starMax": 4,
+     "cwLv": 20,
+     "cwMul": 2.6
+    },
+    "kara": {
+     "stats": {
+      "atk": 332908.64302079997,
+      "hp": 4100653.7155584,
+      "aps": 1.02,
+      "crit": 0.05
+     },
+     "cPow": 6531071.069414708,
+     "owned": false,
+     "recStar": 0,
+     "starMul": 1.1,
+     "skPow": 1,
+     "cardOpen": true,
+     "starNeed": 30,
+     "starMax": 4,
+     "cwLv": 12,
+     "cwMul": 1.96
+    },
+    "beryl": {
+     "stats": {
+      "atk": 400874.901504,
+      "hp": 4938863.1012864,
+      "aps": 0.96,
+      "crit": 0.05
+     },
+     "cPow": 7402865.410392884,
+     "owned": false,
+     "recStar": 0,
+     "starMul": 1.1,
+     "skPow": 1,
+     "cardOpen": true,
+     "starNeed": 30,
+     "starMax": 4,
+     "cwLv": 17,
+     "cwMul": 2.3600000000000003
+    },
+    "mora": {
+     "stats": {
+      "atk": 401509.75488,
+      "hp": 4945297.631039999,
+      "aps": 1.02,
+      "crit": 0.05
+     },
+     "cPow": 7876515.44770272,
+     "owned": false,
+     "recStar": 0,
+     "starMul": 1,
+     "skPow": 1,
+     "cardOpen": true,
+     "starNeed": 30,
+     "starMax": 3,
+     "cwLv": 20,
+     "cwMul": 2.6
+    },
+    "melo": {
+     "stats": {
+      "atk": 339724.4928,
+      "hp": 4184264.7475199997,
+      "aps": 0.8999999999999999,
+      "crit": 0.05
+     },
+     "cPow": 8232515.284815359,
+     "owned": false,
+     "recStar": 0,
+     "starMul": 1,
+     "skPow": 1,
+     "cardOpen": true,
+     "starNeed": 30,
+     "starMax": 3,
+     "cwLv": 15,
+     "cwMul": 2.2
+    },
+    "pori": {
+     "stats": {
+      "atk": 302637.748224,
+      "hp": 3727934.5259519992,
+      "aps": 1.02,
+      "crit": 0.05
+     },
+     "cPow": 5937368.047382015,
+     "owned": false,
+     "recStar": 0,
+     "starMul": 1,
+     "skPow": 1,
+     "cardOpen": true,
+     "starNeed": 30,
+     "starMax": 3,
+     "cwLv": 12,
+     "cwMul": 1.96
+    },
+    "rollo": {
+     "stats": {
+      "atk": 364431.72864,
+      "hp": 4489977.158783999,
+      "aps": 0.8999999999999999,
+      "crit": 0.05
+     },
+     "cPow": 6309356.316439679,
+     "owned": false,
+     "recStar": 0,
+     "starMul": 1,
+     "skPow": 1,
+     "cardOpen": true,
+     "starNeed": 30,
+     "starMax": 3,
+     "cwLv": 17,
+     "cwMul": 2.3600000000000003
+    },
+    "crab": {
+     "stats": {
+      "atk": 401501.16864,
+      "hp": 4945353.603839999,
+      "aps": 1.08,
+      "crit": 0.05
+     },
+     "cPow": 8339844.93818112,
+     "owned": false,
+     "recStar": 0,
+     "starMul": 1,
+     "skPow": 1,
+     "cardOpen": true,
+     "starNeed": 30,
+     "starMax": 3,
+     "cwLv": 20,
+     "cwMul": 2.6
+    },
+    "birch": {
+     "stats": {
+      "atk": 339717.22752,
+      "hp": 4184435.2492799996,
+      "aps": 0.8999999999999999,
+      "crit": 0.05
+     },
+     "cPow": 8232683.186851199,
+     "owned": false,
+     "recStar": 0,
+     "starMul": 1,
+     "skPow": 1,
+     "cardOpen": true,
+     "starNeed": 30,
+     "starMax": 3,
+     "cwLv": 15,
+     "cwMul": 2.2
+    },
+    "gram": {
+     "stats": {
+      "atk": 302637.748224,
+      "hp": 3727968.2818559995,
+      "aps": 0.96,
+      "crit": 0.05
+     },
+     "cPow": 5588145.1293696,
+     "owned": false,
+     "recStar": 0,
+     "starMul": 1,
+     "skPow": 1,
+     "cardOpen": true,
+     "starNeed": 30,
+     "starMax": 3,
+     "cwLv": 12,
+     "cwMul": 1.96
+    },
+    "kael_chief": {
+     "stats": {
+      "atk": 499424.64,
+      "hp": 10539945.187199999,
+      "aps": 3.5999999999999996,
+      "crit": 0.6
+     },
+     "cPow": 77970199.836672,
+     "owned": true,
+     "recStar": 3,
+     "starMul": 1,
+     "skPow": 1.3,
+     "cardOpen": true,
+     "starNeed": 80,
+     "starMax": 5,
+     "cwLv": 0,
+     "cwMul": 1
+    },
+    "luka": {
+     "stats": {
+      "atk": 363371.74770322914,
+      "hp": 4477708.8970261235,
+      "aps": 1.08,
+      "crit": 0.05
+     },
+     "cPow": 7550103.2606003955,
+     "owned": true,
+     "recStar": 1,
+     "starMul": 1.2,
+     "skPow": 1,
+     "cardOpen": true,
+     "starNeed": 30,
+     "starMax": 5,
+     "cwLv": 12,
+     "cwMul": 1.96
+    }
+   },
+   "slots": {
+    "miner": {
+     "member": "brida",
+     "all": [
+      "bron",
+      "gordon",
+      "brida"
+     ],
+     "better": false
+    },
+    "kael": {
+     "member": "kael_chief",
+     "all": [
+      "kael"
+     ],
+     "better": false
+    },
+    "fisher": {
+     "member": "nella",
+     "all": [
+      "haral",
+      "nella"
+     ],
+     "better": false
+    },
+    "keeper": {
+     "member": "riel",
+     "all": [
+      "riel",
+      "daisy"
+     ],
+     "better": true
+    },
+    "cook": {
+     "member": "luka",
+     "all": [
+      "margo",
+      "luka"
+     ],
+     "better": false
+    }
+   },
+   "costs": {
+    "en": [
+     5,
+     7,
+     9,
+     12,
+     16,
+     21,
+     28,
+     38,
+     51,
+     68,
+     92,
+     124,
+     167,
+     226,
+     304,
+     411,
+     554,
+     748,
+     1010,
+     1363,
+     1840
+    ],
+    "cwOre": [
+     8,
+     10,
+     14,
+     18,
+     25,
+     33,
+     45,
+     60,
+     81,
+     109,
+     147,
+     198,
+     267,
+     361,
+     487,
+     657,
+     887,
+     1197,
+     1615,
+     2181,
+     2944
+    ],
+    "cwGold": [
+     28636,
+     57272,
+     85908,
+     114544,
+     143180,
+     171816,
+     200452,
+     229088,
+     257724,
+     286360,
+     314996,
+     343632,
+     372268,
+     400904,
+     429540,
+     458176,
+     486812,
+     515448,
+     544084,
+     572720,
+     601356
+    ],
+    "comp": [
+     25,
+     28,
+     33,
+     39,
+     45,
+     52,
+     60,
+     70,
+     81,
+     95,
+     110,
+     127,
+     148,
+     172,
+     199,
+     231,
+     268,
+     311,
+     361,
+     419,
+     486,
+     564,
+     654,
+     759,
+     880,
+     1021,
+     1185,
+     1375,
+     1595,
+     1850,
+     2146,
+     2489,
+     2887,
+     3350,
+     3886,
+     4507,
+     5229,
+     6065,
+     7036,
+     8162,
+     9468,
+     10982,
+     12740,
+     14778,
+     17143,
+     19886,
+     23067,
+     26758,
+     31040,
+     36006,
+     41767,
+     48450,
+     56202,
+     65194,
+     75626,
+     87726,
+     101762,
+     118044,
+     136931,
+     158840,
+     184255,
+     213735,
+     247933,
+     287602,
+     333619,
+     386998,
+     448918,
+     520745,
+     604064,
+     700714,
+     812829,
+     942881,
+     1093742,
+     1268741,
+     1471740,
+     1707218,
+     1980373,
+     2297233,
+     2664791,
+     3091157
+    ],
+    "upg": {
+     "atk": [
+      10,
+      11.5,
+      13.224999999999998,
+      15.208749999999998,
+      17.490062499999993,
+      20.113571874999995,
+      23.130607656249992,
+      26.600198804687487,
+      30.5902286253906,
+      35.178762919199194,
+      40.455577357079065,
+      46.52391396064093,
+      53.50250105473706,
+      61.52787621294762,
+      70.75705764488976,
+      81.37061629162321,
+      93.57620873536668,
+      107.61264004567167,
+      123.75453605252241,
+      142.31771646040076,
+      163.66537392946088,
+      188.21518001887998,
+      216.447457021712,
+      248.91457557496878,
+      286.25176191121403,
+      329.18952619789616,
+      378.56795512758055,
+      435.35314839671753,
+      500.6561206562252,
+      575.7545387546589,
+      662.1177195678576,
+      761.4353775030362,
+      875.6506841284918,
+      1006.9982867477653,
+      1158.04802975993,
+      1331.7552342239194,
+      1531.5185193575073,
+      1761.2462972611331,
+      2025.4332418503031,
+      2329.248228127848,
+      2678.635462347025,
+      3080.4307816990786,
+      3542.4953989539404,
+      4073.869708797031,
+      4684.950165116586,
+      5387.692689884072,
+      6195.846593366683,
+      7125.223582371686,
+      8194.007119727437,
+      9423.108187686552,
+      10836.574415839534,
+      12462.060578215463,
+      14331.36966494778,
+      16481.07511468995,
+      18953.23638189344,
+      21796.22183917745,
+      25065.65511505407,
+      28825.503382312178,
+      33149.328889659,
+      38121.72822310785,
+      43839.98745657402
+     ],
+     "hp": [
+      10,
+      11.5,
+      13.224999999999998,
+      15.208749999999998,
+      17.490062499999993,
+      20.113571874999995,
+      23.130607656249992,
+      26.600198804687487,
+      30.5902286253906,
+      35.178762919199194,
+      40.455577357079065,
+      46.52391396064093,
+      53.50250105473706,
+      61.52787621294762,
+      70.75705764488976,
+      81.37061629162321,
+      93.57620873536668,
+      107.61264004567167,
+      123.75453605252241,
+      142.31771646040076,
+      163.66537392946088,
+      188.21518001887998,
+      216.447457021712,
+      248.91457557496878,
+      286.25176191121403,
+      329.18952619789616,
+      378.56795512758055,
+      435.35314839671753,
+      500.6561206562252,
+      575.7545387546589,
+      662.1177195678576,
+      761.4353775030362,
+      875.6506841284918,
+      1006.9982867477653,
+      1158.04802975993,
+      1331.7552342239194,
+      1531.5185193575073,
+      1761.2462972611331,
+      2025.4332418503031,
+      2329.248228127848,
+      2678.635462347025,
+      3080.4307816990786,
+      3542.4953989539404,
+      4073.869708797031,
+      4684.950165116586,
+      5387.692689884072,
+      6195.846593366683,
+      7125.223582371686,
+      8194.007119727437,
+      9423.108187686552,
+      10836.574415839534,
+      12462.060578215463,
+      14331.36966494778,
+      16481.07511468995,
+      18953.23638189344,
+      21796.22183917745,
+      25065.65511505407,
+      28825.503382312178,
+      33149.328889659,
+      38121.72822310785,
+      43839.98745657402
+     ],
+     "spd": [
+      50,
+      70,
+      97.99999999999999,
+      137.19999999999996,
+      192.07999999999993,
+      268.9119999999999,
+      376.47679999999986,
+      527.0675199999997,
+      737.8945279999996,
+      1033.0523391999996,
+      1446.273274879999,
+      2024.7825848319983,
+      2834.695618764798,
+      3968.5738662707167,
+      5556.003412779003,
+      7778.404777890604,
+      10889.766689046844,
+      15245.673364665581,
+      21343.942710531814,
+      29881.519794744538,
+      41834.12771264235,
+      58567.778797699284,
+      81994.890316779,
+      114792.84644349059,
+      160709.98502088682,
+      224993.9790292415,
+      314991.5706409381,
+      440988.1988973133,
+      617383.4784562385,
+      864336.8698387339,
+      1210071.6177742274,
+      1694100.2648839185,
+      2371740.3708374854,
+      3320436.51917248,
+      4648611.126841471,
+      6508055.5775780585,
+      9111277.808609283,
+      12755788.932052994,
+      17858104.504874192,
+      25001346.306823865,
+      35001884.82955341,
+      49002638.761374764,
+      68603694.26592468,
+      96045171.97229454,
+      134463240.76121235,
+      188248537.06569728,
+      263547951.89197618,
+      368967132.6487666,
+      516553985.7082732,
+      723175579.9915824,
+      1012445811.9882153,
+      1417424136.7835016,
+      1984393791.496902,
+      2778151308.095662,
+      3889411831.333927,
+      5445176563.867497,
+      7623247189.414496,
+      10672546065.180294,
+      14941564491.25241,
+      20918190287.753372,
+      29285466402.85472
+     ],
+     "crit": [
+      40,
+      54,
+      72.9,
+      98.41500000000002,
+      132.86025000000004,
+      179.36133750000008,
+      242.13780562500008,
+      326.88603759375013,
+      441.2961507515627,
+      595.7498035146098,
+      804.2622347447232,
+      1085.7540169053764,
+      1465.7679228222582,
+      1978.786695810049,
+      2671.3620393435663,
+      3606.338753113814,
+      4868.557316703649,
+      6572.552377549928,
+      8872.945709692402,
+      11978.476708084745,
+      16170.943555914404,
+      21830.77380048445,
+      29471.544630654007,
+      39786.585251382916,
+      53711.890089366934,
+      72511.05162064536,
+      97889.91968787127,
+      132151.3915786262,
+      178404.37863114537,
+      240845.9111520463,
+      325141.9800552625,
+      438941.6730746044,
+      592571.2586507159,
+      799971.1991784666,
+      1079961.11889093,
+      1457947.5105027556,
+      1968229.13917872,
+      2657109.3378912727,
+      3587097.606153218,
+      4842581.768306845,
+      6537485.387214241,
+      8825605.272739226,
+      11914567.118197957,
+      16084665.60956724,
+      21714298.572915778,
+      29314303.0734363,
+      39574309.14913901,
+      53425317.35133767,
+      72124178.42430586,
+      97367640.8728129,
+      131446315.17829745,
+      177452525.49070153,
+      239560909.4124471,
+      323407227.7068036,
+      436599757.40418494,
+      589409672.4956497,
+      795703057.869127,
+      1074199128.1233218,
+      1450168822.9664845,
+      1957727911.004754,
+      2642932679.856418
+     ]
+    },
+    "bld": {
+     "inn": [
+      {
+       "cost": 150,
+       "ore": 0,
+       "time": 67,
+       "gem": 6
+      },
+      {
+       "cost": 330,
+       "ore": 0,
+       "time": 134,
+       "gem": 6
+      },
+      {
+       "cost": 726,
+       "ore": 0,
+       "time": 268,
+       "gem": 7
+      },
+      {
+       "cost": 1597,
+       "ore": 0,
+       "time": 537,
+       "gem": 8
+      },
+      {
+       "cost": 3513,
+       "ore": 0,
+       "time": 1073,
+       "gem": 11
+      },
+      {
+       "cost": 7730,
+       "ore": 15,
+       "time": 2147,
+       "gem": 17
+      },
+      {
+       "cost": 17006,
+       "ore": 23,
+       "time": 4293,
+       "gem": 29
+      },
+      {
+       "cost": 37415,
+       "ore": 34,
+       "time": 8587,
+       "gem": 53
+      },
+      {
+       "cost": 82313,
+       "ore": 51,
+       "time": 17173,
+       "gem": 101
+      },
+      {
+       "cost": 181090,
+       "ore": 76,
+       "time": 34346,
+       "gem": 196
+      },
+      {
+       "cost": 398398,
+       "ore": 114,
+       "time": 43200,
+       "gem": 250
+      }
+     ],
+     "farm": [
+      {
+       "cost": 120,
+       "ore": 0,
+       "time": 60,
+       "gem": 6
+      },
+      {
+       "cost": 264,
+       "ore": 0,
+       "time": 120,
+       "gem": 6
+      },
+      {
+       "cost": 580,
+       "ore": 0,
+       "time": 240,
+       "gem": 7
+      },
+      {
+       "cost": 1277,
+       "ore": 0,
+       "time": 480,
+       "gem": 8
+      },
+      {
+       "cost": 2811,
+       "ore": 0,
+       "time": 960,
+       "gem": 11
+      },
+      {
+       "cost": 6184,
+       "ore": 15,
+       "time": 1920,
+       "gem": 16
+      },
+      {
+       "cost": 13605,
+       "ore": 23,
+       "time": 3840,
+       "gem": 27
+      }
+     ],
+     "diner": [
+      {
+       "cost": 220,
+       "ore": 0,
+       "time": 81,
+       "gem": 6
+      },
+      {
+       "cost": 484,
+       "ore": 0,
+       "time": 162,
+       "gem": 6
+      },
+      {
+       "cost": 1064,
+       "ore": 0,
+       "time": 325,
+       "gem": 7
+      },
+      {
+       "cost": 2342,
+       "ore": 0,
+       "time": 650,
+       "gem": 9
+      },
+      {
+       "cost": 5153,
+       "ore": 0,
+       "time": 1300,
+       "gem": 13
+      },
+      {
+       "cost": 11337,
+       "ore": 15,
+       "time": 2600,
+       "gem": 20
+      },
+      {
+       "cost": 24943,
+       "ore": 23,
+       "time": 5199,
+       "gem": 34
+      },
+      {
+       "cost": 54875,
+       "ore": 34,
+       "time": 10399,
+       "gem": 63
+      },
+      {
+       "cost": 120726,
+       "ore": 51,
+       "time": 20798,
+       "gem": 121
+      },
+      {
+       "cost": 265599,
+       "ore": 76,
+       "time": 41595,
+       "gem": 239
+      },
+      {
+       "cost": 584318,
+       "ore": 114,
+       "time": 43200,
+       "gem": 255
+      }
+     ],
+     "dock": [
+      {
+       "cost": 350,
+       "ore": 0,
+       "time": 102,
+       "gem": 6
+      },
+      {
+       "cost": 770,
+       "ore": 0,
+       "time": 205,
+       "gem": 7
+      },
+      {
+       "cost": 1694,
+       "ore": 0,
+       "time": 410,
+       "gem": 8
+      },
+      {
+       "cost": 3726,
+       "ore": 0,
+       "time": 820,
+       "gem": 10
+      },
+      {
+       "cost": 8198,
+       "ore": 0,
+       "time": 1640,
+       "gem": 15
+      },
+      {
+       "cost": 18037,
+       "ore": 15,
+       "time": 3279,
+       "gem": 24
+      },
+      {
+       "cost": 39682,
+       "ore": 23,
+       "time": 6558,
+       "gem": 42
+      },
+      {
+       "cost": 87302,
+       "ore": 34,
+       "time": 13116,
+       "gem": 78
+      },
+      {
+       "cost": 192065,
+       "ore": 51,
+       "time": 26232,
+       "gem": 151
+      },
+      {
+       "cost": 422544,
+       "ore": 76,
+       "time": 43200,
+       "gem": 251
+      },
+      {
+       "cost": 929597,
+       "ore": 114,
+       "time": 43200,
+       "gem": 263
+      }
+     ],
+     "apiary": [
+      {
+       "cost": 600,
+       "ore": 0,
+       "time": 134,
+       "gem": 6
+      },
+      {
+       "cost": 1320,
+       "ore": 0,
+       "time": 268,
+       "gem": 7
+      },
+      {
+       "cost": 2904,
+       "ore": 0,
+       "time": 537,
+       "gem": 8
+      },
+      {
+       "cost": 6388,
+       "ore": 0,
+       "time": 1073,
+       "gem": 11
+      },
+      {
+       "cost": 14055,
+       "ore": 0,
+       "time": 2147,
+       "gem": 17
+      },
+      {
+       "cost": 30921,
+       "ore": 15,
+       "time": 4293,
+       "gem": 29
+      },
+      {
+       "cost": 68027,
+       "ore": 23,
+       "time": 8587,
+       "gem": 53
+      },
+      {
+       "cost": 149661,
+       "ore": 34,
+       "time": 17173,
+       "gem": 101
+      },
+      {
+       "cost": 329255,
+       "ore": 51,
+       "time": 34346,
+       "gem": 200
+      },
+      {
+       "cost": 724361,
+       "ore": 76,
+       "time": 43200,
+       "gem": 258
+      },
+      {
+       "cost": 1593595,
+       "ore": 114,
+       "time": 43200,
+       "gem": 279
+      }
+     ],
+     "mine": [
+      {
+       "cost": 2000,
+       "ore": 0,
+       "time": 245,
+       "gem": 7
+      },
+      {
+       "cost": 4400,
+       "ore": 0,
+       "time": 490,
+       "gem": 8
+      },
+      {
+       "cost": 9680,
+       "ore": 0,
+       "time": 980,
+       "gem": 11
+      },
+      {
+       "cost": 21296,
+       "ore": 0,
+       "time": 1960,
+       "gem": 16
+      },
+      {
+       "cost": 46851,
+       "ore": 0,
+       "time": 3919,
+       "gem": 27
+      },
+      {
+       "cost": 103072,
+       "ore": 0,
+       "time": 7838,
+       "gem": 49
+      },
+      {
+       "cost": 226759,
+       "ore": 0,
+       "time": 15677,
+       "gem": 94
+      },
+      {
+       "cost": 498871,
+       "ore": 0,
+       "time": 31353,
+       "gem": 188
+      },
+      {
+       "cost": 1097517,
+       "ore": 0,
+       "time": 43200,
+       "gem": 267
+      },
+      {
+       "cost": 2414538,
+       "ore": 0,
+       "time": 43200,
+       "gem": 299
+      },
+      {
+       "cost": 5311984,
+       "ore": 0,
+       "time": 43200,
+       "gem": 370
+      }
+     ],
+     "forge": [
+      {
+       "cost": 1500,
+       "ore": 0,
+       "time": 212,
+       "gem": 7
+      },
+      {
+       "cost": 3300,
+       "ore": 0,
+       "time": 424,
+       "gem": 8
+      },
+      {
+       "cost": 7260,
+       "ore": 0,
+       "time": 849,
+       "gem": 10
+      },
+      {
+       "cost": 15972,
+       "ore": 0,
+       "time": 1697,
+       "gem": 15
+      },
+      {
+       "cost": 35138,
+       "ore": 0,
+       "time": 3394,
+       "gem": 24
+      },
+      {
+       "cost": 77304,
+       "ore": 0,
+       "time": 6788,
+       "gem": 43
+      },
+      {
+       "cost": 170069,
+       "ore": 0,
+       "time": 13576,
+       "gem": 81
+      },
+      {
+       "cost": 374153,
+       "ore": 0,
+       "time": 27153,
+       "gem": 161
+      },
+      {
+       "cost": 823138,
+       "ore": 0,
+       "time": 43200,
+       "gem": 261
+      },
+      {
+       "cost": 1810903,
+       "ore": 0,
+       "time": 43200,
+       "gem": 285
+      },
+      {
+       "cost": 3983988,
+       "ore": 0,
+       "time": 43200,
+       "gem": 337
+      }
+     ],
+     "market": [
+      {
+       "cost": 800,
+       "ore": 0,
+       "time": 155,
+       "gem": 6
+      },
+      {
+       "cost": 1760,
+       "ore": 0,
+       "time": 310,
+       "gem": 7
+      },
+      {
+       "cost": 3872,
+       "ore": 0,
+       "time": 620,
+       "gem": 9
+      },
+      {
+       "cost": 8518,
+       "ore": 0,
+       "time": 1239,
+       "gem": 12
+      },
+      {
+       "cost": 18740,
+       "ore": 0,
+       "time": 2479,
+       "gem": 19
+      },
+      {
+       "cost": 41229,
+       "ore": 15,
+       "time": 4957,
+       "gem": 33
+      },
+      {
+       "cost": 90703,
+       "ore": 23,
+       "time": 9915,
+       "gem": 61
+      },
+      {
+       "cost": 199548,
+       "ore": 34,
+       "time": 19830,
+       "gem": 116
+      },
+      {
+       "cost": 439006,
+       "ore": 51,
+       "time": 39659,
+       "gem": 232
+      },
+      {
+       "cost": 965815,
+       "ore": 76,
+       "time": 43200,
+       "gem": 264
+      },
+      {
+       "cost": 2124793,
+       "ore": 114,
+       "time": 43200,
+       "gem": 292
+      }
+     ],
+     "ranch": [
+      {
+       "cost": 1200,
+       "ore": 0,
+       "time": 190,
+       "gem": 7
+      },
+      {
+       "cost": 2640,
+       "ore": 0,
+       "time": 379,
+       "gem": 8
+      },
+      {
+       "cost": 5808,
+       "ore": 0,
+       "time": 759,
+       "gem": 10
+      },
+      {
+       "cost": 12777,
+       "ore": 0,
+       "time": 1518,
+       "gem": 14
+      },
+      {
+       "cost": 28110,
+       "ore": 0,
+       "time": 3036,
+       "gem": 22
+      },
+      {
+       "cost": 61843,
+       "ore": 15,
+       "time": 6072,
+       "gem": 39
+      },
+      {
+       "cost": 136055,
+       "ore": 23,
+       "time": 12143,
+       "gem": 73
+      },
+      {
+       "cost": 299322,
+       "ore": 34,
+       "time": 24286,
+       "gem": 143
+      },
+      {
+       "cost": 658510,
+       "ore": 51,
+       "time": 43200,
+       "gem": 257
+      },
+      {
+       "cost": 1448723,
+       "ore": 76,
+       "time": 43200,
+       "gem": 276
+      },
+      {
+       "cost": 3187190,
+       "ore": 114,
+       "time": 43200,
+       "gem": 318
+      }
+     ],
+     "chapel": [
+      {
+       "cost": 3000,
+       "ore": 0,
+       "time": 300,
+       "gem": 7
+      },
+      {
+       "cost": 6600,
+       "ore": 0,
+       "time": 600,
+       "gem": 9
+      },
+      {
+       "cost": 14520,
+       "ore": 0,
+       "time": 1200,
+       "gem": 12
+      },
+      {
+       "cost": 31944,
+       "ore": 0,
+       "time": 2400,
+       "gem": 19
+      },
+      {
+       "cost": 70276,
+       "ore": 0,
+       "time": 4800,
+       "gem": 32
+      },
+      {
+       "cost": 154608,
+       "ore": 15,
+       "time": 9600,
+       "gem": 59
+      },
+      {
+       "cost": 340139,
+       "ore": 23,
+       "time": 19200,
+       "gem": 116
+      },
+      {
+       "cost": 748307,
+       "ore": 34,
+       "time": 38400,
+       "gem": 233
+      },
+      {
+       "cost": 1646276,
+       "ore": 51,
+       "time": 43200,
+       "gem": 281
+      },
+      {
+       "cost": 3621807,
+       "ore": 76,
+       "time": 43200,
+       "gem": 329
+      },
+      {
+       "cost": 7967976,
+       "ore": 114,
+       "time": 43200,
+       "gem": 434
+      }
+     ]
+    },
+    "bldOpen": {
+     "inn": true,
+     "farm": true,
+     "diner": true,
+     "dock": true,
+     "apiary": true,
+     "mine": true,
+     "forge": true,
+     "market": true,
+     "ranch": true,
+     "chapel": true
+    },
+    "bldEff": {
+     "inn": [
+      "방치 보상 최대 6시간",
+      "방치 보상 최대 7시간",
+      "방치 보상 최대 8시간",
+      "방치 보상 최대 9시간",
+      "방치 보상 최대 10시간",
+      "방치 보상 최대 11시간",
+      "방치 보상 최대 12시간",
+      "방치 보상 최대 13시간",
+      "방치 보상 최대 14시간",
+      "방치 보상 최대 15시간",
+      "방치 보상 최대 16시간"
+     ],
+     "farm": [
+      "밭 2칸",
+      "밭 3칸",
+      "밭 4칸",
+      "밭 5칸",
+      "밭 6칸",
+      "밭 7칸",
+      "밭 8칸"
+     ],
+     "diner": [
+      "원정대 체력 +0%",
+      "원정대 체력 +5%",
+      "원정대 체력 +10%",
+      "원정대 체력 +15%",
+      "원정대 체력 +20%",
+      "원정대 체력 +25%",
+      "원정대 체력 +30%",
+      "원정대 체력 +35%",
+      "원정대 체력 +40%",
+      "원정대 체력 +45%",
+      "원정대 체력 +50%"
+     ],
+     "dock": [
+      "생선 0마리/2분",
+      "생선 1마리/2분",
+      "생선 2마리/2분",
+      "생선 3마리/2분",
+      "생선 4마리/2분",
+      "생선 5마리/2분",
+      "생선 6마리/2분",
+      "생선 7마리/2분",
+      "생선 8마리/2분",
+      "생선 9마리/2분",
+      "생선 10마리/2분"
+     ],
+     "apiary": [
+      "동료 공격력 +0% · 꿀 0병/2분",
+      "동료 공격력 +8% · 꿀 1병/2분",
+      "동료 공격력 +16% · 꿀 2병/2분",
+      "동료 공격력 +24% · 꿀 3병/2분",
+      "동료 공격력 +32% · 꿀 4병/2분",
+      "동료 공격력 +40% · 꿀 5병/2분",
+      "동료 공격력 +48% · 꿀 6병/2분",
+      "동료 공격력 +56% · 꿀 7병/2분",
+      "동료 공격력 +64% · 꿀 8병/2분",
+      "동료 공격력 +72% · 꿀 9병/2분",
+      "동료 공격력 +80% · 꿀 10병/2분"
+     ],
+     "mine": [
+      "카엘 장비 +0% · 광석 0개/2분 (여왕의 대장간)",
+      "카엘 장비 +6% · 광석 1.8개/2분 (여왕의 대장간)",
+      "카엘 장비 +12% · 광석 3.5개/2분 (여왕의 대장간)",
+      "카엘 장비 +18% · 광석 5.3개/2분 (여왕의 대장간)",
+      "카엘 장비 +24% · 광석 7개/2분 (여왕의 대장간)",
+      "카엘 장비 +30% · 광석 8.8개/2분 (여왕의 대장간)",
+      "카엘 장비 +36% · 광석 10.5개/2분 (여왕의 대장간)",
+      "카엘 장비 +42% · 광석 12.3개/2분 (여왕의 대장간)",
+      "카엘 장비 +48% · 광석 14개/2분 (여왕의 대장간)",
+      "카엘 장비 +54% · 광석 15.8개/2분 (여왕의 대장간)",
+      "카엘 장비 +60% · 광석 17.5개/2분 (여왕의 대장간)"
+     ],
+     "forge": [
+      "강화 최대 +20",
+      "강화 최대 +20",
+      "강화 최대 +21 · 강화 광석 −3%",
+      "강화 최대 +21 · 강화 광석 −6%",
+      "강화 최대 +22 · 강화 광석 −9%",
+      "강화 최대 +22 · 강화 광석 −12%",
+      "강화 최대 +23 · 강화 광석 −15%",
+      "강화 최대 +23 · 강화 광석 −18%",
+      "강화 최대 +24 · 강화 광석 −21%",
+      "강화 최대 +24 · 강화 광석 −24%",
+      "강화 최대 +25 · 강화 광석 −27%"
+     ],
+     "market": [
+      "주문 0칸 · 주문 골드 +0%",
+      "주문 2칸 · 주문 골드 +3%",
+      "주문 2칸 · 주문 골드 +6%",
+      "주문 3칸 · 주문 골드 +9%",
+      "주문 3칸 · 주문 골드 +12%",
+      "주문 3칸 · 주문 골드 +15%",
+      "주문 4칸 · 주문 골드 +18%",
+      "주문 4칸 · 주문 골드 +21%",
+      "주문 4칸 · 주문 골드 +24%",
+      "주문 5칸 · 주문 골드 +27%",
+      "주문 5칸 · 주문 골드 +30%"
+     ],
+     "ranch": [
+      "달걀 0개/3분 · 우유 0병/6분 · 원정대 체력 +0%",
+      "달걀 1개/3분 · 우유 1병/6분 · 원정대 체력 +3%",
+      "달걀 2개/3분 · 우유 2병/6분 · 원정대 체력 +6%",
+      "달걀 3개/3분 · 우유 3병/6분 · 원정대 체력 +9%",
+      "달걀 4개/3분 · 우유 4병/6분 · 원정대 체력 +12%",
+      "달걀 5개/3분 · 우유 5병/6분 · 원정대 체력 +15%",
+      "달걀 6개/3분 · 우유 6병/6분 · 원정대 체력 +18%",
+      "달걀 7개/3분 · 우유 7병/6분 · 원정대 체력 +21%",
+      "달걀 8개/3분 · 우유 8병/6분 · 원정대 체력 +24%",
+      "달걀 9개/3분 · 우유 9병/6분 · 원정대 체력 +27%",
+      "달걀 10개/3분 · 우유 10병/6분 · 원정대 체력 +30%"
+     ],
+     "chapel": [
+      "축복 2시간  · 고르기 3개",
+      "축복 2시간 10분 · 고르기 3개",
+      "축복 2시간 20분 · 고르기 3개",
+      "축복 2시간 30분 · 고르기 3개",
+      "축복 2시간 40분 · 고르기 3개",
+      "축복 2시간 50분 · 고르기 4개",
+      "축복 3시간  · 고르기 4개",
+      "축복 3시간 10분 · 고르기 4개",
+      "축복 3시간 20분 · 고르기 4개",
+      "축복 3시간 30분 · 고르기 4개",
+      "축복 3시간 40분 · 고르기 4개"
+     ]
+    },
+    "price": {
+     "wheat": 1590,
+     "carrot": 9545,
+     "pumpkin": 47726,
+     "fish": 6363,
+     "honey": 7954,
+     "ore": 11136,
+     "egg": 7158,
+     "milk": 12727
+    },
+    "timeGem": [
+     1,
+     1,
+     1,
+     1,
+     2,
+     20,
+     240
+    ],
+    "adLeft": {
+     "card": 1,
+     "box": 3,
+     "gem": 3,
+     "farm": 2,
+     "offline": 2,
+     "att": 1,
+     "dun": 1,
+     "bless": 1
+    },
+    "cardReady": [],
+    "nextGoal": {
+     "id": "luka",
+     "job": "cook",
+     "face": true,
+     "title": "★2 올리기 · 영웅",
+     "name": "루카",
+     "n": 29,
+     "need": 30,
+     "can": false
+    }
+   },
+   "village": {
+    "enMax": 22,
+    "forgeCut": 0.91,
+    "bldSum": 75,
+    "vLv": 9,
+    "vlRw": true,
+    "work": {
+     "inn": {
+      "slots": 2,
+      "ids": [
+       "bron"
+      ],
+      "bonus": 0.12000000000000001,
+      "prodMul": 1.288
+     },
+     "farm": {
+      "slots": 2,
+      "ids": [],
+      "bonus": 0,
+      "prodMul": 1.15
+     },
+     "diner": {
+      "slots": 2,
+      "ids": [],
+      "bonus": 0,
+      "prodMul": 1.15
+     },
+     "dock": {
+      "slots": 2,
+      "ids": [
+       "haral",
+       "margo"
+      ],
+      "bonus": 0.36000000000000004,
+      "prodMul": 1.564
+     },
+     "apiary": {
+      "slots": 2,
+      "ids": [
+       "daisy"
+      ],
+      "bonus": 0.45999999999999996,
+      "prodMul": 1.6789999999999998
+     },
+     "mine": {
+      "slots": 2,
+      "ids": [
+       "gordon"
+      ],
+      "bonus": 0.28,
+      "prodMul": 2.5759999999999996
+     },
+     "forge": {
+      "slots": 1,
+      "ids": [],
+      "bonus": 0,
+      "prodMul": 1.15
+     },
+     "market": {
+      "slots": 2,
+      "ids": [
+       "nella"
+      ],
+      "bonus": 0,
+      "prodMul": 1.15
+     },
+     "ranch": {
+      "slots": 2,
+      "ids": [],
+      "bonus": 0,
+      "prodMul": 1.15
+     },
+     "chapel": {
+      "slots": 2,
+      "ids": [],
+      "bonus": 0,
+      "prodMul": 1.15
+     }
+    },
+    "rest": [
+     "bron",
+     "haral",
+     "margo",
+     "gordon",
+     "daisy"
+    ],
+    "idle": [],
+    "working": {
+     "gordon": "mine",
+     "haral": "dock",
+     "margo": "dock",
+     "daisy": "apiary",
+     "nella": "market",
+     "bron": "inn"
+    },
+    "wkOpen": true,
+    "wkOne": {
+     "bron": [
+      0.12000000000000001,
+      0.12000000000000001,
+      0.12000000000000001,
+      0.12000000000000001,
+      0.12000000000000001,
+      0.24000000000000002,
+      0.24000000000000002,
+      0.12000000000000001,
+      0.12000000000000001,
+      0.12000000000000001
+     ],
+     "haral": [
+      0.12000000000000001,
+      0.12000000000000001,
+      0.12000000000000001,
+      0.24000000000000002,
+      0.12000000000000001,
+      0.12000000000000001,
+      0.12000000000000001,
+      0.24000000000000002,
+      0.12000000000000001,
+      0.12000000000000001
+     ],
+     "riel": [
+      0.12000000000000001,
+      0.12000000000000001,
+      0.12000000000000001,
+      0.12000000000000001,
+      0.24000000000000002,
+      0.12000000000000001,
+      0.12000000000000001,
+      0.12000000000000001,
+      0.12000000000000001,
+      0.24000000000000002
+     ],
+     "margo": [
+      0.12000000000000001,
+      0.12000000000000001,
+      0.24000000000000002,
+      0.12000000000000001,
+      0.12000000000000001,
+      0.12000000000000001,
+      0.12000000000000001,
+      0.12000000000000001,
+      0.24000000000000002,
+      0.12000000000000001
+     ],
+     "luka": [
+      0.22,
+      0.22,
+      0.44,
+      0.22,
+      0.22,
+      0.22,
+      0.22,
+      0.22,
+      0.44,
+      0.22
+     ],
+     "gordon": [
+      0.14,
+      0.14,
+      0.14,
+      0.14,
+      0.14,
+      0.28,
+      0.28,
+      0.14,
+      0.14,
+      0.14
+     ],
+     "daisy": [
+      0.22999999999999998,
+      0.22999999999999998,
+      0.22999999999999998,
+      0.22999999999999998,
+      0.45999999999999996,
+      0.22999999999999998,
+      0.22999999999999998,
+      0.22999999999999998,
+      0.22999999999999998,
+      0.45999999999999996
+     ],
+     "brida": [
+      0.36,
+      0.36,
+      0.36,
+      0.36,
+      0.36,
+      0.72,
+      0.72,
+      0.36,
+      0.36,
+      0.36
+     ],
+     "nella": [
+      0.30000000000000004,
+      0.30000000000000004,
+      0.30000000000000004,
+      0.6000000000000001,
+      0.30000000000000004,
+      0.30000000000000004,
+      0.30000000000000004,
+      0.6000000000000001,
+      0.30000000000000004,
+      0.30000000000000004
+     ],
+     "makrye": [
+      0.3,
+      0.3,
+      0.3,
+      0.6,
+      0.3,
+      0.3,
+      0.3,
+      0.6,
+      0.3,
+      0.3
+     ],
+     "malbong": [
+      0.3,
+      0.3,
+      0.3,
+      0.3,
+      0.6,
+      0.3,
+      0.3,
+      0.3,
+      0.3,
+      0.6
+     ],
+     "deokbae": [
+      0.3,
+      0.3,
+      0.6,
+      0.3,
+      0.3,
+      0.3,
+      0.3,
+      0.3,
+      0.6,
+      0.3
+     ],
+     "peppy": [
+      0.2,
+      0.2,
+      0.2,
+      0.2,
+      0.2,
+      0.4,
+      0.4,
+      0.2,
+      0.2,
+      0.2
+     ],
+     "andante": [
+      0.2,
+      0.2,
+      0.2,
+      0.2,
+      0.4,
+      0.2,
+      0.2,
+      0.2,
+      0.2,
+      0.4
+     ],
+     "toby": [
+      0.15,
+      0.15,
+      0.15,
+      0.3,
+      0.15,
+      0.15,
+      0.15,
+      0.3,
+      0.15,
+      0.15
+     ],
+     "kara": [
+      0.15,
+      0.15,
+      0.3,
+      0.15,
+      0.15,
+      0.15,
+      0.15,
+      0.15,
+      0.3,
+      0.15
+     ],
+     "beryl": [
+      0.15,
+      0.15,
+      0.15,
+      0.15,
+      0.15,
+      0.3,
+      0.3,
+      0.15,
+      0.15,
+      0.15
+     ],
+     "mora": [
+      0.1,
+      0.1,
+      0.1,
+      0.2,
+      0.1,
+      0.1,
+      0.1,
+      0.2,
+      0.1,
+      0.1
+     ],
+     "melo": [
+      0.1,
+      0.1,
+      0.1,
+      0.1,
+      0.2,
+      0.1,
+      0.1,
+      0.1,
+      0.1,
+      0.2
+     ],
+     "pori": [
+      0.1,
+      0.1,
+      0.2,
+      0.1,
+      0.1,
+      0.1,
+      0.1,
+      0.1,
+      0.2,
+      0.1
+     ],
+     "rollo": [
+      0.1,
+      0.1,
+      0.1,
+      0.1,
+      0.1,
+      0.2,
+      0.2,
+      0.1,
+      0.1,
+      0.1
+     ],
+     "crab": [
+      0.1,
+      0.1,
+      0.1,
+      0.2,
+      0.1,
+      0.1,
+      0.1,
+      0.2,
+      0.1,
+      0.1
+     ],
+     "birch": [
+      0.1,
+      0.1,
+      0.1,
+      0.1,
+      0.2,
+      0.1,
+      0.1,
+      0.1,
+      0.1,
+      0.2
+     ],
+     "gram": [
+      0.1,
+      0.1,
+      0.2,
+      0.1,
+      0.1,
+      0.1,
+      0.1,
+      0.1,
+      0.2,
+      0.1
+     ]
+    },
+    "cookMs": 600000,
+    "vHp": 1.4949999999999999,
+    "vBrave": 1,
+    "vIdle": 1.24,
+    "idle1h": 6065910.37218443,
+    "ordN": 4,
+    "ordMats": [
+     "wheat",
+     "carrot",
+     "pumpkin",
+     "fish",
+     "honey",
+     "ore",
+     "egg",
+     "milk"
+    ],
+    "per2": [
+     12.266666666666666,
+     2.4533333333333336,
+     0.6133333333333334,
+     10,
+     9,
+     10,
+     3.3333333333333335,
+     1.6666666666666667
+    ],
+    "ordGold": [
+     615676,
+     null,
+     1500960,
+     901029
+    ],
+    "ordCan": [
+     true,
+     false,
+     true,
+     true
+    ],
+    "ordReady": 3,
+    "ordKeep": {
+     "fish": 40,
+     "egg": 10,
+     "wheat": 500,
+     "honey": 60
+    },
+    "blessK": "gold",
+    "blessMs": 10200000,
+    "blessLeft": 0,
+    "blessSec": [
+     7200,
+     10200,
+     13200
+    ],
+    "bless": {
+     "d": "2026-10-20",
+     "used": 1,
+     "ad": 0,
+     "k": "gold",
+     "until": 1792467600000,
+     "opts": []
+    }
+   },
+   "worldmap": {
+    "seen": [
+     true,
+     true,
+     true,
+     true,
+     true,
+     true,
+     true,
+     true,
+     true,
+     true,
+     true,
+     true,
+     true,
+     true,
+     true,
+     true,
+     true,
+     true,
+     true,
+     true,
+     true,
+     true,
+     true,
+     true,
+     true,
+     true,
+     true,
+     true,
+     true,
+     true,
+     true,
+     true,
+     true,
+     true,
+     true,
+     true,
+     true,
+     true,
+     true,
+     true,
+     true,
+     true,
+     true,
+     true,
+     true,
+     true,
+     true,
+     false,
+     false,
+     false,
+     false,
+     false,
+     false,
+     false,
+     false,
+     false,
+     false,
+     false,
+     false,
+     false
+    ],
+    "taken": [
+     true,
+     true,
+     true,
+     true,
+     true,
+     true,
+     true,
+     true,
+     true,
+     true,
+     true,
+     true,
+     true,
+     true,
+     true,
+     true,
+     true,
+     true,
+     true,
+     true,
+     true,
+     true,
+     true,
+     true,
+     true,
+     true,
+     true,
+     true,
+     true,
+     true,
+     true,
+     true,
+     true,
+     true,
+     true,
+     true,
+     true,
+     true,
+     true,
+     true,
+     true,
+     true,
+     true,
+     true,
+     false,
+     false,
+     false,
+     false,
+     false,
+     false,
+     false,
+     false,
+     false,
+     false,
+     false,
+     false,
+     false,
+     false,
+     false,
+     false
+    ],
+    "entered": [
+     true,
+     true,
+     true,
+     true,
+     true,
+     false
+    ],
+    "cleared": [
+     true,
+     true,
+     true,
+     true,
+     false,
+     false
+    ],
+    "all": false,
+    "explore": 46,
+    "cur": 45,
+    "holes": [
+     [
+      470,
+      1360,
+      150
+     ],
+     [
+      470,
+      1450,
+      82
+     ],
+     [
+      560,
+      1390,
+      82
+     ],
+     [
+      600,
+      1320,
+      82
+     ],
+     [
+      700,
+      1295,
+      82
+     ],
+     [
+      800,
+      1300,
+      82
+     ],
+     [
+      530,
+      1250,
+      82
+     ],
+     [
+      390,
+      1215,
+      82
+     ],
+     [
+      470,
+      1180,
+      82
+     ],
+     [
+      510,
+      1130,
+      82
+     ],
+     [
+      640,
+      1060,
+      82
+     ],
+     [
+      510,
+      1000,
+      82
+     ],
+     [
+      430,
+      965,
+      82
+     ],
+     [
+      360,
+      920,
+      82
+     ],
+     [
+      300,
+      985,
+      82
+     ],
+     [
+      215,
+      1000,
+      82
+     ],
+     [
+      110,
+      985,
+      82
+     ],
+     [
+      70,
+      890,
+      82
+     ],
+     [
+      150,
+      850,
+      82
+     ],
+     [
+      190,
+      790,
+      82
+     ],
+     [
+      150,
+      720,
+      82
+     ],
+     [
+      640,
+      990,
+      82
+     ],
+     [
+      770,
+      1035,
+      82
+     ],
+     [
+      860,
+      1000,
+      82
+     ],
+     [
+      900,
+      925,
+      82
+     ],
+     [
+      920,
+      870,
+      82
+     ],
+     [
+      860,
+      830,
+      82
+     ],
+     [
+      740,
+      850,
+      82
+     ],
+     [
+      820,
+      790,
+      82
+     ],
+     [
+      720,
+      770,
+      82
+     ],
+     [
+      930,
+      760,
+      82
+     ],
+     [
+      395,
+      540,
+      82
+     ],
+     [
+      400,
+      470,
+      82
+     ],
+     [
+      330,
+      420,
+      82
+     ],
+     [
+      265,
+      395,
+      82
+     ],
+     [
+      200,
+      450,
+      82
+     ],
+     [
+      130,
+      500,
+      82
+     ],
+     [
+      80,
+      420,
+      82
+     ],
+     [
+      130,
+      330,
+      82
+     ],
+     [
+      300,
+      330,
+      82
+     ],
+     [
+      180,
+      290,
+      82
+     ],
+     [
+      760,
+      700,
+      82
+     ],
+     [
+      870,
+      625,
+      82
+     ],
+     [
+      760,
+      560,
+      82
+     ],
+     [
+      690,
+      470,
+      82
+     ],
+     [
+      735,
+      425,
+      82
+     ],
+     [
+      800,
+      470,
+      82
+     ],
+     [
+      900,
+      470,
+      82
+     ],
+     [
+      470,
+      1450,
+      130
+     ],
+     [
+      560,
+      1390,
+      130
+     ],
+     [
+      600,
+      1320,
+      130
+     ],
+     [
+      700,
+      1295,
+      130
+     ],
+     [
+      800,
+      1300,
+      130
+     ],
+     [
+      530,
+      1250,
+      130
+     ],
+     [
+      390,
+      1215,
+      130
+     ],
+     [
+      470,
+      1180,
+      130
+     ],
+     [
+      510,
+      1130,
+      130
+     ],
+     [
+      640,
+      1060,
+      130
+     ],
+     [
+      520,
+      1280,
+      230
+     ],
+     [
+      510,
+      1000,
+      130
+     ],
+     [
+      430,
+      965,
+      130
+     ],
+     [
+      360,
+      920,
+      130
+     ],
+     [
+      300,
+      985,
+      130
+     ],
+     [
+      215,
+      1000,
+      130
+     ],
+     [
+      110,
+      985,
+      130
+     ],
+     [
+      70,
+      890,
+      130
+     ],
+     [
+      150,
+      850,
+      130
+     ],
+     [
+      190,
+      790,
+      130
+     ],
+     [
+      150,
+      720,
+      130
+     ],
+     [
+      200,
+      900,
+      230
+     ],
+     [
+      640,
+      990,
+      130
+     ],
+     [
+      770,
+      1035,
+      130
+     ],
+     [
+      860,
+      1000,
+      130
+     ],
+     [
+      900,
+      925,
+      130
+     ],
+     [
+      920,
+      870,
+      130
+     ],
+     [
+      860,
+      830,
+      130
+     ],
+     [
+      740,
+      850,
+      130
+     ],
+     [
+      820,
+      790,
+      130
+     ],
+     [
+      720,
+      770,
+      130
+     ],
+     [
+      930,
+      760,
+      130
+     ],
+     [
+      830,
+      880,
+      230
+     ],
+     [
+      395,
+      540,
+      130
+     ],
+     [
+      400,
+      470,
+      130
+     ],
+     [
+      330,
+      420,
+      130
+     ],
+     [
+      265,
+      395,
+      130
+     ],
+     [
+      200,
+      450,
+      130
+     ],
+     [
+      130,
+      500,
+      130
+     ],
+     [
+      80,
+      420,
+      130
+     ],
+     [
+      130,
+      330,
+      130
+     ],
+     [
+      300,
+      330,
+      130
+     ],
+     [
+      180,
+      290,
+      130
+     ],
+     [
+      220,
+      420,
+      230
+     ]
+    ]
+   },
+   "chief": {
+    "vp": 1.15,
+    "on": true,
+    "shop": false,
+    "can": false,
+    "pct": [
+     10,
+     12.5,
+     15,
+     17.5,
+     20
+    ],
+    "prod": [
+     2.5759999999999996,
+     1.564,
+     1.6789999999999998,
+     1.15,
+     1.15
+    ],
+    "slot": "kael_chief",
+    "mem": [
+     "brida",
+     "kael_chief",
+     "nella",
+     "riel",
+     "luka"
+    ],
+    "pow": 128008996
+   },
+   "vrand": {
+    "orders": [
+     {
+      "who": "pete",
+      "need": {
+       "fish": 130,
+       "milk": 25
+      },
+      "gold": 0,
+      "extra": {
+       "k": "ore",
+       "n": 27
+      },
+      "at": 0
+     },
+     {
+      "who": "timo",
+      "need": {
+       "pumpkin": 10
+      },
+      "gold": 0,
+      "extra": {
+       "k": "ore",
+       "n": 28
+      },
+      "at": 0
+     },
+     {
+      "who": "nella",
+      "need": {
+       "fish": 110
+      },
+      "gold": 0,
+      "extra": {
+       "k": "gem",
+       "n": 4
+      },
+      "at": 0
+     },
+     {
+      "who": "nella",
+      "need": {
+       "ore": 200
+      },
+      "gold": 0,
+      "extra": {
+       "k": "ore",
+       "n": 28
+      },
+      "at": 0
+     }
+    ],
+    "opts": [
+     "brave",
+     "luck",
+     "gold",
+     "work"
+    ],
+    "walkers": [],
+    "skip": [
+     {
+      "at": 1792468800000
+     },
+     {
+      "at": 1792468800000
+     },
+     {
+      "at": 1792468800000
+     },
+     {
+      "at": 1792468800000
+     }
+    ],
+    "day": {
+     "d": "2026-10-20",
+     "gem": 5,
+     "skip": {
+      "0": 1,
+      "1": 1,
+      "2": 1,
+      "3": 1
+     }
+    }
+   },
+   "offline": 97054565,
+   "produced": {
+    "items": {
+     "wheat": 520,
+     "carrot": 120,
+     "pumpkin": 55,
+     "fish": 2391,
+     "honey": 1877,
+     "ore": 1623,
+     "egg": 31,
+     "milk": 15
+    },
+    "prod": {
+     "dock": 1792465200000,
+     "apiary": 1792465193845.543,
+     "mine": 1792465195341.615,
+     "egg": 1792465194782.6086,
+     "milk": 1792465171304.348
+    },
+    "bld": {
+     "inn": 10,
+     "farm": 6,
+     "diner": 10,
+     "dock": 10,
+     "apiary": 9,
+     "mine": 10,
+     "forge": 4,
+     "market": 6,
+     "ranch": 5,
+     "chapel": 5
+    },
+    "build": null,
+    "bq": null
+   },
+   "plots": [],
+   "rolls": {
+    "items": [
+     {
+      "slot": "helm",
+      "g": 3,
+      "lv": 46,
+      "atk": 0,
+      "hp": 3804,
+      "price": 20008
+     },
+     {
+      "slot": "helm",
+      "g": 1,
+      "lv": 44,
+      "atk": 0,
+      "hp": 1433,
+      "price": 10004
+     },
+     {
+      "slot": "boots",
+      "g": 4,
+      "lv": 45,
+      "atk": 289,
+      "hp": 3396,
+      "price": 25010
+     },
+     {
+      "slot": "ring",
+      "g": 4,
+      "lv": 43,
+      "atk": 431,
+      "hp": 2060,
+      "price": 25010
+     },
+     {
+      "slot": "helm",
+      "g": 1,
+      "lv": 43,
+      "atk": 0,
+      "hp": 1273,
+      "price": 10004
+     },
+     {
+      "slot": "armor",
+      "g": 1,
+      "lv": 44,
+      "atk": 0,
+      "hp": 2249,
+      "price": 10004
+     },
+     {
+      "slot": "armor",
+      "g": 5,
+      "lv": 43,
+      "atk": 0,
+      "hp": 13865,
+      "price": 30012
+     },
+     {
+      "slot": "boots",
+      "g": 3,
+      "lv": 44,
+      "atk": 169,
+      "hp": 1911,
+      "price": 20008
+     },
+     {
+      "slot": "weapon",
+      "g": 5,
+      "lv": 44,
+      "atk": 1481,
+      "hp": 0,
+      "price": 30012
+     },
+     {
+      "slot": "boots",
+      "g": 2,
+      "lv": 45,
+      "atk": 110,
+      "hp": 1275,
+      "price": 15006
+     },
+     {
+      "slot": "ring",
+      "g": 5,
+      "lv": 43,
+      "atk": 691,
+      "hp": 3986,
+      "price": 30012
+     },
+     {
+      "slot": "ring",
+      "g": 1,
+      "lv": 45,
+      "atk": 111,
+      "hp": 542,
+      "price": 10004
+     },
+     {
+      "slot": "ring",
+      "g": 4,
+      "lv": 46,
+      "atk": 467,
+      "hp": 2205,
+      "price": 25010
+     },
+     {
+      "slot": "ring",
+      "g": 4,
+      "lv": 44,
+      "atk": 460,
+      "hp": 2510,
+      "price": 25010
+     },
+     {
+      "slot": "boots",
+      "g": 1,
+      "lv": 46,
+      "atk": 69,
+      "hp": 929,
+      "price": 10004
+     },
+     {
+      "slot": "armor",
+      "g": 3,
+      "lv": 46,
+      "atk": 0,
+      "hp": 5693,
+      "price": 20008
+     },
+     {
+      "slot": "boots",
+      "g": 3,
+      "lv": 43,
+      "atk": 152,
+      "hp": 2130,
+      "price": 20008
+     },
+     {
+      "slot": "weapon",
+      "g": 2,
+      "lv": 45,
+      "atk": 342,
+      "hp": 0,
+      "price": 15006
+     },
+     {
+      "slot": "ring",
+      "g": 3,
+      "lv": 44,
+      "atk": 267,
+      "hp": 1517,
+      "price": 20008
+     },
+     {
+      "slot": "weapon",
+      "g": 3,
+      "lv": 45,
+      "atk": 520,
+      "hp": 0,
+      "price": 20008
+     },
+     {
+      "slot": "boots",
+      "g": 0,
+      "lv": 46,
+      "atk": 44,
+      "hp": 573,
+      "price": 5002
+     },
+     {
+      "slot": "weapon",
+      "g": 3,
+      "lv": 46,
+      "atk": 545,
+      "hp": 0,
+      "price": 20008
+     },
+     {
+      "slot": "ring",
+      "g": 4,
+      "lv": 46,
+      "atk": 425,
+      "hp": 2168,
+      "price": 25010
+     },
+     {
+      "slot": "armor",
+      "g": 3,
+      "lv": 46,
+      "atk": 0,
+      "hp": 5796,
+      "price": 20008
+     },
+     {
+      "slot": "helm",
+      "g": 2,
+      "lv": 46,
+      "atk": 0,
+      "hp": 2114,
+      "price": 15006
+     },
+     {
+      "slot": "gloves",
+      "g": 2,
+      "lv": 45,
+      "atk": 209,
+      "hp": 622,
+      "price": 15006
+     },
+     {
+      "slot": "weapon",
+      "g": 1,
+      "lv": 46,
+      "atk": 204,
+      "hp": 0,
+      "price": 10004
+     },
+     {
+      "slot": "gloves",
+      "g": 0,
+      "lv": 43,
+      "atk": 71,
+      "hp": 272,
+      "price": 5002
+     },
+     {
+      "slot": "ring",
+      "g": 0,
+      "lv": 44,
+      "atk": 61,
+      "hp": 348,
+      "price": 5002
+     },
+     {
+      "slot": "helm",
+      "g": 1,
+      "lv": 43,
+      "atk": 0,
+      "hp": 1407,
+      "price": 10004
+     },
+     {
+      "slot": "weapon",
+      "g": 1,
+      "lv": 43,
+      "atk": 219,
+      "hp": 0,
+      "price": 10004
+     },
+     {
+      "slot": "gloves",
+      "g": 2,
+      "lv": 45,
+      "atk": 197,
+      "hp": 621,
+      "price": 15006
+     },
+     {
+      "slot": "helm",
+      "g": 2,
+      "lv": 45,
+      "atk": 0,
+      "hp": 2459,
+      "price": 15006
+     },
+     {
+      "slot": "weapon",
+      "g": 4,
+      "lv": 45,
+      "atk": 913,
+      "hp": 0,
+      "price": 25010
+     },
+     {
+      "slot": "helm",
+      "g": 3,
+      "lv": 43,
+      "atk": 0,
+      "hp": 3211,
+      "price": 20008
+     },
+     {
+      "slot": "ring",
+      "g": 3,
+      "lv": 43,
+      "atk": 269,
+      "hp": 1290,
+      "price": 20008
+     },
+     {
+      "slot": "armor",
+      "g": 0,
+      "lv": 44,
+      "atk": 0,
+      "hp": 1297,
+      "price": 5002
+     },
+     {
+      "slot": "weapon",
+      "g": 5,
+      "lv": 43,
+      "atk": 1393,
+      "hp": 0,
+      "price": 30012
+     },
+     {
+      "slot": "armor",
+      "g": 5,
+      "lv": 44,
+      "atk": 0,
+      "hp": 16849,
+      "price": 30012
+     },
+     {
+      "slot": "ring",
+      "g": 2,
+      "lv": 45,
+      "atk": 184,
+      "hp": 912,
+      "price": 15006
+     }
+    ],
+    "forced": [
+     {
+      "slot": "helm",
+      "g": 0,
+      "lv": 45,
+      "atk": 0,
+      "hp": 920,
+      "price": 5002
+     },
+     {
+      "slot": "boots",
+      "g": 1,
+      "lv": 45,
+      "atk": 65,
+      "hp": 818,
+      "price": 10004
+     },
+     {
+      "slot": "gloves",
+      "g": 2,
+      "lv": 46,
+      "atk": 218,
+      "hp": 708,
+      "price": 15006
+     },
+     {
+      "slot": "gloves",
+      "g": 3,
+      "lv": 43,
+      "atk": 327,
+      "hp": 1070,
+      "price": 20008
+     },
+     {
+      "slot": "helm",
+      "g": 4,
+      "lv": 45,
+      "atk": 0,
+      "hp": 5341,
+      "price": 25010
+     },
+     {
+      "slot": "armor",
+      "g": 5,
+      "lv": 46,
+      "atk": 0,
+      "hp": 15056,
+      "price": 30012
+     }
+    ],
+    "cards": [
+     "bron",
+     "haral",
+     "toby",
+     "rollo",
+     "rollo",
+     "crab",
+     "pori",
+     "birch",
+     "haral",
+     "pori",
+     "haral",
+     "bron",
+     "mora",
+     "pori",
+     "peppy",
+     "luka",
+     "kara",
+     "luka",
+     "",
+     "kara",
+     "gram",
+     "riel",
+     "gram",
+     "gram",
+     "gram",
+     "margo",
+     "gordon",
+     "crab",
+     "gordon",
+     "melo",
+     "birch",
+     "beryl",
+     "haral",
+     "mora",
+     "",
+     "rollo",
+     "gram",
+     "melo",
+     "rollo",
+     "mora",
+     "margo",
+     "beryl",
+     "gordon",
+     "pori",
+     "andante",
+     "pori",
+     "birch",
+     "haral",
+     "rollo",
+     "gordon",
+     "pori"
+    ],
+    "chunks": {
+     "got": [
+      [
+       "kara",
+       5
+      ],
+      [
+       "haral",
+       5
+      ],
+      [
+       "birch",
+       5
+      ],
+      [
+       "haral",
+       5
+      ],
+      [
+       "gordon",
+       5
+      ],
+      [
+       "haral",
+       5
+      ]
+     ],
+     "gold": 0
+    },
+    "cardsAfter": {
+     "brida": 70,
+     "luka": 31,
+     "nella": 0,
+     "gordon": 26,
+     "daisy": 79,
+     "bron": 5,
+     "haral": 22,
+     "toby": 1,
+     "rollo": 8,
+     "crab": 2,
+     "pori": 9,
+     "birch": 38,
+     "mora": 5,
+     "peppy": 1,
+     "kara": 7,
+     "gram": 6,
+     "riel": 1,
+     "margo": 3,
+     "melo": 3,
+     "beryl": 4,
+     "andante": 2
+    },
+    "goldAfter": 987000000018514
+   },
+   "retired": {
+    "gold": 60,
+    "stage": 1,
+    "wave": 0,
+    "boxLv": 10,
+    "boxXp": 0,
+    "up": {
+     "atk": 0,
+     "hp": 0,
+     "spd": 0,
+     "crit": 0
+    },
+    "eq": {},
+    "autoSell": false,
+    "autoOpen": false,
+    "last": 1792393200000,
+    "best": 46,
+    "started": true,
+    "joined": {
+     "margo": true,
+     "haral": true,
+     "riel": true,
+     "bron": true,
+     "kael_chief": true
+    },
+    "done": {
+     "marta": true,
+     "margo": true,
+     "haral": true,
+     "riel": true,
+     "bron": true
+    },
+    "lv": {
+     "bron": 1,
+     "haral": 1,
+     "riel": 1,
+     "margo": 1,
+     "brida": 1,
+     "nella": 1,
+     "luka": 1,
+     "daisy": 1,
+     "gordon": 1
+    },
+    "bld": {
+     "inn": 10,
+     "farm": 6,
+     "diner": 10,
+     "dock": 10,
+     "apiary": 9,
+     "mine": 10,
+     "forge": 4,
+     "market": 6,
+     "ranch": 5,
+     "chapel": 5
+    },
+    "plots": [],
+    "seeds": {
+     "wheat": 0,
+     "carrot": 0,
+     "pumpkin": 0
+    },
+    "items": {
+     "wheat": 520,
+     "carrot": 120,
+     "pumpkin": 55,
+     "fish": 2000,
+     "honey": 1500,
+     "ore": 980,
+     "egg": 12,
+     "milk": 3
+    },
+    "prod": {
+     "dock": 1792462200000,
+     "apiary": 1792462200000,
+     "mine": 1792462200000,
+     "egg": 1792464600000,
+     "milk": 1792464420000
+    },
+    "buffs": {
+     "spd": 1792465740000,
+     "hp": 1792465500000,
+     "sk": 1792465320000
+    },
+    "rankSeen": 0,
+    "memory": 17,
+    "retires": 4,
+    "buys": {},
+    "sub": {
+     "until": 0,
+     "last": ""
+    },
+    "ucard": 45,
+    "gem": 5100,
+    "gemRank": 0,
+    "gemLord": {},
+    "daily": {
+     "d": "",
+     "kill": 0,
+     "box": 0,
+     "harv": 0,
+     "claim": {}
+    },
+    "att": {
+     "last": "",
+     "w": 0,
+     "ym": "",
+     "m": 0,
+     "ad": "",
+     "got": [],
+     "intro": 0,
+     "tab": "w"
+    },
+    "tickets": {
+     "box": 0,
+     "box10": 0
+    },
+    "capClears": 0,
+    "capBonus": 0,
+    "ending1": 0,
+    "chOpen": 0,
+    "tower": {
+     "top": 0,
+     "day": "",
+     "pk": 0
+    },
+    "dun": {
+     "d": "",
+     "used": 0,
+     "ad": 0,
+     "star": {
+      "mine": {},
+      "field": {},
+      "vault": {}
+     },
+     "seen": {}
+    },
+    "mapIntro": 0,
+    "fogSeen": 46,
+    "regSeen": {
+     "0": 1,
+     "1": 1,
+     "2": 1,
+     "3": 1
+    },
+    "trait": {},
+    "trReset": 0,
+    "runStart": 1,
+    "retRw": {
+     "1": 1,
+     "3": 1
+    },
+    "diaryIntro": 0,
+    "orders": [
+     {
+      "who": "pete",
+      "need": {
+       "fish": 40,
+       "egg": 10
+      },
+      "gold": 0,
+      "extra": {
+       "k": "gem",
+       "n": 4
+      },
+      "at": 0
+     },
+     {
+      "at": 1792467000000
+     },
+     {
+      "who": "marta",
+      "need": {
+       "wheat": 500
+      },
+      "gold": 0,
+      "extra": {
+       "k": "ore",
+       "n": 12
+      },
+      "at": 0
+     },
+     {
+      "who": "daisy",
+      "need": {
+       "honey": 60
+      },
+      "gold": 0,
+      "extra": {
+       "k": "seed",
+       "n": 1
+      },
+      "at": 0
+     }
+    ],
+    "ordDay": {
+     "d": "2026-10-20",
+     "gem": 5,
+     "skip": {
+      "1": 1
+     }
+    },
+    "bless": {
+     "d": "2026-10-20",
+     "used": 1,
+     "ad": 0,
+     "k": "gold",
+     "until": 1792467600000,
+     "opts": []
+    },
+    "vlv": 3,
+    "ep": {
+     "2": 1
+    },
+    "walkers": {
+     "d": "2026-10-20",
+     "ids": [
+      "bron",
+      "gordon",
+      "nella"
+     ]
+    },
+    "keepOrder": 1,
+    "work": {
+     "mine": [
+      "gordon"
+     ],
+     "dock": [
+      "haral",
+      "margo"
+     ],
+     "apiary": [
+      "daisy"
+     ],
+     "market": [
+      "nella"
+     ],
+     "inn": [
+      "bron"
+     ]
+    },
+    "workIntro": 1,
+    "workDot": "2026-10-20",
+    "v": 3,
+    "slotEn": {
+     "weapon": 20,
+     "helm": 18,
+     "armor": 20,
+     "gloves": 15,
+     "boots": 12,
+     "ring": 19
+    },
+    "cwEn": {
+     "haral": 20,
+     "bron": 17,
+     "margo": 12,
+     "riel": 15
+    },
+    "rec": {
+     "brida": 3,
+     "luka": 1,
+     "nella": 5,
+     "gordon": 2,
+     "daisy": 4,
+     "kael_chief": 3
+    },
+    "cards": {
+     "brida": 70,
+     "luka": 29,
+     "nella": 0,
+     "gordon": 15,
+     "daisy": 79,
+     "bron": 3
+    },
+    "party": {
+     "miner": "brida",
+     "fisher": "nella",
+     "keeper": "riel",
+     "cook": "luka",
+     "kael": "kael_chief"
+    },
+    "pfUnl": {
+     "wood": 1,
+     "harvest": 1,
+     "holy": 1
+    },
+    "pfNew": {
+     "f_harvest": 1,
+     "f_holy": 1,
+     "b_rebuild": 1,
+     "b_chest": 1,
+     "b_retire": 1
+    },
+    "bdUnl": {
+     "rebuild": 1,
+     "chest": 1,
+     "retire": 1
     }
    },
    "pf": {
@@ -47129,12 +52289,13 @@
    "crab",
    "birch",
    "gram",
+   "kael_chief",
    "luka"
   ]
  },
  "codes": {
-  "mid": "eyJnb2xkIjoxMjM0NTYuNywic3RhZ2UiOjIzLCJ3YXZlIjo0LCJib3hMdiI6NCwiYm94WHAiOjcsInVwIjp7ImF0ayI6NDAsImhwIjozMCwic3BkIjoxMCwiY3JpdCI6MTJ9LCJlcSI6eyJ3ZWFwb24iOnsic2xvdCI6IndlYXBvbiIsImciOjMsImx2IjoyMiwiYXRrIjoxMDMxLCJocCI6MCwicHJpY2UiOjMwMH0sImhlbG0iOnsic2xvdCI6ImhlbG0iLCJnIjoyLCJsdiI6MjAsImF0ayI6MCwiaHAiOjEwMTAsInByaWNlIjoyMDB9LCJhcm1vciI6eyJzbG90IjoiYXJtb3IiLCJnIjoyLCJsdiI6MjMsImF0ayI6MCwiaHAiOjE4NTAsInByaWNlIjoyMTB9LCJnbG92ZXMiOnsic2xvdCI6Imdsb3ZlcyIsImciOjEsImx2IjoyMSwiYXRrIjoxMjAsImhwIjoyMTAsInByaWNlIjo5MH0sImJvb3RzIjp7InNsb3QiOiJib290cyIsImciOjQsImx2IjoyNCwiYXRrIjoxNDAsImhwIjoxOTAwLCJwcmljZSI6OTAwfX0sImF1dG9TZWxsIjpmYWxzZSwiYXV0b09wZW4iOmZhbHNlLCJsYXN0IjoxNzkyNDYzNDAwMDAwLCJiZXN0IjoyNSwic3RhcnRlZCI6dHJ1ZSwiam9pbmVkIjp7Im1hcmdvIjp0cnVlLCJoYXJhbCI6dHJ1ZSwicmllbCI6dHJ1ZSwiYnJvbiI6dHJ1ZX0sImRvbmUiOnsibWFydGEiOnRydWUsIm1hcmdvIjp0cnVlLCJoYXJhbCI6dHJ1ZSwicmllbCI6dHJ1ZSwiYnJvbiI6dHJ1ZSwicGV0ZSI6dHJ1ZSwidHV0QnVpbGQiOnRydWV9LCJsdiI6eyJicm9uIjo1LCJoYXJhbCI6NywicmllbCI6NCwibWFyZ28iOjYsImRhaXN5IjoyfSwiYmxkIjp7ImlubiI6NCwiZmFybSI6MywiZGluZXIiOjUsImRvY2siOjIsImFwaWFyeSI6MywibWluZSI6MiwiZm9yZ2UiOjEsIm1hcmtldCI6MCwicmFuY2giOjAsImNoYXBlbCI6MH0sInBsb3RzIjpbeyJrIjoid2hlYXQiLCJhdCI6MTc5MjQ2NTA4MDAwMH0seyJrIjoiY2Fycm90IiwiYXQiOjE3OTI0NjUxNDAwMDB9LG51bGwsbnVsbCx7ImsiOiJwdW1wa2luIiwiYXQiOjE3OTI0NjM0MDAwMDB9XSwic2VlZHMiOnsid2hlYXQiOjQsImNhcnJvdCI6MiwicHVtcGtpbiI6MH0sIml0ZW1zIjp7IndoZWF0IjoxMiwiY2Fycm90IjozLCJwdW1wa2luIjoxLCJmaXNoIjo0MCwiaG9uZXkiOjIyLCJvcmUiOjMxLCJlZ2ciOjAsIm1pbGsiOjB9LCJwcm9kIjp7ImRvY2siOjE3OTI0NjQ2NjAwMDAsImFwaWFyeSI6MTc5MjQ2NTAyMDAwMCwibWluZSI6MTc5MjQ2MTU0MDAwMH0sImJ1ZmZzIjp7ImF0ayI6MTc5MjQ2NTUwMDAwMCwiY3JpdCI6MTc5MjQ2NTE5OTAwMCwiZ29sZCI6MTc5MjQ2NTMyMDAwMH0sInJhbmtTZWVuIjowLCJtZW1vcnkiOjMsInJldGlyZXMiOjEsImJ1eXMiOnt9LCJzdWIiOnsidW50aWwiOjE3OTMzMjkyMDAwMDAsImxhc3QiOiIyMDI2LTEwLTE5In0sImdlbSI6NzcsImdlbVJhbmsiOjAsImdlbUxvcmQiOnt9LCJkYWlseSI6eyJkIjoiMjAyNi0xMC0yMCIsImtpbGwiOjU1LCJib3giOjEwLCJoYXJ2Ijo0LCJjbGFpbSI6eyJib3giOnRydWV9LCJhZCI6eyJib3giOjJ9fSwiYXR0Ijp7Imxhc3QiOiIiLCJ3IjowLCJ5bSI6IiIsIm0iOjAsImFkIjoiIiwiZ290IjpbXSwiaW50cm8iOjAsInRhYiI6IncifSwidGlja2V0cyI6eyJib3giOjAsImJveDEwIjowfSwiY2FwQ2xlYXJzIjowLCJjYXBCb251cyI6MCwiZW5kaW5nMSI6MCwiY2hPcGVuIjowLCJ0b3dlciI6eyJ0b3AiOjAsImRheSI6IiIsInBrIjowfSwiZHVuIjp7ImQiOiIiLCJ1c2VkIjowLCJhZCI6MCwic3RhciI6eyJtaW5lIjp7fSwiZmllbGQiOnt9LCJ2YXVsdCI6e319LCJzZWVuIjp7fX0sIm1hcEludHJvIjowLCJmb2dTZWVuIjoyNSwicmVnU2VlbiI6eyIwIjoxLCIxIjoxfSwidHJhaXQiOnt9LCJ0clJlc2V0IjowLCJydW5TdGFydCI6MSwicmV0UnciOnt9LCJkaWFyeUludHJvIjowLCJvcmRlcnMiOltdLCJvcmREYXkiOnsiZCI6IiIsImdlbSI6MCwic2tpcCI6e319LCJibGVzcyI6eyJkIjoiIiwidXNlZCI6MCwiYWQiOjAsImsiOiIiLCJ1bnRpbCI6MCwib3B0cyI6W119LCJ2bHYiOjEsImVwIjp7fSwid2Fsa2VycyI6eyJkIjoiIiwiaWRzIjpbXX0sImtlZXBPcmRlciI6MSwid29yayI6e30sIndvcmtJbnRybyI6MCwid29ya0RvdCI6IiIsInYiOjMsInNsb3RFbiI6eyJ3ZWFwb24iOjUsImFybW9yIjozLCJib290cyI6MX0sImN3RW4iOnsiaGFyYWwiOjQsImJyb24iOjIsIm1hcmdvIjoxfSwicmVjIjp7ImRhaXN5IjoyfSwiY2FyZHMiOnsiZGFpc3kiOjExLCJnb3Jkb24iOjcsImx1a2EiOjMsImhhcmFsIjo5fSwicGFydHkiOnsia2VlcGVyIjoiZGFpc3kifSwid2lzaCI6ImdvcmRvbiIsImdlbVBsb3RzIjoxLCJidWlsZCI6eyJrIjoiZGluZXIiLCJlbmQiOjE3OTI0NjQ5MDAwMDAsImR1ciI6MzYwMH0sImJxIjpbImRvY2siXSwicGYiOiJ3b29kIiwicGZVbmwiOnsid29vZCI6MX19",
-  "late": "eyJnb2xkIjo5ODcwMDAwMDAwMDAwMDAsInN0YWdlIjo0NSwid2F2ZSI6OSwiYm94THYiOjEwLCJib3hYcCI6MCwidXAiOnsiYXRrIjo5MDAsImhwIjo4NTAsInNwZCI6NDAsImNyaXQiOjU1fSwiZXEiOnsid2VhcG9uIjp7InNsb3QiOiJ3ZWFwb24iLCJnIjo1LCJsdiI6NDYsImF0ayI6MjIwMDAsImhwIjowLCJwcmljZSI6OTAwMDAwMDAwMH0sImhlbG0iOnsic2xvdCI6ImhlbG0iLCJnIjo0LCJsdiI6NDUsImF0ayI6MCwiaHAiOjk5MDAwLCJwcmljZSI6NTAwMDAwMDAwMH0sImFybW9yIjp7InNsb3QiOiJhcm1vciIsImciOjUsImx2Ijo0NCwiYXRrIjowLCJocCI6MjYwMDAwLCJwcmljZSI6ODAwMDAwMDAwMH0sImdsb3ZlcyI6eyJzbG90IjoiZ2xvdmVzIiwiZyI6NSwibHYiOjQ2LCJhdGsiOjE0MDAwLCJocCI6MzAwMDAsInByaWNlIjo4MDAwMDAwMDAwfSwiYm9vdHMiOnsic2xvdCI6ImJvb3RzIiwiZyI6NCwibHYiOjQ3LCJhdGsiOjYwMDAsImhwIjo2MDAwMCwicHJpY2UiOjYwMDAwMDAwMDB9LCJyaW5nIjp7InNsb3QiOiJyaW5nIiwiZyI6NSwibHYiOjQ1LCJhdGsiOjExMDAwLCJocCI6NDAwMDAsInByaWNlIjo4MDAwMDAwMDAwfX0sImF1dG9TZWxsIjpmYWxzZSwiYXV0b09wZW4iOmZhbHNlLCJsYXN0IjoxNzkyMzkzMjAwMDAwLCJiZXN0Ijo0Niwic3RhcnRlZCI6dHJ1ZSwiam9pbmVkIjp7Im1hcmdvIjp0cnVlLCJoYXJhbCI6dHJ1ZSwicmllbCI6dHJ1ZSwiYnJvbiI6dHJ1ZX0sImRvbmUiOnsibWFydGEiOnRydWUsIm1hcmdvIjp0cnVlLCJoYXJhbCI6dHJ1ZSwicmllbCI6dHJ1ZSwiYnJvbiI6dHJ1ZX0sImx2Ijp7ImJyb24iOjYwLCJoYXJhbCI6NjEsInJpZWwiOjU4LCJtYXJnbyI6NTUsImJyaWRhIjo0MCwibmVsbGEiOjMzLCJsdWthIjoyMCwiZGFpc3kiOjEyLCJnb3Jkb24iOjl9LCJibGQiOnsiaW5uIjoxMCwiZmFybSI6NiwiZGluZXIiOjEwLCJkb2NrIjoxMCwiYXBpYXJ5Ijo5LCJtaW5lIjoxMCwiZm9yZ2UiOjEsIm1hcmtldCI6MCwicmFuY2giOjAsImNoYXBlbCI6MH0sInBsb3RzIjpbXSwic2VlZHMiOnsid2hlYXQiOjAsImNhcnJvdCI6MCwicHVtcGtpbiI6MH0sIml0ZW1zIjp7IndoZWF0Ijo0MDAsImNhcnJvdCI6MTIwLCJwdW1wa2luIjo1NSwiZmlzaCI6MjAwMCwiaG9uZXkiOjE1MDAsIm9yZSI6OTgwLCJlZ2ciOjAsIm1pbGsiOjB9LCJwcm9kIjp7ImRvY2siOjE3OTI0NjIyMDAwMDAsImFwaWFyeSI6MTc5MjQ2MjIwMDAwMCwibWluZSI6MTc5MjQ2MjIwMDAwMH0sImJ1ZmZzIjp7InNwZCI6MTc5MjQ2NTc0MDAwMCwiYXRrIjoxNzkyNDY1MjYwMDAwLCJjcml0IjoxNzkyNDY1MzgwMDAwfSwicmFua1NlZW4iOjAsIm1lbW9yeSI6MTIsInJldGlyZXMiOjQsImJ1eXMiOnt9LCJzdWIiOnsidW50aWwiOjAsImxhc3QiOiIifSwiZ2VtIjo1MDAwLCJnZW1SYW5rIjowLCJnZW1Mb3JkIjp7fSwiZGFpbHkiOnsiZCI6IiIsImtpbGwiOjAsImJveCI6MCwiaGFydiI6MCwiY2xhaW0iOnt9fSwiYXR0Ijp7Imxhc3QiOiIiLCJ3IjowLCJ5bSI6IiIsIm0iOjAsImFkIjoiIiwiZ290IjpbXSwiaW50cm8iOjAsInRhYiI6IncifSwidGlja2V0cyI6eyJib3giOjAsImJveDEwIjowfSwiY2FwQ2xlYXJzIjowLCJjYXBCb251cyI6MCwiZW5kaW5nMSI6MCwiY2hPcGVuIjowLCJ0b3dlciI6eyJ0b3AiOjAsImRheSI6IiIsInBrIjowfSwiZHVuIjp7ImQiOiIiLCJ1c2VkIjowLCJhZCI6MCwic3RhciI6eyJtaW5lIjp7fSwiZmllbGQiOnt9LCJ2YXVsdCI6e319LCJzZWVuIjp7fX0sIm1hcEludHJvIjowLCJmb2dTZWVuIjo0NiwicmVnU2VlbiI6eyIwIjoxLCIxIjoxLCIyIjoxLCIzIjoxfSwidHJhaXQiOnt9LCJ0clJlc2V0IjowLCJydW5TdGFydCI6MSwicmV0UnciOnt9LCJkaWFyeUludHJvIjowLCJvcmRlcnMiOltdLCJvcmREYXkiOnsiZCI6IiIsImdlbSI6MCwic2tpcCI6e319LCJibGVzcyI6eyJkIjoiIiwidXNlZCI6MCwiYWQiOjAsImsiOiIiLCJ1bnRpbCI6MCwib3B0cyI6W119LCJ2bHYiOjEsImVwIjp7fSwid2Fsa2VycyI6eyJkIjoiIiwiaWRzIjpbXX0sImtlZXBPcmRlciI6MSwid29yayI6e30sIndvcmtJbnRybyI6MCwid29ya0RvdCI6IiIsInYiOjMsInNsb3RFbiI6eyJ3ZWFwb24iOjIwLCJoZWxtIjoxOCwiYXJtb3IiOjIwLCJnbG92ZXMiOjE1LCJib290cyI6MTIsInJpbmciOjE5fSwiY3dFbiI6eyJoYXJhbCI6MjAsImJyb24iOjE3LCJtYXJnbyI6MTIsInJpZWwiOjE1fSwicmVjIjp7ImJyaWRhIjozLCJsdWthIjoxLCJuZWxsYSI6NSwiZ29yZG9uIjoyLCJkYWlzeSI6NH0sImNhcmRzIjp7ImJyaWRhIjo3MCwibHVrYSI6MjksIm5lbGxhIjowLCJnb3Jkb24iOjE1LCJkYWlzeSI6NzksImJyb24iOjN9LCJwYXJ0eSI6eyJtaW5lciI6ImJyaWRhIiwiZmlzaGVyIjoibmVsbGEiLCJrZWVwZXIiOiJyaWVsIiwiY29vayI6Imx1a2EifX0=",
-  "old": "eyJnb2xkIjo1MDAsInN0YWdlIjoxNCwid2F2ZSI6MCwiYm94THYiOjEsImJveFhwIjowLCJ1cCI6eyJhdGsiOjAsImhwIjowLCJzcGQiOjAsImNyaXQiOjB9LCJlcSI6e30sImF1dG9TZWxsIjpmYWxzZSwiYXV0b09wZW4iOmZhbHNlLCJsYXN0IjoxNzkyNDY1MjAwMDAwLCJiZXN0IjoxNCwic3RhcnRlZCI6ZmFsc2UsImpvaW5lZCI6eyJtYXJnbyI6dHJ1ZX0sImRvbmUiOnt9LCJsdiI6eyJicm9uIjoxLCJoYXJhbCI6MSwicmllbCI6MSwibWFyZ28iOjN9LCJibGQiOnsiaW5uIjowLCJmYXJtIjowLCJkaW5lciI6MCwiZG9jayI6MCwiYXBpYXJ5IjowLCJtaW5lIjowLCJmb3JnZSI6MCwibWFya2V0IjowLCJyYW5jaCI6MCwiY2hhcGVsIjowfSwicGxvdHMiOltdLCJzZWVkcyI6eyJ3aGVhdCI6MCwiY2Fycm90IjowLCJwdW1wa2luIjowfSwiaXRlbXMiOnsid2hlYXQiOjgsImNhcnJvdCI6MiwicHVtcGtpbiI6MCwiZmlzaCI6MCwiaG9uZXkiOjAsIm9yZSI6MCwiZWdnIjowLCJtaWxrIjowfSwicHJvZCI6e30sImJ1ZmZzIjp7fSwicmFua1NlZW4iOjIsIm1lbW9yeSI6MCwicmV0aXJlcyI6MCwiYnV5cyI6e30sInN1YiI6eyJ1bnRpbCI6MCwibGFzdCI6IiJ9LCJnZW0iOjAsImdlbVJhbmsiOjAsImdlbUxvcmQiOnt9LCJkYWlseSI6eyJkIjoiIiwia2lsbCI6MCwiYm94IjowLCJoYXJ2IjowLCJjbGFpbSI6e319LCJhdHQiOnsibGFzdCI6IiIsInciOjAsInltIjoiIiwibSI6MCwiYWQiOiIiLCJnb3QiOltdLCJpbnRybyI6MCwidGFiIjoidyJ9LCJ0aWNrZXRzIjp7ImJveCI6MCwiYm94MTAiOjB9LCJjYXBDbGVhcnMiOjAsImNhcEJvbnVzIjowLCJlbmRpbmcxIjowLCJjaE9wZW4iOjAsInRvd2VyIjp7InRvcCI6MCwiZGF5IjoiIiwicGsiOjB9LCJkdW4iOnsiZCI6IiIsInVzZWQiOjAsImFkIjowLCJzdGFyIjp7Im1pbmUiOnt9LCJmaWVsZCI6e30sInZhdWx0Ijp7fX0sInNlZW4iOnt9fSwibWFwSW50cm8iOjAsImZvZ1NlZW4iOjE0LCJyZWdTZWVuIjp7IjAiOjF9LCJ0cmFpdCI6e30sInRyUmVzZXQiOjAsInJ1blN0YXJ0IjoxLCJyZXRSdyI6e30sImRpYXJ5SW50cm8iOjAsIm9yZGVycyI6W10sIm9yZERheSI6eyJkIjoiIiwiZ2VtIjowLCJza2lwIjp7fX0sImJsZXNzIjp7ImQiOiIiLCJ1c2VkIjowLCJhZCI6MCwiayI6IiIsInVudGlsIjowLCJvcHRzIjpbXX0sInZsdiI6MSwiZXAiOnt9LCJ3YWxrZXJzIjp7ImQiOiIiLCJpZHMiOltdfSwia2VlcE9yZGVyIjoxLCJ3b3JrIjp7fSwid29ya0ludHJvIjowLCJ3b3JrRG90IjoiIiwidiI6M30="
+  "mid": "eyJnb2xkIjoxMjM0NTYuNywic3RhZ2UiOjIzLCJ3YXZlIjo0LCJib3hMdiI6NCwiYm94WHAiOjcsInVwIjp7ImF0ayI6NDAsImhwIjozMCwic3BkIjoxMCwiY3JpdCI6MTJ9LCJlcSI6eyJ3ZWFwb24iOnsic2xvdCI6IndlYXBvbiIsImciOjMsImx2IjoyMiwiYXRrIjoxMDMxLCJocCI6MCwicHJpY2UiOjMwMH0sImhlbG0iOnsic2xvdCI6ImhlbG0iLCJnIjoyLCJsdiI6MjAsImF0ayI6MCwiaHAiOjEwMTAsInByaWNlIjoyMDB9LCJhcm1vciI6eyJzbG90IjoiYXJtb3IiLCJnIjoyLCJsdiI6MjMsImF0ayI6MCwiaHAiOjE4NTAsInByaWNlIjoyMTB9LCJnbG92ZXMiOnsic2xvdCI6Imdsb3ZlcyIsImciOjEsImx2IjoyMSwiYXRrIjoxMjAsImhwIjoyMTAsInByaWNlIjo5MH0sImJvb3RzIjp7InNsb3QiOiJib290cyIsImciOjQsImx2IjoyNCwiYXRrIjoxNDAsImhwIjoxOTAwLCJwcmljZSI6OTAwfX0sImF1dG9TZWxsIjpmYWxzZSwiYXV0b09wZW4iOmZhbHNlLCJsYXN0IjoxNzkyNDYzNDAwMDAwLCJiZXN0IjoyNSwic3RhcnRlZCI6dHJ1ZSwiam9pbmVkIjp7Im1hcmdvIjp0cnVlLCJoYXJhbCI6dHJ1ZSwicmllbCI6dHJ1ZSwiYnJvbiI6dHJ1ZX0sImRvbmUiOnsibWFydGEiOnRydWUsIm1hcmdvIjp0cnVlLCJoYXJhbCI6dHJ1ZSwicmllbCI6dHJ1ZSwiYnJvbiI6dHJ1ZSwicGV0ZSI6dHJ1ZSwidHV0QnVpbGQiOnRydWV9LCJsdiI6eyJicm9uIjo1LCJoYXJhbCI6NywicmllbCI6NCwibWFyZ28iOjYsImRhaXN5IjoyfSwiYmxkIjp7ImlubiI6NCwiZmFybSI6MywiZGluZXIiOjUsImRvY2siOjIsImFwaWFyeSI6MywibWluZSI6MiwiZm9yZ2UiOjEsIm1hcmtldCI6MCwicmFuY2giOjAsImNoYXBlbCI6MH0sInBsb3RzIjpbeyJrIjoid2hlYXQiLCJhdCI6MTc5MjQ2NTA4MDAwMH0seyJrIjoiY2Fycm90IiwiYXQiOjE3OTI0NjUxNDAwMDB9LG51bGwsbnVsbCx7ImsiOiJwdW1wa2luIiwiYXQiOjE3OTI0NjM0MDAwMDB9XSwic2VlZHMiOnsid2hlYXQiOjQsImNhcnJvdCI6MiwicHVtcGtpbiI6MH0sIml0ZW1zIjp7IndoZWF0IjoxMiwiY2Fycm90IjozLCJwdW1wa2luIjoxLCJmaXNoIjo0MCwiaG9uZXkiOjIyLCJvcmUiOjMxLCJlZ2ciOjAsIm1pbGsiOjB9LCJwcm9kIjp7ImRvY2siOjE3OTI0NjQ2NjAwMDAsImFwaWFyeSI6MTc5MjQ2NTAyMDAwMCwibWluZSI6MTc5MjQ2MTU0MDAwMH0sImJ1ZmZzIjp7ImF0ayI6MTc5MjQ2NTUwMDAwMCwiY3JpdCI6MTc5MjQ2NTE5OTAwMCwiZ29sZCI6MTc5MjQ2NTMyMDAwMH0sInJhbmtTZWVuIjowLCJtZW1vcnkiOjMsInJldGlyZXMiOjEsImJ1eXMiOnt9LCJzdWIiOnsidW50aWwiOjE3OTMzMjkyMDAwMDAsImxhc3QiOiIyMDI2LTEwLTE5In0sInVjYXJkIjowLCJnZW0iOjc3LCJnZW1SYW5rIjowLCJnZW1Mb3JkIjp7fSwiZGFpbHkiOnsiZCI6IjIwMjYtMTAtMjAiLCJraWxsIjo1NSwiYm94IjoxMCwiaGFydiI6NCwiY2xhaW0iOnsiYm94Ijp0cnVlfSwiYWQiOnsiYm94IjoyfX0sImF0dCI6eyJsYXN0IjoiIiwidyI6MCwieW0iOiIiLCJtIjowLCJhZCI6IiIsImdvdCI6W10sImludHJvIjowLCJ0YWIiOiJ3In0sInRpY2tldHMiOnsiYm94IjowLCJib3gxMCI6MH0sImNhcENsZWFycyI6MCwiY2FwQm9udXMiOjAsImVuZGluZzEiOjAsImNoT3BlbiI6MCwidG93ZXIiOnsidG9wIjowLCJkYXkiOiIiLCJwayI6MH0sImR1biI6eyJkIjoiIiwidXNlZCI6MCwiYWQiOjAsInN0YXIiOnsibWluZSI6e30sImZpZWxkIjp7fSwidmF1bHQiOnt9fSwic2VlbiI6e319LCJtYXBJbnRybyI6MCwiZm9nU2VlbiI6MjUsInJlZ1NlZW4iOnsiMCI6MSwiMSI6MX0sInRyYWl0Ijp7fSwidHJSZXNldCI6MCwicnVuU3RhcnQiOjEsInJldFJ3Ijp7fSwiZGlhcnlJbnRybyI6MCwib3JkZXJzIjpbXSwib3JkRGF5Ijp7ImQiOiIiLCJnZW0iOjAsInNraXAiOnt9fSwiYmxlc3MiOnsiZCI6IiIsInVzZWQiOjAsImFkIjowLCJrIjoiIiwidW50aWwiOjAsIm9wdHMiOltdfSwidmx2IjoxLCJlcCI6e30sIndhbGtlcnMiOnsiZCI6IiIsImlkcyI6W119LCJrZWVwT3JkZXIiOjEsIndvcmsiOnt9LCJ3b3JrSW50cm8iOjAsIndvcmtEb3QiOiIiLCJ2IjozLCJzbG90RW4iOnsid2VhcG9uIjo1LCJhcm1vciI6MywiYm9vdHMiOjF9LCJjd0VuIjp7ImhhcmFsIjo0LCJicm9uIjoyLCJtYXJnbyI6MX0sInJlYyI6eyJkYWlzeSI6Mn0sImNhcmRzIjp7ImRhaXN5IjoxMSwiZ29yZG9uIjo3LCJsdWthIjozLCJoYXJhbCI6OX0sInBhcnR5Ijp7ImtlZXBlciI6ImRhaXN5In0sIndpc2giOiJnb3Jkb24iLCJnZW1QbG90cyI6MSwiYnVpbGQiOnsiayI6ImRpbmVyIiwiZW5kIjoxNzkyNDY0OTAwMDAwLCJkdXIiOjM2MDB9LCJicSI6WyJkb2NrIl0sInBmIjoid29vZCIsInBmVW5sIjp7Indvb2QiOjF9fQ==",
+  "late": "eyJnb2xkIjo5ODcwMDAwMDAwMDAwMDAsInN0YWdlIjo0NSwid2F2ZSI6OSwiYm94THYiOjEwLCJib3hYcCI6MCwidXAiOnsiYXRrIjo5MDAsImhwIjo4NTAsInNwZCI6NDAsImNyaXQiOjU1fSwiZXEiOnsid2VhcG9uIjp7InNsb3QiOiJ3ZWFwb24iLCJnIjo1LCJsdiI6NDYsImF0ayI6MjIwMDAsImhwIjowLCJwcmljZSI6OTAwMDAwMDAwMH0sImhlbG0iOnsic2xvdCI6ImhlbG0iLCJnIjo0LCJsdiI6NDUsImF0ayI6MCwiaHAiOjk5MDAwLCJwcmljZSI6NTAwMDAwMDAwMH0sImFybW9yIjp7InNsb3QiOiJhcm1vciIsImciOjUsImx2Ijo0NCwiYXRrIjowLCJocCI6MjYwMDAwLCJwcmljZSI6ODAwMDAwMDAwMH0sImdsb3ZlcyI6eyJzbG90IjoiZ2xvdmVzIiwiZyI6NSwibHYiOjQ2LCJhdGsiOjE0MDAwLCJocCI6MzAwMDAsInByaWNlIjo4MDAwMDAwMDAwfSwiYm9vdHMiOnsic2xvdCI6ImJvb3RzIiwiZyI6NCwibHYiOjQ3LCJhdGsiOjYwMDAsImhwIjo2MDAwMCwicHJpY2UiOjYwMDAwMDAwMDB9LCJyaW5nIjp7InNsb3QiOiJyaW5nIiwiZyI6NSwibHYiOjQ1LCJhdGsiOjExMDAwLCJocCI6NDAwMDAsInByaWNlIjo4MDAwMDAwMDAwfX0sImF1dG9TZWxsIjpmYWxzZSwiYXV0b09wZW4iOmZhbHNlLCJsYXN0IjoxNzkyMzkzMjAwMDAwLCJiZXN0Ijo0Niwic3RhcnRlZCI6dHJ1ZSwiam9pbmVkIjp7Im1hcmdvIjp0cnVlLCJoYXJhbCI6dHJ1ZSwicmllbCI6dHJ1ZSwiYnJvbiI6dHJ1ZX0sImRvbmUiOnsibWFydGEiOnRydWUsIm1hcmdvIjp0cnVlLCJoYXJhbCI6dHJ1ZSwicmllbCI6dHJ1ZSwiYnJvbiI6dHJ1ZX0sImx2Ijp7ImJyb24iOjYwLCJoYXJhbCI6NjEsInJpZWwiOjU4LCJtYXJnbyI6NTUsImJyaWRhIjo0MCwibmVsbGEiOjMzLCJsdWthIjoyMCwiZGFpc3kiOjEyLCJnb3Jkb24iOjl9LCJibGQiOnsiaW5uIjoxMCwiZmFybSI6NiwiZGluZXIiOjEwLCJkb2NrIjoxMCwiYXBpYXJ5Ijo5LCJtaW5lIjoxMCwiZm9yZ2UiOjEsIm1hcmtldCI6MCwicmFuY2giOjAsImNoYXBlbCI6MH0sInBsb3RzIjpbXSwic2VlZHMiOnsid2hlYXQiOjAsImNhcnJvdCI6MCwicHVtcGtpbiI6MH0sIml0ZW1zIjp7IndoZWF0Ijo0MDAsImNhcnJvdCI6MTIwLCJwdW1wa2luIjo1NSwiZmlzaCI6MjAwMCwiaG9uZXkiOjE1MDAsIm9yZSI6OTgwLCJlZ2ciOjAsIm1pbGsiOjB9LCJwcm9kIjp7ImRvY2siOjE3OTI0NjIyMDAwMDAsImFwaWFyeSI6MTc5MjQ2MjIwMDAwMCwibWluZSI6MTc5MjQ2MjIwMDAwMH0sImJ1ZmZzIjp7InNwZCI6MTc5MjQ2NTc0MDAwMCwiYXRrIjoxNzkyNDY1MjYwMDAwLCJjcml0IjoxNzkyNDY1MzgwMDAwfSwicmFua1NlZW4iOjAsIm1lbW9yeSI6MTIsInJldGlyZXMiOjQsImJ1eXMiOnt9LCJzdWIiOnsidW50aWwiOjAsImxhc3QiOiIifSwidWNhcmQiOjAsImdlbSI6NTAwMCwiZ2VtUmFuayI6MCwiZ2VtTG9yZCI6e30sImRhaWx5Ijp7ImQiOiIiLCJraWxsIjowLCJib3giOjAsImhhcnYiOjAsImNsYWltIjp7fX0sImF0dCI6eyJsYXN0IjoiIiwidyI6MCwieW0iOiIiLCJtIjowLCJhZCI6IiIsImdvdCI6W10sImludHJvIjowLCJ0YWIiOiJ3In0sInRpY2tldHMiOnsiYm94IjowLCJib3gxMCI6MH0sImNhcENsZWFycyI6MCwiY2FwQm9udXMiOjAsImVuZGluZzEiOjAsImNoT3BlbiI6MCwidG93ZXIiOnsidG9wIjowLCJkYXkiOiIiLCJwayI6MH0sImR1biI6eyJkIjoiIiwidXNlZCI6MCwiYWQiOjAsInN0YXIiOnsibWluZSI6e30sImZpZWxkIjp7fSwidmF1bHQiOnt9fSwic2VlbiI6e319LCJtYXBJbnRybyI6MCwiZm9nU2VlbiI6NDYsInJlZ1NlZW4iOnsiMCI6MSwiMSI6MSwiMiI6MSwiMyI6MX0sInRyYWl0Ijp7fSwidHJSZXNldCI6MCwicnVuU3RhcnQiOjEsInJldFJ3Ijp7fSwiZGlhcnlJbnRybyI6MCwib3JkZXJzIjpbXSwib3JkRGF5Ijp7ImQiOiIiLCJnZW0iOjAsInNraXAiOnt9fSwiYmxlc3MiOnsiZCI6IiIsInVzZWQiOjAsImFkIjowLCJrIjoiIiwidW50aWwiOjAsIm9wdHMiOltdfSwidmx2IjoxLCJlcCI6e30sIndhbGtlcnMiOnsiZCI6IiIsImlkcyI6W119LCJrZWVwT3JkZXIiOjEsIndvcmsiOnt9LCJ3b3JrSW50cm8iOjAsIndvcmtEb3QiOiIiLCJ2IjozLCJzbG90RW4iOnsid2VhcG9uIjoyMCwiaGVsbSI6MTgsImFybW9yIjoyMCwiZ2xvdmVzIjoxNSwiYm9vdHMiOjEyLCJyaW5nIjoxOX0sImN3RW4iOnsiaGFyYWwiOjIwLCJicm9uIjoxNywibWFyZ28iOjEyLCJyaWVsIjoxNX0sInJlYyI6eyJicmlkYSI6MywibHVrYSI6MSwibmVsbGEiOjUsImdvcmRvbiI6MiwiZGFpc3kiOjR9LCJjYXJkcyI6eyJicmlkYSI6NzAsImx1a2EiOjI5LCJuZWxsYSI6MCwiZ29yZG9uIjoxNSwiZGFpc3kiOjc5LCJicm9uIjozfSwicGFydHkiOnsibWluZXIiOiJicmlkYSIsImZpc2hlciI6Im5lbGxhIiwia2VlcGVyIjoicmllbCIsImNvb2siOiJsdWthIn19",
+  "old": "eyJnb2xkIjo1MDAsInN0YWdlIjoxNCwid2F2ZSI6MCwiYm94THYiOjEsImJveFhwIjowLCJ1cCI6eyJhdGsiOjAsImhwIjowLCJzcGQiOjAsImNyaXQiOjB9LCJlcSI6e30sImF1dG9TZWxsIjpmYWxzZSwiYXV0b09wZW4iOmZhbHNlLCJsYXN0IjoxNzkyNDY1MjAwMDAwLCJiZXN0IjoxNCwic3RhcnRlZCI6ZmFsc2UsImpvaW5lZCI6eyJtYXJnbyI6dHJ1ZX0sImRvbmUiOnt9LCJsdiI6eyJicm9uIjoxLCJoYXJhbCI6MSwicmllbCI6MSwibWFyZ28iOjN9LCJibGQiOnsiaW5uIjowLCJmYXJtIjowLCJkaW5lciI6MCwiZG9jayI6MCwiYXBpYXJ5IjowLCJtaW5lIjowLCJmb3JnZSI6MCwibWFya2V0IjowLCJyYW5jaCI6MCwiY2hhcGVsIjowfSwicGxvdHMiOltdLCJzZWVkcyI6eyJ3aGVhdCI6MCwiY2Fycm90IjowLCJwdW1wa2luIjowfSwiaXRlbXMiOnsid2hlYXQiOjgsImNhcnJvdCI6MiwicHVtcGtpbiI6MCwiZmlzaCI6MCwiaG9uZXkiOjAsIm9yZSI6MCwiZWdnIjowLCJtaWxrIjowfSwicHJvZCI6e30sImJ1ZmZzIjp7fSwicmFua1NlZW4iOjIsIm1lbW9yeSI6MCwicmV0aXJlcyI6MCwiYnV5cyI6e30sInN1YiI6eyJ1bnRpbCI6MCwibGFzdCI6IiJ9LCJ1Y2FyZCI6MCwiZ2VtIjowLCJnZW1SYW5rIjowLCJnZW1Mb3JkIjp7fSwiZGFpbHkiOnsiZCI6IiIsImtpbGwiOjAsImJveCI6MCwiaGFydiI6MCwiY2xhaW0iOnt9fSwiYXR0Ijp7Imxhc3QiOiIiLCJ3IjowLCJ5bSI6IiIsIm0iOjAsImFkIjoiIiwiZ290IjpbXSwiaW50cm8iOjAsInRhYiI6IncifSwidGlja2V0cyI6eyJib3giOjAsImJveDEwIjowfSwiY2FwQ2xlYXJzIjowLCJjYXBCb251cyI6MCwiZW5kaW5nMSI6MCwiY2hPcGVuIjowLCJ0b3dlciI6eyJ0b3AiOjAsImRheSI6IiIsInBrIjowfSwiZHVuIjp7ImQiOiIiLCJ1c2VkIjowLCJhZCI6MCwic3RhciI6eyJtaW5lIjp7fSwiZmllbGQiOnt9LCJ2YXVsdCI6e319LCJzZWVuIjp7fX0sIm1hcEludHJvIjowLCJmb2dTZWVuIjoxNCwicmVnU2VlbiI6eyIwIjoxfSwidHJhaXQiOnt9LCJ0clJlc2V0IjowLCJydW5TdGFydCI6MSwicmV0UnciOnt9LCJkaWFyeUludHJvIjowLCJvcmRlcnMiOltdLCJvcmREYXkiOnsiZCI6IiIsImdlbSI6MCwic2tpcCI6e319LCJibGVzcyI6eyJkIjoiIiwidXNlZCI6MCwiYWQiOjAsImsiOiIiLCJ1bnRpbCI6MCwib3B0cyI6W119LCJ2bHYiOjEsImVwIjp7fSwid2Fsa2VycyI6eyJkIjoiIiwiaWRzIjpbXX0sImtlZXBPcmRlciI6MSwid29yayI6e30sIndvcmtJbnRybyI6MCwid29ya0RvdCI6IiIsInYiOjN9"
  }
 }

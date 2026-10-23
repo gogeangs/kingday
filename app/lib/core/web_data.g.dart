@@ -367,6 +367,12 @@ const wComp = {
     'base': {'atk': 4, 'hp': 92, 'aps': 0.8},
     'per': {'atk': 1.4, 'hp': 18},
   },
+  'kael_chief': {
+    'n': '카엘 촌장',
+    'role': '촌장 · 원정대 전원 강화',
+    'desc': '은퇴의 꿈을 이룬 미래의 카엘. 그런데 촌장이 되어 은퇴 전보다 더 바쁘다. 새벽마다 종을 쳐 마을 사람들을 깨워 다 함께 일한다.',
+    'join': '첫 은퇴 뒤 피트의 상점에서 맞이하거나, 은퇴 10번이면 찾아와요',
+  },
   'luka': {
     'n': '루카',
     'role': '요리사 · 회복',
@@ -414,6 +420,7 @@ const wOrder = ['bron', 'kael', 'haral', 'riel', 'margo'];
 
 const wHeight = {
   'kael': 66,
+  'kael_chief': 68,
   'bron': 54,
   'haral': 66,
   'riel': 66,
@@ -707,6 +714,7 @@ const wGrade = {
   'crab': 'common',
   'birch': 'common',
   'gram': 'common',
+  'kael_chief': 'unique',
 };
 
 const wGr = {
@@ -746,6 +754,15 @@ const wGr = {
     'need': [30, 40, 80, 160, 300],
     'fr': 'legendary',
   },
+  'unique': {
+    'n': '유니크',
+    'c': '#3ee08f',
+    'max': 5,
+    'mul': 1,
+    'w': 0,
+    'need': [0, 20, 40, 80, 150],
+    'fr': 'unique',
+  },
 };
 
 const wVpas = {
@@ -753,6 +770,7 @@ const wVpas = {
   'makrye': {'n': '물질 대장'},
   'malbong': {'n': '말벌 퇴치반'},
   'deokbae': {'n': '수라간의 손맛'},
+  'kael_chief': {'n': '새벽 종소리'},
 };
 
 const wSkills = {
@@ -922,6 +940,13 @@ const wSkills = {
     'd': '모든 적에게 공격력 2배 피해, 4초 동안 묶어서 공격을 못 하게 함 (보스는 2초, ★3·★5에서 강화)',
     'line': '다 걸렸다! 오늘은 만선이야!',
     'need': 20,
+    'face': 'laugh',
+  },
+  'kael_chief': {
+    'n': '다 함께 울력',
+    'd': '종을 크게 울려 8초 동안 원정대 모두 공격력 +25%, 공격 속도 +20% (★3·★5에서 강화)',
+    'line': '자, 다들 일어나! 다 함께 울력이다!',
+    'need': 22,
     'face': 'laugh',
   },
   'luka': {
@@ -1256,6 +1281,7 @@ const wSaveKey = 'acorn-idle-v1';
 
 const wSprites = {
   'kael': {'idle': 4, 'walk': 6, 'attack': 4, 'hit': 2, 'h': 70},
+  'kael_chief': {'idle': 4, 'walk': 6, 'attack': 4, 'hit': 2, 'h': 74},
   'bron': {'idle': 4, 'walk': 6, 'attack': 4, 'hit': 2, 'h': 74},
   'haral': {'idle': 4, 'walk': 6, 'attack': 4, 'hit': 2, 'h': 72},
   'riel': {'idle': 4, 'walk': 6, 'attack': 4, 'hit': 2, 'h': 76},
@@ -1457,6 +1483,7 @@ const wTraits = {
 const wGob = {'id': 'goblin_gold', 'walk': 4, 'attack': 4, 'hit': 2, 'fig': 150, 'h': 46};
 
 const wFxdef = {
+  'skill_kael_chief': 4,
   'hit': 4,
   'crit': 5,
   'bees': 4,
@@ -1495,6 +1522,7 @@ const wFxdef = {
 
 const wForm = {
   'kael': [0.46, 0.34],
+  'kael_chief': [0.46, 0.34],
   'bron': [0.58, 0.72],
   'haral': [0.31, 1],
   'riel': [0.17, 0.16],

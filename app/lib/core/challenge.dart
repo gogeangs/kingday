@@ -218,16 +218,18 @@ extension ChallengeCalc on GameCalc {
 
   /// 요리 버프·루카 빵 배달을 뺀 전투력 (웹 powNoBuff)
   num powNoBuff() {
-    final b = s.raw['buffs'], bp = bakeProbe, ba = bakeActive;
+    final b = s.raw['buffs'], bp = bakeProbe, ba = bakeActive, up = ulProbe;
     s.raw['buffs'] = <String, dynamic>{};
     bakeProbe = null;
     bakeActive = false;
+    ulProbe = null;
     try {
       return power();
     } finally {
       s.raw['buffs'] = b;
       bakeProbe = bp;
       bakeActive = ba;
+      ulProbe = up;
     }
   }
 

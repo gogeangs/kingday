@@ -730,6 +730,13 @@ class BattleGame extends FlameGame {
       _fxFrame('skill_bron', i, (l.pos['bron'] ?? l.front) + 44 * s, (l.py['bron'] ?? l.bot) - hh * .42, hh,
           alpha: math.min(1, sk.shield * 3) * (e < .5 ? .95 : .7));
     }
+    if (sk.ul > 0) {
+      for (final id in l.ids) {
+        final yy = l.py[id]! - ((_t * 44 + l.pos[id]! + 20) % 40) * s;
+        _text('▲', l.pos[id]! - 14 * s, yy - 30 * s, 12 * s, const ui.Color(0xFF7EF0A8),
+            alpha0: math.min(1, sk.ul) * .65, weight: FontWeight.w700);
+      }
+    }
     if (sk.feast > 0) {
       for (final id in l.ids) {
         final yy = l.py[id]! - ((_t * 40 + l.pos[id]!) % 40) * s;
@@ -766,7 +773,7 @@ class BattleGame extends FlameGame {
   void _drawQuip(BattleLayout l) {
     final q = sim.quip;
     if (q == null) return;
-    final id = comps.containsKey(q.who) && q.who != 'kael' && l.pos[q.who] != null ? q.who : 'kael';
+    final hk = sim.c.slotMember('kael')!, id = comps.containsKey(q.who) && q.who != 'kael' && l.pos[q.who] != null ? q.who : hk;
     final x = l.pos[id]?.toDouble();
     if (x == null) return;
     final gy = (l.py[id] ?? l.top).toDouble(), s = l.s.toDouble(), z = math.max(.85, s);

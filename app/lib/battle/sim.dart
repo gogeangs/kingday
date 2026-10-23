@@ -165,6 +165,9 @@ class SkillTimers {
 
   /// 덕배 불굴 남은 시간, 안단테 꿀벌 교향곡 (남은 시간·강화·다음 박자)
   num guts = 0, sym = 0, symK = 1, symTick = 0;
+
+  /// 카엘 촌장 「다 함께 울력」 남은 시간·공격 배수·공속 배수 (웹 ULB)
+  num ul = 0, ulA = 1, ulS = 1;
 }
 
 /// 전투가 화면·저장에 알려야 할 일. 화면이 매 프레임 꺼내서 처리한다.
@@ -281,6 +284,7 @@ class BattleSim {
         fxLoaded = fxLoaded ?? fxFrames.keys.toSet() {
     this.gobT = gobT ?? 150 + this.rng.next() * 120;
     c.bakeProbe = () => skx.bake > 0;
+    c.ulProbe = () => skx.ul > 0 ? (a: skx.ulA, s: skx.ulS) : null;
   }
 
   final GameCalc c;
@@ -332,6 +336,7 @@ class BattleSim {
 
   void _chPartyReset() {
     skx.shield = skx.honey = skx.feast = skx.guts = skx.sym = 0;
+    skx.ul = 0;
     for (final id in c.members()) {
       final p = party[id];
       if (p == null) continue;
@@ -608,6 +613,16 @@ class BattleSim {
     cy = cy / alive.length;
     final feast = skx.feast > 0 ? 1.2 : 1;
     switch (id) {
+      case 'kael_chief':
+        final k = c.skPow(id);
+        skx.ul = 8;
+        skx.ulA = 1 + .25 * k;
+        skx.ulS = 1 + .2 * k;
+        for (final j in c.members()) {
+          final q = party[j];
+          if (q != null && !q.down) addFloat(pos[j]!, py[j]! - (heightOf(j) + 8) * sc, '울력!', 0xFF7EF0A8, 13);
+        }
+        if (fxOk('skill_kael_chief')) spawnFx('skill_kael_chief', pos[id]!, py[id]! - 40 * sc, 200 * sc, .9);
       case 'kael':
         spawnFx('skill_kael', cx - 10 * sc, cy - 46 * sc, 170 * sc, .6);
         for (final m in alive) {
@@ -935,6 +950,7 @@ class BattleSim {
     skx.mount = math.max(0, skx.mount - dt);
     skx.wall = math.max(0, skx.wall - dt);
     skx.guts = math.max(0, skx.guts - dt);
+    skx.ul = math.max(0, skx.ul - dt);
     if (skx.sym > 0) {
       // 안단테 「꿀벌 교향곡」: 0.5초마다 벌떼가 모든 적을 쏨
       skx.sym -= dt;
@@ -1124,6 +1140,7 @@ class BattleSim {
     if (ch != null) return _chLose();
     final dem = mons.any((m) => m.dem);
     skx.shield = skx.honey = skx.feast = skx.guts = skx.sym = 0;
+    skx.ul = 0;
     for (final id in c.members()) {
       party[id]!.hp = c.stats(id).hp;
       party[id]!.down = false;

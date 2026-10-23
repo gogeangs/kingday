@@ -57,3 +57,6 @@ dynamic deepCopy(dynamic v) {
   if (v is List) return [for (final x in v) deepCopy(x)];
   return v;
 }
+
+/// 웹 숫자를 글자로 바꿀 때와 같게: 정수면 소수점 없이 (5 → "5", 7.5 → "7.5")
+String pctTxt(num v) => v == v.roundToDouble() ? v.round().toString() : v.toString();

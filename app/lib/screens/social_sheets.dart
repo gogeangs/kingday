@@ -823,6 +823,7 @@ class _MailState extends State<_Mail> {
   List<Widget> _chips(Map<String, dynamic> r) => [
         if (asNum(r['gem']) > 0) _chip(gemIcon, fmt(asNum(r['gem']))),
         if (asNum(r['cards']) > 0) _chip('assets/game/ui/card_pack30.png', '동료 카드 ${fmt(asNum(r['cards']))}장'),
+        if (asNum(r['ucard']) > 0) _chip('assets/game/ui/card_unique.png', '유니크 카드 ${fmt(asNum(r['ucard']))}장'),
         if (r['frame'] is String) _chip('assets/game/profile/frame_${r['frame']}.png', '${frameName(r['frame'])} 테두리'),
         if (r['badge'] is String) _chip(badgeAsset(r['badge'] as String), '${badgeName(r['badge'])} 배지'),
       ];

@@ -308,6 +308,12 @@ class Online {
       }
       if (truthy(r['starter'])) g.act((a) => a.grantStarter(count: true));
       if (asNum(r['sub_days']) > 0) g.act((a) => a.grantSub(count: true, days: asNum(r['sub_days'])));
+      if (truthy(r['chief'])) g.act((a) => a.grantChief());
+      if (asNum(r['ucard']) > 0) {
+        final u = math.min(asNum(r['ucard']).floor(), 1000);
+        s.raw['ucard'] = c.ucard + u;
+        items.add('유니크 카드 +$u');
+      }
       if (asNum(r['gem']) > 0) gem += math.min(asNum(r['gem']), 100000);
       final cards = asNum(r['cards']);
       if (cards > 0) {

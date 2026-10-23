@@ -55,6 +55,12 @@ class ActOpen10 extends ActResult {
 }
 
 /// 새 동료 맞이 장면
+/// 카엘 촌장 합류 장면 (src: pay · retire · mail)
+class ActChiefScene extends ActResult {
+  ActChiefScene(this.src);
+  final String src;
+}
+
 class ActRecruitScene extends ActResult {
   ActRecruitScene(this.id);
   final String id;
@@ -298,7 +304,7 @@ class GameActions {
       if (s.gold < cost) break;
       s.gold = s.gold - cost;
       s.up[k] = s.upLv(k) + 1;
-      if (k == 'hp') onHpAdd?.call('kael', 20);
+      if (k == 'hp') onHpAdd?.call(c.slotMember('kael')!, 20);
       n++;
     }
     if (n == 0) _toast('골드가 부족해요');
@@ -356,6 +362,18 @@ class GameActions {
     } else if (!quiet) {
       _toast('${comps[id]!.n}이(가) ${jobName[j]} 자리로 출전해요');
     }
+    return true;
+  }
+
+  /// 카엘 자리 바꾸기 (웹 setKaelSeat): 체력 비율을 그대로 옮기므로 보스전 중에도 바꿈
+  bool setKaelSeat(String id) {
+    final cur = c.slotMember('kael')!;
+    if (cur == id || (id == GameCalc.chiefId && !c.owned(id))) return false;
+    final party = asMap(s.raw['party']) ?? (s.raw['party'] = <String, dynamic>{});
+    party['kael'] = id;
+    onSwap?.call(cur, id);
+    _toast('${comps[id]!.n}이(가) 카엘 자리로 출전해요');
+    s.last = c.now;
     return true;
   }
 
@@ -974,9 +992,10 @@ class GameActions {
   }
 
   void _givePack(String k, bool first) {
-    final p = gemPacks.firstWhere((x) => x.k == k), n = p.gem * (first ? 2 : 1);
+    final p = gemPacks.firstWhere((x) => x.k == k), n = p.gem * (first ? 2 : 1), u = GameCalc.ucardPack[k] ?? 0;
     s.gem = s.gem + n;
-    _toast('황금 이삭 +${fmt(n)}${first ? ' (첫 구매 2배)' : ''}');
+    s.raw['ucard'] = c.ucard + u;
+    _toast('황금 이삭 +${fmt(n)}${first ? ' (첫 구매 2배)' : ''}${u > 0 ? ' · 유니크 카드 +$u' : ''}');
   }
 
   /// 첫 거래 특가: 전설 성유물 1개 + 이삭 100 (한 번만)
@@ -1002,7 +1021,8 @@ class GameActions {
     sub['last'] = c.today();
     final g = asNum(subscription['now']) + asNum(subscription['day']);
     s.gem = s.gem + g;
-    _toast('정기 배송 시작! 황금 이삭 +${fmt(g)}');
+    s.raw['ucard'] = c.ucard + 1;
+    _toast('정기 배송 시작! 황금 이삭 +${fmt(g)} · 유니크 카드 +1');
   }
 
   /// 정기 배송 오늘 받기
@@ -1010,7 +1030,51 @@ class GameActions {
     if (!c.subOn() || sub['last'] == c.today()) return;
     sub['last'] = c.today();
     s.gem = s.gem + asNum(subscription['day']);
-    _toast('피트의 마차가 도착했어요. 황금 이삭 +${fmt(asNum(subscription['day']))}');
+    s.raw['ucard'] = c.ucard + 1;
+    _toast('피트의 마차가 도착했어요. 황금 이삭 +${fmt(asNum(subscription['day']))} · 유니크 카드 +1');
+  }
+
+  // ───────────── 카엘 촌장 (웹 chiefJoin · chiefCheck · chiefUp · buyChief) ─────────────
+  /// 합류: ★1 + 장면. 카엘 자리 출전은 장면 버튼에서 (화면 쪽 setKaelSeat)
+  bool chiefJoin(String src) {
+    const id = GameCalc.chiefId;
+    if (c.owned(id)) return false;
+    s.joined[id] = true;
+    s.recW[id] = math.max(1, orNum(s.rec?[id], 0).toInt());
+    s.last = c.now;
+    out.add(ActHaptic(const [30, 40, 30]));
+    out.add(ActChiefScene(src));
+    return true;
+  }
+
+  /// 은퇴 10번이면 무료로 찾아옴
+  bool chiefCheck() => !c.owned(GameCalc.chiefId) && orNum(s.raw['retires'], 0) >= GameCalc.chiefRet && chiefJoin('retire');
+
+  /// 500원 상품 (첫 은퇴 뒤 상점)
+  void buyChief() {
+    if (!c.chiefShop()) return;
+    _pay('chief', () => chiefJoin('pay'));
+  }
+
+  /// 스토어 결제 확인 우편으로 받은 카엘 촌장
+  void grantChief() {
+    buys['chief'] = orNum(buys['chief'], 0) + 1;
+    chiefJoin('pay');
+  }
+
+  /// 유니크 카드로 ★ 올리기
+  bool chiefUp() {
+    const id = GameCalc.chiefId;
+    if (!c.chiefCan()) return false;
+    final need = c.starNeed(id)!, h0 = c.stats(id).hp;
+    s.raw['ucard'] = c.ucard - need;
+    s.recW[id] = c.recStar(id) + 1;
+    onHpAdd?.call(id, c.stats(id).hp - h0);
+    s.last = c.now;
+    out.add(ActHaptic(const [25, 40, 25]));
+    final st = c.recStar(id);
+    _toast('카엘 촌장 ★$st! 카엘 능력치 +${pctTxt(GameCalc.chiefBonus[st] * 100)}% · 새벽 종소리 +${pctTxt(GameCalc.chPct(st))}%');
+    return true;
   }
 
   /// 남은 정기 배송 일수

@@ -59,3 +59,4 @@ build(load("art/source/fx/fx_skill_rollo.png"), "fx_skill_rollo", 384, 256, bott
 build(load("art/source/fx/fx_skill_crab.png"), "fx_skill_crab", 384, 256, bottom=True)
 build(load("art/source/fx/fx_skill_birch.png"), "fx_skill_birch", 384, 256, bottom=True)
 build(load("art/source/fx/fx_skill_gram.png"), "fx_skill_gram", 384, 256)
+build(load("art/source/fx/fx_skill_kael_chief.png"), "fx_skill_kael_chief", 384, 256)
