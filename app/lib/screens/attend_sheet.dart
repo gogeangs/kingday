@@ -107,9 +107,9 @@ class _AttendSheetState extends State<AttendSheet> {
             child: FittedBox(
               fit: BoxFit.scaleDown,
               child: Column(mainAxisAlignment: MainAxisAlignment.center, mainAxisSize: MainAxisSize.min, children: [
-                Text(top, style: KdText.body(small ? 9 : 10, color: KdColors.muted, weight: FontWeight.w700)),
+                Text(top, style: KdText.body(11, color: KdColors.muted, weight: FontWeight.w700)),
                 _icon(r['k'] as String, icon),
-                if (!small) Text(label, maxLines: 1, overflow: TextOverflow.ellipsis, style: KdText.body(10.5, weight: FontWeight.w700)),
+                if (!small) Text(label, maxLines: 1, overflow: TextOverflow.ellipsis, style: KdText.body(11, weight: FontWeight.w700)),
               ]),
             ),
           ),

@@ -72,8 +72,10 @@ class EqPage extends StatelessWidget {
           if (odds[i] > 0 || i < 6) oddsChip(gradeColor(i), '${itemGrades[i].n} ${_oddsTxt(odds[i])}%'),
         GestureDetector(
           key: const ValueKey('oddsAll'),
+          behavior: HitTestBehavior.opaque,
           onTap: () => _oddsSheet(),
-          child: Text('레벨별 확률표', style: KdText.body(12, color: KdColors.gold).copyWith(decoration: TextDecoration.underline, decorationColor: KdColors.gold)),
+          // 누르는 범위만 넓힘 (웹 #oddsAll::after)
+          child: Padding(padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 4), child: Text('레벨별 확률표', style: KdText.body(12, color: KdColors.gold).copyWith(decoration: TextDecoration.underline, decorationColor: KdColors.gold))),
         ),
       ]),
       Wrap(spacing: 14, runSpacing: 8, children: [
@@ -277,7 +279,7 @@ class _Slot extends StatelessWidget {
                         borderRadius: BorderRadius.circular(999),
                         boxShadow: const [BoxShadow(color: Colors.black, blurRadius: 2, offset: Offset(0, 1))],
                       ),
-                      child: Text('+$en', style: KdText.body(10, color: Colors.white, weight: FontWeight.w600, height: 1.5)),
+                      child: Text('+$en', style: KdText.body(11, color: Colors.white, weight: FontWeight.w600, height: 1.5)),
                     ),
                   ),
                 Positioned(
@@ -290,7 +292,7 @@ class _Slot extends StatelessWidget {
                     child: Text(it != null ? 'Lv.${it.lv}' : '비어 있음',
                         maxLines: 1,
                         overflow: TextOverflow.clip,
-                        style: KdText.body(it != null ? 10 : 9.5, color: it != null ? Colors.white : const Color(0xFFC9CBD6), weight: FontWeight.w600, height: 1.5)),
+                        style: KdText.body(11, color: it != null ? Colors.white : const Color(0xFFC9CBD6), weight: FontWeight.w600, height: 1.5)),
                   ),
                 ),
               ]);

@@ -300,12 +300,15 @@ class _HelpNoteState extends State<HelpNote> {
   Widget build(BuildContext context) {
     final on = widget.open[widget.k] ?? false;
     return Padding(
-      padding: const EdgeInsets.only(top: 6, bottom: 8),
+      padding: const EdgeInsets.only(bottom: 0),
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
         GestureDetector(
           behavior: HitTestBehavior.opaque,
           onTap: () => setState(() => widget.open[widget.k] = !on),
-          child: Row(mainAxisSize: MainAxisSize.min, children: [
+          // 누르는 범위만 넓힘 (웹 .helpq::after)
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 8),
+            child: Row(mainAxisSize: MainAxisSize.min, children: [
             Container(
               width: 18,
               height: 18,
@@ -320,6 +323,7 @@ class _HelpNoteState extends State<HelpNote> {
             const SizedBox(width: 6),
             Text(widget.title, style: KdText.body(12.5, color: KdColors.muted)),
           ]),
+          ),
         ),
         if (on) ...[const SizedBox(height: 4), widget.body],
       ]),

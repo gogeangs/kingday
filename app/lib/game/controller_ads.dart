@@ -222,7 +222,7 @@ extension GameAdsX on GameController {
       case TowerWinEvent(:final f, :final first, :final r, :final unlocked):
         sound('clear');
         save();
-        Timer(const Duration(milliseconds: 1100), () => queue((ctx) => _towerWinSheet(ctx, f, first, r, unlocked)));
+        _towerWon(f, first, r, unlocked);
       case TowerLoseEvent(:final f):
         queue((ctx) => _towerLoseSheet(ctx, f));
       case final DunEndEvent de:
