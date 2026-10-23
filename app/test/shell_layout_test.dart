@@ -195,6 +195,7 @@ void main() {
         g.setTab(null);
 
         // 유니크 카엘 촌장: 첫 은퇴 뒤 상점 상품 → 맞이하기 장면 → 카엘 자리 → 정보 창 · 카엘 자리 창
+        final ret0 = g.state.raw['retires'];
         g.state.raw['retires'] = 1;
         g.setTab(GameTab.sh);
         await frames(2);
@@ -222,7 +223,7 @@ void main() {
         expect(find.text('누가 출전할까요?'), findsOneWidget);
         await closeTop();
         g.state.raw['ptTab'] = 'form';
-        g.state.raw['retires'] = 0; // 아래 은퇴 시험은 첫 은퇴 이야기(지역 소개)를 봄
+        g.state.raw['retires'] = ret0; // 아래 은퇴 시험이 보는 이야기 창이 그대로 나오게
         g.setTab(null);
         await frames(2);
 
