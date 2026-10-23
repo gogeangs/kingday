@@ -1690,6 +1690,8 @@ $('autoSell').onchange=e=>{S.autoSell=e.target.checked};
 $('autoOpen').onchange=e=>{S.autoOpen=e.target.checked};
 
 /* ---------- 전투 ---------- */
+/* 아이폰 사파리는 앱을 내렸다 올리면 캔버스 상태(배율)를 지울 때가 있음 → 그릴 때마다 배율을 다시 맞춤 */
+function fitCtx(x,c,w){if(w>0)x.setTransform(c.width/w,0,0,c.width/w,0,0)}
 const cv=$('cv'),mainCtx=cv.getContext('2d');let ctx=mainCtx,W=0,Ht=0;
 function resize(){const r=$('wrap').getBoundingClientRect(),d=Math.min(2,window.devicePixelRatio||1);W=r.width;Ht=r.height;cv.width=W*d;cv.height=Ht*d;mainCtx.setTransform(d,0,0,d,0,0)}
 new ResizeObserver(resize).observe($('wrap'));
@@ -2338,7 +2340,7 @@ function drawQuip(pos,s,gy,pyo){
  ctx.textAlign='left';ctx.fillStyle=quip.who==='q'?'#8fd0ff':'#4a7a3a';ctx.font=`700 ${9*Math.max(.85,s)}px "IBM Plex Sans KR",sans-serif`;ctx.fillText(who,bx+8,by+11*Math.max(.85,s));
  ctx.fillStyle=quip.who==='q'?'#eef6ff':'#22262e';ctx.font=`600 ${11*Math.max(.85,s)}px "IBM Plex Sans KR",sans-serif`;ctx.fillText(txt,bx+8,by+24*Math.max(.85,s),w-16);ctx.globalAlpha=1}
 function draw(){
- if(!W)return;ctx=mainCtx;const r=CH?REGIONS[chRi()]:region(S.stage),L=layout(),{ids,pos,py,dsc,s}=L;
+ if(!W)return;ctx=mainCtx;fitCtx(mainCtx,cv,W);const r=CH?REGIONS[chRi()]:region(S.stage),L=layout(),{ids,pos,py,dsc,s}=L;
  if(CH&&CH.mode==='tower'&&bgReadyN('tower'))drawBg(r,L,'tower');else{drawBg(r,L);if(CH&&CH.mode==='tower'){ctx.fillStyle='rgba(8,10,30,.42)';ctx.fillRect(0,0,W,Ht)}}
  const ents=ids.map(id=>({y:py[id],f:()=>drawMember(id,pos[id],py[id],s*dsc[id],P[id],!engaged)}));
  for(const m of mons){const y=m.y??depthAt(L,m.lane??.5);ents.push({y,f:()=>drawMon(m.ri!=null?REGIONS[m.ri]:r,y,s*(.9+.14*(m.lane??.5)),m)})}
@@ -2437,7 +2439,7 @@ const vLine=id=>{const a=VTALK[id]||VTALK[JOB[id]]||['…'];return a[Math.floor(
 /* 일꾼 배치 때 잘 맞는 직업이면 한마디 (동료 성격에 맞춰 1개씩) */
 const WLINE={bron:'망치든 곡괭이든 맡겨라.',haral:'이 물결, 내가 제일 잘 알지.',riel:'벌들이 날 기다렸대.',margo:'불 앞은 내 자리야!',luka:'반죽하듯 정성껏 할게요!',gordon:'…돌은 거짓말을 안 한다.',daisy:'꽃이랑 벌은 내 친구야!',brida:'삼백 년 손맛을 보여 주마.',nella:'그물은 내가 제일 빠르지!',makrye:'호오이~ 물질은 내 전문이여.',malbong:'…말벌은 내가 맡는다.',deokbae:'수라간 손맛, 제대로 보여 주마!',peppy:'이번엔 안 터뜨릴게요. 아마도요!',andante:'브라보! 일도 박자에 맞춰서!',toby:'노 젓는 건 자신 있어!',kara:'불맛 제대로 내 볼게요!',beryl:'흠 하나 안 보이게 골라낼게요.',mora:'싱싱하게 잡아 올게!',melo:'꿀은 제가 제일 잘 팔아요!',pori:'안 엎고 나를게요! 거의요!',rollo:'광차는 내가 끈다, 꼬맹이들.',crab:'…게는 거짓말을 안 해.',birch:'튼튼한 벌통부터 짜죠.',gram:'뜨끈하게 해 주마.'};
 function drawVillage(){
- if(!VW||!VIMG.map)return;const prev=ctx;ctx=vctx;const k=vK(),hr=new Date().getHours(),night=hr>=19||hr<6;
+ if(!VW||!VIMG.map)return;fitCtx(vctx,vc,VW);const prev=ctx;ctx=vctx;const k=vK(),hr=new Date().getHours(),night=hr>=19||hr<6;
  ctx.drawImage(VIMG.map,0,0,VW,VH);
  const lab=[];
  for(const b of VORD){const[x,y,w,fl]=VPOS[b],lv=S.bld[b]||0,B=bldK(b),open=lv>0||B.open(),t=lv?'built':'ruin',o=VIMG.b[b],im=open?o[t]:null;
@@ -2672,7 +2674,7 @@ function wmFlag(x,y,s,col){const c=ctx;c.save();c.lineCap='round';c.strokeStyle=
  c.beginPath();c.moveTo(x,y-11*s);c.lineTo(x+8*s,y-8.3*s);c.lineTo(x,y-5.6*s);c.closePath();c.fillStyle=col;c.fill();c.strokeStyle='#fff';c.lineWidth=1;c.stroke();ell(x,y,2.2*s,1.1*s,'rgba(0,0,0,.45)');c.restore()}
 function wmPill(t,x,y,fs,bg,fg){ctx.font=`700 ${fs}px "IBM Plex Sans KR",sans-serif`;const w=ctx.measureText(t).width+fs*.9,h=fs*1.5;ctx.fillStyle=bg;rr(x-w/2,y-h/2,w,h,h/2);ctx.fillStyle=fg;ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(t,x,y+.5);ctx.textBaseline='alphabetic'}
 function drawMap(){
- if(!MW)return;const prev=ctx;ctx=mctx;
+ if(!MW)return;fitCtx(mctx,mc,MW);const prev=ctx;ctx=mctx;
  const a=Math.min(1,.12),C=WCAM;C.x+=(C.tx-C.x)*a*1.6;C.y+=(C.ty-C.y)*a*1.6;C.z+=(C.tz-C.z)*a*1.6;
  if(!WMI.ok){ctx.fillStyle='#1a1028';ctx.fillRect(0,0,MW,MH);ctx.fillStyle='#c9b8e8';ctx.font='600 13px "IBM Plex Sans KR",sans-serif';ctx.textAlign='center';ctx.fillText('지도를 펼치는 중…',MW/2,MH/2);ctx=prev;return}
  wmCache();const v=wmView(),s=v.s,P=MAPPOS.pts,sp=MAPPOS.spot,zoom=wmZoomR>=0,now=performance.now();
