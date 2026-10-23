@@ -68,7 +68,7 @@ void main() {
       expect(find.text('+20'), findsOneWidget, reason: '모두 끝내기는 아직');
 
       // 바로 가기 → 골드 바꾸기
-      await press('골드');
+      await press('🌾 이삭으로');
       final gold0 = g.state.gold;
       await press('골드 주머니');
       expect(g.state.gold, greaterThan(gold0));

@@ -31,7 +31,7 @@ class ShopPage extends StatefulWidget {
 class _ShopPageState extends State<ShopPage> {
   // 다 받은 묶음을 눌러 펼쳐 보기 (웹 misOpen · adOpen)
   bool _misOpen = false, _adOpen = false;
-  final _jump = {for (final k in ['today', 'gold', 'card', 'pack']) k: GlobalKey()};
+  final _jump = {for (final k in ['free', 'gem', 'pay']) k: GlobalKey()};
 
   GameController get g => widget.g;
   GameActions get a => g.acts;
@@ -155,7 +155,29 @@ class _ShopPageState extends State<ShopPage> {
   /// 스토어 가격(나라별 통화)이 있으면 그것, 없으면 웹 가격표
   String _price(String key, num krw) => g.iap.price(key) ?? won(krw);
 
-  Widget _anchor(String k) => SizedBox(key: _jump[k], height: 0, width: double.infinity);
+  /// 웹 .shgrp: 「매일 무료 / 황금 이삭으로 / 상품」 묶음 (2026-10-24 상점 정리)
+  Widget _group(String k, String title, Widget small, List<Widget> children, {bool pay = false}) => Container(
+        key: _jump[k],
+        margin: const EdgeInsets.only(top: 10, bottom: 4),
+        padding: const EdgeInsets.fromLTRB(10, 10, 10, 12),
+        decoration: BoxDecoration(
+          color: pay ? const Color(0x0FFFC94A) : const Color(0x06FFFFFF),
+          borderRadius: BorderRadius.circular(14),
+          border: Border.all(color: pay ? const Color(0x99FFC94A) : const Color(0x59C9952A)),
+        ),
+        child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+          Container(
+            padding: const EdgeInsets.only(left: 2, right: 2, bottom: 4),
+            decoration: const BoxDecoration(border: Border(bottom: BorderSide(color: Color(0x4DC9952A)))),
+            child: Row(crossAxisAlignment: CrossAxisAlignment.end, children: [
+              Expanded(child: Text(title, style: KdText.display(17, color: KdColors.gold))),
+              small,
+            ]),
+          ),
+          const SizedBox(height: 8),
+          ...children,
+        ]),
+      );
 
   void _go(String k) {
     final ctx = _jump[k]!.currentContext;
@@ -184,105 +206,25 @@ class _ShopPageState extends State<ShopPage> {
       );
     }
 
-    return Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-      if (GameActions.testPay && !IapStore.enabled)
-        Container(
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-          decoration: BoxDecoration(
-            color: const Color(0xFF2E2400),
-            border: Border.all(color: KdColors.gold),
-            borderRadius: BorderRadius.circular(12),
-          ),
-          child: Text('시험판: 실제 결제 없이 누르면 바로 지급돼요. 스토어 결제를 붙이기 전까지만 이렇게 동작해요.',
-              style: KdText.body(12, color: const Color(0xFFFFE08A), height: 1.5)),
-        ),
-      const SizedBox(height: 12),
-      // 바로 가기 (웹 .shjump)
-      Row(children: [
-        for (final (k, n) in const [('today', '오늘'), ('gold', '골드'), ('card', '카드'), ('pack', '상품')]) ...[
-          if (k != 'today') const SizedBox(width: 6),
-          Expanded(
-            child: GestureDetector(
-              onTap: () => _go(k),
-              child: Container(
-                padding: const EdgeInsets.symmetric(vertical: 7),
-                alignment: Alignment.center,
-                decoration: BoxDecoration(color: KdColors.panel2, border: Border.all(color: KdColors.line), borderRadius: BorderRadius.circular(10)),
-                child: Text(n, style: KdText.body(13, weight: FontWeight.w600)),
-              ),
-            ),
-          ),
-        ],
-      ]),
-      const SizedBox(height: 12),
-      const Para('m:피트|어서 와, 형씨! 오늘도 진품만 들여놨어. …대부분.'),
-      _anchor('today'),
-      const SizedBox(height: 12),
-      // ── 오늘의 할 일 ──
-      if (truthy(claim['all']) && !_misOpen)
-        _done('✓ 오늘의 할 일 완료', '내일 자정에 새 할 일이 열려요 · 눌러서 보기', () => setState(() => _misOpen = true))
-      else ...[
-        const KdSec('오늘의 할 일', small: '매일 자정에 새로 시작'),
-        for (final m in missions) ...[misRow(m), const SizedBox(height: 8)],
-        _row(
-          title: '오늘의 할 일 모두 끝내기',
-          btn: KdBuy(
-            kind: BuyKind.claim,
-            minWidth: 72,
-            text: truthy(claim['all']) ? '받음' : '+$missionAllReward${a.misCan(null) ? ' 받기' : ''}',
-            onTap: a.misCan(null) ? () => g.act((x) => x.claimMission('all')) : null,
-          ),
-        ),
-      ],
-      const SizedBox(height: 12),
-      // ── 피트의 무료 선물 (광고) ──
-      if (!adKeys.any((k) => c.adLeft(k) > 0) && !_adOpen)
-        _done('✓ 피트의 무료 선물 모두 받음', '내일 자정에 다시 받을 수 있어요 · 눌러서 보기', () => setState(() => _adOpen = true))
-      else ...[
-        const KdSec('피트의 무료 선물', small: '광고를 보면 받아요 · 매일 자정 초기화'),
-        for (final k in adKeys) ...[
-          _row(
-            title: ads[k]!.t,
-            sub: Text('오늘 ${c.adLeft(k)} / ${ads[k]!.n}회 남음', style: KdText.body(11, color: KdColors.muted)),
-            btn: KdBuy(
-              kind: BuyKind.ad,
-              minWidth: 72,
-              text: '▶ 받기',
-              onTap: c.adLeft(k) > 0
-                  ? () => g.watchAd(k, () => g.act((x) {
-                        if (k == 'box') {
-                          x.adBoxGive();
-                        } else if (k == 'gem') {
-                          x.adGemGive();
-                        } else {
-                          x.adCardGive();
-                        }
-                      }))
-                  : null,
-            ),
-          ),
-          const SizedBox(height: 8),
-        ],
-      ],
-      _anchor('gold'),
-      const SizedBox(height: 4),
-      // ── 골드 바꾸기 ──
-      const KdSec('골드 바꾸기', small: '지금 영지 기준 · 영지가 오를수록 더 많이'),
-      _grid([
-        for (var i = 0; i < goldExchanges.length; i++)
-          _pack(
-            img: kdImg('assets/game/ui/gold_pack${i + 1}.png', w: 72, h: 72),
-            big: fmt(c.goldX(goldExchanges[i])),
-            small: goldExchanges[i].n,
-            price: _gemPrice(goldExchanges[i].gem),
-            tag: i > 0 ? '${fmt(goldExchanges[i].h)}시간치' : null,
-            onTap: () => g.act((x) => x.buyGoldX(goldExchanges[i].k)),
-          ),
-      ]),
-      // ── 동료 카드 ──
-      _anchor('card'),
-      if (cardOk) ...[
-        const SizedBox(height: 12),
+    final freeDot = missions.any(a.misCan) || a.misCan(null) || adKeys.any((k) => c.adLeft(k) > 0) || (subOn && !gotToday);
+    final subRow = _shopRow(
+        img: 'assets/game/gem/gem_pack_5.png',
+        title: subscription['n'] as String,
+        hot: subOn,
+        info: subOn
+            ? Text('남은 기간 ${a.subLeft()}일 · ${gotToday ? '오늘 배송 받음' : '오늘 배송이 도착했어요'}')
+            : Text.rich(TextSpan(children: [
+                const TextSpan(text: '구매 즉시 '),
+                WidgetSpan(alignment: PlaceholderAlignment.middle, child: kdImg(gemIcon, w: 16, h: 16)),
+                TextSpan(text: '${subscription['now']} + 30일간 매일 '),
+                WidgetSpan(alignment: PlaceholderAlignment.middle, child: kdImg(gemIcon, w: 16, h: 16)),
+                TextSpan(text: '${subscription['day']}\n+ 3일마다 유니크 카드 1장 · 방치 보상 +50%'),
+              ])),
+        btn: subOn
+            ? KdBuy(kind: BuyKind.claim, minWidth: 0, text: gotToday ? '받음' : '+${subscription['day']} 받기', onTap: gotToday ? null : () => g.act((x) => x.claimSub()))
+            : KdBuy(minWidth: 0, text: _price('sub', asNum(subscription['won'])), onTap: () => _buy('sub', () => g.act((x) => x.buySub()))),
+      );
+    final cardBlock = Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
         Row(crossAxisAlignment: CrossAxisAlignment.center, children: [
           Expanded(child: Text('동료 카드', style: KdText.display(15))),
           Text('여러 동료에게 무작위 · ', style: KdText.body(12, color: KdColors.muted)),
@@ -312,13 +254,129 @@ class _ShopPageState extends State<ShopPage> {
               );
             }),
         ]),
-      ],
-      _anchor('pack'),
+      const SizedBox(height: 4),
+    ]);
+
+    return Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+      if (GameActions.testPay && !IapStore.enabled)
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+          decoration: BoxDecoration(
+            color: const Color(0xFF2E2400),
+            border: Border.all(color: KdColors.gold),
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: Text('시험판: 실제 결제 없이 누르면 바로 지급돼요. 스토어 결제를 붙이기 전까지만 이렇게 동작해요.',
+              style: KdText.body(12, color: const Color(0xFFFFE08A), height: 1.5)),
+        ),
       const SizedBox(height: 12),
+      // 바로 가기 (웹 .shjump) — 무료로 받을 게 있으면 빨간 점
+      Row(children: [
+        for (final (k, n, dot) in [('free', '🎁 매일 무료', freeDot), ('gem', '🌾 이삭으로', false), ('pay', '💰 상품', false)]) ...[
+          if (k != 'free') const SizedBox(width: 6),
+          Expanded(
+            child: GestureDetector(
+              onTap: () => _go(k),
+              child: Stack(clipBehavior: Clip.none, children: [
+                Container(
+                  padding: const EdgeInsets.symmetric(vertical: 7),
+                  alignment: Alignment.center,
+                  decoration: BoxDecoration(color: KdColors.panel2, border: Border.all(color: KdColors.line), borderRadius: BorderRadius.circular(10)),
+                  child: Text(n, style: KdText.body(13, weight: FontWeight.w600)),
+                ),
+                if (dot) const Positioned(top: -3, right: -3, child: KdRedDot()),
+              ]),
+            ),
+          ),
+        ],
+      ]),
+      const SizedBox(height: 12),
+      const Para('m:피트|어서 와, 형씨! 오늘도 진품만 들여놨어. …대부분.'),
+      _group('free', '🎁 매일 무료', Text('매일 자정에 새로', style: KdText.body(12, color: KdColors.muted)), [
+      // ── 오늘의 할 일 ──
+      if (truthy(claim['all']) && !_misOpen)
+        _done('✓ 오늘의 할 일 완료', '내일 자정에 새 할 일이 열려요 · 눌러서 보기', () => setState(() => _misOpen = true))
+      else ...[
+        const KdSec('오늘의 할 일'),
+        for (final m in missions) ...[misRow(m), const SizedBox(height: 8)],
+        _row(
+          title: '오늘의 할 일 모두 끝내기',
+          btn: KdBuy(
+            kind: BuyKind.claim,
+            minWidth: 72,
+            text: truthy(claim['all']) ? '받음' : '+$missionAllReward${a.misCan(null) ? ' 받기' : ''}',
+            onTap: a.misCan(null) ? () => g.act((x) => x.claimMission('all')) : null,
+          ),
+        ),
+      ],
+      const SizedBox(height: 12),
+      // ── 피트의 무료 선물 (광고) ──
+      if (!adKeys.any((k) => c.adLeft(k) > 0) && !_adOpen)
+        _done('✓ 피트의 무료 선물 모두 받음', '내일 자정에 다시 받을 수 있어요 · 눌러서 보기', () => setState(() => _adOpen = true))
+      else ...[
+        const KdSec('피트의 무료 선물', small: '광고를 보면 받아요'),
+        for (final k in adKeys) ...[
+          _row(
+            title: ads[k]!.t,
+            sub: Text('오늘 ${c.adLeft(k)} / ${ads[k]!.n}회 남음', style: KdText.body(11, color: KdColors.muted)),
+            btn: KdBuy(
+              kind: BuyKind.ad,
+              minWidth: 72,
+              text: '▶ 받기',
+              onTap: c.adLeft(k) > 0
+                  ? () => g.watchAd(k, () => g.act((x) {
+                        if (k == 'box') {
+                          x.adBoxGive();
+                        } else if (k == 'gem') {
+                          x.adGemGive();
+                        } else {
+                          x.adCardGive();
+                        }
+                      }))
+                  : null,
+            ),
+          ),
+          const SizedBox(height: 8),
+        ],
+      ],
+      if (subOn) subRow,
+      ]),
+      _group(
+          'gem',
+          '🌾 황금 이삭으로',
+          Row(mainAxisSize: MainAxisSize.min, children: [
+            Text('가진 이삭 ', style: KdText.body(12, color: KdColors.muted)),
+            kdImg(gemIcon, w: 14, h: 14),
+            Text(fmt(s.gem), style: KdText.body(12, color: KdColors.muted)),
+          ]),
+          [
+      // ── 동료 카드 (먼저) ──
+      if (cardOk) cardBlock,
+      // ── 골드 바꾸기 ──
+      const KdSec('골드 바꾸기', small: '지금 영지 기준 · 영지가 오를수록 더 많이'),
+      _grid([
+        for (var i = 0; i < goldExchanges.length; i++)
+          _pack(
+            img: kdImg('assets/game/ui/gold_pack${i + 1}.png', w: 72, h: 72),
+            big: fmt(c.goldX(goldExchanges[i])),
+            small: goldExchanges[i].n,
+            price: _gemPrice(goldExchanges[i].gem),
+            tag: i > 0 ? '${fmt(goldExchanges[i].h)}시간치' : null,
+            onTap: () => g.act((x) => x.buyGoldX(goldExchanges[i].k)),
+          ),
+      ]),
+      const SizedBox(height: 4),
+      HelpNote(
+        k: 'gemuse',
+        title: '황금 이삭은 어디에 쓰나요?',
+        seen: g.helpSeen,
+        open: g.helpOpen,
+        body: KdNote('황금 이삭 ${fmt(s.gem)}개 · 동료 카드, 골드 바꾸기, 성유물 상자 10연속(장비 탭), 작물 바로 키우기·건물 바로 짓기(마을 탭), 방치 보상 2배 받기에 써요.'),
+      ),
+          ]),
+      _group('pay', '💰 상품', Text('황금 이삭은 상품마다 첫 구매 2배', style: KdText.body(12, color: KdColors.muted)), pay: true, [
       // ── 특별 상품 ──
-      const KdSec('특별 상품'),
       if (!truthy(a.buys['starter'])) ...[
-        const SizedBox(height: 6),
         _shopRow(
           img: 'assets/game/relic/relic_weapon_3.png',
           title: starterPack['n'] as String,
@@ -332,8 +390,7 @@ class _ShopPageState extends State<ShopPage> {
           btn: KdBuy(minWidth: 0, text: _price('starter', asNum(starterPack['won'])), onTap: () => _buy('starter', () => g.act((x) => x.buyStarter()))),
         ),
         const SizedBox(height: 10),
-      ] else
-        const SizedBox(height: 6),
+      ],
       if (g.calc.chiefShop()) ...[
         _shopRow(
           img: 'assets/game/portraits/portrait_kael_chief_laugh.png',
@@ -345,25 +402,8 @@ class _ShopPageState extends State<ShopPage> {
         ),
         const SizedBox(height: 10),
       ],
-      _shopRow(
-        img: 'assets/game/gem/gem_pack_5.png',
-        title: subscription['n'] as String,
-        hot: subOn,
-        info: subOn
-            ? Text('남은 기간 ${a.subLeft()}일 · ${gotToday ? '오늘 배송 받음' : '오늘 배송이 도착했어요'}')
-            : Text.rich(TextSpan(children: [
-                const TextSpan(text: '구매 즉시 '),
-                WidgetSpan(alignment: PlaceholderAlignment.middle, child: kdImg(gemIcon, w: 16, h: 16)),
-                TextSpan(text: '${subscription['now']} + 30일간 매일 '),
-                WidgetSpan(alignment: PlaceholderAlignment.middle, child: kdImg(gemIcon, w: 16, h: 16)),
-                TextSpan(text: '${subscription['day']}\n+ 3일마다 유니크 카드 1장 · 방치 보상 +50%'),
-              ])),
-        btn: subOn
-            ? KdBuy(kind: BuyKind.claim, minWidth: 0, text: gotToday ? '받음' : '+${subscription['day']} 받기', onTap: gotToday ? null : () => g.act((x) => x.claimSub()))
-            : KdBuy(minWidth: 0, text: _price('sub', asNum(subscription['won'])), onTap: () => _buy('sub', () => g.act((x) => x.buySub()))),
-      ),
-      const SizedBox(height: 12),
-      const KdSec('황금 이삭', small: '상품마다 첫 구매는 2배'),
+      if (!subOn) ...[subRow, const SizedBox(height: 12)],
+      const KdSec('황금 이삭'),
       _grid(gap: 6, [
         for (var i = 0; i < gemPacks.length; i++)
           Builder(builder: (_) {
@@ -379,14 +419,7 @@ class _ShopPageState extends State<ShopPage> {
             );
           }),
       ]),
-      const SizedBox(height: 12),
-      HelpNote(
-        k: 'gemuse',
-        title: '황금 이삭은 어디에 쓰나요?',
-        seen: g.helpSeen,
-        open: g.helpOpen,
-        body: KdNote('황금 이삭 ${fmt(s.gem)}개 · 골드 바꾸기, 성유물 상자 10연속(장비 탭), 작물 바로 키우기·건물 바로 짓기(마을 탭), 방치 보상 2배 받기에 써요.'),
-      ),
+      ]),
     ]);
   }
 }
