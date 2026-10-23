@@ -1702,14 +1702,30 @@ table.codds th {
 .tab .dot.opt.n {
   color: #3a2a00;
 }
-.rkfab {
-  top: 58px;
-}
-.shfab {
-  top: 108px;
-}
-.stagewrap:not(:has(#mailBtn:not([hidden]))) .shfab {
+.fabcol {
+  position: absolute;
   top: 8px;
+  right: 8px;
+  z-index: 4;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.fabcol .mailbtn {
+  position: relative;
+  top: auto;
+  right: auto;
+}
+.attfab .dot {
+  position: absolute;
+  top: -3px;
+  right: -3px;
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+  background: #ffd23a;
+  border: 1.5px solid #fff;
+  box-shadow: 0 0 6px #ffd23a;
 }
 .rkfab .dday {
   position: absolute;
@@ -2043,49 +2059,6 @@ table.codds th {
   opacity: 0.45;
   filter: grayscale(0.7);
 }
-.attbtn {
-  position: relative;
-  flex: 0 0 auto;
-  width: 34px;
-  height: 34px;
-  padding: 0;
-  border-radius: 10px;
-  background: #1a1406;
-  border: 1px solid #8a6a1a;
-  display: grid;
-  place-items: center;
-  cursor: pointer;
-  font-size: 18px;
-}
-.attbtn[hidden] {
-  display: none;
-}
-.attbtn img {
-  width: 28px;
-  height: 28px;
-  object-fit: contain;
-}
-.attbtn .dot {
-  position: absolute;
-  top: -3px;
-  right: -3px;
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-  background: #ffd23a;
-  border: 1px solid #fff;
-  box-shadow: 0 0 6px #ffd23a;
-}
-@media (max-width: 375px) {
-  .attbtn {
-    width: 30px;
-    height: 30px;
-  }
-  .attbtn img {
-    width: 24px;
-    height: 24px;
-  }
-}
 @media (max-width: 360px) {
   .upr .upv {
     white-space: normal;
@@ -2109,18 +2082,6 @@ table.codds th {
   }
   .gplus {
     display: none;
-  }
-  .attbtn {
-    width: 26px;
-    height: 26px;
-    border-radius: 8px;
-  }
-  .attbtn img {
-    width: 22px;
-    height: 22px;
-  }
-  .attbtn span {
-    font-size: 15px;
   }
 }
 .hdban.nohd {
@@ -6118,16 +6079,19 @@ input:focus-visible {
   <header class="hud">
     <button class="face" id="faceBtn" aria-label="프로필 열기"><canvas id="faceCv"></canvas><img class="pfr" id="hFrame" src="assets/profile/frame_wood.png" alt="" onerror="this.remove()"></button>
     <div class="who"><span class="nm">카엘<img class="hbadge" id="hBadge" alt="" hidden onerror="bdErr(this)"><img class="rankimg" id="hRankImg" src="assets/ui/rank_farmer.png" alt="" onerror="this.remove()"><span class="rank" id="hRank">농부</span></span><span class="pow" id="hPow">0</span></div>
-    <button class="attbtn" id="attBtn" aria-label="피트의 출석부" hidden><img src="assets/ui/ic_attend.png" alt="" onerror="this.outerHTML='<span>📅</span>'"><i class="dot" id="attDot" hidden></i></button>
     <button class="gempill" id="gemBtn" aria-label="황금 이삭과 오늘의 할 일"><img class="gemimg" src="assets/gem/ui_gem.png" alt="" onerror="this.remove()"><span id="gem">0</span><b class="gplus">+</b><i class="dot" id="gemDot" hidden></i></button>
     <div class="goldpill"><img class="coinimg" src="assets/ui/ui_gold.png" alt="" onerror="this.outerHTML='<i class=&quot;coin&quot;></i>'"><span id="gold">0</span></div>
   </header>
 
   <div class="stagewrap" id="wrap">
     <canvas id="cv" aria-label="원정대 자동 전투 화면"></canvas>
-    <button class="mailbtn rkfab" id="rankBtn" aria-label="랭킹" hidden><img src="assets/ui/icon_rank.png" alt="" onerror="this.outerHTML='<span>🏆</span>'"><i class="dday" id="rankDday" hidden></i></button>
-    <button class="mailbtn shfab" id="shopBtn" aria-label="피트의 상점"><img src="assets/ui/icon_shop.png" alt="" onerror="this.outerHTML='<span>🛒</span>'"><i class="mdot" id="shopDot" hidden></i></button>
-    <button class="mailbtn" id="mailBtn" aria-label="우편함" hidden><img src="assets/ui/icon_mail.png" alt="" onerror="this.outerHTML='<span>✉️</span>'"><i class="mdot" id="mailDot" hidden></i></button>
+    <!-- 오른쪽 세로 버튼 줄: 우편 · 랭킹 · 상점 · 출석부 (숨은 버튼은 빈자리 없이 당겨짐) -->
+    <div class="fabcol">
+      <button class="mailbtn" id="mailBtn" aria-label="우편함" hidden><img src="assets/ui/icon_mail.png" alt="" onerror="this.outerHTML='<span>✉️</span>'"><i class="mdot" id="mailDot" hidden></i></button>
+      <button class="mailbtn rkfab" id="rankBtn" aria-label="랭킹" hidden><img src="assets/ui/icon_rank.png" alt="" onerror="this.outerHTML='<span>🏆</span>'"><i class="dday" id="rankDday" hidden></i></button>
+      <button class="mailbtn shfab" id="shopBtn" aria-label="피트의 상점"><img src="assets/ui/icon_shop.png" alt="" onerror="this.outerHTML='<span>🛒</span>'"><i class="mdot" id="shopDot" hidden></i></button>
+      <button class="mailbtn attfab" id="attBtn" aria-label="피트의 출석부" hidden><img src="assets/ui/ic_attend.png" alt="" onerror="this.outerHTML='<span>📅</span>'"><i class="dot" id="attDot" hidden></i></button>
+    </div>
     <div class="pgshade" id="pgShade" hidden></div>
     <div class="ovtop"><div class="toprow"><div class="stagepill"><div class="sth"><b id="stLabel">1-1 에르단 평원</b><small id="stRegion">개울 마을</small></div><div class="pips" id="pips"></div></div><button class="chx" id="chExit" hidden>나가기</button><button class="chx nx" id="chNext" hidden>다음 층 ▶</button><button class="guide" id="guide" hidden></button></div>
     <div class="bossbar" id="bossbar" hidden><img id="bossFace" class="bossface" alt="" hidden><div class="bb"><div class="bbtop"><span class="btag" id="bossTag">성주</span><span id="bossName">보스</span><span id="bosst">30초</span></div><div class="track"><div class="fill" id="bossfill"></div><span id="bossHp"></span></div><div class="tline"><i id="bossTime"></i></div></div></div>
