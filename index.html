@@ -1411,6 +1411,12 @@ let partySig='',ptTab='form';
 const cardReady=()=>CARDIDS().filter(id=>cardOpen(id)&&recStar(id)<starMax(id)&&((S.cards&&S.cards[id])||0)>=starNeed(id));
 const ptAct=()=>[...(chiefCan()?['u'+recStar(CHIEF)]:[]),...cardReady().map(id=>'c'+id+recStar(id)),...JSLOT.filter(j=>j!=='kael'&&betterBench(j)).map(j=>'b'+j+jobMembers(j).reduce((a,x)=>cPow(x)>cPow(a)?x:a))].join();
 function dotSeen(){S.dotSeen=ptAct()}
+/* 동료 목록 순서: 카엘(·촌장) → 출전 중(자리 순) → 대기·일꾼(등급 높은 순 → 별 많은 순 → 전투력 높은 순) → 아직 합류 전 */
+const GRK={legend:3,epic:2,rare:1,common:0};
+function partyOrder(){const on=JSLOT.filter(j=>j!=='kael').map(slotMember).filter(Boolean);
+ const bench=JSLOT.filter(j=>j!=='kael').flatMap(j=>jobMembers(j)).filter(x=>!on.includes(x)).map(id=>({id,g:GRK[GRADE[id]]||0,s:recStar(id),p:cPow(id)}));
+ bench.sort((a,b)=>b.g-a.g||b.s-a.s||b.p-a.p);
+ return['kael',...(owned(CHIEF)||chiefShop()?[CHIEF]:[]),...on,...bench.map(x=>x.id),...JSLOT.filter(j=>j!=='kael'&&!slotMember(j)).map(j=>STORY[j])]}
 function compSheet(id){const c=COMP[id],t=stats(id),on=slotMember(JOB[id])===id,lv=S.lv[id]||1;
  $('sheet').innerHTML=`<div class="eyebrow"><img class="jobi" src="assets/ui/job_${JOB[id]}.png" alt="" onerror="this.remove()">${JOBN[JOB[id]]} 동료</div><div class="cdh"><span class="cfr" style="--g:${gr(id).c}"><img src="assets/ui/frame_${gr(id).fr}.png" alt="" onerror="this.remove()"><canvas class="portrait" id="cdf-${id}"></canvas></span><div><h2>${c.n}</h2><div>${gradeTag(id)}${starTxt(id)}</div><small>${c.role} · Lv.${lv} · ${on?'출전 중':'대기'}</small></div></div>
  <p class="cdd">${c.desc}</p><div class="kv"><span>공격 · 체력</span><b>${fmt(t.atk)} · ${fmt(t.hp)}</b></div><div class="kv"><span>전투력</span><b>${fmt(cPow(id))}</b></div>
@@ -1470,7 +1476,7 @@ function renderParty(){
   const crow=id=>{const c=COMP[id];if(id===CHIEF)return owned(id)?`<div class="crow" role="button" tabindex="0" data-det="${id}"><canvas class="cface" id="cf-${id}"></canvas><div class="info"><b>${c.n}${gradeTag(id)+starTxt(id)}</b><small>${chiefOn()?'출전':'대기'} · 카엘 자리 · 카엘 능력치 +${CHIEF_B[recStar(id)]*100}%</small></div>${chiefCan()?'<span class="buy sm glow">★ 올리기</span>':`<span class="benchtag">${chiefOn()?'출전':'대기'}</span>`}</div>`:`<div class="crow" role="button" tabindex="0" data-det="${id}"><canvas class="cface" id="cf-${id}"></canvas><div class="info"><b>${c.n}${gradeTag(id)}</b><small>${c.join}</small></div><span class="benchtag">보기</span></div>`;
    if(!owned(id))return`<div class="crow locked"><canvas class="cface" id="cf-${id}"></canvas><div class="info"><b>???</b><small>${c.role} · ${c.join}</small></div></div>`;
    const j=JOB[id],on=id==='kael'||slotMember(j)===id;return`<div class="crow" role="button" tabindex="0" data-det="${id}"><canvas class="cface" id="cf-${id}"></canvas><div class="info"><b>${c.n}${id==='kael'?'':gradeTag(id)+starTxt(id)}</b><small>${id==='kael'?RANKS[rankIdx()].n:(on?'출전':working()[id]?'🔨 '+bldK(working()[id]).n:'대기')+' · Lv.'+(S.lv[id]||1)} · ${id==='kael'?'원정대 전투력 '+fmt(power()):'전투력 '+fmt(cPow(id))}</small></div>${id==='kael'?'<span class="buy ghost sm">장비</span>':on?`<button class="buy sm" id="lv-${id}">${costBtn('Lv↑',compCost(S.lv[id]||1))}</button>`:`<span class="benchtag">${working()[id]?'🔨 일꾼':'대기'}</span>`}</div>`};
-  const list=['kael',...(owned(CHIEF)||chiefShop()?[CHIEF]:[]),...JSLOT.filter(j=>j!=='kael').flatMap(j=>[slotMember(j),...jobMembers(j).filter(x=>x!==slotMember(j))].filter(Boolean)),...JSLOT.filter(j=>j!=='kael'&&!slotMember(j)).map(j=>STORY[j])];
+  const list=partyOrder();
   window._rowOf=rowOf;
   $('ptNote').hidden=ptTab!=='form';
   $('party').innerHTML=ptTab==='form'?board+ngoalHtml():ptTab==='list'?`<p class="note">동료를 누르면 자세한 정보·스킬·출전을 볼 수 있어요.</p>`+list.map(crow).join(''):`<p class="note">카드 등급: <b style="color:#b8c0cc">일반</b>(★3까지) · <b style="color:#5aa8ff">희귀</b>(★4) · <b style="color:#b07bff">영웅</b>(★5) · <b style="color:#ffc23a">전설</b>(★5). 높은 등급일수록 드물게 나오고 기본 능력치가 높아요. 마물·성주·군단장·황금 고블린·오늘의 할 일·피트의 상점에서 카드를 얻어요. ♡ 희망을 눌러 두면 그 동료 카드가 절반 확률로 나와요. 은퇴해도 카드와 별은 남아요.${ucRow?' <b style="color:#3ee08f">유니크</b>(★5)는 카드 뽑기에 나오지 않고, 유니크 카드로만 별을 올려요.':''}</p>${ucRow}${recs}`;
