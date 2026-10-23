@@ -87,7 +87,10 @@ class ActGemPlotAsk extends ActResult {
 
 /// 카드를 받았어요 창 (웹 cardReveal)
 class ActCardReveal extends ActResult {
-  ActCardReveal(this.got, this.title, [this.gold = 0]);
+  ActCardReveal(this.got, this.title, [this.gold = 0, this.again]);
+
+  /// 상점 카드 묶음 번호 — 결과 창에 「또 뽑기」 (웹 cardReveal again)
+  final int? again;
   /// 별을 다 채운 동료 카드가 바뀐 골드
   final num gold;
   final List<(String, int)> got;
@@ -975,7 +978,7 @@ class GameActions {
     }
     if (!spendGem(asNum(cp['gem']))) return;
     final r = c.gainCards(rng, n, 'shop', n >= 30 ? 5 : 1);
-    out.add(ActCardReveal(r?.got ?? const [], '카드 $n장', r?.gold ?? 0));
+    out.add(ActCardReveal(r?.got ?? const [], '카드 $n장', r?.gold ?? 0, i));
   }
 
   /// 결제 (웹 pay): 지금은 시험용으로 바로 지급

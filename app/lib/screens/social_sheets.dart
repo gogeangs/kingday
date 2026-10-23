@@ -918,7 +918,7 @@ Future<void> showResultSheet(BuildContext ctx, GameController g, {required int n
 // ════════════════════ 카드 공개 (웹 cardReveal, C-1) ════════════════════
 /// 줄 높이는 내용에 맞춤 · 카드가 하나씩 뒤집힘(영웅·전설은 뒤집기 전부터 빛이 샘) · 「모두 뒤집기」
 /// · 맨 위 요약 + 합류·★ 올리기 가능한 동료를 맨 위로(금테) · 줄마다 「합류하기」「★ 올리기」
-Future<void> showCardReveal(BuildContext ctx, GameController g, List<(String, int)> list, String title, {num gold = 0}) {
+Future<void> showCardReveal(BuildContext ctx, GameController g, List<(String, int)> list, String title, {num gold = 0, int? again}) {
   final m = <String, int>{};
   for (final (id, n) in list) {
     m[id] = (m[id] ?? 0) + n;
@@ -927,15 +927,18 @@ Future<void> showCardReveal(BuildContext ctx, GameController g, List<(String, in
     if (gold > 0) g.toast('동료 카드 → 골드 +${fmt(gold)} (별을 다 채운 동료)');
     return Future.value();
   }
-  return showKdSheet<void>(ctx, builder: (sc) => _CardReveal(g, m, title, gold));
+  return showKdSheet<void>(ctx, builder: (sc) => _CardReveal(g, m, title, gold, again));
 }
 
 class _CardReveal extends StatefulWidget {
-  const _CardReveal(this.g, this.m, this.title, this.gold);
+  const _CardReveal(this.g, this.m, this.title, this.gold, this.again);
   final GameController g;
   final Map<String, int> m;
   final String title;
   final num gold;
+
+  /// 상점 카드 묶음 번호 → 「또 뽑기」 (가격 보이게, 확인 창 없음)
+  final int? again;
 
   @override
   State<_CardReveal> createState() => _CardRevealState();
@@ -1108,12 +1111,28 @@ class _CardRevealState extends State<_CardReveal> with SingleTickerProviderState
           ]),
       ],
       acts: KdActs(buttons: [
-        KdAct('닫기', onTap: () => Navigator.of(context).pop()),
-        KdAct('원정대에서 보기', primary: true, onTap: () {
+        if (widget.again == null) KdAct('닫기', onTap: () => Navigator.of(context).pop()),
+        KdAct('원정대에서 보기', primary: widget.again == null, onTap: () {
           Navigator.of(context).pop();
           g.state.raw['ptTab'] = 'card';
           g.setTab(GameTab.pt);
         }),
+        if (widget.again != null)
+          KdAct('또 뽑기',
+              primary: true,
+              onTap: () {
+                final i = widget.again!;
+                Navigator.of(context).pop();
+                g.act((x) => x.buyCardPack(i));
+              },
+              child: Column(mainAxisSize: MainAxisSize.min, children: [
+                Text('또 뽑기', style: KdText.display(16, color: KdColors.goldInk)),
+                Row(mainAxisSize: MainAxisSize.min, children: [
+                  kdImg(gemIcon, w: 16, h: 16),
+                  const SizedBox(width: 2),
+                  Text(fmt(asNum(cardPacks[widget.again!]['gem'])), style: KdText.body(13, color: KdColors.goldInk, weight: FontWeight.w700)),
+                ]),
+              ])),
       ]),
     );
   }
