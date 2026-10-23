@@ -40,9 +40,8 @@ class StageTop extends StatelessWidget {
     }
     final gi = g.state.raw['guideOff'] == true ? -1 : g.calc.guideIndex();
     // 오른쪽 위에 우편함·랭킹 버튼이 있으면 그만큼 비움 (웹 .ovtop padding-inline:8px 58px)
-    final fab = g.online.on;
     return Padding(
-        padding: EdgeInsets.fromLTRB(fab ? 8 : 12, 0, fab ? 58 : 12, 0),
+        padding: const EdgeInsets.fromLTRB(8, 0, 58, 0), // 오른쪽 위 버튼 줄(상점은 늘 있음)
         child: Column(
           children: [
             // .toprow: 영지 표시줄 + 다음 할 일
@@ -180,8 +179,7 @@ class _GuidePillState extends State<_GuidePill> {
             ),
             if (open) ...[
               const SizedBox(width: 6),
-              ConstrainedBox(
-                constraints: BoxConstraints(maxWidth: math.min(280, MediaQuery.sizeOf(context).width - 120)),
+              Flexible(
                 child: Text(GameCalc.guideTexts[widget.i],
                     maxLines: 1, overflow: TextOverflow.ellipsis, style: KdText.body(12, color: const Color(0xFFE9F4EA), height: 1.2)),
               ),
@@ -386,7 +384,7 @@ class StageBottom extends StatelessWidget {
       ),
       child: Row(crossAxisAlignment: CrossAxisAlignment.end, children: [
         Expanded(
-          child: LayoutBuilder(builder: (_, c) {
+          child: LayoutBuilder(key: g.partyRowKey, builder: (_, c) {
             final w = math.min(52.0, c.maxWidth * .17);
             return Row(children: [
               for (var i = 0; i < 5; i++) ...[

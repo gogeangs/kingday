@@ -1,6 +1,8 @@
 /// 그림 효과 — 웹 CSS filter(grayscale·brightness·saturate)와 얼굴 확대(faceTo)
 library;
 
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 
 import '../core/fmt.dart';
@@ -65,6 +67,11 @@ class NumFlash extends StatefulWidget {
 
 class _NumFlashState extends State<NumFlash> with TickerProviderStateMixin {
   late final AnimationController _pulse = AnimationController(vsync: this, duration: const Duration(milliseconds: 600));
+
+  /// 숫자가 올라가는 효과 (U-2 ⑩, 웹 numRoll 0.4초) · 큰 보상 반짝임 (웹 .nfsp 0.9초)
+  late final AnimationController _roll = AnimationController(vsync: this, duration: const Duration(milliseconds: 400));
+  late final AnimationController _spark = AnimationController(vsync: this, duration: const Duration(milliseconds: 900));
+  num _from = 0;
   final List<(String, bool, AnimationController)> _floats = [];
   bool _up = true;
 
@@ -77,6 +84,15 @@ class _NumFlashState extends State<NumFlash> with TickerProviderStateMixin {
     final o = old.value, v = widget.value;
     if (v == o || !v.isFinite || !o.isFinite) return;
     final d = v - o;
+    final reduce = MediaQuery.maybeDisableAnimationsOf(context) ?? false;
+    if (!reduce && d > 0 && d >= (o * .02 > 1 ? o * .02 : 1)) {
+      _from = _roll.isAnimating ? _shown(old.value) : o;
+      _roll.forward(from: 0);
+    } else {
+      _roll.stop();
+      _roll.value = 1;
+    }
+    if (!reduce && d > 0 && o > 0 && d >= o * .5) _spark.forward(from: 0);
     if (widget.big && d.abs() < (o.abs() * .1 > 50 ? o.abs() * .1 : 50)) return;
     if (!widget.big && d.abs() < 1) return;
     _up = d > 0;
@@ -91,8 +107,17 @@ class _NumFlashState extends State<NumFlash> with TickerProviderStateMixin {
     });
   }
 
+  /// 지금 보여 줄 값 (올라가는 중이면 사이 값)
+  num _shown(num target) {
+    if (!_roll.isAnimating) return target;
+    final e = Curves.easeOutCubic.transform(_roll.value);
+    return _from + (target - _from) * e;
+  }
+
   @override
   void dispose() {
+    _roll.dispose();
+    _spark.dispose();
     _pulse.dispose();
     for (final f in _floats) {
       f.$3.dispose();
@@ -105,14 +130,21 @@ class _NumFlashState extends State<NumFlash> with TickerProviderStateMixin {
     final base = widget.style.color ?? Colors.white;
     return Stack(clipBehavior: Clip.none, alignment: Alignment.topCenter, children: [
       AnimatedBuilder(
-        animation: _pulse,
+        animation: Listenable.merge([_pulse, _roll, _spark]),
         builder: (_, __) {
           // 웹 @keyframes nfu/nfd: 30% 지점에서 가장 크게(작게)·색 바뀜
           final t = _pulse.value, k = !_pulse.isAnimating ? 0.0 : (t < .3 ? t / .3 : (1 - t) / .7);
           final hi = _up ? const Color(0xFF9BFFA8) : const Color(0xFFFF8A7A);
           return Transform.scale(
             scale: 1 + (_up ? .18 : -.08) * k,
-            child: Text('${widget.prefix}${_f(widget.value)}', maxLines: 1, style: widget.style.copyWith(color: Color.lerp(base, hi, k))),
+            child: Text('${widget.prefix}${_f(_shown(widget.value))}',
+                maxLines: 1,
+                style: widget.style.copyWith(
+                  color: Color.lerp(base, hi, k),
+                  shadows: _spark.isAnimating
+                      ? [Shadow(color: const Color(0xFFFFE27A).withValues(alpha: math.sin(_spark.value * math.pi)), blurRadius: 14)]
+                      : null,
+                )),
           );
         },
       ),

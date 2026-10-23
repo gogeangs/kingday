@@ -176,6 +176,7 @@ class _ShopPageState extends State<ShopPage> {
         title: m.n,
         sub: XpBar((v / m.goal).toDouble()),
         btn: KdBuy(
+          kind: BuyKind.claim,
           minWidth: 72,
           text: done ? '받음' : can ? '+${fmt(m.r)} 받기' : '${fmt(v)} / ${fmt(m.goal)}',
           onTap: can ? () => g.act((x) => x.claimMission(m.k)) : null,
@@ -226,6 +227,7 @@ class _ShopPageState extends State<ShopPage> {
         _row(
           title: '오늘의 할 일 모두 끝내기',
           btn: KdBuy(
+            kind: BuyKind.claim,
             minWidth: 72,
             text: truthy(claim['all']) ? '받음' : '+$missionAllReward${a.misCan(null) ? ' 받기' : ''}',
             onTap: a.misCan(null) ? () => g.act((x) => x.claimMission('all')) : null,
@@ -357,7 +359,7 @@ class _ShopPageState extends State<ShopPage> {
                 TextSpan(text: '${subscription['day']}\n+ 매일 유니크 카드 1장 · 방치 보상 +50%'),
               ])),
         btn: subOn
-            ? KdBuy(minWidth: 0, text: gotToday ? '받음' : '+${subscription['day']} 받기', onTap: gotToday ? null : () => g.act((x) => x.claimSub()))
+            ? KdBuy(kind: BuyKind.claim, minWidth: 0, text: gotToday ? '받음' : '+${subscription['day']} 받기', onTap: gotToday ? null : () => g.act((x) => x.claimSub()))
             : KdBuy(minWidth: 0, text: _price('sub', asNum(subscription['won'])), onTap: () => _buy('sub', () => g.act((x) => x.buySub()))),
       ),
       const SizedBox(height: 12),
@@ -378,7 +380,13 @@ class _ShopPageState extends State<ShopPage> {
           }),
       ]),
       const SizedBox(height: 12),
-      KdNote('황금 이삭 ${fmt(s.gem)}개 · 골드 바꾸기, 성유물 상자 10연속(장비 탭), 작물 바로 키우기·건물 바로 짓기(마을 탭), 방치 보상 2배 받기에 써요.'),
+      HelpNote(
+        k: 'gemuse',
+        title: '황금 이삭은 어디에 쓰나요?',
+        seen: g.helpSeen,
+        open: g.helpOpen,
+        body: KdNote('황금 이삭 ${fmt(s.gem)}개 · 골드 바꾸기, 성유물 상자 10연속(장비 탭), 작물 바로 키우기·건물 바로 짓기(마을 탭), 방치 보상 2배 받기에 써요.'),
+      ),
     ]);
   }
 }

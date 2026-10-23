@@ -9,7 +9,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../core/data.dart';
-import '../core/fmt.dart';
 import '../core/profile_data.dart';
 import 'attend_sheet.dart';
 import '../game/controller.dart';
@@ -205,7 +204,7 @@ class _Hud extends StatelessWidget {
               child: Row(mainAxisSize: MainAxisSize.min, children: [
                 SizedBox(width: 22, height: 16, child: OverflowBox(maxWidth: 24, maxHeight: 24, child: kdImg('assets/game/gem/ui_gem.png', w: 24, h: 24))),
                 const SizedBox(width: 3),
-                Text(fmt(s.gem), style: KdText.figure(14, color: const Color(0xFFFFE08A))),
+                NumFlash(s.gem, style: KdText.figure(14, color: const Color(0xFFFFE08A))),
                 const SizedBox(width: 2),
                 Container(
                   width: 14,
@@ -240,11 +239,27 @@ class _Hud extends StatelessWidget {
 }
 
 class _Dot extends StatelessWidget {
-  const _Dot({this.opt = false});
+  const _Dot({this.opt = false, this.n = 0});
   final bool opt;
 
+  /// 2 이상이면 숫자 (웹 .dot.n)
+  final int n;
+
   @override
-  Widget build(BuildContext context) => Container(
+  Widget build(BuildContext context) => n > 1
+      ? Container(
+          constraints: const BoxConstraints(minWidth: 16),
+          height: 16,
+          padding: const EdgeInsets.symmetric(horizontal: 4),
+          alignment: Alignment.center,
+          decoration: BoxDecoration(
+            color: opt ? KdColors.gold : KdColors.bad,
+            borderRadius: BorderRadius.circular(999),
+            border: Border.all(color: opt ? const Color(0xFF6B4F12) : Colors.white),
+          ),
+          child: Text(n > 9 ? '9+' : '$n', style: KdText.body(10.5, color: opt ? KdColors.goldInk : Colors.white, weight: FontWeight.w700, height: 1)),
+        )
+      : Container(
         width: opt ? 8 : 9,
         height: opt ? 8 : 9,
         decoration: BoxDecoration(
@@ -268,7 +283,7 @@ class _StageArea extends StatelessWidget {
           Positioned.fill(child: GameWidget(game: g.game)),
           Positioned(left: 0, right: 0, top: 8, child: ValueListenableBuilder<int>(valueListenable: g.frame, builder: (_, __, ___) => StageTop(g))),
           Positioned(left: 0, right: 0, bottom: 0, child: ValueListenableBuilder<int>(valueListenable: g.frame, builder: (_, __, ___) => StageBottom(g))),
-          Positioned(top: 8, right: 8, child: SocialFabs(g)),
+          Positioned(top: 8, right: 8, child: ValueListenableBuilder<int>(valueListenable: g.ui, builder: (_, __, ___) => SocialFabs(g))),
           // 반쯤 열린 창 위 빈 곳을 누르면 닫힘 (웹 .pgshade)
           if (half) Positioned(left: 0, right: 0, top: 0, height: top, child: GestureDetector(behavior: HitTestBehavior.opaque, onTap: () => g.setTab(null))),
           if (t != null)
@@ -285,7 +300,8 @@ class _Tabs extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final dots = {GameTab.pt: g.ptDot, GameTab.up: g.upDot, GameTab.vl: g.vlDot, GameTab.mp: g.chDot};
+    final dots = {GameTab.pt: g.ptDot, GameTab.up: g.dotOn(GameTab.up), GameTab.vl: g.dotOn(GameTab.vl), GameTab.mp: g.dotOn(GameTab.mp)};
+    final nums = {GameTab.pt: g.calc.cardReady().length, GameTab.vl: g.vReadyN()};
     return Container(
       padding: EdgeInsets.fromLTRB(8, 5, 8, math.max(6, bottom - 18)),
       decoration: const BoxDecoration(
@@ -295,13 +311,13 @@ class _Tabs extends StatelessWidget {
       child: Row(children: [
         for (final t in [GameTab.eq, GameTab.pt, GameTab.up, GameTab.vl, GameTab.mp]) ...[
           if (t != GameTab.eq) const SizedBox(width: 4),
-          Expanded(child: _tab(t, dots[t] ?? false)),
+          Expanded(child: _tab(t, dots[t] ?? false, nums[t] ?? 0)),
         ],
       ]),
     );
   }
 
-  Widget _tab(GameTab t, bool dot) {
+  Widget _tab(GameTab t, bool dot, int n) {
     final on = g.tab == t;
     Widget icon = kdImg('assets/game/ui/${t.icon}.png', w: 38, h: 38);
     icon = on ? Transform.scale(scale: 1.08, child: icon) : filtered(icon, sat: .75, bright: .9);
@@ -322,7 +338,7 @@ class _Tabs extends StatelessWidget {
           ]),
         ),
         // 원정대 점은 금색(선택), 마을 점은 빨강
-        if (dot) Positioned(top: 3, right: 10, child: _Dot(opt: t == GameTab.pt || t == GameTab.up)),
+        if (dot) Positioned(top: n > 1 ? 0 : 3, right: n > 1 ? 4 : 10, child: _Dot(opt: t == GameTab.pt || t == GameTab.up, n: n)),
       ]),
     );
   }
@@ -337,10 +353,18 @@ class _ToastView extends StatelessWidget {
   @override
   Widget build(BuildContext context) => ValueListenableBuilder<String?>(
         valueListenable: g.toastMsg,
-        builder: (_, msg, __) => Positioned(
+        builder: (ctx, msg, __) {
+          // 전투 화면: 초상화 줄 바로 위 (영지 이름표·보스 막대를 가리지 않게). 창이 열려 있으면 맨 위
+          double? bottom;
+          if (!g.toastHigh && g.tab == null) {
+            final rb = g.partyRowKey.currentContext?.findRenderObject();
+            if (rb is RenderBox && rb.hasSize && rb.attached) bottom = MediaQuery.sizeOf(ctx).height - rb.localToGlobal(Offset.zero).dy + 8;
+          }
+          return Positioned(
           left: 16,
           right: 16,
-          top: (g.toastHigh ? 8 : 76) + top,
+          top: bottom == null ? (g.toastHigh ? 8 : 76) + top : null,
+          bottom: bottom,
           child: IgnorePointer(
             child: AnimatedOpacity(
               opacity: msg == null ? 0 : 1,
@@ -360,7 +384,8 @@ class _ToastView extends StatelessWidget {
               ),
             ),
           ),
-        ),
+        );
+        },
       );
 }
 

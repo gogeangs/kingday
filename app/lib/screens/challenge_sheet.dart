@@ -77,6 +77,7 @@ class _ChSheet extends StatelessWidget {
             const SizedBox(width: 6),
             Expanded(
                 child: KdBuy(
+                    kind: BuyKind.claim,
                     text: c.supplyCan() ? '🎁 탑 보급 받기' : '보급 받음 · 내일 다시',
                     minWidth: 0,
                     onTap: c.supplyCan() ? g.claimSupply : null)),

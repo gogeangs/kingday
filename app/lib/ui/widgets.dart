@@ -122,7 +122,35 @@ class XpBar extends StatelessWidget {
       );
 }
 
-enum BuyKind { gold, ghost, gem, ad, danger }
+/// 버튼 색 규칙 (U-2 ⑦): gold = 골드·이삭 쓰기 · ghost = 다른 화면으로 이동 · claim(초록) = 받기
+enum BuyKind { gold, ghost, gem, ad, danger, claim }
+
+/// 누르면 살짝 작아지는 효과 (U-2 ⑩, 웹 .buy:active scale .95)
+class Pressable extends StatefulWidget {
+  const Pressable({super.key, required this.child, this.onTap});
+  final Widget child;
+  final VoidCallback? onTap;
+
+  @override
+  State<Pressable> createState() => _PressableState();
+}
+
+class _PressableState extends State<Pressable> {
+  bool _down = false;
+
+  void _set(bool v) {
+    if (_down != v && mounted) setState(() => _down = v);
+  }
+
+  @override
+  Widget build(BuildContext context) => GestureDetector(
+        onTap: widget.onTap,
+        onTapDown: widget.onTap == null ? null : (_) => _set(true),
+        onTapUp: (_) => _set(false),
+        onTapCancel: () => _set(false),
+        child: AnimatedScale(scale: _down ? .95 : 1, duration: const Duration(milliseconds: 80), child: widget.child),
+      );
+}
 
 /// .buy — 사는/올리는 버튼. [label] 위 작은 글자, [cost] 아래 큰 글자(아이콘과 함께)
 class KdBuy extends StatelessWidget {
@@ -165,7 +193,7 @@ class KdBuy extends StatelessWidget {
       BuyKind.gold => (KdColors.gold, null, KdColors.goldInk, null),
       BuyKind.ghost => (Colors.transparent, null, off ? KdColors.muted : KdColors.fg, Border.all(color: KdColors.line)),
       BuyKind.gem => (null, const LinearGradient(colors: [Color(0xFF2C4A8C), Color(0xFF1D3366)], begin: Alignment.topCenter, end: Alignment.bottomCenter), const Color(0xFFFFE08A), Border.all(color: const Color(0xFF5A7AC8))),
-      BuyKind.ad => (null, const LinearGradient(colors: [Color(0xFF2F7A4A), Color(0xFF1D5232)], begin: Alignment.topCenter, end: Alignment.bottomCenter), const Color(0xFFE8FFE8), Border.all(color: const Color(0xFF5AC07A))),
+      BuyKind.ad || BuyKind.claim => (null, const LinearGradient(colors: [Color(0xFF2F7A4A), Color(0xFF1D5232)], begin: Alignment.topCenter, end: Alignment.bottomCenter), const Color(0xFFE8FFE8), Border.all(color: const Color(0xFF5AC07A))),
       BuyKind.danger => (const Color(0xFF5A1A24), null, const Color(0xFFFFD6DC), Border.all(color: KdColors.bad)),
     };
     final costColor = off && kind == BuyKind.gold ? const Color(0xFFFF8D9A) : fg;
@@ -181,7 +209,7 @@ class KdBuy extends StatelessWidget {
           ]),
         ),
     ];
-    return GestureDetector(
+    return Pressable(
       onTap: onTap == null
           ? null
           : () {
@@ -216,22 +244,25 @@ class KdActs extends StatelessWidget {
 }
 
 class KdAct extends StatelessWidget {
-  const KdAct(this.text, {super.key, this.onTap, this.primary = false, this.danger = false, this.child});
+  const KdAct(this.text, {super.key, this.onTap, this.primary = false, this.danger = false, this.claim = false, this.child});
   final String text;
   final VoidCallback? onTap;
-  final bool primary, danger;
+
+  /// claim: 초록 「받기」 버튼 (U-2 ⑦)
+  final bool primary, danger, claim;
   final Widget? child;
 
   @override
   Widget build(BuildContext context) {
-    final bg = danger
+    final green = claim && onTap != null;
+    final bg = danger || green
         ? null
         : primary
             ? KdColors.gold
             : KdColors.panel2;
     return Opacity(
       opacity: onTap == null ? .45 : 1,
-      child: GestureDetector(
+      child: Pressable(
         onTap: onTap == null
             ? null
             : () {
@@ -243,14 +274,18 @@ class KdAct extends StatelessWidget {
           alignment: Alignment.center,
           decoration: BoxDecoration(
             color: bg,
-            gradient: danger ? const LinearGradient(colors: [Color(0xFFFF7A6A), Color(0xFFC94A3A)], begin: Alignment.topCenter, end: Alignment.bottomCenter) : null,
+            gradient: danger
+                ? const LinearGradient(colors: [Color(0xFFFF7A6A), Color(0xFFC94A3A)], begin: Alignment.topCenter, end: Alignment.bottomCenter)
+                : green
+                    ? const LinearGradient(colors: [Color(0xFF3FA863), Color(0xFF24713F)], begin: Alignment.topCenter, end: Alignment.bottomCenter)
+                    : null,
             borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: primary ? KdColors.gold : KdColors.line),
+            border: Border.all(color: green ? const Color(0xFF5AC07A) : primary ? KdColors.gold : KdColors.line),
           ),
           child: child ??
               Text(text,
                   textAlign: TextAlign.center,
-                  style: KdText.display(16, color: danger ? Colors.white : primary ? KdColors.goldInk : KdColors.fg)),
+                  style: KdText.display(16, color: danger ? Colors.white : green ? const Color(0xFFEFFFF2) : primary ? KdColors.goldInk : KdColors.fg)),
         ),
       ),
     );
