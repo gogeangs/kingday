@@ -823,7 +823,7 @@ class GameCalc {
   /// 지금 보여 줄 할 일 (웹 guideNow). k: 'g0'~'g8' 기본 안내 · 'up:atk' 추천 강화 · 'b:inn' 재건. 없으면 null
   ({String k, String t})? guideNow() {
     if (s.retires > 0) return null;
-    if (s.best > 30) {
+    ({String k, String t})? reb() {
       final bd = building();
       final q = s.raw['bq'] is List ? s.raw['bq'] as List : const [];
       for (final b in buildings) {
@@ -832,9 +832,11 @@ class GameCalc {
       }
       return null;
     }
+
+    if (s.best > 30) return reb();
     final i = guideIndex();
-    // 추천 강화는 기다리는 단계에서만: 할 일을 다 했거나 · 「1-10 성주」 · 아직 은퇴 못 하는 「첫 은퇴」 (3회차 리뷰 10)
-    if (i < 0 || i == 2 || (i == 8 && !retCan())) {
+    // 추천 강화는 기다리는 단계에서만: 할 일을 다 했거나 · 「1-10 성주」 · 「첫 은퇴」 (3회차 리뷰 10). 다 했으면 마을 재건
+    if (i < 0 || i == 2 || i == 8) {
       num mc = double.infinity;
       for (final u in upgrades) {
         final l = s.upLv(u.k);
@@ -845,7 +847,7 @@ class GameCalc {
         if (k != null) return (k: 'up:$k', t: '추천 강화 하기 · ${upgrades.firstWhere((u) => u.k == k).n}');
       }
     }
-    return i < 0 ? null : (k: 'g$i', t: guideTexts[i]);
+    return i < 0 ? reb() : (k: 'g$i', t: guideTexts[i]);
   }
 
   /// 받침에 따라 을/를·이/가 (웹 josa)

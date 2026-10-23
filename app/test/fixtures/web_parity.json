@@ -23408,7 +23408,7 @@
      "aps": 1,
      "crit": 0.05
     },
-    "guide": "g8"
+    "guide": "up:hp"
    },
    "retire": {
     "tl": {
