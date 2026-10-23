@@ -520,6 +520,14 @@ button:focus-visible,input:focus-visible{outline:2px solid var(--gold);outline-o
 .lore.k{color:#a8e6b0}
 .lore .who{display:block;font-family:var(--f-body);font-size:11px;letter-spacing:.08em;opacity:.75}
 .talk{display:flex;gap:8px;align-items:center;margin:0}
+.rpl{display:flex;flex-direction:column;gap:6px}
+.rpi{display:flex;gap:8px;align-items:center;padding:6px 8px;border-radius:12px;background:rgba(255,255,255,.05);border:1px solid rgba(201,149,42,.35)}
+.rpf{width:40px;height:40px;flex:0 0 auto;border-radius:10px;object-fit:cover;object-position:50% 25%;background:radial-gradient(circle at 50% 40%,#2c4a7a,#141a29);border:2px solid #c9952a}
+.rpm{flex:1 1 auto;min-width:0}
+.rpe{font-size:11px;color:var(--gold);letter-spacing:.06em}
+.rpt{font-size:14px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rpb{flex:0 0 auto;font-size:12px;padding:6px 8px;min-height:32px}
+.rpd{display:flex;flex-direction:column;gap:6px;padding:0 2px 4px}
 .talk .pface{width:44px;height:44px;flex:0 0 auto;border-radius:12px;background:radial-gradient(circle at 50% 40%,#2c4a7a,#141a29);border:2px solid #c9952a;object-fit:cover;object-position:50% 20%}
 .talk.m .pface{border-color:#ffd9a8;object-position:50% 30%}
 .talk.q .pface{background:radial-gradient(circle at 50% 50%,#203a66,#0d1220);border-color:#5ab4ff;object-position:50% 40%}
@@ -1271,23 +1279,33 @@ function para(p){
  return`<p class="lore">${p}</p>`}
 function scene(eyebrow,title,paras,btn,alt,illust){
  $('sheet').innerHTML=`${illust?`<img class="illust il-${illust}" src="assets/illust/illust_${illust}.jpg" alt="" onerror="this.remove()">`:''}<div class="eyebrow">${eyebrow}</div><h2>${title}</h2>${paras.map(para).join('')}<div class="acts ${alt&&alt.label?'':'one'}">${alt&&alt.label?`<button id="mAlt">${alt.label}</button>`:''}<button class="pri" id="mGo">${btn}</button></div>`;
- $('modal').hidden=false;$('mGo').focus({preventScroll:true});$('mGo').onclick=()=>{closeModal();alt&&alt.go&&alt.go()};if(alt&&alt.label)$('mAlt').onclick=closeModal;
+ $('modal').hidden=false;$('mGo').focus({preventScroll:true});$('mGo').onclick=()=>{closeModal();alt&&alt.go&&alt.go()};if(alt&&alt.label)$('mAlt').onclick=()=>{closeModal();alt.no&&alt.no()};
 }
+/* 탈환 보고서 (FIRST_DAY 2): 같은 순간 생긴 이야기 창(군단 소개·동료 합류·주민 이벤트·칭호 상승)을 모아
+   1개면 그 창 그대로, 2개 이상이면 「탈환 보고서」 한 장. 칸마다 얼굴 + 한 줄, 대사는 「자세히 보기」로 펼침 */
+let rpBuf=[];
+function rpFace(ps){for(const p of ps)if(p.startsWith('m:')){let w=p.slice(2).split('|')[0].split('@')[0];if(NPCID[w])return'assets/portraits/portrait_'+NPCID[w]+'_idle.png'}return'assets/portraits/portrait_kael_idle.png'}
+function rpAdd(it){rpBuf.push(it);if(rpBuf.length===1)Promise.resolve().then(rpFlush)}
+function rpFlush(){const b=rpBuf;rpBuf=[];if(!b.length)return;
+ if(b.length===1){const it=b[0];queue(()=>scene(it.eb,it.th||it.t,it.p,it.btn));return}
+ queue(()=>{$('sheet').innerHTML=`<div class="eyebrow">영지 소식</div><h2>탈환 보고서</h2><div class="rpl">${b.map((it,i)=>`<div class="rpi"><img class="rpf" src="${it.face}" alt="" onerror="this.style.visibility='hidden'"><div class="rpm"><div class="rpe">${it.eb}</div><div class="rpt">${it.t}</div></div><button class="rpb" data-i="${i}">자세히 보기</button></div><div class="rpd" id="rpd${i}" hidden>${it.p.map(para).join('')}</div>`).join('')}</div><div class="acts one"><button class="pri" id="mGo">계속</button></div>`;
+  $('modal').hidden=false;$('mGo').focus({preventScroll:true});$('mGo').onclick=closeModal;
+  for(const x of $('sheet').querySelectorAll('.rpb'))x.onclick=()=>{const d=$('rpd'+x.dataset.i);d.hidden=!d.hidden;x.textContent=d.hidden?'자세히 보기':'접기';haptic(8)}})}
 /* 두 번째 은퇴부터는 다시 나오는 이야기 창(은퇴 직후·지역 이야기·칭호 상승)을 알림 한 줄로 */
 const quietStory=()=>(S.retires||0)>=2;
 /* 왕도 입장: 처음 한 번은 「왕도로 가는 길」 + 지역 소개, 그 뒤로는 알림 한 줄 */
 function capChapter(){if(S.done.capRoad){toast('왕도 아스테리온 진입 · 알현실까지 10곳');return}S.done.capRoad=true;const r=REGIONS[REGIONS.length-1];
  queue(()=>scene('다섯 군단을 몰아내다','왕도로 가는 길',['sys:다섯 군단이 모두 물러났다. 안개 너머로 왕도 아스테리온의 성벽이 보인다.','q@moved:…300년 만이다. 저 성문 안에 주인의 왕좌가 있다.','k:왕좌 말고 은퇴 서류는 없을까?','q:왕이 되면 은퇴 서류는 주인이 직접 쓰면 된다.','k@smile:…그 말, 이상하게 설득력 있네.'],'성문으로 간다'));
  queue(()=>scene('마지막 지역 · 왕도',`<img class="bossportrait demp" src="assets/portraits/portrait_baltasar_idle.png" alt="" onerror="this.remove()">`+r.n,[...r.lore,'sys:이 땅의 지배자 · '+r.boss+' · 홀수 영지는 군단장의 잔영, 짝수 영지는 마왕 근위대장'],'진격한다'))}
-function chapter(){const st=S.stage;if(isCap(st))return capChapter();if(quietStory()){const r=region(st),i=Math.floor((st-1)/10)%5;toast('제'+(i+1)+'군단 점령지 · '+r.n+' 진입');return}queue(()=>{const r=region(st),i=Math.floor((st-1)/10)%5;scene('제'+(i+1)+'군단 · 점령지',`<img class="bossportrait" src="assets/portraits/portrait_${BOSSID[i]}_idle.png" alt="" onerror="this.remove()">`+r.n,[...r.lore,'sys:이 땅의 지배자 · '+r.boss],'진격한다')})}
-function events(){for(const e of EVENTS)if(S.stage>=e.at&&!S.done[e.id]){S.done[e.id]=true;e.act();syncParty();queue(()=>scene(e.eb,e.t,e.p,e.btn))}
- const ri=rankIdx();if(ri>S.rankSeen){S.rankSeen=ri;const r=RANKS[ri],gg=ri>(S.gemRank||0);if(gg){S.gemRank=ri;S.gem=(S.gem||0)+RANK_GEM};if(quietStory())toast('칭호 상승: '+r.n+' · 능력치 +4%'+(gg?' · 황금 이삭 +'+RANK_GEM:''));else queue(()=>scene('칭호 상승',uiImg(RANKIMG[ri],'rankbig')+r.n+' 카엘',['되찾은 영지가 '+r.at+'곳에 이르자, 사람들이 카엘을 '+r.n+'(이)라고 부르기 시작했다.','k@flustered:'+r.k,'q@proud:하하! 한 걸음 더 왕좌에 가까워졌다!','sys:모든 원정대 능력치 +4%'+(gg?' · 황금 이삭 +'+RANK_GEM:'')],'…알겠어요'))}
- renderAll()}
+function chapter(){const st=S.stage;if(isCap(st))return capChapter();if(quietStory()){const r=region(st),i=Math.floor((st-1)/10)%5;toast('제'+(i+1)+'군단 점령지 · '+r.n+' 진입');return}{const r=region(st),i=Math.floor((st-1)/10)%5;rpAdd({face:'assets/portraits/portrait_'+BOSSID[i]+'_idle.png',eb:'제'+(i+1)+'군단 · 점령지',t:r.n,th:`<img class="bossportrait" src="assets/portraits/portrait_${BOSSID[i]}_idle.png" alt="" onerror="this.remove()">`+r.n,p:[...r.lore,'sys:이 땅의 지배자 · '+r.boss],btn:'진격한다'})}}
+function events(){for(const e of EVENTS)if(S.stage>=e.at&&!S.done[e.id]){S.done[e.id]=true;e.act();syncParty();rpAdd({face:rpFace(e.p),eb:e.eb,t:e.t,p:e.p,btn:e.btn})}
+ const ri=rankIdx();if(ri>S.rankSeen){S.rankSeen=ri;const r=RANKS[ri],gg=ri>(S.gemRank||0);if(gg){S.gemRank=ri;S.gem=(S.gem||0)+RANK_GEM};if(quietStory())toast('칭호 상승: '+r.n+' · 능력치 +4%'+(gg?' · 황금 이삭 +'+RANK_GEM:''));else rpAdd({face:'assets/ui/'+RANKIMG[ri]+'.png',eb:'칭호 상승',t:r.n+' 카엘',th:uiImg(RANKIMG[ri],'rankbig')+r.n+' 카엘',p:['되찾은 영지가 '+r.at+'곳에 이르자, 사람들이 카엘을 '+r.n+'(이)라고 부르기 시작했다.','k@flustered:'+r.k,'q@proud:하하! 한 걸음 더 왕좌에 가까워졌다!','sys:모든 원정대 능력치 +4%'+(gg?' · 황금 이삭 +'+RANK_GEM:'')],btn:'…알겠어요'})}
+ rpFlush();renderAll()}
 function intro(){queue(()=>scene('왕이 되는 그날까지 · 프롤로그','밭에 박힌 쇠막대',[
  '마계의 문이 열려 왕국이 무너진 날, 농부 카엘은 밭에 박힌 녹슨 쇠막대를 뽑아 마물을 막아 냈다.',
  'q@moved:…드디어 나를 뽑는 자가 나타났군. 300년 기다렸다, 주인. 이제 왕이 되러 가자.',
  'k@surprised:누구세요? 그리고 전 농부인데요.',
- 'sys:빼앗긴 영지를 되찾고, 동료를 모아 마을을 다시 세우세요.'],'일단 마을부터 지키자',null,'prologue'));chapter()}
+ 'sys:빼앗긴 영지를 되찾고, 동료를 모아 마을을 다시 세우세요.'],'일단 마을부터 지키자',null,'prologue'));chapter();rpFlush()}
 
 /* ---------- 장비 ---------- */
 function rollItem(fg){
@@ -1588,7 +1606,7 @@ function retire(p,one){
  if(extra.length&&!(quietStory()&&!sc))queue(()=>{toast(extra.join(' · '))});
  chiefCheck();
  if(rw)queue(()=>{toast(retRwText(rw))});
- if(!quietStory())chapter();renderAll()}
+ if(!quietStory())chapter();rpFlush();renderAll()}
 /* ---- 은퇴 일기 창 ---- */
 let diaryTab='tr',diaryBr='sword';
 function diaryOpen(){if(!S.diaryIntro){S.diaryIntro=1;save();closeModal();queue(()=>scene('은퇴 일기','카엘의 은퇴 일기',['sys:카엘의 서랍 깊은 곳에서 손때 묻은 일기장이 나왔다.','k@smile:은퇴할 때마다 적어 둔 거야. 다음엔 더 빨리 은퇴하려고.','q:…그 일기, 전부 싸운 이야기뿐이다만.','k:그러니까 다음엔 더 잘 싸워서 더 빨리 끝내야지.','sys:은퇴의 추억만큼 추억 포인트가 생겨요. 써도 추억 효과는 그대로예요'],'일기 펼치기',{go:()=>diarySheet()}));return}diarySheet()}
@@ -2071,7 +2089,7 @@ const rwText=r=>Object.keys(RWN).filter(k=>r[k]).map(k=>RWN[k][0]+' +'+fmt(r[k])
 const chRi=()=>!CH?0:CH.mode==='tower'?3:DUNS[CH.k].ri;/* 배경 지역: 탑은 그림이 없으면 서리 무덤을 어둡게 */
 /* 도전 해금: 영지 20 탈환 때 한 번 */
 function chCheck(){if(S.chOpen||!chCan())return;S.chOpen=1;save();
- queue(()=>scene('새로운 도전','시련의 탑',['sys:들판 끝에 오래된 석탑이 서 있다. 꼭대기가 구름에 가려 보이지 않는다.','q:시련의 탑이다. 300년 전 에르단의 왕들은 왕관을 쓰기 전에 이 탑을 올랐지.','k:꼭대기가 어디야?','q:없다. 오를수록 높아진다.','k@flustered:…그럼 은퇴는 언제 해?','m:브론|탑 말고 내 폐광도 좀 봐 줘. 요일마다 광석이 쏟아진다고.','sys:지도 탭의 「⚔ 도전」에서 시련의 탑과 요일 던전에 들어갈 수 있어요.'],'도전 보러 가기',{go:()=>chSheet()}))}
+ queue(()=>scene('새로운 도전','시련의 탑',['sys:들판 끝에 오래된 석탑이 서 있다. 꼭대기가 구름에 가려 보이지 않는다.','q:시련의 탑이다. 300년 전 에르단의 왕들은 왕관을 쓰기 전에 이 탑을 올랐지.','k:꼭대기가 어디야?','q:없다. 오를수록 높아진다.','k@flustered:…그럼 은퇴는 언제 해?','m:브론|탑 말고 내 폐광도 좀 봐 줘. 요일마다 광석이 쏟아진다고.','sys:지도 탭의 「⚔ 도전」에서 시련의 탑과 요일 던전에 들어갈 수 있어요.'],'도전 보러 가기',{label:'나중에',go:()=>chSheet(),no:()=>{if(S.dotSeen2)delete S.dotSeen2.mp;renderAll()}}))}
 const chDot=()=>!!S.chOpen&&(supplyCan()||dunLeft()>0);
 function chPartyReset(){SKX.shield=SKX.honey=SKX.feast=SKX.guts=SKX.sym=0;ULB.t=0;for(const id of members()){if(!P[id])continue;P[id].hp=stats(id).hp;P[id].down=false;P[id].bsh=0}seal=null;talk=null;holdT=0;warn=null;banner=null}
 /* 추억 속 원정대 (CHALLENGE.md 11장): 탑·던전에서는 원정대 힘을 「지금」과 「역대 최고」 중 센 쪽으로.

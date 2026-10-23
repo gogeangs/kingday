@@ -35,6 +35,7 @@ import '../screens/challenge_sheet.dart';
 import '../screens/retire_sheet.dart';
 import '../screens/social_sheets.dart';
 import '../ui/game_widgets.dart';
+import '../ui/report_sheet.dart';
 import '../ui/theme.dart';
 import '../ui/widgets.dart';
 import 'ads.dart';
@@ -557,7 +558,7 @@ class GameController extends ChangeNotifier {
 
   /// 웹 scene(eyebrow,title,paras,btn,alt,illust): 이야기 창. 대기열에 넣는다.
   void scene(String eyebrow, String title, List<String> paras, String btn,
-      {String? altLabel, VoidCallback? onGo, String? illust, String? illustFace, Widget? titleWidget, bool closable = false}) {
+      {String? altLabel, VoidCallback? onGo, VoidCallback? onAlt, String? illust, String? illustFace, Widget? titleWidget, bool closable = false}) {
     queue((ctx) => showKdSheet<void>(ctx, closable: closable, builder: (c) {
           return KdSheetBody(
             illust: illust,
@@ -567,7 +568,11 @@ class GameController extends ChangeNotifier {
             titleWidget: titleWidget,
             children: [for (final p in paras) Para(p)],
             acts: KdActs(buttons: [
-              if (altLabel != null) KdAct(altLabel, onTap: () => Navigator.of(c).pop()),
+              if (altLabel != null)
+                KdAct(altLabel, onTap: () {
+                  Navigator.of(c).pop();
+                  onAlt?.call();
+                }),
               KdAct(btn, primary: true, onTap: () {
                 Navigator.of(c).pop();
                 onGo?.call();
@@ -618,6 +623,24 @@ class GameController extends ChangeNotifier {
     for (final e in es) {
       _handle(e);
     }
+    _rpFlush();
+  }
+
+  // ── 탈환 보고서 (docs/content/FIRST_DAY.md 3-2, 웹 rpAdd/rpFlush) ──
+  final _rpBuf = <ReportItem>[];
+  void _rpAdd(ReportItem it) => _rpBuf.add(it);
+
+  /// 모인 이야기 창이 1개면 그 창 그대로, 2개 이상이면 「탈환 보고서」 한 장
+  void _rpFlush() {
+    if (_rpBuf.isEmpty) return;
+    final b = List<ReportItem>.of(_rpBuf);
+    _rpBuf.clear();
+    if (b.length == 1) {
+      final it = b.first;
+      scene(it.eb, it.t, it.p, it.btn, titleWidget: it.titleWidget);
+      return;
+    }
+    queue((ctx) => showKdSheet<void>(ctx, builder: (c) => ReportSheet(items: b, onDone: () => Navigator.of(c).pop())));
   }
 
   // ── 누르면 일어나는 일 (core/actions.dart) ──
@@ -1058,7 +1081,7 @@ class GameController extends ChangeNotifier {
         }
       case StoryEvent(:final id):
         final ev = storyEvents.firstWhere((x) => x.id == id);
-        scene(ev.eyebrow, ev.title, ev.lines, ev.button);
+        _rpAdd((face: reportFace(ev.lines), eb: ev.eyebrow, t: ev.title, p: ev.lines, btn: ev.button, titleWidget: null));
       case RankUpEvent(:final rankIdx, :final gem):
         sound('fanfare');
         final r = ranks[rankIdx];
@@ -1066,16 +1089,22 @@ class GameController extends ChangeNotifier {
           toast('칭호 상승: ${r.n} · 능력치 +4%${gem > 0 ? ' · 황금 이삭 +${fmt(gem)}' : ''}');
           return;
         }
-        scene('칭호 상승', '${r.n} 카엘', [
-          '되찾은 영지가 ${r.at}곳에 이르자, 사람들이 카엘을 ${r.n}(이)라고 부르기 시작했다.',
-          'k@flustered:${r.k ?? ''}',
-          'q@proud:하하! 한 걸음 더 왕좌에 가까워졌다!',
-          'sys:모든 원정대 능력치 +4%${gem > 0 ? ' · 황금 이삭 +${fmt(gem)}' : ''}',
-        ], '…알겠어요',
-            titleWidget: Column(children: [
-              kdImg('assets/game/ui/${rankImg[rankIdx]}.png', w: 96, h: 96),
-              Text('${r.n} 카엘', textAlign: TextAlign.center, style: const TextStyle(fontFamily: 'Hahmlet', fontSize: 22, fontWeight: FontWeight.w700)),
-            ]));
+        _rpAdd((
+          face: 'assets/game/ui/${rankImg[rankIdx]}.png',
+          eb: '칭호 상승',
+          t: '${r.n} 카엘',
+          p: [
+            '되찾은 영지가 ${r.at}곳에 이르자, 사람들이 카엘을 ${r.n}(이)라고 부르기 시작했다.',
+            'k@flustered:${r.k ?? ''}',
+            'q@proud:하하! 한 걸음 더 왕좌에 가까워졌다!',
+            'sys:모든 원정대 능력치 +4%${gem > 0 ? ' · 황금 이삭 +${fmt(gem)}' : ''}',
+          ],
+          btn: '…알겠어요',
+          titleWidget: Column(children: [
+            kdImg('assets/game/ui/${rankImg[rankIdx]}.png', w: 96, h: 96),
+            Text('${r.n} 카엘', textAlign: TextAlign.center, style: const TextStyle(fontFamily: 'Hahmlet', fontSize: 22, fontWeight: FontWeight.w700)),
+          ]),
+        ));
       case GemEvent(:final n, :final why):
         // 웹: 군단장 첫 처치 이삭은 2.3초 뒤 (「○○ 처치」 알림에 덮이지 않게) + 진동
         Timer(Duration(milliseconds: why.endsWith('첫 처치') ? 2300 : 0), () {
@@ -1132,7 +1161,11 @@ class GameController extends ChangeNotifier {
       'k@flustered:…그럼 은퇴는 언제 해?',
       'm:브론|탑 말고 내 폐광도 좀 봐 줘. 요일마다 광석이 쏟아진다고.',
       'sys:지도 탭의 「⚔ 도전」에서 시련의 탑과 요일 던전에 들어갈 수 있어요.',
-    ], '도전 보러 가기', onGo: () => openChallenge(this));
+    ], '도전 보러 가기', altLabel: '나중에', onGo: () => openChallenge(this), onAlt: () {
+      // 「나중에」: 지도 탭에 빨간 점 (웹 dotSeen2.mp 지움)
+      asMap(state.raw['dotSeen2'])?.remove('mp');
+      refresh();
+    });
   }
 
   /// 지도 탭·도전 버튼 노란 점
@@ -1294,6 +1327,7 @@ class GameController extends ChangeNotifier {
       'sys:빼앗긴 영지를 되찾고, 동료를 모아 마을을 다시 세우세요.',
     ], '일단 마을부터 지키자', illust: 'prologue');
     _chapter();
+    _rpFlush();
   }
 
   // ── 다음 할 일 안내 (웹 GUIDE.go) ──
@@ -1468,6 +1502,7 @@ class GameController extends ChangeNotifier {
     act((a) => a.chiefCheck());
     if (rw != null) queue((_) async => toast(retRwText(rw)));
     if (!_quietStory) _chapter();
+    _rpFlush();
     refresh();
   }
 
@@ -1605,11 +1640,17 @@ class GameController extends ChangeNotifier {
       toast('제${i + 1}군단 점령지 · ${r.n} 진입');
       return;
     }
-    scene('제${i + 1}군단 · 점령지', r.n, [...r.lore, 'sys:이 땅의 지배자 · ${r.boss}'], '진격한다',
-        titleWidget: Column(children: [
-          kdImg('assets/game/portraits/portrait_${bossIds[i]}_idle.png', w: 120, h: 120),
-          Text(r.n, textAlign: TextAlign.center, style: const TextStyle(fontFamily: 'Hahmlet', fontSize: 22, fontWeight: FontWeight.w700)),
-        ]));
+    _rpAdd((
+      face: 'assets/game/portraits/portrait_${bossIds[i]}_idle.png',
+      eb: '제${i + 1}군단 · 점령지',
+      t: r.n,
+      p: [...r.lore, 'sys:이 땅의 지배자 · ${r.boss}'],
+      btn: '진격한다',
+      titleWidget: Column(children: [
+        kdImg('assets/game/portraits/portrait_${bossIds[i]}_idle.png', w: 120, h: 120),
+        Text(r.n, textAlign: TextAlign.center, style: const TextStyle(fontFamily: 'Hahmlet', fontSize: 22, fontWeight: FontWeight.w700)),
+      ]),
+    ));
   }
 
   // ── 빨간 점 (웹 ptAct / dotSeen) ──
