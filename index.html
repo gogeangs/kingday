@@ -4850,7 +4850,7 @@ canvas {
   background: linear-gradient(#2a2410, #1d1a10);
   border: 1px solid #6b5420;
   border-radius: 12px;
-  padding: 8px 12px;
+  padding: 6px 12px;
   color: var(--fg);
   font: inherit;
   cursor: pointer;
@@ -4881,21 +4881,36 @@ canvas {
   background: linear-gradient(90deg, #d39a1c, #ffd96a);
 }
 .vlvbar small {
-  grid-area: m;
-  font-size: 12px;
-  color: var(--muted);
+  display: none;
 }
 .vlvbar .dot {
   position: absolute;
   top: 6px;
   right: 6px;
 }
+/* 마을 할 일 칩: 지도 안 아래쪽 가운데에 띄움 → 지도가 한 화면에 들어옴 (2026-10-23 마을 화면 정리) */
 .vtodo {
   display: flex;
   flex-wrap: wrap;
   gap: 6px;
-  margin: -4px 0;
+  position: absolute;
+  left: 8px;
+  right: 8px;
+  bottom: 8px;
+  z-index: 2;
+  justify-content: center;
+  pointer-events: none;
 } /* 360폭에서 잘리지 않게 두 줄로 (UX 점검 12) */
+.vtodo > * {
+  pointer-events: auto;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.5);
+}
+.vtodo[hidden] {
+  display: none;
+}
+.vtodo .vchip:not(.all):not(.gold) {
+  background: rgba(30, 22, 10, 0.88);
+}
 .vtodo::-webkit-scrollbar {
   display: none;
 }
@@ -6198,8 +6213,7 @@ input:focus-visible {
     <section class="page" id="p-vl" hidden>
       <div class="phead"><h2>마을</h2><button class="pclose" data-close aria-label="전투로 돌아가기">✕</button></div>
       <button class="vlvbar" id="vlvBar" aria-label="마을 레벨"></button>
-      <div class="vtodo" id="vTodo" hidden></div>
-      <div class="vmap" id="vscene"><canvas id="vc" aria-label="마을 지도. 건물을 누르면 관리 창이 열려요"></canvas></div>
+      <div class="vmap" id="vscene"><div class="vtodo" id="vTodo" hidden></div><canvas id="vc" aria-label="마을 지도. 건물을 누르면 관리 창이 열려요"></canvas></div>
       <div class="vwk" id="vWk" hidden><button class="buy ghost" id="wkMgr">🔨 일꾼 관리</button><button class="buy" id="wkRec">추천 일꾼</button></div>
       <p class="vhint">건물을 누르면 아래에 관리 창이 열려요 · 길 위 사람을 누르면 한마디</p>
     </section>
@@ -16179,7 +16193,7 @@ function drawVillage() {
     ell(px, py, 11 * k * 2.2, 3.5 * k * 2.2, 'rgba(0,0,0,.28)');
     if (!p.ppl && hasSprite(p.id)) {
       ctx.save();
-      drawSprite(p.id, px, py, Math.max(0.32, VW / 760), 'idle', fr);
+      drawSprite(p.id, px, py, Math.max(0.32, VW / 760) * (p.wk ? 0.82 : 1), 'idle', fr); /* 일꾼은 조금 작게 */
       ctx.restore();
     } else {
       const im = VIMG.p[p.id] || portraitImg(p.id),
@@ -16198,8 +16212,9 @@ function drawVillage() {
       ctx.arc(px, py - r - 2, r, 0, Math.PI * 2);
       ctx.stroke();
     }
-    if (p.wk) {
-      vPill('🔨', px, py - Math.max(30, VW * 0.1), Math.max(9, VW * 0.026), 'rgba(30,22,10,.8)', '#ffe08a');
+    /* 마르타·티모·피트(마을 사람) 얼굴 밑에 이름표. 일꾼 머리 위 🔨 표시는 없앰 (얼룩처럼 보이고 복잡해서) */
+    if (p.ppl) {
+      vPill(whoN(p.id), px, py + Math.max(8, VW * 0.022), Math.max(9, VW * 0.026), 'rgba(30,22,10,.85)', '#ffe08a');
     }
   }
   /* 이름표 · 상태 배지 */
@@ -16375,7 +16390,7 @@ function renderVillage() {
   if (sig !== vTopSig) {
     vTopSig = sig;
     $('vlvBar').innerHTML =
-      `<span class="vlvn">마을 Lv.${L}</span><span class="vlvs">방치 골드 +${2 * L}%</span><span class="vlvx"><i style="width:${nx ? Math.min(100, ((s - VLV[L - 1]) / (nx - VLV[L - 1])) * 100) : 100}%"></i></span><small>${nx ? '건물 레벨 ' + s + ' / ' + nx : '최대 레벨'}</small>${vlRw() ? '<span class="dot"></span>' : ''}`;
+      `<span class="vlvn">마을 Lv.${L}</span><span class="vlvs">방치 골드 +${2 * L}%${nx ? ' · 건물 ' + s + '/' + nx : ' · 최대'}</span><span class="vlvx"${nx ? '' : ' hidden'}><i style="width:${nx ? Math.min(100, ((s - VLV[L - 1]) / (nx - VLV[L - 1])) * 100) : 100}%"></i></span><small>${nx ? '건물 레벨 ' + s + ' / ' + nx : '최대 레벨'}</small>${vlRw() ? '<span class="dot"></span>' : ''}`;
     $('vTodo').innerHTML = td
       .map(
         (x, i) =>
