@@ -10,7 +10,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../core/data.dart';
 import '../core/profile_data.dart';
-import 'attend_sheet.dart';
 import '../game/controller.dart';
 import '../ui/fx.dart';
 import '../ui/theme.dart';
@@ -68,8 +67,7 @@ class _Hud extends StatelessWidget {
   Widget build(BuildContext context) {
     final s = g.state, ri = g.calc.rankIdx();
     // 이삭·골드 칸이 쓸 수 있는 최대 폭: 얼굴(52)·간격·이름 최소 70 을 빼고 나눔
-    final att = attEligible(g);
-    final pillMax = math.max(60.0, (math.min(480.0, MediaQuery.sizeOf(context).width) - 24 - 52 - 18 - 70 - (att ? 36 : 0)) / 2);
+    final pillMax = math.max(60.0, (math.min(480.0, MediaQuery.sizeOf(context).width) - 24 - 52 - 18 - 70) / 2);
     final badge = g.calc.curBadge();
     final frame = g.calc.curFrame();
     return Container(
@@ -159,37 +157,6 @@ class _Hud extends StatelessWidget {
           ]),
         ),
         const SizedBox(width: 6),
-        // 출석부 (1-3 이후, 오늘 안 받았으면 노란 점)
-        if (att) ...[
-          GestureDetector(
-            onTap: () => openAttend(g),
-            child: Stack(clipBehavior: Clip.none, children: [
-              Container(
-                width: 30,
-                height: 30,
-                alignment: Alignment.center,
-                decoration: BoxDecoration(color: const Color(0xFF1A1406), border: Border.all(color: const Color(0xFF8A6A1A)), borderRadius: BorderRadius.circular(9)),
-                child: kdImg('assets/game/ui/ic_attend.png', w: 25, h: 25),
-              ),
-              if (attDot(g))
-                Positioned(
-                  top: -3,
-                  right: -3,
-                  child: Container(
-                    width: 10,
-                    height: 10,
-                    decoration: BoxDecoration(
-                      color: const Color(0xFFFFD23A),
-                      shape: BoxShape.circle,
-                      border: Border.all(color: Colors.white),
-                      boxShadow: const [BoxShadow(color: Color(0xFFFFD23A), blurRadius: 6)],
-                    ),
-                  ),
-                ),
-            ]),
-          ),
-          const SizedBox(width: 6),
-        ],
         // 황금 이삭 (누르면 상점) — 숫자가 길면 좁은 폰에서 줄여 보여 줌
         _fit(pillMax, GestureDetector(
           onTap: () => g.setTab(GameTab.sh),
