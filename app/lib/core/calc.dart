@@ -476,7 +476,6 @@ class GameCalc {
     return sec / tpk * reward(fightSt(), false) * .5 * memMul() * (subOn() ? 1.5 : 1) * this.vIdle();
   }
 
-  num idleGoldPerSec() => idleGold(1);
 
   /// offline(): 게임을 꺼 둔 동안 쌓인 골드. 60초 미만이면 0.
   ({num sec, num cap, num gold}) offlineReward() {

@@ -1673,8 +1673,6 @@ class GameController extends ChangeNotifier {
     refresh();
   }
 
-  /// 단련 탭 노란 점: 찍을 수 있는 특성이 있음 (웹 trCanAny)
-  bool get upDot => calc.trCanAny();
 
   /// 은퇴 일기 열기: 처음이면 대사 먼저 (웹 diaryOpen)
   void openDiary() {
