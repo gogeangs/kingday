@@ -11,7 +11,7 @@ from playwright.async_api import async_playwright
 
 H = sys.argv[1] if len(sys.argv) > 1 else '6'
 N = int(sys.argv[2]) if len(sys.argv) > 2 else 3
-ORIG = "const primalP=L=>L<=30?0:5*(1-Math.pow(.93,L-30)),primalOn=()=>(S.retires||0)>0;"
+ORIG = "const primalP = L => (L <= 30 ? 0 : 5 * (1 - Math.pow(0.93, L - 30))),\n  primalOn = () => (S.retires || 0) > 0;"
 PLANS = {k: v for k, v in {
     '지금 (3안: Lv.31부터 + 첫 은퇴 뒤)': ORIG,
     '예전 (Lv.11부터)': 'const primalP=L=>L<=10?0:5*(1-Math.pow(.93,L-10)),primalOn=()=>true;',

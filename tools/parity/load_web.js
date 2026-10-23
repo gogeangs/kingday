@@ -42,7 +42,7 @@ function loadWeb(opts = {}) {
   const m = html.match(/<script>([\s\S]*?)<\/script>\s*<\/body>/) || html.match(/<script>([\s\S]*)<\/script>/);
   let code = m[1];
   // 맨 끝의 자동 시작 호출은 빼고, 함수·상수 정의만 남긴다
-  code = code.replace(/window\.claude\?\.hot\?\.ready\?[^\n]*\n?/, '');
+  code = code.replace(/window\.claude\?\.hot\?\.ready\s*\?[^\n]*\n?/, '');
   // let/const 로 선언된 S 를 밖에서 바꿀 수 있게 손잡이를 단다
   code += '\n;globalThis.__setS=v=>{S=v};globalThis.__getS=()=>S;';
 

@@ -26,8 +26,8 @@ DUMP = r"""() => {
  const out={};const props=window.__props||(window.__props=[...getComputedStyle(document.body)].sort());
  const path=e=>{const a=[];for(let x=e;x&&x.nodeType===1&&x!==document.documentElement;x=x.parentElement){let i=0;for(let y=x;(y=y.previousElementSibling);)i++;a.unshift(x.tagName.toLowerCase()+(x.id?'#'+x.id:'')+':'+i)}return a.join('>')};
  for(const e of document.querySelectorAll('body *')){if(e.closest('script,style')||!e.getClientRects().length||(e.parentElement===document.body&&e.tagName==='I')||e.id==='toast'||e.closest('#acctBox'))continue;const cs=getComputedStyle(e);
-  let v=props.map(p=>cs.getPropertyValue(p)).join('\u0001');
-  for(const pe of ['::before','::after']){const c=getComputedStyle(e,pe);if(c.content&&c.content!=='none'&&c.content!=='normal')v+='\u0002'+pe+props.map(p=>c.getPropertyValue(p)).join('\u0001')}
+  const nv=(p,x)=>p.startsWith('--')?x.replace(/\s+/g,'').replace(/'/g,'"'):x;let v=props.map(p=>nv(p,cs.getPropertyValue(p))).join('\u0001');
+  for(const pe of ['::before','::after']){const c=getComputedStyle(e,pe);if(c.content&&c.content!=='none'&&c.content!=='normal')v+='\u0002'+pe+props.map(p=>nv(p,c.getPropertyValue(p))).join('\u0001')}
   out[path(e)]=v+'\u0003'+(e.children.length?'':(e.textContent||'').trim().slice(0,200))}
  return out}"""
 
