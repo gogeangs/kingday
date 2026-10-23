@@ -647,6 +647,30 @@ body {
   overflow-y: auto;
   overscroll-behavior: contain;
 }
+.crag small {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  font-size: 13px;
+  font-weight: 700;
+}
+.crag small img {
+  width: 16px;
+  height: 16px;
+}
+.crall {
+  align-self: center;
+  font: inherit;
+  font-size: 13px;
+  color: var(--fg);
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 7px 16px;
+  min-height: 34px;
+  cursor: pointer;
+}
 .crgold {
   display: flex;
   align-items: center;
@@ -7075,7 +7099,8 @@ function seatSheet(j) {
 /* 카드 개봉 창: 이번에 받은 카드와 진행 상황 */
 /* 카드 결과 창 (C-1): 줄 높이는 내용에 맞춤 · 카드가 하나씩 뒤집힘(영웅·전설은 뒤집기 전부터 빛이 샘) · 「모두 뒤집기」
    · 맨 위 요약 + 합류·★ 올리기 가능한 동료를 맨 위로(금테) · 줄마다 「합류하기」「★ 올리기」 */
-function cardReveal(list, title, gold, keep) {
+/* again: 상점에서 산 카드면 { gem, go } — 「또 뽑기」 버튼(가격 보이게, 확인 창 없음) */
+function cardReveal(list, title, gold, keep, again) {
   const m = {};
   for (const [id, n] of list) m[id] = (m[id] || 0) + n;
   const canOf = id => {
@@ -7106,21 +7131,29 @@ function cardReveal(list, title, gold, keep) {
    })
    .join(
      ''
-   )}</div>${gold ? `<div class="crgold"><img src="assets/ui/ui_gold.png" alt=""> 별을 다 채운 동료 카드 → 골드 <b>+${fmt(gold)}</b></div>` : ''}
- <div class="acts">${flip && ids.length > 1 ? '<button id="crAll">모두 뒤집기</button>' : '<button id="mX">닫기</button>'}<button class="pri" id="mGo">원정대에서 보기</button></div>`;
+   )}</div>${flip && ids.length > 1 ? '<button class="crall" id="crAll">모두 뒤집기</button>' : ''}${gold ? `<div class="crgold"><img src="assets/ui/ui_gold.png" alt=""> 별을 다 채운 동료 카드 → 골드 <b>+${fmt(gold)}</b></div>` : ''}
+ <div class="acts">${
+   again
+     ? `<button id="mX" hidden>닫기</button><button id="mGo">원정대에서 보기</button><button class="pri crag" id="crAgain">또 뽑기<small><img src="assets/gem/ui_gem.png" alt="" onerror="this.remove()">${again.gem}</small></button>`
+     : '<button id="mX">닫기</button><button class="pri" id="mGo">원정대에서 보기</button>'
+ }</div>`;
   $('modal').hidden = false;
   ids.forEach(id => faceTo($('rv-' + id), id));
   const x = $('mX');
   if (x) x.onclick = closeModal;
+  /* 모두 뒤집기: 카드 밑 작은 버튼. 누르거나 다 뒤집히면 사라짐 (아래 버튼 줄은 늘 같은 모양) */
   const fa = $('crAll');
-  if (fa)
+  if (fa) {
     fa.onclick = () => {
       $('sheet')
         .querySelectorAll('.crc,.cbk')
         .forEach(e => (e.style.animationDelay = '0s'));
-      fa.outerHTML = '<button id="mX">닫기</button>';
-      $('mX').onclick = closeModal;
+      fa.remove();
     };
+    setTimeout(() => fa.isConnected && fa.remove(), (0.95 + ids.length * 0.35) * 1000);
+  }
+  const ag = $('crAgain');
+  if (ag) ag.onclick = () => again.go();
   $('sheet')
     .querySelectorAll('[data-rup]')
     .forEach(
@@ -7133,7 +7166,7 @@ function cardReveal(list, title, gold, keep) {
             closeModal();
             return;
           }
-          cardReveal(list, title, gold, true);
+          cardReveal(list, title, gold, true, again);
         })
     );
   $('mGo').onclick = () => {
@@ -8365,6 +8398,15 @@ const CARDPK = [
   { n: 3, gem: 30 },
   { n: 30, gem: 270 }
 ];
+/* 동료 카드 묶음 사기 (상점 · 결과 창 「또 뽑기」) */
+function buyCardPack(c) {
+  if (!CARDIDS().some(x => cardOpen(x) && recStar(x) < starMax(x))) return toast('모을 수 있는 동료 카드가 없어요');
+  if (!spendGem(c.gem)) return;
+  const r = gainCards(c.n, 'shop', c.n >= 30 ? 5 : 1) || { got: [], gold: 0 };
+  shopSig = '';
+  renderAll();
+  cardReveal(r.got, '카드 ' + c.n + '장', r.gold, false, { gem: c.gem, go: () => buyCardPack(c) });
+}
 function renderShop() {
   if (curTab !== 'sh') return;
   const d = daily();
@@ -8500,13 +8542,7 @@ function renderShop() {
   sh.querySelectorAll('[data-cp]').forEach(
     b =>
       (b.onclick = () => {
-        const c = CARDPK[+b.dataset.cp];
-        if (!CARDIDS().some(x => cardOpen(x) && recStar(x) < starMax(x))) return toast('모을 수 있는 동료 카드가 없어요');
-        if (!spendGem(c.gem)) return;
-        const r = gainCards(c.n, 'shop', c.n >= 30 ? 5 : 1) || { got: [], gold: 0 };
-        shopSig = '';
-        renderAll();
-        cardReveal(r.got, '카드 ' + c.n + '장', r.gold);
+        buyCardPack(CARDPK[+b.dataset.cp]);
       })
   );
   sh.querySelectorAll('[data-gx]').forEach(b => (b.onclick = () => buyGoldX(b.dataset.gx)));

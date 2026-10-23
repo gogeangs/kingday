@@ -592,9 +592,9 @@ class GameController extends ChangeNotifier {
             'q@proud:주인, 이걸 받아라. 성검이 축복한 황금 이삭이다. 이삭을 내면 마을 사람들이 힘을 내서 공사를 바로 끝낸다.',
             'sys:황금 이삭 $tutGem개를 선물로 받았어요. 공사 중인 건물의 파란 "바로 완료" 버튼을 누르면 이삭으로 공사를 끝낼 수 있어요. 공사 중에도 다른 건물을 $buildQueueMax개까지 예약해 두면 차례로 지어져요.',
           ], '이삭으로 바로 완료', altLabel: '그냥 기다릴래요', onGo: () => act((a) => a.finishByGem()));
-        case ActCardReveal(:final got, :final title, :final gold):
+        case ActCardReveal(:final got, :final title, :final gold, :final again):
           sound('gem');
-          queue((ctx) => showCardReveal(ctx, this, got, title, gold: gold));
+          queue((ctx) => showCardReveal(ctx, this, got, title, gold: gold, again: again));
         case ActLaterToast(:final msg, :final ms):
           Timer(Duration(milliseconds: ms), () => toast(msg));
         case ActStarter(:final it, :final cur):
