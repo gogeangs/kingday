@@ -315,6 +315,26 @@ class GameActions {
   /// 단련 탭 「추천」 배지 = 길잡이와 같은 줄 (calc.upBest)
   String? bestUpgrade() => c.upBest();
 
+  /// 지금 골드로 살 수 있는 것 중 비용 대비 전투력이 가장 많이 오르는 단련 (긴 플레이 시험의 웹 봇과 같은 고르기)
+  String? bestBuyable() {
+    final p0 = c.power();
+    String? best;
+    num bv = 0;
+    for (final u in upgrades) {
+      final l = s.upLv(u.k);
+      final cost = c.upgradeCost(u.k, l);
+      if (l >= u.max || s.gold < cost) continue;
+      s.up[u.k] = l + 1;
+      final g = (c.power() - p0) / cost;
+      s.up[u.k] = l;
+      if (g > bv) {
+        bv = g;
+        best = u.k;
+      }
+    }
+    return best;
+  }
+
   // ════════════════════ 원정대 ════════════════════
   /// 동료 레벨업 (웹 lv-<id>): 전투 중 체력도 늘어난 만큼 더해 줌
   bool levelUp(String id) {
