@@ -8111,8 +8111,8 @@ const isObj = v => !!v && typeof v === 'object' && !Array.isArray(v);
 const okVal = (fv, dv) =>
   typeof fv === 'number' ? typeof dv === 'number' && isFinite(dv) : isObj(fv) ? isObj(dv) : Array.isArray(fv) ? Array.isArray(dv) : dv != null;
 const badNum = v => typeof v === 'number' && !isFinite(v);
-/* 저장처럼 보이는지 (골드가 깨져도 다른 기록은 살림) */
-const isSave = d => isObj(d) && (typeof d.gold === 'number' || 'stage' in d || 'started' in d);
+/* 저장처럼 보이는지: 골드 칸이 있으면 (값이 깨져 null 이어도 다른 기록은 살림) */
+const isSave = d => isObj(d) && 'gold' in d;
 function hydrate(d) {
   const f = fresh();
   for (const k in d) {

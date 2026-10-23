@@ -144,8 +144,8 @@ class GameState {
 
   static bool _badNum(Object? v) => v is num && !v.isFinite;
 
-  /// 웹 isSave(d): 저장처럼 보이는지 (골드가 깨져도 다른 기록은 살림)
-  static bool looksLikeSave(Object? d) => d is Map && (d['gold'] is num || d.containsKey('stage') || d.containsKey('started'));
+  /// 웹 isSave(d): 저장처럼 보이는지 — 골드 칸이 있으면 (값이 깨져 null 이어도 다른 기록은 살림)
+  static bool looksLikeSave(Object? d) => d is Map && d.containsKey('gold');
 
   /// 처음 시작하는 게임 (웹 start(): hydrate({gold:60}))
   static GameState newGame(int now, int Function(GameState) rankIdx) => hydrate({'gold': 60}, now, rankIdx);
