@@ -1025,6 +1025,8 @@ class _CardRevealState extends State<_CardReveal> with SingleTickerProviderState
               style: KdText.body(13),
             ),
           ),
+        if (_ids.length > 1 && _ac.value < 1)
+          Center(child: KdBuy(text: '모두 뒤집기', kind: BuyKind.ghost, small: true, minWidth: 0, onTap: _flipAll)),
         for (final (i, id) in _ids.indexed)
           AnimatedBuilder(
             animation: _ac,
@@ -1106,10 +1108,7 @@ class _CardRevealState extends State<_CardReveal> with SingleTickerProviderState
           ]),
       ],
       acts: KdActs(buttons: [
-        if (_ids.length > 1 && _ac.value < 1)
-          KdAct('모두 뒤집기', onTap: _flipAll)
-        else
-          KdAct('닫기', onTap: () => Navigator.of(context).pop()),
+        KdAct('닫기', onTap: () => Navigator.of(context).pop()),
         KdAct('원정대에서 보기', primary: true, onTap: () {
           Navigator.of(context).pop();
           g.state.raw['ptTab'] = 'card';

@@ -34,7 +34,7 @@ class KdText {
       TextStyle(fontFamily: KdFonts.display, fontSize: size, fontWeight: weight, color: color, height: 1.25);
 
   static TextStyle body(double size, {Color color = KdColors.fg, FontWeight weight = FontWeight.w400, double height = 1.4}) =>
-      TextStyle(fontFamily: KdFonts.body, fontSize: color == KdColors.muted ? mutedSize(size) : size, fontWeight: weight, color: color, height: height);
+      TextStyle(fontFamily: KdFonts.body, fontSize: size, fontWeight: weight, color: color, height: height);
 
   /// 회색 보조 글자 최소 크기 (웹과 같게: 11.5~12 → 12.5, 그보다 작으면 +1)
   static double mutedSize(double size) => size >= 12.5 ? size : size >= 11.5 ? 12.5 : size + 1;
