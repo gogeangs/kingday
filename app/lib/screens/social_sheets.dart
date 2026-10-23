@@ -915,29 +915,129 @@ Future<void> showResultSheet(BuildContext ctx, GameController g, {required int n
           ]),
         ));
 
-// ════════════════════ 카드 공개 (웹 cardReveal) ════════════════════
+// ════════════════════ 카드 공개 (웹 cardReveal, C-1) ════════════════════
+/// 줄 높이는 내용에 맞춤 · 카드가 하나씩 뒤집힘(영웅·전설은 뒤집기 전부터 빛이 샘) · 「모두 뒤집기」
+/// · 맨 위 요약 + 합류·★ 올리기 가능한 동료를 맨 위로(금테) · 줄마다 「합류하기」「★ 올리기」
 Future<void> showCardReveal(BuildContext ctx, GameController g, List<(String, int)> list, String title, {num gold = 0}) {
   final m = <String, int>{};
   for (final (id, n) in list) {
     m[id] = (m[id] ?? 0) + n;
   }
-  final ids = m.keys.toList()..sort((a, b) => GameCalc.gr(a).w.compareTo(GameCalc.gr(b).w));
-  if (ids.isEmpty) {
+  if (m.isEmpty) {
     if (gold > 0) g.toast('동료 카드 → 골드 +${fmt(gold)} (별을 다 채운 동료)');
     return Future.value();
   }
-  final best = ids.first, c = g.calc;
-  return showKdSheet<void>(ctx, builder: (sc) => KdSheetBody(
-        eyebrow: title,
-        eyebrowColor: compColor(best),
-        title: '카드를 받았어요!',
-        children: [
-          for (final id in ids)
-            Builder(builder: (_) {
-              final st = c.recStar(id), mx = st >= c.starMax(id), n = orNum(c.s.cardsW[id], 0).toInt(), need = c.starNeed(id) ?? 1, can = !mx && n >= need;
-              return Container(
+  return showKdSheet<void>(ctx, builder: (sc) => _CardReveal(g, m, title, gold));
+}
+
+class _CardReveal extends StatefulWidget {
+  const _CardReveal(this.g, this.m, this.title, this.gold);
+  final GameController g;
+  final Map<String, int> m;
+  final String title;
+  final num gold;
+
+  @override
+  State<_CardReveal> createState() => _CardRevealState();
+}
+
+class _CardRevealState extends State<_CardReveal> with SingleTickerProviderStateMixin {
+  late final List<String> _ids;
+
+  /// 전체 시간 하나로 줄마다 0.35초씩 늦게 0.45초 동안 뒤집음 (타이머 없이)
+  late final AnimationController _ac;
+  int get _totalMs => 350 + _ids.length * 350 + 450;
+  double _t(int i) => ((_ac.value * _totalMs - (350 + i * 350)) / 450).clamp(0.0, 1.0);
+
+  bool _can(String id) {
+    final c = widget.g.calc;
+    final need = c.starNeed(id);
+    return c.recStar(id) < c.starMax(id) && need != null && orNum(c.s.cardsW[id], 0) >= need;
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _ids = stableSorted(widget.m.keys, (a, b) {
+      final d = (_can(b) ? 1 : 0) - (_can(a) ? 1 : 0);
+      return d != 0 ? d : GameCalc.gr(a).w.compareTo(GameCalc.gr(b).w);
+    });
+    _ac = AnimationController(vsync: this, duration: Duration(milliseconds: _totalMs));
+    final reduce = WidgetsBinding.instance.platformDispatcher.accessibilityFeatures.disableAnimations;
+    if (reduce) {
+      _ac.value = 1;
+    } else {
+      _ac.forward();
+    }
+    _ac.addStatusListener((_) {
+      if (mounted) setState(() {});
+    });
+  }
+
+  @override
+  void dispose() {
+    _ac.dispose();
+    super.dispose();
+  }
+
+  void _flipAll() => setState(() => _ac.value = 1);
+
+  Widget _back(String id) {
+    final gk = gradeOf[id];
+    final glow = gk == 'legend'
+        ? const Color(0xB3FFC23A)
+        : gk == 'epic'
+            ? const Color(0x99B07BFF)
+            : null;
+    return Container(
+      alignment: Alignment.center,
+      decoration: BoxDecoration(
+        gradient: const LinearGradient(colors: [Color(0xFF1B2246), Color(0xFF121833)], begin: Alignment.topLeft, end: Alignment.bottomRight),
+        borderRadius: BorderRadius.circular(12),
+        boxShadow: glow == null ? null : [BoxShadow(color: glow, blurRadius: 14, spreadRadius: 1)],
+        border: glow == null ? null : Border.all(color: glow, width: 2),
+      ),
+      child: kdImg('assets/game/ui/card_back.png', h: 70),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final g = widget.g, c = g.calc, m = widget.m;
+    final jn = _ids.where((id) => _can(id) && c.recStar(id) == 0).length, un = _ids.where((id) => _can(id) && c.recStar(id) > 0).length;
+    final best = _ids.first;
+    return KdSheetBody(
+      eyebrow: widget.title,
+      eyebrowColor: compColor(best),
+      title: '카드를 받았어요!',
+      children: [
+        if (jn + un > 0)
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+            decoration: BoxDecoration(color: const Color(0x1FFFC94A), border: Border.all(color: const Color(0x66FFC94A)), borderRadius: BorderRadius.circular(10)),
+            child: Text.rich(
+              TextSpan(children: [
+                if (jn > 0) ...[const TextSpan(text: '합류 가능 '), TextSpan(text: '$jn명', style: const TextStyle(color: KdColors.gold, fontWeight: FontWeight.w700))],
+                if (jn > 0 && un > 0) const TextSpan(text: ' · '),
+                if (un > 0) ...[const TextSpan(text: '★ 올리기 가능 '), TextSpan(text: '$un명', style: const TextStyle(color: KdColors.gold, fontWeight: FontWeight.w700))],
+              ]),
+              textAlign: TextAlign.center,
+              style: KdText.body(13),
+            ),
+          ),
+        for (final (i, id) in _ids.indexed)
+          AnimatedBuilder(
+            animation: _ac,
+            builder: (_, __) {
+              final t = _t(i);
+              final st = c.recStar(id), mx = st >= c.starMax(id), n = orNum(c.s.cardsW[id], 0).toInt(), need = c.starNeed(id) ?? 1, can = _can(id);
+              final row = Container(
                 padding: const EdgeInsets.all(8),
-                decoration: BoxDecoration(color: KdColors.panel2, borderRadius: BorderRadius.circular(12), border: Border.all(color: compColor(id))),
+                decoration: BoxDecoration(
+                  color: KdColors.panel2,
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: can ? KdColors.gold : compColor(id), width: can ? 2 : 1),
+                ),
                 child: Row(children: [
                   Stack(clipBehavior: Clip.none, children: [
                     CompFrame(id, w: 50, h: 60),
@@ -961,35 +1061,63 @@ Future<void> showCardReveal(BuildContext ctx, GameController g, List<(String, in
                       else ...[
                         const SizedBox(height: 3),
                         XpBar(math.min(1, n / need).toDouble()),
-                        Text.rich(TextSpan(children: [
-                          TextSpan(text: '$n / $need'),
-                          if (can) TextSpan(text: ' · ${st > 0 ? '★ 올리기 가능!' : '맞이하기 가능!'}', style: const TextStyle(color: KdColors.good, fontWeight: FontWeight.w600)),
-                        ]), style: _muted(12)),
+                        Text('$n / $need', style: _muted(12)),
                       ],
                     ]),
                   ),
+                  if (can) ...[
+                    const SizedBox(width: 6),
+                    KdBuy(
+                      text: st > 0 ? '★ 올리기' : '합류하기',
+                      small: true,
+                      glow: true,
+                      minWidth: 0,
+                      onTap: () {
+                        final first = st == 0;
+                        g.act((a) => a.recruitUp(id));
+                        if (first) {
+                          Navigator.of(context).pop();
+                        } else {
+                          setState(() {});
+                        }
+                      },
+                    ),
+                  ],
                 ]),
               );
-            }),
-          if (gold > 0)
-            Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-              uiImg('ui_gold', size: 20),
-              const SizedBox(width: 6),
-              Text.rich(TextSpan(children: [
-                const TextSpan(text: '별을 다 채운 동료 카드 → 골드 '),
-                TextSpan(text: '+${fmt(gold)}', style: const TextStyle(color: KdColors.gold, fontWeight: FontWeight.w700)),
-              ]), style: _muted(13)),
-            ]),
-        ],
-        acts: KdActs(buttons: [
-          KdAct('닫기', onTap: () => Navigator.of(sc).pop()),
-          KdAct('원정대에서 보기', primary: true, onTap: () {
-            Navigator.of(sc).pop();
-            g.state.raw['ptTab'] = 'card';
-            g.setTab(GameTab.pt);
-          }),
-        ]),
-      ));
+              // 앞 절반: 카드 뒷면이 접히고, 뒤 절반: 내용이 펼쳐짐 (웹 cbkout rotateY)
+              if (t >= 1) return row;
+              final front = t >= .6;
+              final k = front ? ((t - .6) / .4) : 1 - t / .6;
+              return Stack(children: [
+                Opacity(opacity: front ? 1 : 0, child: row),
+                if (!front) Positioned.fill(child: Transform(alignment: Alignment.center, transform: Matrix4.diagonal3Values(k.clamp(0.0, 1.0), 1, 1), child: _back(id))),
+              ]);
+            },
+          ),
+        if (widget.gold > 0)
+          Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+            uiImg('ui_gold', size: 20),
+            const SizedBox(width: 6),
+            Text.rich(TextSpan(children: [
+              const TextSpan(text: '별을 다 채운 동료 카드 → 골드 '),
+              TextSpan(text: '+${fmt(widget.gold)}', style: const TextStyle(color: KdColors.gold, fontWeight: FontWeight.w700)),
+            ]), style: _muted(13)),
+          ]),
+      ],
+      acts: KdActs(buttons: [
+        if (_ids.length > 1 && _ac.value < 1)
+          KdAct('모두 뒤집기', onTap: _flipAll)
+        else
+          KdAct('닫기', onTap: () => Navigator.of(context).pop()),
+        KdAct('원정대에서 보기', primary: true, onTap: () {
+          Navigator.of(context).pop();
+          g.state.raw['ptTab'] = 'card';
+          g.setTab(GameTab.pt);
+        }),
+      ]),
+    );
+  }
 }
 
 // ════════════════════ 황금 고블린 아주 드문 전리품 (웹 gobRare 창) ════════════════════
