@@ -66,7 +66,7 @@ class _ReportSheetState extends State<ReportSheet> {
               onTap: news ? () => setState(() => on ? _open.remove(i) : _open.add(i)) : null,
               child: Column(crossAxisAlignment: CrossAxisAlignment.start, mainAxisSize: MainAxisSize.min, children: [
                 Text(it.eb, maxLines: 1, overflow: TextOverflow.ellipsis, style: KdText.body(11, color: KdColors.gold)),
-                Text(news ? '${it.t} ▾' : it.t, maxLines: 1, overflow: TextOverflow.ellipsis, style: KdText.display(14)),
+                Text(news ? '${it.t} ▾' : it.t, maxLines: 2, overflow: TextOverflow.ellipsis, style: KdText.display(14)),
               ]),
             ),
           ),

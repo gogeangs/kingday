@@ -83,11 +83,13 @@ def snap(page_file, out):
                 pg.on('pageerror', lambda e: errs.append(str(e)))
                 pg.add_init_script(INIT)
                 pg.goto(f'http://localhost:8765/{page_file}?rc')
-                pg.evaluate("s=>{localStorage.setItem('acorn-idle-v1',JSON.stringify(s))}", dict(SAVES[name], started=True))
+                # noSave 먼저: 안 그러면 새로고침할 때 지금(새 게임) 상태가 넣은 저장을 덮어씀
+                pg.evaluate("s=>{noSave=true;localStorage.setItem('acorn-idle-v1',JSON.stringify(s))}", dict(SAVES[name], started=True))
                 pg.reload()
                 pg.wait_for_timeout(1200)
                 pg.evaluate("()=>{noSave=true;document.getElementById('startBtn').click();sceneQ.length=0;closeModal()}")
                 pg.wait_for_timeout(300)
+                res[f'{name}@{w}/__stage'] = pg.evaluate('()=>[S.stage,S.best]')  # 저장이 실제로 들어갔는지
                 for step, js in STEPS:
                     try:
                         pg.evaluate(js)
@@ -111,7 +113,7 @@ def diff(a, b):
     PROPS[:] = A.get('__props', [])
     bad = 0
     for k in A:
-        if k == '__props':
+        if k == '__props' or k.endswith('__stage'):
             continue
         if k.endswith('__errors'):
             if A[k] != B.get(k):

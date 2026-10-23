@@ -380,7 +380,7 @@ class PtPage extends StatelessWidget {
             ? '${ranks[c.rankIdx()].n} · 원정대 전투력 ${fmt(c.power())}'
             : '${on ? '출전' : c.working()[id] != null ? '🔨 ${buildingDef(c.working()[id]!).n}' : '대기'} · Lv.$lv · 전투력 ${fmt(c.cPow(id))}',
         right: id == 'kael'
-            ? KdBuy(text: '장비', kind: BuyKind.ghost, small: true, minWidth: 74, onTap: () => g.setTab(GameTab.eq))
+            ? KdBuy(text: '장비', kind: BuyKind.ghost, small: true, minWidth: 0, onTap: () => g.setTab(GameTab.eq))
             : on
                 ? KdBuy(
                     label: 'Lv↑',
@@ -412,7 +412,8 @@ class PtPage extends StatelessWidget {
               child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                 title,
                 const SizedBox(height: 2),
-                Text(sub, maxLines: 1, overflow: TextOverflow.ellipsis, style: KdText.body(12, color: KdColors.muted)),
+                // 웹 .crow small: 좁은 폭에서도 숫자가 잘리지 않게 두 줄까지
+                Text(sub, maxLines: 2, overflow: TextOverflow.ellipsis, style: KdText.body(12, color: KdColors.muted)),
               ]),
             ),
             if (right != null) ...[const SizedBox(width: 8), right],
