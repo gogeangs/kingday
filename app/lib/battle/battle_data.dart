@@ -94,7 +94,6 @@ final num gobRareBadge = _n(wGobRare['badge']), gobRareFrame = _n(wGobRare['fram
 /// 지역 번호 → 배경 그림 이름, 꽉 찬 배경 여부
 final Map<int, String> bgImage = {for (final e in wBgImg.entries) int.parse(e.key): e.value};
 final Set<String> bgFull = {for (final e in wBgFull.entries) if (e.value == true) e.key};
-final List<String> decoKinds = wDeco.cast<String>();
 
 /// 웹 코드 그림의 키(HEIGHT). 스프라이트가 있으면 시트의 h 를 씀
 num heightOf(String id) => charSheets[id]?.h ?? 66;

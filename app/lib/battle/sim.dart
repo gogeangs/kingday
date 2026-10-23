@@ -326,7 +326,6 @@ class BattleSim {
 
   // ───────────── 도전 (웹 CH) ─────────────
   ChState? ch;
-  String get fightMode => ch?.mode ?? 'field';
 
   /// 시련 규칙 「회복 금지」면 회복 효과 0 (웹 healOk)
   bool healOk() => !(ch != null && ch!.mode == 'tower' && ch!.info!.rule == 0);

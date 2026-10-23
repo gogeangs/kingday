@@ -90,7 +90,6 @@ final List<String> jobSlots = wJslot.cast<String>();
 /// 직업 → 이야기 동료
 final Map<String, String> storyOf = wStory.cast<String, String>();
 final List<String> partyOrder = wOrder.cast<String>();
-final Map<String, num> spriteHeight = wHeight.cast<String, num>();
 
 class RecruitDef {
   RecruitDef._(this.id, Map<String, dynamic> m)
@@ -104,7 +103,6 @@ final Map<String, RecruitDef> recruits = {
   for (final e in wRecruits.entries) e.key: RecruitDef._(e.key, _m(e.value))
 };
 
-final List<num> starNeedLegacy = wStarNeed.cast<num>();
 final List<num> starMulTable = wStarMul.cast<num>();
 
 /// 동료 → 등급 키 (common·rare·epic·legend)

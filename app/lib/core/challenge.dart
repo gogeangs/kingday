@@ -188,7 +188,6 @@ extension ChallengeCalc on GameCalc {
   int dunMs() => math.max(1, bestLand() - 3);
   Map<String, dynamic> _star(String k) => asMap(asMap(dunS['star'])![k])!;
   int dunStar(String k, int l) => orNum(_star(k)['$l'], 0).toInt();
-  int dunBest(String k) => _star(k).values.fold<int>(0, (a, v) => math.max(a, orNum(v, 0).toInt()));
 
   /// 소탕: 지금 단계 이상에서 ★3을 받은 적이 있으면 지금 단계 ★3 보상
   bool sweepOk(String k) => _star(k).entries.any((e) => orNum(e.value, 0) >= 3 && (int.tryParse(e.key) ?? 0) >= dunL());
