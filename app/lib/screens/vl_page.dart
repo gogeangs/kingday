@@ -101,18 +101,23 @@ class VlPage extends StatelessWidget {
     final c = g.calc, todos = g.vTodos();
     return Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
       _LvBar(g),
-      if (todos.isNotEmpty) ...[
-        const SizedBox(height: 8),
-        // 좁은 폭에서 잘리지 않게 줄바꿈 (웹 .vtodo flex-wrap, UX 점검 12)
-        Wrap(runSpacing: 6, children: [
-          for (final (k, t, go) in todos) ...[
-            _Chip(t, gold: k == 'lv', onTap: go),
-            if (k == 'farm') _Chip('모두 수확', all: true, onTap: () => g.act((a) => a.harvestReplant())),
-          ],
-        ]),
-      ],
       const SizedBox(height: 10),
-      VillageMap(g),
+      // 할 일 칩은 지도 안 아래쪽 가운데에 띄움 → 지도가 한 화면에 들어옴 (웹 .vtodo, 2026-10-23 마을 화면 정리)
+      Stack(children: [
+        VillageMap(g),
+        if (todos.isNotEmpty)
+          Positioned(
+            left: 8,
+            right: 8,
+            bottom: 8,
+            child: Wrap(alignment: WrapAlignment.center, runSpacing: 6, children: [
+              for (final (k, t, go) in todos) ...[
+                _Chip(t, gold: k == 'lv', onTap: go),
+                if (k == 'farm') _Chip('모두 수확', all: true, onTap: () => g.act((a) => a.harvestReplant())),
+              ],
+            ]),
+          ),
+      ]),
       if (c.wkOpen()) ...[
         const SizedBox(height: 10),
         Row(children: [
@@ -143,12 +148,13 @@ class _Chip extends StatelessWidget {
   Widget build(BuildContext context) => GestureDetector(
         onTap: onTap,
         child: Container(
-          margin: const EdgeInsets.only(right: 6),
+          margin: const EdgeInsets.symmetric(horizontal: 3),
           padding: const EdgeInsets.symmetric(horizontal: 11, vertical: 6),
           decoration: BoxDecoration(
-            color: all ? KdColors.gold : gold ? const Color(0xFFE8B43A) : const Color(0x1FFFC94A),
+            color: all ? KdColors.gold : gold ? const Color(0xFFE8B43A) : const Color(0xE01E160A),
             border: Border.all(color: all || gold ? KdColors.gold : const Color(0x73FFC94A)),
             borderRadius: BorderRadius.circular(16),
+            boxShadow: const [BoxShadow(color: Color(0x80000000), blurRadius: 6, offset: Offset(0, 2))],
           ),
           child: Text(t, style: KdText.body(12.5, weight: FontWeight.w700, color: all || gold ? KdColors.goldInk : const Color(0xFFFFE6A8))),
         ),
@@ -167,7 +173,7 @@ class _LvBar extends StatelessWidget {
     return GestureDetector(
       onTap: () => showVlSheet(g),
       child: Container(
-        padding: const EdgeInsets.fromLTRB(12, 8, 12, 8),
+        padding: const EdgeInsets.fromLTRB(12, 6, 12, 6),
         decoration: BoxDecoration(
           gradient: const LinearGradient(colors: [Color(0xFF2A2410), Color(0xFF1D1A10)], begin: Alignment.topCenter, end: Alignment.bottomCenter),
           border: Border.all(color: const Color(0xFF6B5420)),
@@ -178,12 +184,10 @@ class _LvBar extends StatelessWidget {
             Row(children: [
               Text('마을 Lv.$l', style: KdText.display(15, color: KdColors.gold)),
               const Spacer(),
-              Text('방치 골드 +${2 * l}%', style: KdText.body(12.5, color: const Color(0xFFE9DCB8))),
+              Text('방치 골드 +${2 * l}%${nx != null ? ' · 건물 $s/$nx' : ' · 최대'}', style: KdText.body(12.5, color: const Color(0xFFE9DCB8))),
             ]),
-            const SizedBox(height: 4),
-            XpBar(ratio, height: 7, bg: const Color(0x1AFFFFFF)),
-            const SizedBox(height: 3),
-            Text(nx != null ? '건물 레벨 $s / $nx' : '최대 레벨', style: KdText.body(11, color: KdColors.muted)),
+            // 마을 Lv 막대 한 줄 (최대면 막대 숨김) — 웹 마을 화면 정리
+            if (nx != null) ...[const SizedBox(height: 4), XpBar(ratio, height: 7, bg: const Color(0x1AFFFFFF))],
           ]),
           if (c.vlRw()) const Positioned(top: -4, right: -6, child: KdRedDot()),
         ]),
@@ -327,7 +331,8 @@ class _MapPainter extends CustomPainter {
       c.drawOval(Rect.fromCenter(center: Offset(px, py), width: 48 * k, height: 15 * k), Paint()..color = const Color(0x47000000));
       final sheet = charSheets[p.id], spr = p.ppl ? null : ImageStore.get('assets/game/characters/${p.id}_idle.png');
       if (sheet != null && spr != null) {
-        final s0 = math.max(.32, vw / 760), kk = (66 * s0 / sprFig).toDouble(), n = sheet.frames('idle'), cw = spr.width / n;
+        // 일꾼은 조금 작게 (웹 마을 화면 정리)
+        final s0 = math.max(.32, vw / 760) * (p.wk != null ? .82 : 1), kk = (66 * s0 / sprFig).toDouble(), n = sheet.frames('idle'), cw = spr.width / n;
         c.drawImageRect(spr, Rect.fromLTWH((fr % n) * cw, 0, cw, sprFrame.toDouble()),
             Rect.fromLTWH(px - cw / 2 * kk, py - sprFoot * kk, cw * kk, sprFrame * kk), Paint()..filterQuality = FilterQuality.medium);
       } else {
@@ -347,7 +352,8 @@ class _MapPainter extends CustomPainter {
               ..strokeWidth = 2
               ..color = p.ppl ? const Color(0xFFFFE08A) : const Color(0xFFCFE0FF));
       }
-      if (p.wk != null) _pill(c, '🔨', px, py - math.max(30, vw * .1), math.max(9, vw * .026), const Color(0xCC1E160A), const Color(0xFFFFE08A));
+      // 마르타·티모·피트 얼굴 밑에 이름표 · 일꾼 머리 위 🔨 표시는 없앰 (웹 마을 화면 정리)
+      if (p.ppl) _pill(c, wVppl[p.id] ?? p.id, px, py + math.max(8, vw * .022), math.max(9, vw * .026), const Color(0xD91E160A), const Color(0xFFFFE08A));
     }
     // 이름표 · 상태 배지
     final fs = math.min(12.0, math.max(9.5, vw * .029)).roundToDouble();
