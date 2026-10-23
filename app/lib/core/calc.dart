@@ -325,7 +325,7 @@ class GameCalc {
   static const chiefBonus = [0, .05, .075, .1, .125, .15];
 
   /// 황금 이삭 상품의 덤 유니크 카드 (웹 UCARD_PK)
-  static const ucardPack = {'p2': 2, 'p3': 5, 'p4': 12, 'p5': 35, 'p6': 70};
+  static const ucardPack = {'p2': 1, 'p3': 3, 'p4': 6, 'p5': 16, 'p6': 30}; // 2026-10-23 줄임
   static num chPct(int st) => 10 + 2.5 * (math.max(1, st) - 1);
   num vpChief() => owned(chiefId) ? 1 + chPct(recStar(chiefId)) / 100 : 1;
   bool chiefOn() => owned(chiefId) && s.party?['kael'] == chiefId;

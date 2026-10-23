@@ -300,8 +300,18 @@ body {
   cursor: pointer;
   min-width: 0;
 }
+/* 프로필 아래 버튼 줄은 스크롤해도 늘 보이게 (「저장」을 찾으러 내려가지 않게) */
+.pfacts {
+  position: sticky;
+  bottom: -8px;
+  z-index: 2;
+  background: var(--panel);
+  padding: 8px 0;
+  margin-bottom: -8px;
+}
 .pfc.on {
   border-color: var(--gold);
+  box-shadow: 0 0 10px rgba(255, 201, 74, 0.35);
 }
 .pfc.lock {
   opacity: 0.55;
@@ -646,6 +656,30 @@ body {
   max-height: 52vh;
   overflow-y: auto;
   overscroll-behavior: contain;
+}
+.crag small {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  font-size: 13px;
+  font-weight: 700;
+}
+.crag small img {
+  width: 16px;
+  height: 16px;
+}
+.crall {
+  align-self: center;
+  font: inherit;
+  font-size: 13px;
+  color: var(--fg);
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 7px 16px;
+  min-height: 34px;
+  cursor: pointer;
 }
 .crgold {
   display: flex;
@@ -1023,9 +1057,21 @@ table.codds th {
 .crow small {
   font-size: 12.5px;
   color: var(--muted);
-  white-space: nowrap;
+  /* 좁은 폭에서도 숫자가 잘리지 않게 두 줄까지 (낱말 중간에서 끊지 않음) */
+  word-break: keep-all;
+  overflow-wrap: anywhere;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
   overflow: hidden;
-  text-overflow: ellipsis;
+}
+.nw {
+  white-space: nowrap;
+}
+.buy.sm.eqtag {
+  min-width: 0;
+  padding: 6px 12px;
+  text-align: center;
 }
 .buy.sm {
   min-width: 74px;
@@ -1702,14 +1748,30 @@ table.codds th {
 .tab .dot.opt.n {
   color: #3a2a00;
 }
-.rkfab {
-  top: 58px;
-}
-.shfab {
-  top: 108px;
-}
-.stagewrap:not(:has(#mailBtn:not([hidden]))) .shfab {
+.fabcol {
+  position: absolute;
   top: 8px;
+  right: 8px;
+  z-index: 4;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.fabcol .mailbtn {
+  position: relative;
+  top: auto;
+  right: auto;
+}
+.attfab .dot {
+  position: absolute;
+  top: -3px;
+  right: -3px;
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+  background: #ffd23a;
+  border: 1.5px solid #fff;
+  box-shadow: 0 0 6px #ffd23a;
 }
 .rkfab .dday {
   position: absolute;
@@ -2043,49 +2105,6 @@ table.codds th {
   opacity: 0.45;
   filter: grayscale(0.7);
 }
-.attbtn {
-  position: relative;
-  flex: 0 0 auto;
-  width: 34px;
-  height: 34px;
-  padding: 0;
-  border-radius: 10px;
-  background: #1a1406;
-  border: 1px solid #8a6a1a;
-  display: grid;
-  place-items: center;
-  cursor: pointer;
-  font-size: 18px;
-}
-.attbtn[hidden] {
-  display: none;
-}
-.attbtn img {
-  width: 28px;
-  height: 28px;
-  object-fit: contain;
-}
-.attbtn .dot {
-  position: absolute;
-  top: -3px;
-  right: -3px;
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-  background: #ffd23a;
-  border: 1px solid #fff;
-  box-shadow: 0 0 6px #ffd23a;
-}
-@media (max-width: 375px) {
-  .attbtn {
-    width: 30px;
-    height: 30px;
-  }
-  .attbtn img {
-    width: 24px;
-    height: 24px;
-  }
-}
 @media (max-width: 360px) {
   .upr .upv {
     white-space: normal;
@@ -2109,18 +2128,6 @@ table.codds th {
   }
   .gplus {
     display: none;
-  }
-  .attbtn {
-    width: 26px;
-    height: 26px;
-    border-radius: 8px;
-  }
-  .attbtn img {
-    width: 22px;
-    height: 22px;
-  }
-  .attbtn span {
-    font-size: 15px;
   }
 }
 .hdban.nohd {
@@ -5764,9 +5771,13 @@ input:focus-visible {
 .rpt {
   font-size: 14px;
   font-weight: 700;
-  white-space: nowrap;
+  line-height: 1.3;
+  word-break: keep-all;
+  overflow-wrap: anywhere;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
   overflow: hidden;
-  text-overflow: ellipsis;
 }
 .rpb {
   flex: 0 0 auto;
@@ -5852,7 +5863,8 @@ input:focus-visible {
 .sheet {
   width: 100%;
   max-width: 400px;
-  max-height: 90%;
+  /* 테두리(22px×2)·안쪽 여백까지 합쳐 화면 안에 들어오게 (작은 화면에서 위 테두리가 잘리던 것) */
+  max-height: calc(100% - 80px);
   overflow-y: auto;
   display: flex;
   flex-direction: column;
@@ -5938,7 +5950,8 @@ input:focus-visible {
   }
   .sheet {
     gap: 7px;
-    max-height: 100%;
+    /* 테두리 22px×2 + 안쪽 여백 18px 까지 화면 안에 */
+    max-height: calc(100% - 62px);
   }
   .modal {
     padding-top: 4px;
@@ -6133,16 +6146,19 @@ input:focus-visible {
   <header class="hud">
     <button class="face" id="faceBtn" aria-label="프로필 열기"><canvas id="faceCv"></canvas><img class="pfr" id="hFrame" src="assets/profile/frame_wood.png" alt="" onerror="this.remove()"></button>
     <div class="who"><span class="nm">카엘<img class="hbadge" id="hBadge" alt="" hidden onerror="bdErr(this)"><img class="rankimg" id="hRankImg" src="assets/ui/rank_farmer.png" alt="" onerror="this.remove()"><span class="rank" id="hRank">농부</span></span><span class="pow" id="hPow">0</span></div>
-    <button class="attbtn" id="attBtn" aria-label="피트의 출석부" hidden><img src="assets/ui/ic_attend.png" alt="" onerror="this.outerHTML='<span>📅</span>'"><i class="dot" id="attDot" hidden></i></button>
     <button class="gempill" id="gemBtn" aria-label="황금 이삭과 오늘의 할 일"><img class="gemimg" src="assets/gem/ui_gem.png" alt="" onerror="this.remove()"><span id="gem">0</span><b class="gplus">+</b><i class="dot" id="gemDot" hidden></i></button>
     <div class="goldpill"><img class="coinimg" src="assets/ui/ui_gold.png" alt="" onerror="this.outerHTML='<i class=&quot;coin&quot;></i>'"><span id="gold">0</span></div>
   </header>
 
   <div class="stagewrap" id="wrap">
     <canvas id="cv" aria-label="원정대 자동 전투 화면"></canvas>
-    <button class="mailbtn rkfab" id="rankBtn" aria-label="랭킹" hidden><img src="assets/ui/icon_rank.png" alt="" onerror="this.outerHTML='<span>🏆</span>'"><i class="dday" id="rankDday" hidden></i></button>
-    <button class="mailbtn shfab" id="shopBtn" aria-label="피트의 상점"><img src="assets/ui/icon_shop.png" alt="" onerror="this.outerHTML='<span>🛒</span>'"><i class="mdot" id="shopDot" hidden></i></button>
-    <button class="mailbtn" id="mailBtn" aria-label="우편함" hidden><img src="assets/ui/icon_mail.png" alt="" onerror="this.outerHTML='<span>✉️</span>'"><i class="mdot" id="mailDot" hidden></i></button>
+    <!-- 오른쪽 세로 버튼 줄: 우편 · 랭킹 · 상점 · 출석부 (숨은 버튼은 빈자리 없이 당겨짐) -->
+    <div class="fabcol">
+      <button class="mailbtn" id="mailBtn" aria-label="우편함" hidden><img src="assets/ui/icon_mail.png" alt="" onerror="this.outerHTML='<span>✉️</span>'"><i class="mdot" id="mailDot" hidden></i></button>
+      <button class="mailbtn rkfab" id="rankBtn" aria-label="랭킹" hidden><img src="assets/ui/icon_rank.png" alt="" onerror="this.outerHTML='<span>🏆</span>'"><i class="dday" id="rankDday" hidden></i></button>
+      <button class="mailbtn shfab" id="shopBtn" aria-label="피트의 상점"><img src="assets/ui/icon_shop.png" alt="" onerror="this.outerHTML='<span>🛒</span>'"><i class="mdot" id="shopDot" hidden></i></button>
+      <button class="mailbtn attfab" id="attBtn" aria-label="피트의 출석부" hidden><img src="assets/ui/ic_attend.png" alt="" onerror="this.outerHTML='<span>📅</span>'"><i class="dot" id="attDot" hidden></i></button>
+    </div>
     <div class="pgshade" id="pgShade" hidden></div>
     <div class="ovtop"><div class="toprow"><div class="stagepill"><div class="sth"><b id="stLabel">1-1 에르단 평원</b><small id="stRegion">개울 마을</small></div><div class="pips" id="pips"></div></div><button class="chx" id="chExit" hidden>나가기</button><button class="chx nx" id="chNext" hidden>다음 층 ▶</button><button class="guide" id="guide" hidden></button></div>
     <div class="bossbar" id="bossbar" hidden><img id="bossFace" class="bossface" alt="" hidden><div class="bb"><div class="bbtop"><span class="btag" id="bossTag">성주</span><span id="bossName">보스</span><span id="bosst">30초</span></div><div class="track"><div class="fill" id="bossfill"></div><span id="bossHp"></span></div><div class="tline"><i id="bossTime"></i></div></div></div>
@@ -6980,7 +6996,7 @@ const CHIEF = 'kael_chief',
   CHIEF_B = [0, 0.05, 0.075, 0.1, 0.125, 0.15],
   CHIEF_RET = 10,
   CHIEF_PK = { k: 'chief', n: '카엘 촌장 맞이하기', won: 500 },
-  UCARD_PK = { p2: 2, p3: 5, p4: 12, p5: 35, p6: 70 },
+  UCARD_PK = { p2: 1, p3: 3, p4: 6, p5: 16, p6: 30 } /* 2026-10-23 줄임: ★3 약 20만 원 · ★5 약 100만 원 */,
   ULB = { t: 0, a: 1, s: 1 };
 const chPct = st => 10 + 2.5 * (Math.max(1, st) - 1),
   vpChief = () => (owned(CHIEF) ? 1 + chPct(recStar(CHIEF)) / 100 : 1);
@@ -7107,7 +7123,8 @@ function seatSheet(j) {
 /* 카드 개봉 창: 이번에 받은 카드와 진행 상황 */
 /* 카드 결과 창 (C-1): 줄 높이는 내용에 맞춤 · 카드가 하나씩 뒤집힘(영웅·전설은 뒤집기 전부터 빛이 샘) · 「모두 뒤집기」
    · 맨 위 요약 + 합류·★ 올리기 가능한 동료를 맨 위로(금테) · 줄마다 「합류하기」「★ 올리기」 */
-function cardReveal(list, title, gold, keep) {
+/* again: 상점에서 산 카드면 { gem, go } — 「또 뽑기」 버튼(가격 보이게, 확인 창 없음) */
+function cardReveal(list, title, gold, keep, again) {
   const m = {};
   for (const [id, n] of list) m[id] = (m[id] || 0) + n;
   const canOf = id => {
@@ -7138,21 +7155,29 @@ function cardReveal(list, title, gold, keep) {
    })
    .join(
      ''
-   )}</div>${gold ? `<div class="crgold"><img src="assets/ui/ui_gold.png" alt=""> 별을 다 채운 동료 카드 → 골드 <b>+${fmt(gold)}</b></div>` : ''}
- <div class="acts">${flip && ids.length > 1 ? '<button id="crAll">모두 뒤집기</button>' : '<button id="mX">닫기</button>'}<button class="pri" id="mGo">원정대에서 보기</button></div>`;
+   )}</div>${flip && ids.length > 1 ? '<button class="crall" id="crAll">모두 뒤집기</button>' : ''}${gold ? `<div class="crgold"><img src="assets/ui/ui_gold.png" alt=""> 별을 다 채운 동료 카드 → 골드 <b>+${fmt(gold)}</b></div>` : ''}
+ <div class="acts">${
+   again
+     ? `<button id="mX" hidden>닫기</button><button id="mGo">원정대에서 보기</button><button class="pri crag" id="crAgain">또 뽑기<small><img src="assets/gem/ui_gem.png" alt="" onerror="this.remove()">${again.gem}</small></button>`
+     : '<button id="mX">닫기</button><button class="pri" id="mGo">원정대에서 보기</button>'
+ }</div>`;
   $('modal').hidden = false;
   ids.forEach(id => faceTo($('rv-' + id), id));
   const x = $('mX');
   if (x) x.onclick = closeModal;
+  /* 모두 뒤집기: 카드 밑 작은 버튼. 누르거나 다 뒤집히면 사라짐 (아래 버튼 줄은 늘 같은 모양) */
   const fa = $('crAll');
-  if (fa)
+  if (fa) {
     fa.onclick = () => {
       $('sheet')
         .querySelectorAll('.crc,.cbk')
         .forEach(e => (e.style.animationDelay = '0s'));
-      fa.outerHTML = '<button id="mX">닫기</button>';
-      $('mX').onclick = closeModal;
+      fa.remove();
     };
+    setTimeout(() => fa.isConnected && fa.remove(), (0.95 + ids.length * 0.35) * 1000);
+  }
+  const ag = $('crAgain');
+  if (ag) ag.onclick = () => again.go();
   $('sheet')
     .querySelectorAll('[data-rup]')
     .forEach(
@@ -7165,7 +7190,7 @@ function cardReveal(list, title, gold, keep) {
             closeModal();
             return;
           }
-          cardReveal(list, title, gold, true);
+          cardReveal(list, title, gold, true, again);
         })
     );
   $('mGo').onclick = () => {
@@ -8101,14 +8126,32 @@ function fresh() {
     v: 3
   };
 }
+/* 저장 값 고르기: 기본값이 숫자·객체·배열인 칸에 종류가 다른 값(null·NaN·무한대·글자 등)이 들어 있으면 버리고 기본값을 씀.
+   한 칸이 깨져도 게임이 멈추거나 새 게임이 되지 않게 (앱 GameState.hydrate 와 같은 규칙) */
+const isObj = v => !!v && typeof v === 'object' && !Array.isArray(v);
+const okVal = (fv, dv) =>
+  typeof fv === 'number' ? typeof dv === 'number' && isFinite(dv) : isObj(fv) ? isObj(dv) : Array.isArray(fv) ? Array.isArray(dv) : dv != null;
+const badNum = v => typeof v === 'number' && !isFinite(v);
+/* 저장처럼 보이는지: 골드 칸이 있으면 (값이 깨져 null 이어도 다른 기록은 살림) */
+const isSave = d => isObj(d) && 'gold' in d;
 function hydrate(d) {
   const f = fresh();
   for (const k in d) {
-    if (f[k] && typeof f[k] === 'object' && !Array.isArray(f[k]) && d[k] && typeof d[k] === 'object') f[k] = Object.assign(f[k], d[k]);
-    else f[k] = d[k];
+    const fv = f[k],
+      dv = d[k];
+    if (fv !== undefined ? !okVal(fv, dv) : badNum(dv)) continue;
+    if (isObj(fv)) {
+      for (const sk in dv) {
+        const a = fv[sk],
+          b = dv[sk];
+        if ((typeof a === 'number' || isObj(a) || Array.isArray(a)) && !okVal(a, b)) continue;
+        if (badNum(b)) continue;
+        fv[sk] = b;
+      }
+    } else f[k] = dv;
   }
-  if (d && d.crops) {
-    for (const k in d.crops) f.items[k] = (f.items[k] || 0) + d.crops[k];
+  if (d && isObj(d.crops)) {
+    for (const k in d.crops) f.items[k] = (+f.items[k] || 0) + (+d.crops[k] || 0);
     delete f.crops;
   }
   if (((d && d.v) || 0) < 3) {
@@ -8347,22 +8390,28 @@ function buyStarter() {
     );
   });
 }
+/* 정기 배송 유니크 카드: 3일마다 1장 (배송 받은 횟수 1·4·7…번째, 30일에 10장) */
+function subCard() {
+  S.sub.cn = (+S.sub.cn || 0) + 1;
+  if (S.sub.cn % 3 !== 1) return 0;
+  S.ucard = (S.ucard || 0) + 1;
+  return 1;
+}
+const subCardTxt = u => (u ? ' · 유니크 카드 +1' : ' · 유니크 카드까지 ' + (3 - ((S.sub.cn - 1) % 3)) + '일');
 function buySub() {
   pay('sub', SUB.won, () => {
     const base = Math.max(Date.now(), S.sub.until || 0);
     S.sub.until = base + SUB.days * 864e5;
     S.sub.last = today();
     S.gem += SUB.now + SUB.day;
-    S.ucard = (S.ucard || 0) + 1;
-    toast('정기 배송 시작! 황금 이삭 +' + (SUB.now + SUB.day) + ' · 유니크 카드 +1');
+    toast('정기 배송 시작! 황금 이삭 +' + (SUB.now + SUB.day) + subCardTxt(subCard()));
   });
 }
 function claimSub() {
   if (!subOn() || S.sub.last === today()) return;
   S.sub.last = today();
   S.gem += SUB.day;
-  S.ucard = (S.ucard || 0) + 1;
-  toast('피트의 마차가 도착했어요. 황금 이삭 +' + SUB.day + ' · 유니크 카드 +1');
+  toast('피트의 마차가 도착했어요. 황금 이삭 +' + SUB.day + subCardTxt(subCard()));
   shopSig = '';
   renderAll();
 }
@@ -8373,6 +8422,15 @@ const CARDPK = [
   { n: 3, gem: 30 },
   { n: 30, gem: 270 }
 ];
+/* 동료 카드 묶음 사기 (상점 · 결과 창 「또 뽑기」) */
+function buyCardPack(c) {
+  if (!CARDIDS().some(x => cardOpen(x) && recStar(x) < starMax(x))) return toast('모을 수 있는 동료 카드가 없어요');
+  if (!spendGem(c.gem)) return;
+  const r = gainCards(c.n, 'shop', c.n >= 30 ? 5 : 1) || { got: [], gold: 0 };
+  shopSig = '';
+  renderAll();
+  cardReveal(r.got, '카드 ' + c.n + '장', r.gold, false, { gem: c.gem, go: () => buyCardPack(c) });
+}
 function renderShop() {
   if (curTab !== 'sh') return;
   const d = daily();
@@ -8403,7 +8461,7 @@ function renderShop() {
   const gemI = '<img src="assets/gem/ui_gem.png" alt="" style="width:16px;height:16px;vertical-align:-3px" onerror="this.remove()">';
   const subTxt = subOn()
     ? `남은 기간 ${subLeft()}일 · ${S.sub.last === today() ? '오늘 배송 받음' : '오늘 배송이 도착했어요'}`
-    : `구매 즉시 ${gemI}${SUB.now} + 30일간 매일 ${gemI}${SUB.day}<br>+ 매일 유니크 카드 1장 · 방치 보상 +50%`;
+    : `구매 즉시 ${gemI}${SUB.now} + 30일간 매일 ${gemI}${SUB.day}<br>+ 3일마다 유니크 카드 1장 · 방치 보상 +50%`;
   const subBtn = subOn()
     ? S.sub.last === today()
       ? `<button class="buy claim" disabled>받음</button>`
@@ -8508,13 +8566,7 @@ function renderShop() {
   sh.querySelectorAll('[data-cp]').forEach(
     b =>
       (b.onclick = () => {
-        const c = CARDPK[+b.dataset.cp];
-        if (!CARDIDS().some(x => cardOpen(x) && recStar(x) < starMax(x))) return toast('모을 수 있는 동료 카드가 없어요');
-        if (!spendGem(c.gem)) return;
-        const r = gainCards(c.n, 'shop', c.n >= 30 ? 5 : 1) || { got: [], gold: 0 };
-        shopSig = '';
-        renderAll();
-        cardReveal(r.got, '카드 ' + c.n + '장', r.gold);
+        buyCardPack(CARDPK[+b.dataset.cp]);
       })
   );
   sh.querySelectorAll('[data-gx]').forEach(b => (b.onclick = () => buyGoldX(b.dataset.gx)));
@@ -10167,7 +10219,7 @@ function chiefSheet() {
  <p class="cdd">${c.desc}</p>${how}<div class="kv"><span>능력치</span><b>카엘 능력치 +${CHIEF_B[Math.max(1, st)] * 100}%${has ? ' · 공격 ' + fmt(t.atk) + ' · 체력 ' + fmt(t.hp) : ''}</b></div><div class="kv"><span>장비·칭호</span><b>카엘 것을 그대로 써요</b></div>
  <div class="skl"><img src="assets/skills/skill_${id}.png" alt="" onerror="this.remove()"><div><b>${SKILLS[id].n}</b><span>${SKILLS[id].d}</span></div></div>${vpBox(id)}
  <div class="kv"><span>${UCIMG} 유니크 카드</span><b>${has ? (mx ? '별을 모두 모았어요 · ' + n + '장' : n + ' / ' + need + '장 (★' + (st + 1) + ')') : n + '장 모아 둠'}</b></div>
- ${has && !mx ? `<div class="xp"><div style="width:${Math.min(100, (n / need) * 100)}%"></div></div>` : ''}<p class="note">유니크 카드는 황금 이삭 상품(5,500원 이상)의 덤, 피트의 정기 배송(매일 1장), 랭킹 시즌 보상으로 받아요. 원하는 유니크 동료를 골라 별을 올려요.</p>
+ ${has && !mx ? `<div class="xp"><div style="width:${Math.min(100, (n / need) * 100)}%"></div></div>` : ''}<p class="note">유니크 카드는 황금 이삭 상품(5,500원 이상)의 덤, 피트의 정기 배송(3일마다 1장), 랭킹 시즌 보상으로 받아요. 원하는 유니크 동료를 골라 별을 올려요.</p>
  <div class="acts">${has ? (on ? `<button id="cdGo">카엘로 바꾸기</button>` : `<button id="cdGo">카엘 자리에 출전</button>`) : `<button id="mX">닫기</button>`}${has ? `<button class="pri${chiefCan() ? ' glow' : ''}" id="cdUp" ${chiefCan() ? '' : 'disabled'}>${mx ? '★ 모두 모음' : '★ 올리기'}</button>` : chiefShop() ? `<button class="pri" id="cdShop">상점 가기</button>` : ''}</div>` +
     (has ? '<button id="mX" hidden></button>' : '');
   $('modal').hidden = false;
@@ -10201,7 +10253,7 @@ function kaelSeatSheet() {
   const cur = slotMember('kael'),
     row = id => {
       const t = stats(id);
-      return `<div class="crow" data-ks="${id}"><canvas class="cface" id="ks-${id}"></canvas><div class="info"><b>${COMP[id].n}${id === CHIEF ? gradeTag(id) + starTxt(id) : ''}</b><small>${id === CHIEF ? '다 함께 울력 · 새벽 종소리' : '추수의 일격'} · 공격 ${fmt(t.atk)} · 체력 ${fmt(t.hp)}</small></div>${cur === id ? '<span class="benchtag">출전 중</span>' : '<button class="buy sm">출전</button>'}</div>`;
+      return `<div class="crow" data-ks="${id}"><canvas class="cface" id="ks-${id}"></canvas><div class="info"><b>${COMP[id].n}${id === CHIEF ? gradeTag(id) + starTxt(id) : ''}</b><small>${id === CHIEF ? '다 함께 울력 · 새벽 종소리' : '추수의 일격'}</small><small>공격 ${fmt(t.atk)} · 체력 ${fmt(t.hp)}</small></div>${cur === id ? '<span class="benchtag">출전 중</span>' : '<button class="buy sm">출전</button>'}</div>`;
     };
   $('sheet').innerHTML =
     `<div class="eyebrow">카엘 자리</div><h2>누가 출전할까요?</h2>${['kael', CHIEF].map(row).join('')}<p class="note">장비·칭호·강화는 둘이 함께 써요.</p><div class="acts"><button id="mX">닫기</button><button class="pri" id="ksEq">장비 보기</button></div>`;
@@ -10345,7 +10397,7 @@ function renderParty() {
         return `<div class="crow locked"><canvas class="cface" id="cf-${id}"></canvas><div class="info"><b>???</b><small>${c.role} · ${c.join}</small></div></div>`;
       const j = JOB[id],
         on = id === 'kael' || slotMember(j) === id;
-      return `<div class="crow" role="button" tabindex="0" data-det="${id}"><canvas class="cface" id="cf-${id}"></canvas><div class="info"><b>${c.n}${id === 'kael' ? '' : gradeTag(id) + starTxt(id)}</b><small>${id === 'kael' ? RANKS[rankIdx()].n : (on ? '출전' : working()[id] ? '🔨 ' + bldK(working()[id]).n : '대기') + ' · Lv.' + (S.lv[id] || 1)} · ${id === 'kael' ? '원정대 전투력 ' + fmt(power()) : '전투력 ' + fmt(cPow(id))}</small></div>${id === 'kael' ? '<span class="buy ghost sm">장비</span>' : on ? `<button class="buy sm" id="lv-${id}">${costBtn('Lv↑', compCost(S.lv[id] || 1))}</button>` : `<span class="benchtag">${working()[id] ? '🔨 일꾼' : '대기'}</span>`}</div>`;
+      return `<div class="crow" role="button" tabindex="0" data-det="${id}"><canvas class="cface" id="cf-${id}"></canvas><div class="info"><b>${c.n}${id === 'kael' ? '' : gradeTag(id) + starTxt(id)}</b><small>${id === 'kael' ? RANKS[rankIdx()].n : (on ? '출전' : working()[id] ? '🔨 ' + bldK(working()[id]).n : '대기') + ' · Lv.' + (S.lv[id] || 1)} · ${id === 'kael' ? '원정대 전투력 ' + fmt(power()) : '전투력 ' + fmt(cPow(id))}</small></div>${id === 'kael' ? '<span class="buy ghost sm eqtag">장비</span>' : on ? `<button class="buy sm" id="lv-${id}">${costBtn('Lv↑', compCost(S.lv[id] || 1))}</button>` : `<span class="benchtag">${working()[id] ? '🔨 일꾼' : '대기'}</span>`}</div>`;
     };
     const list = partyOrder();
     /* 격자 칸 (U-1): 얼굴 + 등급 테두리 + ★ + Lv. 출전 중 금테, 🔨 일꾼, ★ 올리기 가능 노란 점, 합류 전 어둡게 ??? */
@@ -10537,7 +10589,7 @@ function retireConfirm(one) {
   const half = sc && 1 + 5 * tl('shortcut') > Math.floor((S.best || 1) / 2) && !one;
   $('sheet').innerHTML = `<div class="eyebrow" style="color:#ff8a7a">은퇴 확인</div><h2>정말 은퇴할까요?</h2>
  <div class="rtbox lose"><div class="rth">처음으로 돌아가요</div><ul>
-  ${li('되찾은 영지', Math.min(S.stage, MAXLAND + 1) - 1 + '곳 → ' + (st - 1) + '곳 (' + stgName(st) + '부터)')}
+  ${li('되찾은 영지', Math.min(S.stage, MAXLAND + 1) - 1 + '곳 → ' + (st - 1) + '곳 (<span class="nw">' + stgName(st) + '부터</span>)')}
   ${li('골드', fmt(S.gold) + ' → ' + fmt(pg))}
   ${li('착용한 성유물', eqN + '개 → 모두 사라짐')}
   ${li('단련 능력치', up ? '+' + up + '단계 → 0' : '없음')}
@@ -11742,7 +11794,8 @@ let gobT = 150 + Math.random() * 120,
   quip = null,
   quipT = 6;
 function say(who, txt) {
-  quip = { who, txt, t: 3.2 };
+  /* 「⚠ 성주 출현!」 띠가 떠 있으면 띠가 사라진 뒤에 말풍선이 보이게 (글자가 겹치지 않게) */
+  quip = { who, txt, t: 3.2 + (warn ? Math.max(0, warn.t) : 0) };
 }
 /* ---------- 특수 스킬 ---------- */
 const SKILLS = {
@@ -15566,7 +15619,7 @@ function draw() {
   });
   ctx.globalAlpha = 1;
   drawSkillFx(L);
-  drawQuip(pos, s, py[slotMember('kael')] ?? L.top, py);
+  if (!warn) drawQuip(pos, s, py[slotMember('kael')] ?? L.top, py);
   if (warn) {
     const k = Math.min(1, (1.4 - warn.t) * 6, warn.t * 2.5),
       cy = Ht * 0.3,
@@ -18020,11 +18073,13 @@ function nickSheet(after) {
         mailFetch();
         (after || rankSheet)();
       } else {
+        if (!$('nickErr')) return;
         $('nickErr').textContent = NICKERR[r] || '다시 시도해 주세요';
         $('nickOk').disabled = false;
       }
     } catch (e) {
       const m = String((e && e.message) || e);
+      if (!$('nickErr')) return; /* 답을 기다리는 사이 창을 닫음 */
       $('nickErr').textContent = !navigator.onLine
         ? '인터넷 연결이 필요해요'
         : /abort/i.test(m) || /Failed to fetch|Load failed|NetworkError/i.test(m)
@@ -18523,7 +18578,7 @@ function cloudPick(cl) {
  <div class="acts"><button id="cpDev">이 기기 기록 유지</button><button class="pri" id="cpCl">클라우드 기록 불러오기</button></div>`;
   $('modal').hidden = false;
   $('cpCl').onclick = () => {
-    if (!d || typeof d.gold !== 'number') return toast('클라우드 기록을 읽을 수 없어요');
+    if (!isSave(d)) return toast('클라우드 기록을 읽을 수 없어요');
     noSave = true;
     try {
       localStorage.setItem(KEY, JSON.stringify(d));
@@ -18715,62 +18770,110 @@ function pfCheck() {
     im.className = 'pfr' + pfTall(S.pf || 'wood');
   }
 }
-function profileSheet() {
-  S.pfSeen = 1;
-  const nw = S.pfNew || {};
-  S.pfNew = {};
+/* 프로필 꾸미기: 칸을 눌러 고르기만 하고(금테), 「저장」으로 한 번에 적용. 맨 위 미리보기는 고른 대로 바로 바뀜.
+   저장하지 않고 닫으려 하면 「저장할까요?」 한 번 묻기 (2026-10-23 대표님 의견) */
+let pfDraft = null;
+const pfNow = () => ({ pf: S.pf || 'wood', badge: S.badge && bdHas(S.badge) ? S.badge : null, face: pubFace(), photo: !!(S.facePhoto && photoData()) });
+const pfDirty = () => {
+  if (!pfDraft) return false;
+  const a = pfNow();
+  return a.pf !== pfDraft.pf || a.badge !== pfDraft.badge || a.face !== pfDraft.face || a.photo !== pfDraft.photo;
+};
+function pfSave() {
+  const d = pfDraft;
+  if (!d) return;
+  S.pf = d.pf;
+  S.badge = d.badge;
+  S.face = d.face === 'kael' ? null : d.face;
+  S.facePhoto = d.photo;
+  faceSync();
   pfCheck();
-  const cur = S.pf || 'wood',
-    ri = rankIdx();
+  save();
+  drawMyFace();
+  renderAll();
+  toast('프로필을 저장했어요');
+}
+/* 저장 안 한 채로 나가려 할 때: then 은 나간 뒤 할 일(닫기·설정·랭킹·닉네임) */
+function pfLeave(then) {
+  if (!pfDirty()) {
+    pfDraft = null;
+    return then();
+  }
+  $('sheet').innerHTML = `<div class="eyebrow">프로필</div><h2>바꾼 꾸미기를 저장할까요?</h2><p class="note" style="text-align:center">저장하지 않으면 고른 얼굴·테두리·배지가 원래대로 돌아가요.</p><div class="acts"><button id="pfNo">저장 안 함</button><button class="pri" id="pfYes">저장</button></div>`;
+  $('modal').hidden = false;
+  $('pfNo').onclick = () => {
+    pfDraft = null;
+    then();
+  };
+  $('pfYes').onclick = () => {
+    pfSave();
+    pfDraft = null;
+    then();
+  };
+}
+function profileSheet(keep) {
+  S.pfSeen = 1;
+  if (!keep || !pfDraft) {
+    pfDraft = pfNow();
+    profileSheet.nw = S.pfNew || {};
+    S.pfNew = {};
+    pfCheck();
+  }
+  const nw = profileSheet.nw || {},
+    d = pfDraft,
+    dirty = pfDirty(),
+    cur = d.pf,
+    ri = rankIdx(),
+    nb = '<small>&nbsp;</small>';
   $('sheet').innerHTML =
-    `<div class="hdban" style="--hb:url(assets/ui/hd_profile.png)"><span>프로필</span></div><div class="pfhead"><div class="pfbig"><canvas id="pfCv"></canvas><img class="pfr${pfTall(cur)}" src="assets/profile/frame_${cur}.png" alt=""></div><div class="pfinfo"><b>카엘${S.badge && bdHas(S.badge) ? `<img class="pfbd" data-k="${S.badge}" src="${bdSrc(S.badge)}" alt="" onerror="bdErr(this)">` : ''}</b><small class="pfnick">닉네임 <b>${esc(S.nick || '준비 중')}</b>${S.nickTemp ? ' <i>임시</i>' : ''}${sbOn() ? '<button class="buy" id="pfNick">' + (S.nickTemp || !S.nick ? '정하기' : '바꾸기') + '</button>' : ''}</small><small>${RANKS[ri].n} · 전투력 ${fmt(power())}</small><small>최고 영지 ${Math.min(S.best, MAXLAND)} · 은퇴 ${S.retires || 0}번 · 은퇴의 추억 ${S.memory || 0}개</small>${S.chOpen ? `<small>시련의 탑 최고 ${S.tower.top || 0}층</small>` : ''}</div></div>
+    `<div class="hdban" style="--hb:url(assets/ui/hd_profile.png)"><span>프로필</span></div><div class="pfhead"><div class="pfbig"><canvas id="pfCv"></canvas><img class="pfr${pfTall(cur)}" src="assets/profile/frame_${cur}.png" alt=""></div><div class="pfinfo"><b>카엘${d.badge ? `<img class="pfbd" data-k="${d.badge}" src="${bdSrc(d.badge)}" alt="" onerror="bdErr(this)">` : ''}</b><small class="pfnick">닉네임 <b>${esc(S.nick || '준비 중')}</b>${S.nickTemp ? ' <i>임시</i>' : ''}${sbOn() ? '<button class="buy" id="pfNick">' + (S.nickTemp || !S.nick ? '정하기' : '바꾸기') + '</button>' : ''}</small><small>${RANKS[ri].n} · 전투력 ${fmt(power())}</small><small>최고 영지 ${Math.min(S.best, MAXLAND)} · 은퇴 ${S.retires || 0}번 · 은퇴의 추억 ${S.memory || 0}개</small>${S.chOpen ? `<small>시련의 탑 최고 ${S.tower.top || 0}층</small>` : ''}</div></div>
+ <p class="note pfhint">${dirty ? '고른 대로 위에 미리 보여요. <b>저장</b>을 눌러야 바뀌어요.' : '칸을 눌러 고른 뒤 <b>저장</b>을 누르세요.'}</p>
  <div class="sec">얼굴 <small>합류한 동료 · 내 사진</small></div>
  <div class="pfgrid fcgrid">${(() => {
-   const pub = pubFace(),
-     ph = S.facePhoto && photoData();
    const ids = ['kael', ...Object.keys(COMP).filter(id => id !== 'kael' && owned(id))];
    return (
-     `<button class="pfc fc${ph ? ' on' : ''}" data-face="photo"><span class="pv">${photoData() ? '<canvas class="fcv" data-fc="photo"></canvas>' : '<span class="fcam">📷</span>'}</span><b>내 사진</b><small>${ph ? '사용 중' : photoData() ? '쓰기' : '올리기'}</small></button>` +
-     ids
-       .map(
-         id =>
-           `<button class="pfc fc${!ph && pub === id ? ' on' : ''}" data-face="${id}"><span class="pv"><canvas class="fcv" data-fc="${id}"></canvas></span><b>${id === 'kael' ? '카엘' : COMP[id].n}</b><small>${!ph && pub === id ? '사용 중' : '바꾸기'}</small></button>`
-       )
-       .join('')
+     `<button class="pfc fc${d.photo ? ' on' : ''}" data-face="photo"><span class="pv">${photoData() ? '<canvas class="fcv" data-fc="photo"></canvas>' : '<span class="fcam">📷</span>'}</span><b>내 사진</b>${photoData() ? nb : '<small>올리기</small>'}</button>` +
+     ids.map(id => `<button class="pfc fc${!d.photo && d.face === id ? ' on' : ''}" data-face="${id}"><span class="pv"><canvas class="fcv" data-fc="${id}"></canvas></span><b>${id === 'kael' ? '카엘' : COMP[id].n}</b>${nb}</button>`).join('')
    );
  })()}</div>
- ${photoData() ? `<p class="note fcnote">내 사진은 이 기기에서만 보여요. 다른 영주에게는 <b>${pubFace() === 'kael' ? '카엘' : COMP[pubFace()].n}</b> 얼굴이 보여요. <button class="lnk" id="fcNew">다른 사진</button> · <button class="lnk" id="fcDel">사진 지우기</button></p>` : ''}
+ ${photoData() ? `<p class="note fcnote">내 사진은 이 기기에서만 보여요. 다른 영주에게는 <b>${d.face === 'kael' ? '카엘' : COMP[d.face].n}</b> 얼굴이 보여요. <button class="lnk" id="fcNew">다른 사진</button> · <button class="lnk" id="fcDel">사진 지우기</button></p>` : ''}
  <div class="sec">테두리 <small>${PFRAMES.filter(f => pfHas(f.k)).length} / ${PFRAMES.length}</small></div>
  <div class="pfgrid">${PFRAMES.map(f => {
    const has = pfHas(f.k);
-   return `<button class="pfc${f.k === cur ? ' on' : ''}${has ? '' : ' lock'}${f.rare || f.rk ? ' rare' : ''}" data-pf="${f.k}"><span class="pv"><i></i><img class="pfr${pfTall(f.k)}" src="assets/profile/frame_${f.k}.png" alt="">${has ? '' : '<img class="lk" src="assets/ui/icon_lock.png" alt="잠김">'}${f.rk ? '<em class="rkt">랭킹</em>' : ''}</span><b>${f.n}</b>${nw['f_' + f.k] ? '<i class="nwb">NEW</i>' : ''}<small>${f.k === cur ? '사용 중' : has ? '바꾸기' : '🔒 ' + f.d}</small></button>`;
+   return `<button class="pfc${f.k === cur ? ' on' : ''}${has ? '' : ' lock'}${f.rare || f.rk ? ' rare' : ''}" data-pf="${f.k}"><span class="pv"><i></i><img class="pfr${pfTall(f.k)}" src="assets/profile/frame_${f.k}.png" alt="">${has ? '' : '<img class="lk" src="assets/ui/icon_lock.png" alt="잠김">'}${f.rk ? '<em class="rkt">랭킹</em>' : ''}</span><b>${f.n}</b>${nw['f_' + f.k] ? '<i class="nwb">NEW</i>' : ''}${has ? nb : '<small>🔒 ' + f.d + '</small>'}</button>`;
  }).join('')}</div>
- <div class="sec">대표 배지 <small>${BADGES.filter(b => bdHas(b.k)).length + attBds().length} / ${BADGES.length + attBds().length}</small></div>
+ <div class="sec">대표 배지 <small>${BADGES.filter(b => bdHas(b.k)).length + attBds().length} / ${BADGES.length + attBds().length} · 한 번 더 누르면 떼기</small></div>
  <div class="pfgrid">${attBds()
-   .map(k => {
-     const on = S.badge === k;
-     return `<button class="pfc bd${on ? ' on' : ''} rare" data-bd="${k}"><span class="pv"><img class="pfr" data-k="${k}" src="${bdSrc(k)}" alt="" onerror="bdErr(this)"></span><b>${BDN(k)}</b>${nw['b_' + k] ? '<i class="nwb">NEW</i>' : ''}<small>${on ? '다는 중' : '달기'}</small></button>`;
-   })
+   .map(k => `<button class="pfc bd${d.badge === k ? ' on' : ''} rare" data-bd="${k}"><span class="pv"><img class="pfr" data-k="${k}" src="${bdSrc(k)}" alt="" onerror="bdErr(this)"></span><b>${BDN(k)}</b>${nw['b_' + k] ? '<i class="nwb">NEW</i>' : ''}${nb}</button>`)
    .join('')}${BADGES.map(b => {
-   const has = bdHas(b.k),
-     on = S.badge === b.k;
-   return `<button class="pfc bd${on ? ' on' : ''}${has ? '' : ' lock'}${b.rare || b.rk ? ' rare' : ''}" data-bd="${b.k}"><span class="pv"><img class="pfr" src="assets/profile/badge_${b.k}.png" alt="">${has ? '' : '<img class="lk" src="assets/ui/icon_lock.png" alt="잠김">'}${b.rk ? '<em class="rkt">랭킹</em>' : ''}</span><b>${b.n}</b>${nw['b_' + b.k] ? '<i class="nwb">NEW</i>' : ''}<small>${on ? '다는 중' : has ? '달기' : '🔒 ' + b.d}</small></button>`;
+   const has = bdHas(b.k);
+   return `<button class="pfc bd${d.badge === b.k ? ' on' : ''}${has ? '' : ' lock'}${b.rare || b.rk ? ' rare' : ''}" data-bd="${b.k}"><span class="pv"><img class="pfr" src="assets/profile/badge_${b.k}.png" alt="">${has ? '' : '<img class="lk" src="assets/ui/icon_lock.png" alt="잠김">'}${b.rk ? '<em class="rkt">랭킹</em>' : ''}</span><b>${b.n}</b>${nw['b_' + b.k] ? '<i class="nwb">NEW</i>' : ''}${has ? nb : '<small>🔒 ' + b.d + '</small>'}</button>`;
  }).join('')}</div>
- <div class="acts three"><button id="pfSet">⚙ 설정</button><button id="pfRank">🏆 랭킹</button><button class="pri" id="mGo">닫기</button></div>`;
+ <div class="acts three pfacts"><button id="mX" hidden>닫기</button><button id="pfSet">⚙ 설정</button><button id="pfRank">🏆 랭킹</button>${dirty ? '<button class="pri" id="pfOk">저장</button>' : '<button class="pri" id="mGo">닫기</button>'}</div>`;
   $('modal').hidden = false;
   drawMyFace();
+  faceTo($('pfCv'), d.photo ? 'photo' : d.face);
   document.querySelectorAll('[data-fc]').forEach(c => {
     if (c.dataset.fc !== 'photo') faceTo(c, c.dataset.fc);
     else if (photoData()) faceTo(c, 'photo');
   });
-  $('mGo').onclick = closeModal;
-  $('pfSet').onclick = () => settingsSheet();
-  $('pfRank').onclick = () => rankSheet();
-  if ($('pfNick'))
-    $('pfNick').onclick = () => {
-      if (!S.nick) sbEnsure();
-      nickSheet(() => profileSheet());
+  const re = () => profileSheet(true);
+  $('mX').onclick = () => pfLeave(closeModal);
+  if ($('mGo')) $('mGo').onclick = () => pfLeave(closeModal);
+  if ($('pfOk'))
+    $('pfOk').onclick = () => {
+      pfSave();
+      pfDraft = null;
+      closeModal();
     };
+  $('pfSet').onclick = () => pfLeave(() => settingsSheet());
+  $('pfRank').onclick = () => pfLeave(() => rankSheet());
+  if ($('pfNick'))
+    $('pfNick').onclick = () =>
+      pfLeave(() => {
+        if (!S.nick) sbEnsure();
+        nickSheet(() => profileSheet());
+      });
   document.querySelectorAll('[data-bd]').forEach(
     b =>
       (b.onclick = () => {
@@ -18778,10 +18881,8 @@ function profileSheet() {
           f = BADGES.find(x => x.k === k);
         if (!bdHas(k))
           return toast(f.rk ? f.d + '로 우편함에 도착해요' : f.rare ? '황금 고블린을 잡으면 아주 드물게 얻어요' : f.d + ' 달성 시 얻어요');
-        S.badge = S.badge === k ? null : k;
-        pfCheck();
-        save();
-        profileSheet();
+        d.badge = d.badge === k ? null : k;
+        re();
       })
   );
   document.querySelectorAll('[data-face]').forEach(
@@ -18789,19 +18890,26 @@ function profileSheet() {
       (b.onclick = () => {
         const k = b.dataset.face;
         if (k === 'photo') {
-          if (!photoData()) return pickPhoto(() => profileSheet());
-          S.facePhoto = true;
+          /* 사진 올리기는 고르는 즉시 이 기기에 저장되고 바로 씀 */
+          if (!photoData())
+            return pickPhoto(() => {
+              d.photo = true;
+              re();
+            });
+          d.photo = true;
         } else {
-          S.face = k === 'kael' ? null : k;
-          S.facePhoto = false;
-          faceSync();
+          d.face = k;
+          d.photo = false;
         }
-        save();
-        drawMyFace();
-        profileSheet();
+        re();
       })
   );
-  if ($('fcNew')) $('fcNew').onclick = () => pickPhoto(() => profileSheet());
+  if ($('fcNew'))
+    $('fcNew').onclick = () =>
+      pickPhoto(() => {
+        d.photo = true;
+        re();
+      });
   if ($('fcDel'))
     $('fcDel').onclick = () => {
       try {
@@ -18809,10 +18917,11 @@ function profileSheet() {
       } catch (e) {}
       PHOTO = null;
       S.facePhoto = false;
+      d.photo = false;
       save();
       drawMyFace();
       toast('사진을 지웠어요');
-      profileSheet();
+      re();
     };
   document.querySelectorAll('[data-pf]').forEach(
     b =>
@@ -18821,10 +18930,8 @@ function profileSheet() {
           f = PFRAMES.find(x => x.k === k);
         if (!pfHas(k))
           return toast(f.rk ? f.d + '로 우편함에 도착해요' : f.rare ? '황금 고블린을 잡으면 아주 드물게 얻어요' : f.d + ' 달성 시 얻어요');
-        S.pf = k;
-        pfCheck();
-        save();
-        profileSheet();
+        d.pf = k;
+        re();
       })
   );
 }
@@ -18871,7 +18978,7 @@ function settingsSheet(step) {
   $('setImp').onclick = () => {
     try {
       const d = JSON.parse(decodeURIComponent(escape(atob($('setCode').value.trim()))));
-      if (!d || typeof d.gold !== 'number') throw 0;
+      if (!isSave(d)) throw 0;
       noSave = true;
       localStorage.setItem(KEY, JSON.stringify(d));
       location.reload();
@@ -18891,9 +18998,20 @@ function settingsSheet(step) {
   } else $('setReset').onclick = () => settingsSheet('reset');
 }
 function load() {
+  let raw = null;
   try {
-    const d = JSON.parse(localStorage.getItem(KEY));
-    if (d && typeof d.gold === 'number') return hydrate(d);
+    raw = localStorage.getItem(KEY);
+  } catch (e) {
+    return null;
+  }
+  if (!raw) return null;
+  try {
+    const d = JSON.parse(raw);
+    if (isSave(d)) return hydrate(d);
+  } catch (e) {}
+  /* 읽지 못한 저장은 새 게임이 덮어쓰기 전에 따로 남겨 둠 */
+  try {
+    localStorage.setItem(KEY + '-bak', raw);
   } catch (e) {}
   return null;
 }
@@ -19459,7 +19577,7 @@ function start(data) {
     } catch (e) {}
   }
   BANNER.src = 'assets/ui/banner_capture.png';
-  S = data && typeof data.gold === 'number' ? hydrate(data) : load() || hydrate({ gold: 60 });
+  S = isSave(data) ? hydrate(data) : load() || hydrate({ gold: 60 });
   $('autoSell').checked = S.autoSell;
   $('autoOpen').checked = S.autoOpen;
   const isNew = !S.started;

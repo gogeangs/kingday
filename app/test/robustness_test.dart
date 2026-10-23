@@ -55,6 +55,8 @@ final Map<String, String?> _badSaves = {
   '음수와 이상한 숫자': '{"gold":-500,"gem":-3,"stage":-2,"best":0,"boxLv":0,"wave":99,"memory":-1,"retires":-1,"started":true}',
   '아주 큰 숫자': '{"gold":1.7e308,"gem":1e300,"stage":51,"best":51,"boxLv":10,"up":{"atk":900,"hp":900,"spd":40,"crit":55},"started":true}',
   '미래 시각(시계 되돌림)': '{"gold":1000,"stage":12,"best":12,"started":true,"last":${_now + 10 * 86400000},"prod":{"dock":${_now + 86400000}},"bld":{"dock":3,"farm":2},"plots":[{"k":"wheat","at":${_now + 86400000}}],"buffs":{"atk":${_now + 9e9}}}',
+  // 웹 QA(2026-10-23): 웹은 이런 저장에서 멈추거나 새 게임으로 덮어썼음 → 웹·앱 hydrate 가 깨진 칸만 기본값으로
+  '칸이 비어 있음(null)': '{"gold":null,"stage":23,"best":25,"bld":null,"up":null,"eq":null,"joined":null,"done":null,"lv":null,"items":null,"buffs":null,"prod":null,"seeds":null,"started":true}',
   '아주 오래 꺼 둠(1970년)': '{"gold":1000,"stage":12,"best":12,"started":true,"last":0,"prod":{"dock":0,"mine":0},"bld":{"dock":3,"mine":2,"farm":2},"plots":[{"k":"wheat","at":0}]}',
 };
 
@@ -77,6 +79,22 @@ void main() {
         sane(s, e.key);
       });
     }
+  });
+
+  test('깨진 칸이 있어도 나머지 기록은 살림 · 못 읽은 저장은 백업', () async {
+    SharedPreferences.setMockInitialValues({'acorn-idle-v1': _badSaves['칸이 비어 있음(null)']!});
+    var store = await SaveStore.open();
+    var s = store.load(_now);
+    expect(s.stage, 23);
+    expect(s.best, 25);
+    expect(s.gold, 0);
+    expect(asMap(s.raw['bld'])!['inn'], 0);
+    expect(store.prefs.getString('acorn-idle-v1-bak'), isNull);
+    SharedPreferences.setMockInitialValues({'acorn-idle-v1': '안녕하세요{{{'});
+    store = await SaveStore.open();
+    s = store.load(_now);
+    expect(s.stage, 1);
+    expect(store.prefs.getString('acorn-idle-v1-bak'), '안녕하세요{{{');
   });
 
   group('화면이 깨진 저장에서도 열림', () {

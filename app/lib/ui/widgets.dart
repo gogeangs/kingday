@@ -522,7 +522,8 @@ Future<T?> showKdSheet<T>(BuildContext context, {required Widget Function(BuildC
           padding: const EdgeInsets.all(16),
           child: Material(
             type: MaterialType.transparency,
-            child: KdSheetFrame(onClose: closable ? () => Navigator.of(ctx).pop() : null, child: builder(ctx)),
+            // maybePop: 창 안에서 닫기를 막을 수 있게 (PopScope · 프로필 「저장할까요?」)
+            child: KdSheetFrame(onClose: closable ? () => Navigator.of(ctx).maybePop() : null, child: builder(ctx)),
           ),
         ),
       ),

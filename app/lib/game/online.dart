@@ -432,7 +432,7 @@ class Online {
       try {
         cl = await rpc('kd_save_get', {});
       } catch (_) {}
-      if (cl is Map && cl['data'] is Map && (cl['data'] as Map)['gold'] is num) {
+      if (cl is Map && GameState.looksLikeSave(cl['data'])) {
         g.queue((ctx) => showCloudPick(ctx, g, cl.cast<String, dynamic>()));
       } else {
         await ensure();

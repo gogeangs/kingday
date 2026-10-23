@@ -772,7 +772,8 @@ class BattleGame extends FlameGame {
   // ── 말풍선 (웹 drawQuip) ──
   void _drawQuip(BattleLayout l) {
     final q = sim.quip;
-    if (q == null) return;
+    // 웹: 「⚠ 성주 출현!」 띠가 떠 있는 동안은 말풍선을 그리지 않음
+    if (q == null || sim.warn != null) return;
     final hk = sim.c.slotMember('kael')!, id = comps.containsKey(q.who) && q.who != 'kael' && l.pos[q.who] != null ? q.who : hk;
     final x = l.pos[id]?.toDouble();
     if (x == null) return;

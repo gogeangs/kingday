@@ -87,7 +87,10 @@ class ActGemPlotAsk extends ActResult {
 
 /// 카드를 받았어요 창 (웹 cardReveal)
 class ActCardReveal extends ActResult {
-  ActCardReveal(this.got, this.title, [this.gold = 0]);
+  ActCardReveal(this.got, this.title, [this.gold = 0, this.again]);
+
+  /// 상점 카드 묶음 번호 — 결과 창에 「또 뽑기」 (웹 cardReveal again)
+  final int? again;
   /// 별을 다 채운 동료 카드가 바뀐 골드
   final num gold;
   final List<(String, int)> got;
@@ -975,7 +978,7 @@ class GameActions {
     }
     if (!spendGem(asNum(cp['gem']))) return;
     final r = c.gainCards(rng, n, 'shop', n >= 30 ? 5 : 1);
-    out.add(ActCardReveal(r?.got ?? const [], '카드 $n장', r?.gold ?? 0));
+    out.add(ActCardReveal(r?.got ?? const [], '카드 $n장', r?.gold ?? 0, i));
   }
 
   /// 결제 (웹 pay): 지금은 시험용으로 바로 지급
@@ -1034,17 +1037,26 @@ class GameActions {
     sub['last'] = c.today();
     final g = asNum(subscription['now']) + asNum(subscription['day']);
     s.gem = s.gem + g;
-    s.raw['ucard'] = c.ucard + 1;
-    _toast('정기 배송 시작! 황금 이삭 +${fmt(g)} · 유니크 카드 +1');
+    _toast('정기 배송 시작! 황금 이삭 +${fmt(g)}${_subCardTxt(_subCard())}');
   }
+
+  /// 웹 subCard(): 정기 배송 유니크 카드는 3일마다 1장 (배송 받은 횟수 1·4·7…번째)
+  bool _subCard() {
+    final cn = orNum(sub['cn'], 0).toInt() + 1;
+    sub['cn'] = cn;
+    if (cn % 3 != 1) return false;
+    s.raw['ucard'] = c.ucard + 1;
+    return true;
+  }
+
+  String _subCardTxt(bool u) => u ? ' · 유니크 카드 +1' : ' · 유니크 카드까지 ${3 - ((orNum(sub['cn'], 0).toInt() - 1) % 3)}일';
 
   /// 정기 배송 오늘 받기
   void claimSub() {
     if (!c.subOn() || sub['last'] == c.today()) return;
     sub['last'] = c.today();
     s.gem = s.gem + asNum(subscription['day']);
-    s.raw['ucard'] = c.ucard + 1;
-    _toast('피트의 마차가 도착했어요. 황금 이삭 +${fmt(asNum(subscription['day']))} · 유니크 카드 +1');
+    _toast('피트의 마차가 도착했어요. 황금 이삭 +${fmt(asNum(subscription['day']))}${_subCardTxt(_subCard())}');
   }
 
   // ───────────── 카엘 촌장 (웹 chiefJoin · chiefCheck · chiefUp · buyChief) ─────────────
