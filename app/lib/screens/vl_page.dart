@@ -183,8 +183,11 @@ class _LvBar extends StatelessWidget {
           Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
             Row(children: [
               Text('마을 Lv.$l', style: KdText.display(15, color: KdColors.gold)),
-              const Spacer(),
-              Text('방치 골드 +${2 * l}%${nx != null ? ' · 건물 $s/$nx' : ' · 최대'}', style: KdText.body(12.5, color: const Color(0xFFE9DCB8))),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Text('방치 골드 +${2 * l}%${nx != null ? ' · 건물 $s/$nx' : ' · 최대'}',
+                    textAlign: TextAlign.right, style: KdText.body(12.5, color: const Color(0xFFE9DCB8))),
+              ),
             ]),
             // 마을 Lv 막대 한 줄 (최대면 막대 숨김) — 웹 마을 화면 정리
             if (nx != null) ...[const SizedBox(height: 4), XpBar(ratio, height: 7, bg: const Color(0x1AFFFFFF))],
