@@ -211,34 +211,95 @@ class _Profile extends StatefulWidget {
   State<_Profile> createState() => _ProfileState();
 }
 
+/// 웹 profileSheet: 칸을 눌러 고르기만(금테) → 「저장」으로 한 번에 적용. 맨 위 미리보기는 고른 대로.
+/// 저장하지 않고 나가려 하면(✕·바깥·뒤로·설정·랭킹·닉네임) 「저장할까요?」 한 번 묻기
 class _ProfileState extends State<_Profile> {
   GameController get g => widget.g;
 
-  void _pick(Deco d, bool frame) {
+  // 고르는 중인 값 (웹 pfDraft)
+  late String _pf;
+  String? _badge;
+  late String _face;
+  late bool _photo;
+  bool _leaving = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _pf = g.calc.curFrame();
+    _badge = g.calc.curBadge();
+    _face = g.calc.pubFace();
+    _photo = g.photoOn;
+  }
+
+  bool get _dirty {
+    final c = g.calc;
+    return _pf != c.curFrame() || _badge != c.curBadge() || _face != c.pubFace() || _photo != g.photoOn;
+  }
+
+  void _save() {
     final c = g.calc, s = g.state;
+    s.raw['pf'] = _pf;
+    s.raw['badge'] = _badge;
+    s.raw['face'] = _face == 'kael' ? null : _face;
+    s.raw['facePhoto'] = _photo;
+    g.online.faceSync();
+    c.pfCheck();
+    g.save();
+    g.refresh();
+    g.toast('프로필을 저장했어요');
+  }
+
+  /// 저장 안 한 채로 나가려 할 때. then: 나간 뒤 할 일
+  Future<void> _leave(VoidCallback then) async {
+    if (!_dirty) {
+      _leaving = true;
+      then();
+      return;
+    }
+    final save = await showKdSheet<bool>(
+      context,
+      closable: false,
+      builder: (c) => KdSheetBody(
+        eyebrow: '프로필',
+        title: '바꾼 꾸미기를 저장할까요?',
+        children: [Text('저장하지 않으면 고른 얼굴·테두리·배지가 원래대로 돌아가요.', textAlign: TextAlign.center, style: _muted(13))],
+        acts: KdActs(buttons: [
+          KdAct('저장 안 함', onTap: () => Navigator.of(c).pop(false)),
+          KdAct('저장', primary: true, onTap: () => Navigator.of(c).pop(true)),
+        ]),
+      ),
+    );
+    if (save == null || !mounted) return;
+    if (save) _save();
+    _leaving = true;
+    then();
+  }
+
+  void _pick(Deco d, bool frame) {
+    final c = g.calc;
     final has = frame ? c.pfHas(d.k) : c.bdHas(d.k);
     if (!has) {
       g.toast(d.rk ? '${d.d}로 우편함에 도착해요' : d.rare ? '황금 고블린을 잡으면 아주 드물게 얻어요' : '${d.d} 달성 시 얻어요');
       return;
     }
-    if (frame) {
-      s.raw['pf'] = d.k;
-    } else {
-      s.raw['badge'] = s.raw['badge'] == d.k ? null : d.k;
-    }
-    c.pfCheck();
-    g.save();
-    g.refresh();
-    setState(() {});
+    setState(() {
+      if (frame) {
+        _pf = d.k;
+      } else {
+        _badge = _badge == d.k ? null : d.k;
+      }
+    });
   }
 
+  /// 사진 올리기는 고르는 즉시 이 기기에 저장되고 바로 씀
   Future<void> _newPhoto() async {
-    if (await g.pickPhoto() && mounted) setState(() {});
+    if (await g.pickPhoto() && mounted) setState(() => _photo = true);
   }
 
   void _delPhoto() {
     g.clearPhoto();
-    if (mounted) setState(() {});
+    if (mounted) setState(() => _photo = false);
   }
 
   void _pickFace(String id) {
@@ -247,21 +308,19 @@ class _ProfileState extends State<_Profile> {
         _newPhoto();
         return;
       }
-      g.state.raw['facePhoto'] = true;
+      setState(() => _photo = true);
     } else {
-      g.state.raw['face'] = id == 'kael' ? null : id;
-      g.state.raw['facePhoto'] = false;
-      g.online.faceSync();
+      setState(() {
+        _face = id;
+        _photo = false;
+      });
     }
-    g.save();
-    g.refresh();
-    setState(() {});
   }
 
   /// 웹 .fcgrid: 내 사진 + 카엘 + 합류한 동료
   Widget _faceGrid() => LayoutBuilder(builder: (_, box) {
         final w = (box.maxWidth - 3 * 8) / 4, pv = math.min(52.0, w - 6);
-        final c = g.calc, ph = g.photoOn, pub = c.pubFace(), bytes = g.photoBytes;
+        final c = g.calc, ph = _photo, pub = _face, bytes = g.photoBytes;
         final ids = ['kael', for (final id in comps.keys) if (id != 'kael' && c.owned(id)) id];
         Widget cell(String key, String name, Widget face, bool on, String sub) => GestureDetector(
               onTap: () => _pickFace(key),
@@ -292,19 +351,19 @@ class _ProfileState extends State<_Profile> {
             );
         return Wrap(spacing: 8, runSpacing: 8, children: [
           cell('photo', '내 사진', bytes != null ? Image.memory(bytes, fit: BoxFit.cover, gaplessPlayback: true) : const Center(child: Text('📷', style: TextStyle(fontSize: 24))), ph,
-              ph ? '사용 중' : bytes != null ? '쓰기' : '올리기'),
-          for (final id in ids) cell(id, id == 'kael' ? '카엘' : comps[id]!.n, FaceImg(id), !ph && pub == id, !ph && pub == id ? '사용 중' : '바꾸기'),
+              bytes != null ? ' ' : '올리기'),
+          for (final id in ids) cell(id, id == 'kael' ? '카엘' : comps[id]!.n, FaceImg(id), !ph && pub == id, ' '),
         ]);
       });
 
   Widget _grid(List<Deco> list, bool frame) => LayoutBuilder(builder: (_, box) {
         final w = (box.maxWidth - 3 * 8) / 4, pv = math.min(56.0, w - 6);
-        final c = g.calc, cur = c.curFrame();
+        final c = g.calc, cur = _pf;
         return Wrap(spacing: 8, runSpacing: 8, children: [
           for (final d in list)
             Builder(builder: (_) {
               final has = frame ? c.pfHas(d.k) : c.bdHas(d.k);
-              final on = frame ? d.k == cur : g.state.raw['badge'] == d.k;
+              final on = frame ? d.k == cur : _badge == d.k;
               final isNew = truthy(widget.nw['${frame ? 'f' : 'b'}_${d.k}']);
               return GestureDetector(
                 onTap: () => _pick(d, frame),
@@ -352,7 +411,7 @@ class _ProfileState extends State<_Profile> {
                           child: Text('NEW', style: KdText.body(9, color: Colors.white, weight: FontWeight.w600, height: 1.4)),
                         ),
                       Text(
-                        on ? (frame ? '사용 중' : '다는 중') : has ? (frame ? '바꾸기' : '달기') : '🔒 ${d.d}',
+                        has ? ' ' : '🔒 ${d.d}',
                         textAlign: TextAlign.center,
                         style: KdText.body(11.5, color: on ? KdColors.gold : KdColors.muted, height: 1.2),
                       ),
@@ -366,12 +425,17 @@ class _ProfileState extends State<_Profile> {
 
   @override
   Widget build(BuildContext context) {
-    final s = g.state, c = g.calc, o = g.online, cur = c.curFrame(), bd = c.curBadge();
-    return KdSheetBody(
+    final s = g.state, c = g.calc, o = g.online, cur = _pf, bd = _badge, dirty = _dirty;
+    return PopScope(
+      canPop: !dirty || _leaving,
+      onPopInvokedWithResult: (didPop, _) {
+        if (!didPop) _leave(() => Navigator.of(widget.sheet).pop());
+      },
+      child: KdSheetBody(
       titleWidget: const HdBanner('hd_profile', '프로필'),
       children: [
         Row(children: [
-          FramedFace(frame: cur, size: 104, faceId: c.pubFace(), photo: g.photoOn ? g.photoBytes : null),
+          FramedFace(frame: cur, size: 104, faceId: _face, photo: _photo ? g.photoBytes : null),
           const SizedBox(width: 12),
           Expanded(
             child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
@@ -396,10 +460,10 @@ class _ProfileState extends State<_Profile> {
                     small: true,
                     minWidth: 0,
                     text: o.nickTemp || o.nick == null ? '정하기' : '바꾸기',
-                    onTap: () => g.chainSheet(widget.sheet, () async {
-                      if (o.nick == null) await o.ensure();
-                      openNick(g, after: () => openProfile(g));
-                    }),
+                    onTap: () => _leave(() => g.chainSheet(widget.sheet, () async {
+                          if (o.nick == null) await o.ensure();
+                          openNick(g, after: () => openProfile(g));
+                        })),
                   ),
               ]),
               const SizedBox(height: 3),
@@ -410,13 +474,18 @@ class _ProfileState extends State<_Profile> {
             ]),
           ),
         ]),
+        Text.rich(
+            TextSpan(children: dirty
+                ? const [TextSpan(text: '고른 대로 위에 미리 보여요. '), TextSpan(text: '저장', style: TextStyle(fontWeight: FontWeight.w700)), TextSpan(text: '을 눌러야 바뀌어요.')]
+                : const [TextSpan(text: '칸을 눌러 고른 뒤 '), TextSpan(text: '저장', style: TextStyle(fontWeight: FontWeight.w700)), TextSpan(text: '을 누르세요.')]),
+            style: _muted(12.5)),
         KdSec('얼굴', small: '합류한 동료 · 내 사진'),
         _faceGrid(),
         if (g.photoBytes != null)
           Text.rich(
             TextSpan(style: _muted(12), children: [
               const TextSpan(text: '내 사진은 이 기기에서만 보여요. 다른 영주에게는 '),
-              TextSpan(text: c.pubFace() == 'kael' ? '카엘' : comps[c.pubFace()]!.n, style: KdText.body(12, weight: FontWeight.w600)),
+              TextSpan(text: _face == 'kael' ? '카엘' : comps[_face]!.n, style: KdText.body(12, weight: FontWeight.w600)),
               const TextSpan(text: ' 얼굴이 보여요.  '),
               TextSpan(text: '다른 사진', style: KdText.body(12, color: KdColors.gold).copyWith(decoration: TextDecoration.underline), recognizer: TapGestureRecognizer()..onTap = _newPhoto),
               const TextSpan(text: ' · '),
@@ -425,14 +494,22 @@ class _ProfileState extends State<_Profile> {
           ),
         KdSec('테두리', small: '${pframes.where((f) => c.pfHas(f.k)).length} / ${pframes.length}'),
         _grid(pframes, true),
-        KdSec('대표 배지', small: '${badges.where((b) => c.bdHas(b.k)).length + c.attBadges().length} / ${badges.length + c.attBadges().length}'),
+        KdSec('대표 배지', small: '${badges.where((b) => c.bdHas(b.k)).length + c.attBadges().length} / ${badges.length + c.attBadges().length} · 한 번 더 누르면 떼기'),
         _grid([...c.attBadges(), ...badges], false),
       ],
       acts: KdActs(buttons: [
-        KdAct('⚙ 설정', onTap: () => g.chainSheet(widget.sheet, () => openSettings(g))),
-        KdAct('🏆 랭킹', onTap: () => g.chainSheet(widget.sheet, () => openRanking(g))),
-        KdAct('닫기', primary: true, onTap: () => Navigator.of(widget.sheet).pop()),
+        KdAct('⚙ 설정', onTap: () => _leave(() => g.chainSheet(widget.sheet, () => openSettings(g)))),
+        KdAct('🏆 랭킹', onTap: () => _leave(() => g.chainSheet(widget.sheet, () => openRanking(g)))),
+        if (dirty)
+          KdAct('저장', primary: true, onTap: () {
+            _save();
+            _leaving = true;
+            Navigator.of(widget.sheet).pop();
+          })
+        else
+          KdAct('닫기', primary: true, onTap: () => Navigator.of(widget.sheet).pop()),
       ]),
+      ),
     );
   }
 }

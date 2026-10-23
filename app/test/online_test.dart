@@ -204,8 +204,11 @@ void main() {
       await frames(1);
       await tester.tap(find.text('시즌 왕관'));
       await frames(2);
+      // 고르기만 해서는 안 바뀌고, 「저장」을 눌러야 바뀜
+      expect(g.state.raw['pf'], isNot('season'));
+      await press('저장');
+      await frames(2);
       expect(g.state.raw['pf'], 'season');
-      await press('닫기');
 
       // 클라우드 저장 (게스트도 저장해 둠)
       expect(await g.online.cloudPut(true), isTrue);
