@@ -78,7 +78,14 @@ void main() {
       await press('카드 3장');
       await frames(4);
       expect(find.text('카드를 받았어요!'), findsOneWidget);
-      await press('닫기');
+      // 상점에서 산 카드: 「또 뽑기」(가격 보임) → 같은 묶음을 한 번 더
+      final gem1 = g.state.gem;
+      await press('또 뽑기');
+      await frames(4);
+      expect(g.state.gem, gem1 - 30);
+      expect(find.text('카드를 받았어요!'), findsOneWidget);
+      g.navKey.currentState!.pop();
+      await frames(4);
 
       // 첫 거래 특가 → 이야기 → 전설 성유물 비교 창 → 장착
       await press('₩1,200');
