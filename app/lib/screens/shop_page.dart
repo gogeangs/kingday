@@ -39,7 +39,7 @@ class _ShopPageState extends State<ShopPage> {
   Widget _tag(String t) => Container(
         padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 1),
         decoration: BoxDecoration(color: KdColors.bad, borderRadius: BorderRadius.circular(999)),
-        child: Text(t, style: KdText.body(10, color: Colors.white, weight: FontWeight.w600, height: 1.3)),
+        child: Text(t, style: KdText.body(11, color: Colors.white, weight: FontWeight.w600, height: 1.3)),
       );
 
   /// 웹 .mis
@@ -287,8 +287,13 @@ class _ShopPageState extends State<ShopPage> {
           Expanded(child: Text('동료 카드', style: KdText.display(15))),
           Text('여러 동료에게 무작위 · ', style: KdText.body(12, color: KdColors.muted)),
           GestureDetector(
+            behavior: HitTestBehavior.opaque,
             onTap: () => showCardOdds(g),
-            child: Text('확률 보기', style: KdText.body(12, color: KdColors.gold, weight: FontWeight.w600).copyWith(decoration: TextDecoration.underline, decorationColor: KdColors.gold)),
+            // 누르는 범위만 넓힘 (웹 #cardOdds::after)
+            child: Padding(
+              padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 4),
+              child: Text('확률 보기', style: KdText.body(12, color: KdColors.gold, weight: FontWeight.w600).copyWith(decoration: TextDecoration.underline, decorationColor: KdColors.gold)),
+            ),
           ),
         ]),
         _grid([

@@ -442,7 +442,7 @@ class _QBtn extends StatelessWidget {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 6),
             decoration: BoxDecoration(color: const Color(0xD10A0E1A), borderRadius: BorderRadius.circular(8)),
-            child: Text(label, maxLines: 1, style: KdText.figure(10, weight: FontWeight.w600).copyWith(height: 1.45)),
+            child: Text(label, maxLines: 1, style: KdText.figure(11, weight: FontWeight.w600).copyWith(height: 1.4)),
           ),
         ]),
       ),
