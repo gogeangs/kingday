@@ -1172,7 +1172,58 @@ table.codds th {
   background: #171e36;
   padding: 6px 0;
 }
+.shjump .dot {
+  position: absolute;
+  top: -3px;
+  right: -3px;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--bad);
+  border: 1.5px solid #fff;
+}
+.shgrp {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 10px 0 4px;
+  padding: 10px 10px 12px;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.025);
+  border: 1px solid rgba(201, 149, 42, 0.35);
+  scroll-margin-top: 112px;
+}
+.shgrp.pay {
+  border-color: rgba(255, 201, 74, 0.6);
+  background: linear-gradient(rgba(255, 201, 74, 0.06), rgba(255, 255, 255, 0.02));
+}
+.shgh {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 0 2px 4px;
+  border-bottom: 1px solid rgba(201, 149, 42, 0.3);
+}
+.shgh b {
+  font-family: var(--f-display);
+  font-size: 17px;
+  color: var(--gold);
+}
+.shgh small {
+  font-size: 12px;
+  color: var(--muted);
+}
+.shgh small img {
+  width: 14px;
+  height: 14px;
+  vertical-align: -2px;
+}
+.shgrp .sec {
+  margin-top: 4px;
+}
 .shjump button {
+  position: relative;
   flex: 1;
   background: var(--panel2);
   border: 1px solid var(--line);
@@ -8493,28 +8544,31 @@ function renderShop() {
       ? `<button class="buy claim" disabled>받음</button>`
       : `<button class="buy claim" id="subClaim">+${SUB.day} 받기</button>`
     : `<button class="buy" id="subBuy">${won(SUB.won)}</button>`;
+  /* 상점 정리 (2026-10-24 대표님 결정): 「매일 무료 / 황금 이삭으로 / 결제 상품」 세 묶음 + 위에 바로가기 */
+  const freeDot = MISSIONS.some(m => misCan(m)) || misCan(null) || adKeys().some(k => adLeft(k)) || (subOn() && S.sub.last !== today());
+  const subRow = `<div class="shoprow${subOn() ? ' hot' : ''}"><img class="pk" src="assets/gem/gem_pack_5.png" alt="" onerror="this.remove()"><div class="info"><b>${SUB.n}</b><div>${subTxt}</div></div>${subBtn}</div>`;
   $('shop').innerHTML =
     `${TEST_PAY && DEV ? '<div class="testbar">테스트 모드: 실제 결제 없이 누르면 바로 지급돼요. 결제 연동 전까지만 이렇게 동작해요.</div>' : ''}
  <div class="shjump">${[
-   ['shs-today', '오늘'],
-   ['shs-gold', '골드'],
-   ['shs-card', '카드'],
-   ['shs-pack', '상품']
+   ['shs-free', '🎁 매일 무료', freeDot],
+   ['shs-gem', '🌾 이삭으로', false],
+   ['shs-pay', '💰 상품', false]
  ]
-   .map(([k, n]) => `<button data-jump="${k}">${n}</button>`)
+   .map(([k, n, dot]) => `<button data-jump="${k}">${n}${dot ? '<i class="dot"></i>' : ''}</button>`)
    .join('')}</div>
- ${para('m:피트|어서 와, 형씨! 오늘도 진품만 들여놨어. …대부분.')}<div id="shs-today"></div>
+ ${para('m:피트|어서 와, 형씨! 오늘도 진품만 들여놨어. …대부분.')}
+ <section class="shgrp" id="shs-free"><div class="shgh"><b>🎁 매일 무료</b><small>매일 자정에 새로</small></div>
  ${
    d.claim.all && !misOpen
      ? `<button class="misdone" id="misOpen"><b>✓ 오늘의 할 일 완료</b><small>내일 자정에 새 할 일이 열려요 · 눌러서 보기</small></button>`
-     : `<div class="sec">오늘의 할 일 <small>매일 자정에 새로 시작</small></div>
+     : `<div class="sec">오늘의 할 일</div>
  ${MISSIONS.map(misRow).join('')}
  <div class="mis"><div class="info"><b>오늘의 할 일 모두 끝내기</b></div><button class="buy claim" data-m="all" ${misCan(null) ? '' : 'disabled'}>${d.claim.all ? '받음' : '+' + MIS_ALL + (misCan(null) ? ' 받기' : '')}</button></div>`
  }
  ${
    !adKeys().some(k => adLeft(k)) && !adOpen
      ? `<button class="misdone" id="adOpen"><b>✓ 피트의 무료 선물 모두 받음</b><small>내일 자정에 다시 받을 수 있어요 · 눌러서 보기</small></button>`
-     : `<div class="sec">피트의 무료 선물 <small>광고를 보면 받아요 · 매일 자정 초기화</small></div>
+     : `<div class="sec">피트의 무료 선물 <small>광고를 보면 받아요</small></div>
  ${adKeys()
    .map(
      k =>
@@ -8522,24 +8576,25 @@ function renderShop() {
    )
    .join('')}`
  }
- <div id="shs-gold"></div><div class="sec">골드 바꾸기 <small>지금 영지 기준 · 영지가 오를수록 더 많이</small></div>
- <div class="packs">${GOLDX.map((x, i) => `<button class="pack gx" data-gx="${x.k}">${i ? `<span class="tag">${x.h}시간치</span>` : ''}<img src="assets/ui/gold_pack${i + 1}.png" alt="" style="width:72px;height:72px;object-fit:contain" onerror="this.remove()"><b>${fmt(goldX(x))}</b><small>${x.n}</small><span class="price">${gemI}${x.gem}</span></button>`).join('')}</div>
- <div id="shs-card"></div>${
+ ${subOn() ? subRow : ''}</section>
+ <section class="shgrp" id="shs-gem"><div class="shgh"><b>🌾 황금 이삭으로</b><small>가진 이삭 ${gemI}${fmt(S.gem || 0)}</small></div>${
    CARDIDS().some(cardOpen)
      ? `<div class="sec">동료 카드 <small>여러 동료에게 무작위 · <button class="lnk" id="cardOdds">확률 보기</button></small></div>
  <div class="packs">${CARDPK.map((c, i) => `<button class="pack gx" data-cp="${i}">${i ? '<span class="tag">10% 이득</span>' : ''}<span class="cpk"><img src="assets/ui/card_pack${c.n >= 30 ? 30 : 3}.png" alt="" onerror="this.replaceWith('🂠')"><b>×${c.n}</b></span><b>카드 ${c.n}장</b><small>${c.n >= 30 ? '5장씩 6번 무작위' : '1장씩 3번 무작위'}</small><span class="price">${gemI}${c.gem}</span></button>`).join('')}</div>`
      : ''
  }
- <div id="shs-pack"></div><div class="sec">특별 상품</div>
+ <div class="sec">골드 바꾸기 <small>지금 영지 기준 · 영지가 오를수록 더 많이</small></div>
+ <div class="packs">${GOLDX.map((x, i) => `<button class="pack gx" data-gx="${x.k}">${i ? `<span class="tag">${x.h}시간치</span>` : ''}<img src="assets/ui/gold_pack${i + 1}.png" alt="" style="width:72px;height:72px;object-fit:contain" onerror="this.remove()"><b>${fmt(goldX(x))}</b><small>${x.n}</small><span class="price">${gemI}${x.gem}</span></button>`).join('')}</div>
+ ${helpNote('gemuse', '황금 이삭은 어디에 쓰나요?', `황금 이삭은 동료 카드, 골드 바꾸기, 성유물 상자 10연속(장비 탭), 작물 바로 키우기·건물 바로 짓기(마을 탭), 방치 보상 2배 받기에 써요.`)}</section>
+ <section class="shgrp pay" id="shs-pay"><div class="shgh"><b>💰 상품</b><small>황금 이삭은 상품마다 첫 구매 2배</small></div>
  ${S.buys.starter ? '' : `<div class="shoprow hot"><span class="tag">한 번만</span><img class="pk" src="assets/relic/relic_weapon_3.png" alt="" onerror="this.remove()"><div class="info"><b>${STARTER.n}</b><div>전설 등급 성유물 1개 확정<br>+ ${gemI}${STARTER.gem}</div></div><button class="buy" id="starterBuy">${won(STARTER.won)}</button></div>`}
  ${chiefShop() ? `<div class="shoprow hot"><span class="tag" style="background:#1f9e63">유니크</span><img class="pk" src="assets/portraits/portrait_kael_chief_laugh.png" alt="" onerror="this.remove()"><div class="info"><b>${CHIEF_PK.n}</b><div>유니크 동료 ★1 · 카엘 자리에서 출전<br>은퇴 ${CHIEF_RET}번이면 무료로 찾아와요 (${S.retires || 0}/${CHIEF_RET})</div></div><button class="buy" id="chiefBuy">${won(CHIEF_PK.won)}</button></div>` : ''}
- <div class="shoprow${subOn() ? ' hot' : ''}"><img class="pk" src="assets/gem/gem_pack_5.png" alt="" onerror="this.remove()"><div class="info"><b>${SUB.n}</b><div>${subTxt}</div></div>${subBtn}</div>
- <div class="sec">황금 이삭 <small>상품마다 첫 구매는 2배</small></div>
+ ${subOn() ? '' : subRow}
+ <div class="sec">황금 이삭</div>
  <div class="packs gemp">${PACKS.map((p, i) => {
    const first = !S.buys[p.k];
    return `<button class="pack" data-p="${p.k}">${first ? '<span class="tag">2배</span>' : ''}<img src="assets/gem/gem_pack_${i + 1}.png" alt="" onerror="this.remove()"><b>${fmt(p.gem)}</b><small>${first ? '+' + fmt(p.gem) + ' 보너스' : ''}</small>${UCARD_PK[p.k] ? `<small class="ucb">+유니크 카드 ${UCARD_PK[p.k]}</small>` : ''}<span class="price">${won(p.won)}</span></button>`;
- }).join('')}</div>
- ${helpNote('gemuse', '황금 이삭은 어디에 쓰나요?', `황금 이삭은 골드 바꾸기, 성유물 상자 10연속(장비 탭), 작물 바로 키우기·건물 바로 짓기(마을 탭), 방치 보상 2배 받기에 써요.`)}`;
+ }).join('')}</div></section>`;
   const sh = $('shop');
   sh.querySelectorAll('[data-m]').forEach(
     b =>
