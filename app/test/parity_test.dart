@@ -393,6 +393,7 @@ void main() {
         // 웹 retire(p): 은퇴 + 은퇴 횟수 보상(retRwCheck → 받은 게 있으면 pfCheck)
         final c = calcFor(name)..retire(5);
         if (c.retRwCheck() != null) c.pfCheck();
+        GameActions(c).chiefCheck(); // 은퇴 10번이면 카엘 촌장 합류 (웹 retire 끝의 chiefCheck)
         same(jsonDecode(jsonEncode(c.s.raw)), sc['retired'], 'retired S');
       });
 

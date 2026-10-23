@@ -379,7 +379,7 @@ class PtPage extends StatelessWidget {
               Row(children: [
                 uiImg('card_unique', size: 16),
                 const SizedBox(width: 3),
-                Text('유니크 카드 $n / $need', style: KdText.figure(12, color: KdColors.muted, weight: FontWeight.w400)),
+                Flexible(child: Text('유니크 카드 $n / $need', style: KdText.figure(12, color: KdColors.muted, weight: FontWeight.w400))),
               ]),
             ],
           ]),
@@ -629,13 +629,14 @@ void chiefSheet(GameController g) {
             children: [
               Text(cd.desc, style: KdText.body(13, color: KdColors.muted, height: 1.5)),
               if (!has)
-                KdKv('맞이하는 법',
-                    '${c.chiefShop() ? '피트의 상점 ₩${GameCalc.chiefWon}' : '첫 은퇴 뒤 피트의 상점'} · 또는 은퇴 ${math.min(orNum(g.state.raw['retires'], 0), GameCalc.chiefRet)} / ${GameCalc.chiefRet}번'),
-              KdKv('능력치', '카엘 능력치 +${pctTxt(GameCalc.chiefBonus[math.max(1, st)] * 100)}%${has ? ' · 공격 ${fmt(t.atk)} · 체력 ${fmt(t.hp)}' : ''}'),
-              KdKv('장비·칭호', '카엘 것을 그대로 써요'),
+                KdNote(
+                    '맞이하는 법: ${c.chiefShop() ? '피트의 상점 ₩${GameCalc.chiefWon}' : '첫 은퇴 뒤 피트의 상점'} · 또는 은퇴 ${math.min(orNum(g.state.raw['retires'], 0), GameCalc.chiefRet)} / ${GameCalc.chiefRet}번'),
+              KdKv('능력치', '카엘 +${pctTxt(GameCalc.chiefBonus[math.max(1, st)] * 100)}%'),
+              if (has) KdKv('공격 · 체력', '${fmt(t.atk)} · ${fmt(t.hp)}'),
+              KdKv('장비·칭호', '카엘 것 그대로'),
               SkillBox(id),
               VillageSkillBox(c, id),
-              KdKv('유니크 카드', has ? (mx ? '별을 모두 모았어요 · $n장' : '$n / $need장 (★${st + 1})') : '$n장 모아 둠'),
+              KdKv('유니크 카드', has ? (mx ? '$n장 · ★ 모두 모음' : '$n / $need장') : '$n장 모아 둠'),
               if (has && !mx) XpBar(n / need),
               const KdNote('유니크 카드는 황금 이삭 상품(5,500원 이상)의 덤, 피트의 정기 배송(매일 1장), 랭킹 시즌 보상으로 받아요. 원하는 유니크 동료를 골라 별을 올려요.'),
             ],

@@ -222,6 +222,7 @@ void main() {
         expect(find.text('누가 출전할까요?'), findsOneWidget);
         await closeTop();
         g.state.raw['ptTab'] = 'form';
+        g.state.raw['retires'] = 0; // 아래 은퇴 시험은 첫 은퇴 이야기(지역 소개)를 봄
         g.setTab(null);
         await frames(2);
 
