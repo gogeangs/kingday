@@ -179,8 +179,7 @@ class _GuidePillState extends State<_GuidePill> {
             ),
             if (open) ...[
               const SizedBox(width: 6),
-              ConstrainedBox(
-                constraints: BoxConstraints(maxWidth: math.min(280, MediaQuery.sizeOf(context).width - 120)),
+              Flexible(
                 child: Text(GameCalc.guideTexts[widget.i],
                     maxLines: 1, overflow: TextOverflow.ellipsis, style: KdText.body(12, color: const Color(0xFFE9F4EA), height: 1.2)),
               ),
