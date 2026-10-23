@@ -372,6 +372,9 @@ class GameController extends ChangeNotifier {
   bool titleOpen = true;
   bool modalOpen = false;
 
+  /// 시련의 탑 자동 오르기: 이번에 연달아 오른 층·보상 (웹 CH.run)
+  TowerRun? towerRun;
+
   /// 제목 화면의 「게임 시작」 (웹 startBtn)
   void startFromTitle() {
     titleOpen = false;

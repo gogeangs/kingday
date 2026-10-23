@@ -51,9 +51,42 @@ extension GameChallengeX on GameController {
     refresh();
   }
 
+  /// 새로 도전 (자동 오르기 기록 새로)
   void towerStart(int f) {
+    towerRun = null;
+    _towerGo(f);
+  }
+
+  void _towerGo(int f) {
     sim.towerStart(f);
     _chShow();
+  }
+
+  /// 웹 towerAutoOn: 자동으로 계속 오르기 (기본 켬)
+  bool get towerAutoOn => calc.towerS['auto'] != 0;
+
+  set towerAutoOn(bool v) {
+    calc.towerS['auto'] = v ? 1 : 0;
+    save();
+    refresh();
+  }
+
+  /// 층 돌파: 다음이 보통 층이고 자동 오르기가 켜져 있으면 창 없이 바로 다음 층 (웹 towerWin)
+  void _towerWon(int f, bool first, Reward r, List<String> unlocked) {
+    final run = towerRun ??= TowerRun(f);
+    run.n++;
+    if (first) {
+      r.forEach((k, v) => run.r[k] = (run.r[k] ?? 0) + v);
+      if (f == 50) run.fifty = true;
+    }
+    run.nb.addAll(unlocked);
+    final nx = towerInfo(f + 1), auto = towerAutoOn && !nx.gate && nx.rule < 0;
+    Timer(Duration(milliseconds: auto ? 900 : 1100), () {
+      final h = sim.ch;
+      if (h == null || h.mode != 'tower' || h.f != f || h.st != 'win') return;
+      if (auto && !modalOpen) return _towerGo(f + 1);
+      queue((ctx) => _towerWinSheet(ctx, f, first, r, unlocked));
+    });
   }
 
   /// 던전 입장: 처음이면 소개 대사 → 입장권 1장 쓰고 3분 전투 (웹 dunEnter)
@@ -128,21 +161,22 @@ extension GameChallengeX on GameController {
 
   void chNextTap() {
     final h = sim.ch;
-    if (h != null && h.mode == 'tower' && h.st == 'win') towerStart(h.f + 1);
+    if (h != null && h.mode == 'tower' && h.st == 'win') _towerGo(h.f + 1);
   }
 
   Future<void> _towerWinSheet(BuildContext ctx, int f, bool first, Reward r, List<String> unlocked) async {
     final h = sim.ch;
     if (h == null || h.mode != 'tower' || h.f != f || h.st != 'win') return;
-    final nx = towerInfo(f + 1);
+    final nx = towerInfo(f + 1), run = towerRun ?? (TowerRun(f)..n = 1), one = run.n <= 1;
     await showKdSheet<void>(ctx, closable: false, builder: (c) => KdSheetBody(
           eyebrow: '시련의 탑',
-          title: '$f층 돌파!',
+          title: one ? '$f층 돌파!' : '${run.from}~$f층 돌파!',
           children: [
-            if (first) rewardChips(r) else const KdNote('이미 받은 층이에요', center: true),
-            if (unlocked.isNotEmpty) Text('🎉 ${unlocked.join(' · ')} 획득! 프로필에서 쓸 수 있어요', textAlign: TextAlign.center, style: KdText.body(12, color: KdColors.gold)),
-            if (f == 50) ...const [Para('q@proud:반은 왔다. …아니, 끝이 없으니 반은 아니군.'), Para('k:그 말은 위로야, 협박이야?')],
-            KdNote('다음: ${nx.name}${nx.gate ? ' · 수문장' : nx.rule >= 0 ? ' · 시련: ${towerRules[nx.rule].n}' : ''}', center: true),
+            if (one) ...[if (first) rewardChips(r) else const KdNote('이미 받은 층이에요', center: true)] else ..._runSummary(run, f),
+            if (run.nb.isNotEmpty) Text('🎉 ${run.nb.join(' · ')} 획득! 프로필에서 쓸 수 있어요', textAlign: TextAlign.center, style: KdText.body(12, color: KdColors.gold)),
+            if (run.fifty || (one && first && f == 50)) ...const [Para('q@proud:반은 왔다. …아니, 끝이 없으니 반은 아니군.'), Para('k:그 말은 위로야, 협박이야?')],
+            KdNote('다음: ${nx.name}${nx.gate ? ' · 수문장' : nx.rule >= 0 ? ' · 시련: ${towerRules[nx.rule].n}' : ''}'
+                '${towerAutoOn && (nx.gate || nx.rule >= 0) ? '\n수문장·시련 층 앞에서는 자동 오르기가 멈춰요' : ''}', center: true),
           ],
           acts: KdActs(buttons: [
             KdAct('나가기', onTap: () {
@@ -164,7 +198,10 @@ extension GameChallengeX on GameController {
     await showKdSheet<void>(ctx, closable: false, builder: (c) => KdSheetBody(
           eyebrow: '시련의 탑',
           title: '$f층 실패',
-          children: const [KdNote('원정대를 키워서 다시 와요\n도전은 몇 번이든 할 수 있고, 잃는 건 없어요', center: true)],
+          children: [
+            const KdNote('원정대를 키워서 다시 와요\n도전은 몇 번이든 할 수 있고, 잃는 건 없어요', center: true),
+            if (towerRun != null && towerRun!.n > 0) ..._runSummary(towerRun!, f - 1),
+          ],
           acts: KdActs(buttons: [
             KdAct('나가기', onTap: () {
               Navigator.of(c).pop();
@@ -203,4 +240,20 @@ extension GameChallengeX on GameController {
     _chapter();
     _rpFlush();
   }
+}
+
+/// 자동 오르기 요약: 「자동으로 a~b층 (n개 층)을 올랐어요」 + 처음 돌파 보상 합계 (웹 towerRunHtml)
+List<Widget> _runSummary(TowerRun run, int to) => [
+      KdNote('자동으로 ${run.from}~$to층 (${run.n}개 층)을 올랐어요', center: true),
+      if (run.r.values.any((v) => v > 0)) ...[const KdNote('처음 돌파 보상 합계', center: true), rewardChips(run.r)] else const KdNote('모두 이미 받은 층이에요', center: true),
+    ];
+
+/// 시련의 탑 자동 오르기 기록 (웹 CH.run)
+class TowerRun {
+  TowerRun(this.from);
+  final int from;
+  int n = 0;
+  final Reward r = {};
+  final List<String> nb = [];
+  bool fifty = false;
 }
