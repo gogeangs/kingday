@@ -21,6 +21,7 @@ import '../ui/fx.dart';
 import '../ui/game_widgets.dart';
 import '../ui/theme.dart';
 import '../ui/widgets.dart';
+import 'attend_sheet.dart';
 import 'settings_sheet.dart';
 
 // ════════════════════ 공통 ════════════════════
@@ -131,7 +132,29 @@ class SocialFabs extends StatelessWidget {
     // 상점 버튼 (U-2 ③): 늘 보임 · 할 일·무료 선물이 남았고 아직 안 봤으면 점
     final shop = _btn('icon_shop', () => g.setTab(GameTab.sh),
         g.dotOn(GameTab.sh) ? Positioned(top: -3, right: -3, child: Container(width: 11, height: 11, decoration: BoxDecoration(color: KdColors.bad, shape: BoxShape.circle, border: Border.all(color: Colors.white)))) : null);
-    if (!o.on) return shop;
+    // 출석부 (웹 #attBtn): 상점 바로 밑, 1-3 이후 · 오늘 안 받았으면 노란 점
+    final att = attEligible(g)
+        ? _btn(
+            'ic_attend',
+            () => openAttend(g),
+            attDot(g)
+                ? Positioned(
+                    top: -3,
+                    right: -3,
+                    child: Container(
+                      width: 11,
+                      height: 11,
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFFFD23A),
+                        shape: BoxShape.circle,
+                        border: Border.all(color: Colors.white, width: 1.5),
+                        boxShadow: const [BoxShadow(color: Color(0xFFFFD23A), blurRadius: 6)],
+                      ),
+                    ),
+                  )
+                : null)
+        : null;
+    if (!o.on) return Column(mainAxisSize: MainAxisSize.min, children: [shop, if (att != null) ...[const SizedBox(height: 8), att]]);
     return ValueListenableBuilder<int>(
       valueListenable: o.ver,
       builder: (_, __, ___) {
@@ -159,6 +182,7 @@ class SocialFabs extends StatelessWidget {
           ),
           const SizedBox(height: 8),
           shop,
+          if (att != null) ...[const SizedBox(height: 8), att],
         ]);
       },
     );
