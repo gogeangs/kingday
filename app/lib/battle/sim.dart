@@ -547,7 +547,8 @@ class BattleSim {
 
   num depthAt(BattleLayout l, num lane) => l.top + (l.bot - l.top) * lane;
 
-  void say(String who, String txt) => quip = Quip(who, txt);
+  /// 웹 say(): 「⚠ 성주 출현!」 띠가 떠 있으면 띠가 사라진 뒤에 말풍선이 보이게
+  void say(String who, String txt) => quip = Quip(who, txt)..t = 3.2 + (warn != null ? math.max(0, warn!.t) : 0);
   void toast(String m) => events.add(ToastEvent(m));
   void addFloat(num x, num y, String txt, int col, [num? size]) => floats.add(FloatText(x, y, txt, col, size ?? 15));
   void spawnFx(String k, num x, num y, num size, num d, [num? vy]) {

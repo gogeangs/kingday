@@ -18,7 +18,7 @@ Map<String, dynamic>? importSaveCode(String code) {
     final pad = c.length % 4;
     if (pad != 0) c = c.padRight(c.length + 4 - pad, '=');
     final d = jsonDecode(utf8.decode(base64Decode(c)));
-    if (d is Map && d['gold'] is num) return d.cast<String, dynamic>();
+    if (GameState.looksLikeSave(d)) return (d as Map).cast<String, dynamic>();
   } catch (_) {}
   return null;
 }

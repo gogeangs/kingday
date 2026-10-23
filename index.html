@@ -1023,9 +1023,21 @@ table.codds th {
 .crow small {
   font-size: 12.5px;
   color: var(--muted);
-  white-space: nowrap;
+  /* 좁은 폭에서도 숫자가 잘리지 않게 두 줄까지 (낱말 중간에서 끊지 않음) */
+  word-break: keep-all;
+  overflow-wrap: anywhere;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
   overflow: hidden;
-  text-overflow: ellipsis;
+}
+.nw {
+  white-space: nowrap;
+}
+.buy.sm.eqtag {
+  min-width: 0;
+  padding: 6px 12px;
+  text-align: center;
 }
 .buy.sm {
   min-width: 74px;
@@ -5749,9 +5761,13 @@ input:focus-visible {
 .rpt {
   font-size: 14px;
   font-weight: 700;
-  white-space: nowrap;
+  line-height: 1.3;
+  word-break: keep-all;
+  overflow-wrap: anywhere;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
   overflow: hidden;
-  text-overflow: ellipsis;
 }
 .rpb {
   flex: 0 0 auto;
@@ -5837,7 +5853,8 @@ input:focus-visible {
 .sheet {
   width: 100%;
   max-width: 400px;
-  max-height: 90%;
+  /* 테두리(22px×2)·안쪽 여백까지 합쳐 화면 안에 들어오게 (작은 화면에서 위 테두리가 잘리던 것) */
+  max-height: calc(100% - 80px);
   overflow-y: auto;
   display: flex;
   flex-direction: column;
@@ -5923,7 +5940,8 @@ input:focus-visible {
   }
   .sheet {
     gap: 7px;
-    max-height: 100%;
+    /* 테두리 22px×2 + 안쪽 여백 18px 까지 화면 안에 */
+    max-height: calc(100% - 62px);
   }
   .modal {
     padding-top: 4px;
@@ -8087,14 +8105,32 @@ function fresh() {
     v: 3
   };
 }
+/* 저장 값 고르기: 기본값이 숫자·객체·배열인 칸에 종류가 다른 값(null·NaN·무한대·글자 등)이 들어 있으면 버리고 기본값을 씀.
+   한 칸이 깨져도 게임이 멈추거나 새 게임이 되지 않게 (앱 GameState.hydrate 와 같은 규칙) */
+const isObj = v => !!v && typeof v === 'object' && !Array.isArray(v);
+const okVal = (fv, dv) =>
+  typeof fv === 'number' ? typeof dv === 'number' && isFinite(dv) : isObj(fv) ? isObj(dv) : Array.isArray(fv) ? Array.isArray(dv) : dv != null;
+const badNum = v => typeof v === 'number' && !isFinite(v);
+/* 저장처럼 보이는지 (골드가 깨져도 다른 기록은 살림) */
+const isSave = d => isObj(d) && (typeof d.gold === 'number' || 'stage' in d || 'started' in d);
 function hydrate(d) {
   const f = fresh();
   for (const k in d) {
-    if (f[k] && typeof f[k] === 'object' && !Array.isArray(f[k]) && d[k] && typeof d[k] === 'object') f[k] = Object.assign(f[k], d[k]);
-    else f[k] = d[k];
+    const fv = f[k],
+      dv = d[k];
+    if (fv !== undefined ? !okVal(fv, dv) : badNum(dv)) continue;
+    if (isObj(fv)) {
+      for (const sk in dv) {
+        const a = fv[sk],
+          b = dv[sk];
+        if ((typeof a === 'number' || isObj(a) || Array.isArray(a)) && !okVal(a, b)) continue;
+        if (badNum(b)) continue;
+        fv[sk] = b;
+      }
+    } else f[k] = dv;
   }
-  if (d && d.crops) {
-    for (const k in d.crops) f.items[k] = (f.items[k] || 0) + d.crops[k];
+  if (d && isObj(d.crops)) {
+    for (const k in d.crops) f.items[k] = (+f.items[k] || 0) + (+d.crops[k] || 0);
     delete f.crops;
   }
   if (((d && d.v) || 0) < 3) {
@@ -10187,7 +10223,7 @@ function kaelSeatSheet() {
   const cur = slotMember('kael'),
     row = id => {
       const t = stats(id);
-      return `<div class="crow" data-ks="${id}"><canvas class="cface" id="ks-${id}"></canvas><div class="info"><b>${COMP[id].n}${id === CHIEF ? gradeTag(id) + starTxt(id) : ''}</b><small>${id === CHIEF ? '다 함께 울력 · 새벽 종소리' : '추수의 일격'} · 공격 ${fmt(t.atk)} · 체력 ${fmt(t.hp)}</small></div>${cur === id ? '<span class="benchtag">출전 중</span>' : '<button class="buy sm">출전</button>'}</div>`;
+      return `<div class="crow" data-ks="${id}"><canvas class="cface" id="ks-${id}"></canvas><div class="info"><b>${COMP[id].n}${id === CHIEF ? gradeTag(id) + starTxt(id) : ''}</b><small>${id === CHIEF ? '다 함께 울력 · 새벽 종소리' : '추수의 일격'}</small><small>공격 ${fmt(t.atk)} · 체력 ${fmt(t.hp)}</small></div>${cur === id ? '<span class="benchtag">출전 중</span>' : '<button class="buy sm">출전</button>'}</div>`;
     };
   $('sheet').innerHTML =
     `<div class="eyebrow">카엘 자리</div><h2>누가 출전할까요?</h2>${['kael', CHIEF].map(row).join('')}<p class="note">장비·칭호·강화는 둘이 함께 써요.</p><div class="acts"><button id="mX">닫기</button><button class="pri" id="ksEq">장비 보기</button></div>`;
@@ -10331,7 +10367,7 @@ function renderParty() {
         return `<div class="crow locked"><canvas class="cface" id="cf-${id}"></canvas><div class="info"><b>???</b><small>${c.role} · ${c.join}</small></div></div>`;
       const j = JOB[id],
         on = id === 'kael' || slotMember(j) === id;
-      return `<div class="crow" role="button" tabindex="0" data-det="${id}"><canvas class="cface" id="cf-${id}"></canvas><div class="info"><b>${c.n}${id === 'kael' ? '' : gradeTag(id) + starTxt(id)}</b><small>${id === 'kael' ? RANKS[rankIdx()].n : (on ? '출전' : working()[id] ? '🔨 ' + bldK(working()[id]).n : '대기') + ' · Lv.' + (S.lv[id] || 1)} · ${id === 'kael' ? '원정대 전투력 ' + fmt(power()) : '전투력 ' + fmt(cPow(id))}</small></div>${id === 'kael' ? '<span class="buy ghost sm">장비</span>' : on ? `<button class="buy sm" id="lv-${id}">${costBtn('Lv↑', compCost(S.lv[id] || 1))}</button>` : `<span class="benchtag">${working()[id] ? '🔨 일꾼' : '대기'}</span>`}</div>`;
+      return `<div class="crow" role="button" tabindex="0" data-det="${id}"><canvas class="cface" id="cf-${id}"></canvas><div class="info"><b>${c.n}${id === 'kael' ? '' : gradeTag(id) + starTxt(id)}</b><small>${id === 'kael' ? RANKS[rankIdx()].n : (on ? '출전' : working()[id] ? '🔨 ' + bldK(working()[id]).n : '대기') + ' · Lv.' + (S.lv[id] || 1)} · ${id === 'kael' ? '원정대 전투력 ' + fmt(power()) : '전투력 ' + fmt(cPow(id))}</small></div>${id === 'kael' ? '<span class="buy ghost sm eqtag">장비</span>' : on ? `<button class="buy sm" id="lv-${id}">${costBtn('Lv↑', compCost(S.lv[id] || 1))}</button>` : `<span class="benchtag">${working()[id] ? '🔨 일꾼' : '대기'}</span>`}</div>`;
     };
     const list = partyOrder();
     /* 격자 칸 (U-1): 얼굴 + 등급 테두리 + ★ + Lv. 출전 중 금테, 🔨 일꾼, ★ 올리기 가능 노란 점, 합류 전 어둡게 ??? */
@@ -10523,7 +10559,7 @@ function retireConfirm(one) {
   const half = sc && 1 + 5 * tl('shortcut') > Math.floor((S.best || 1) / 2) && !one;
   $('sheet').innerHTML = `<div class="eyebrow" style="color:#ff8a7a">은퇴 확인</div><h2>정말 은퇴할까요?</h2>
  <div class="rtbox lose"><div class="rth">처음으로 돌아가요</div><ul>
-  ${li('되찾은 영지', Math.min(S.stage, MAXLAND + 1) - 1 + '곳 → ' + (st - 1) + '곳 (' + stgName(st) + '부터)')}
+  ${li('되찾은 영지', Math.min(S.stage, MAXLAND + 1) - 1 + '곳 → ' + (st - 1) + '곳 (<span class="nw">' + stgName(st) + '부터</span>)')}
   ${li('골드', fmt(S.gold) + ' → ' + fmt(pg))}
   ${li('착용한 성유물', eqN + '개 → 모두 사라짐')}
   ${li('단련 능력치', up ? '+' + up + '단계 → 0' : '없음')}
@@ -11728,7 +11764,8 @@ let gobT = 150 + Math.random() * 120,
   quip = null,
   quipT = 6;
 function say(who, txt) {
-  quip = { who, txt, t: 3.2 };
+  /* 「⚠ 성주 출현!」 띠가 떠 있으면 띠가 사라진 뒤에 말풍선이 보이게 (글자가 겹치지 않게) */
+  quip = { who, txt, t: 3.2 + (warn ? Math.max(0, warn.t) : 0) };
 }
 /* ---------- 특수 스킬 ---------- */
 const SKILLS = {
@@ -15552,7 +15589,7 @@ function draw() {
   });
   ctx.globalAlpha = 1;
   drawSkillFx(L);
-  drawQuip(pos, s, py[slotMember('kael')] ?? L.top, py);
+  if (!warn) drawQuip(pos, s, py[slotMember('kael')] ?? L.top, py);
   if (warn) {
     const k = Math.min(1, (1.4 - warn.t) * 6, warn.t * 2.5),
       cy = Ht * 0.3,
@@ -18005,11 +18042,13 @@ function nickSheet(after) {
         mailFetch();
         (after || rankSheet)();
       } else {
+        if (!$('nickErr')) return;
         $('nickErr').textContent = NICKERR[r] || '다시 시도해 주세요';
         $('nickOk').disabled = false;
       }
     } catch (e) {
       const m = String((e && e.message) || e);
+      if (!$('nickErr')) return; /* 답을 기다리는 사이 창을 닫음 */
       $('nickErr').textContent = !navigator.onLine
         ? '인터넷 연결이 필요해요'
         : /abort/i.test(m) || /Failed to fetch|Load failed|NetworkError/i.test(m)
@@ -18508,7 +18547,7 @@ function cloudPick(cl) {
  <div class="acts"><button id="cpDev">이 기기 기록 유지</button><button class="pri" id="cpCl">클라우드 기록 불러오기</button></div>`;
   $('modal').hidden = false;
   $('cpCl').onclick = () => {
-    if (!d || typeof d.gold !== 'number') return toast('클라우드 기록을 읽을 수 없어요');
+    if (!isSave(d)) return toast('클라우드 기록을 읽을 수 없어요');
     noSave = true;
     try {
       localStorage.setItem(KEY, JSON.stringify(d));
@@ -18856,7 +18895,7 @@ function settingsSheet(step) {
   $('setImp').onclick = () => {
     try {
       const d = JSON.parse(decodeURIComponent(escape(atob($('setCode').value.trim()))));
-      if (!d || typeof d.gold !== 'number') throw 0;
+      if (!isSave(d)) throw 0;
       noSave = true;
       localStorage.setItem(KEY, JSON.stringify(d));
       location.reload();
@@ -18876,9 +18915,20 @@ function settingsSheet(step) {
   } else $('setReset').onclick = () => settingsSheet('reset');
 }
 function load() {
+  let raw = null;
   try {
-    const d = JSON.parse(localStorage.getItem(KEY));
-    if (d && typeof d.gold === 'number') return hydrate(d);
+    raw = localStorage.getItem(KEY);
+  } catch (e) {
+    return null;
+  }
+  if (!raw) return null;
+  try {
+    const d = JSON.parse(raw);
+    if (isSave(d)) return hydrate(d);
+  } catch (e) {}
+  /* 읽지 못한 저장은 새 게임이 덮어쓰기 전에 따로 남겨 둠 */
+  try {
+    localStorage.setItem(KEY + '-bak', raw);
   } catch (e) {}
   return null;
 }
@@ -19444,7 +19494,7 @@ function start(data) {
     } catch (e) {}
   }
   BANNER.src = 'assets/ui/banner_capture.png';
-  S = data && typeof data.gold === 'number' ? hydrate(data) : load() || hydrate({ gold: 60 });
+  S = isSave(data) ? hydrate(data) : load() || hydrate({ gold: 60 });
   $('autoSell').checked = S.autoSell;
   $('autoOpen').checked = S.autoOpen;
   const isNew = !S.started;

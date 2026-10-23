@@ -61,9 +61,17 @@ class GameState {
     final f = freshMap(now);
     for (final k in src.keys) {
       final fv = f[k], dv = src[k];
-      if (fv is Map && truthy(fv) && dv is Map) {
-        // Object.assign(f[k], d[k]) — 기본값 객체에 저장 값을 덮어씀(한 단계만)
-        final merged = Map<String, dynamic>.from(fv)..addAll(dv.cast<String, dynamic>());
+      // 웹 okVal: 기본값이 숫자·객체·배열인 칸에 종류가 다른 값(null·NaN·무한대·글자 등)은 버리고 기본값
+      if (f.containsKey(k) ? !_okVal(fv, dv) : _badNum(dv)) continue;
+      if (fv is Map) {
+        // Object.assign(f[k], d[k]) — 기본값 객체에 저장 값을 덮어씀(한 단계만), 칸마다 같은 규칙
+        final merged = Map<String, dynamic>.from(fv);
+        (dv as Map).forEach((sk, b) {
+          final a = fv[sk];
+          if ((a is num || a is Map || a is List) && !_okVal(a, b)) return;
+          if (_badNum(b)) return;
+          merged['$sk'] = b;
+        });
         f[k] = merged;
       } else {
         f[k] = dv;
@@ -73,7 +81,8 @@ class GameState {
     if (crops != null) {
       final items = asMap(f['items'])!;
       for (final k in crops.keys) {
-        items[k] = orNum(items[k], 0) + (crops[k] as num);
+        final cv = crops[k];
+        items[k] = orNum(items[k], 0) + (cv is num && cv.isFinite ? cv : 0);
       }
       f.remove('crops');
     }
@@ -125,6 +134,18 @@ class GameState {
     if (asNum(f['stage']) > last) f['stage'] = last;
     return g;
   }
+
+  static bool _okVal(Object? fv, Object? dv) {
+    if (fv is num) return dv is num && dv.isFinite;
+    if (fv is Map) return dv is Map;
+    if (fv is List) return dv is List;
+    return dv != null;
+  }
+
+  static bool _badNum(Object? v) => v is num && !v.isFinite;
+
+  /// 웹 isSave(d): 저장처럼 보이는지 (골드가 깨져도 다른 기록은 살림)
+  static bool looksLikeSave(Object? d) => d is Map && (d['gold'] is num || d.containsKey('stage') || d.containsKey('started'));
 
   /// 처음 시작하는 게임 (웹 start(): hydrate({gold:60}))
   static GameState newGame(int now, int Function(GameState) rankIdx) => hydrate({'gold': 60}, now, rankIdx);
