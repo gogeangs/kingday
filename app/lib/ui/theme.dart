@@ -10,7 +10,7 @@ class KdColors {
   static const panel2 = Color(0xFF29334F); // --panel2
   static const line = Color(0xFF37436A); // --line
   static const fg = Color(0xFFEEF1F8); // --fg
-  static const muted = Color(0xFF97A2C3); // --muted
+  static const muted = Color(0xFFA9B3D1); // --muted (아이폰 가독성: 조금 밝게)
   static const gold = Color(0xFFFFC94A); // --gold
   static const goldInk = Color(0xFF3A2A00); // --gold-ink
   static const bad = Color(0xFFFF6B7D); // --bad
@@ -34,7 +34,10 @@ class KdText {
       TextStyle(fontFamily: KdFonts.display, fontSize: size, fontWeight: weight, color: color, height: 1.25);
 
   static TextStyle body(double size, {Color color = KdColors.fg, FontWeight weight = FontWeight.w400, double height = 1.4}) =>
-      TextStyle(fontFamily: KdFonts.body, fontSize: size, fontWeight: weight, color: color, height: height);
+      TextStyle(fontFamily: KdFonts.body, fontSize: color == KdColors.muted ? mutedSize(size) : size, fontWeight: weight, color: color, height: height);
+
+  /// 회색 보조 글자 최소 크기 (웹과 같게: 11.5~12 → 12.5, 그보다 작으면 +1)
+  static double mutedSize(double size) => size >= 12.5 ? size : size >= 11.5 ? 12.5 : size + 1;
 
   /// 숫자가 흔들리지 않게 (웹 font-variant-numeric:tabular-nums)
   static TextStyle figure(double size, {Color color = KdColors.fg, FontWeight weight = FontWeight.w700}) =>

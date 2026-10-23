@@ -440,10 +440,37 @@ class GameController extends ChangeNotifier {
     toast('사진을 지웠어요');
   }
 
+  /// 알림: 여러 개면 하나씩 차례로 (웹 toast · toastQ)
+  final List<String> _toastQ = [];
+  int _toastAt = 0;
+
+  /// 원정대 초상화 줄 (알림을 그 바로 위에 띄움)
+  final partyRowKey = GlobalKey();
+
   void toast(String m) {
+    if (toastMsg.value != null) {
+      if (m == toastMsg.value || _toastQ.contains(m)) return;
+      _toastQ.add(m);
+      if (_toastQ.length > 3) _toastQ.removeAt(0);
+      _toastTimer?.cancel();
+      final wait = math.max(250, 1300 - (DateTime.now().millisecondsSinceEpoch - _toastAt));
+      _toastTimer = Timer(Duration(milliseconds: wait), () => _toastShow(_toastQ.removeAt(0)));
+      return;
+    }
+    _toastShow(m);
+  }
+
+  void _toastShow(String m) {
     toastMsg.value = m;
+    _toastAt = DateTime.now().millisecondsSinceEpoch;
     _toastTimer?.cancel();
-    _toastTimer = Timer(const Duration(seconds: 2), () => toastMsg.value = null);
+    _toastTimer = Timer(Duration(milliseconds: _toastQ.isNotEmpty ? 1500 : 2000), () {
+      if (_toastQ.isNotEmpty) {
+        _toastShow(_toastQ.removeAt(0));
+      } else {
+        toastMsg.value = null;
+      }
+    });
   }
 
   /// 웹 haptic(): 설정에서 진동을 끄면(S.vib===false) 울리지 않음
@@ -716,6 +743,10 @@ class GameController extends ChangeNotifier {
 
   /// 방금 공사가 끝난 건물 (할 일 줄 「🏗 공사 완료」, 고르면 꺼짐)
   final Set<String> vNewDone = {};
+
+  /// 이번 실행 동안 펼친 안내문 (웹 helpOpen)
+  final Map<String, bool> helpOpen = {};
+  Map<String, dynamic> get helpSeen => asMap(state.raw['helpSeen']) ?? (state.raw['helpSeen'] = <String, dynamic>{});
 
   /// 길 위 사람을 눌렀을 때 한마디 (id, 대사, 지도 x·y, 끝나는 시각)
   ({String id, String line, double x, double y, int end})? vTalk;
@@ -1611,6 +1642,58 @@ class GameController extends ChangeNotifier {
     if (c.ordReady() > 0 || c.blessLeft() > 0 || vNewDone.isNotEmpty || c.vlRw()) return true;
     if (truthy(s.bld['forge']) && (onForgeCan?.call() ?? false)) return true;
     return s.raw['workDot'] != c.today() && c.wkOpen() && c.idleIds().isNotEmpty && buildings.any((b) => c.wkSlots(b.k) > c.wkIds(b.k).length);
+  }
+
+  /// 마을에서 바로 받을 수 있는 것 수 (웹 vReadyN): 다 자란 밭 + 납품할 주문 + 다 된 공사 + 마을 레벨 보상
+  int vReadyN() {
+    final s = state, c = calc;
+    final ready = truthy(s.bld['farm']) ? s.plots.where((p) => c.plotState(p).st == 'ready').length : 0;
+    return ready + c.ordReady() + vNewDone.length + (c.vlRw() ? 1 : 0);
+  }
+
+  /// 탭 점 서명 (웹 dotSig, U-2 ②): 「지금 누르면 바로 이득」인 이유들. 탭을 열면 본 것으로 기록
+  String dotSig(GameTab t) {
+    final c = calc;
+    switch (t) {
+      case GameTab.up:
+        return c.trCanAny() ? 'm${c.memPts()}' : '';
+      case GameTab.vl:
+        if (!vlDot) return '';
+        final s = state;
+        final w = s.raw['workDot'] != c.today() && c.wkOpen() && c.idleIds().isNotEmpty;
+        return [
+          vReadyN(),
+          c.ordReady(),
+          c.blessLeft() > 0 ? 'b${c.today()}' : '',
+          (vNewDone.toList()..sort()).join('.'),
+          c.vlRw() ? 'r${c.vLv()}' : '',
+          truthy(s.bld['forge']) && (onForgeCan?.call() ?? false) ? 'f' : '',
+          w ? 'w' : '',
+        ].join('|');
+      case GameTab.mp:
+        return c.chDot() ? 'c${c.supplyCan() ? 1 : 0}.${c.dunLeft()}.${c.today()}' : '';
+      case GameTab.sh:
+        final d = c.daily();
+        final claim = asMap(d['claim']) ?? const <String, dynamic>{};
+        final n = missions.where((m) => orNum(d[m.k], 0) >= m.goal && !truthy(claim[m.k])).length +
+            (missions.every((m) => truthy(claim[m.k])) && !truthy(claim['all']) ? 1 : 0) +
+            (c.subOn() && asMap(state.raw['sub'])?['last'] != c.today() ? 1 : 0);
+        final a = acts.adKeys().any((k) => c.adLeft(k) > 0);
+        return n > 0 || a ? 's$n${a ? 'a' : ''}${c.today()}' : '';
+      default:
+        return '';
+    }
+  }
+
+  bool dotOn(GameTab t) {
+    final sig = dotSig(t);
+    if (sig.isEmpty) return false;
+    final seen = asMap(state.raw['dotSeen2']) ?? (state.raw['dotSeen2'] = <String, dynamic>{});
+    if (tab == t) {
+      seen[t.name] = sig;
+      return false;
+    }
+    return sig != seen[t.name];
   }
 
   /// 이삭 점: 받을 수 있는 할 일 보상이나 정기 배송이 있을 때 (웹 gemDot)

@@ -887,7 +887,7 @@ void showVlSheet(GameController g) {
         ],
         acts: KdActs(buttons: [
           KdAct('닫기', onTap: () => Navigator.of(ctx).pop()),
-          KdAct(c.vlRw() ? '보상 받기' : '다음 레벨까지 ${l < vlvNeed.length ? vlvNeed[l] - s : 0}', primary: true, onTap: c.vlRw()
+          KdAct(c.vlRw() ? '보상 받기' : '다음 레벨까지 ${l < vlvNeed.length ? vlvNeed[l] - s : 0}', primary: true, claim: true, onTap: c.vlRw()
               ? () {
                   Navigator.of(ctx).pop();
                   g.vlClaimUi();
@@ -1063,7 +1063,7 @@ class _Farm extends StatelessWidget {
         const SizedBox(width: 6),
         Expanded(child: KdBuy(text: '모두 심기', kind: BuyKind.ghost, minWidth: 0, onTap: anyEmpty && !edit ? () => g.act((a) => a.plantAll()) : null)),
         const SizedBox(width: 6),
-        Expanded(child: KdBuy(text: '모두 수확', minWidth: 0, onTap: anyReady ? () => g.act((a) => a.harvestAll()) : null)),
+        Expanded(child: KdBuy(kind: BuyKind.claim, text: '모두 수확', minWidth: 0, onTap: anyReady ? () => g.act((a) => a.harvestAll()) : null)),
       ]),
       if (nGrow > 0) ...[
         KdBuy(

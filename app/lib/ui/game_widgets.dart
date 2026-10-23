@@ -272,3 +272,57 @@ Widget oddsChip(Color c, String t, {double size = 12}) => Row(mainAxisSize: Main
       const SizedBox(width: 4),
       Text(t, style: KdText.figure(size, weight: FontWeight.w400)),
     ]);
+
+/// 긴 안내문 접기 (웹 helpNote, U-2 ⑤): 처음 한 번은 펼쳐 보여 주고, 그 뒤로는 「?」를 눌러야 펼침
+/// [seen] 은 저장 데이터(S.helpSeen), [open] 은 이번 실행 동안 펼친 것
+class HelpNote extends StatefulWidget {
+  const HelpNote({super.key, required this.k, required this.title, required this.body, required this.seen, required this.open});
+  final String k, title;
+  final Widget body;
+  final Map<String, dynamic> seen;
+  final Map<String, bool> open;
+
+  @override
+  State<HelpNote> createState() => _HelpNoteState();
+}
+
+class _HelpNoteState extends State<HelpNote> {
+  @override
+  void initState() {
+    super.initState();
+    if (widget.seen[widget.k] == null) {
+      widget.seen[widget.k] = 1;
+      widget.open[widget.k] = true;
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final on = widget.open[widget.k] ?? false;
+    return Padding(
+      padding: const EdgeInsets.only(top: 6, bottom: 8),
+      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+        GestureDetector(
+          behavior: HitTestBehavior.opaque,
+          onTap: () => setState(() => widget.open[widget.k] = !on),
+          child: Row(mainAxisSize: MainAxisSize.min, children: [
+            Container(
+              width: 18,
+              height: 18,
+              alignment: Alignment.center,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: on ? KdColors.gold : null,
+                border: Border.all(color: on ? KdColors.gold : KdColors.line),
+              ),
+              child: Text('?', style: KdText.body(11, color: on ? KdColors.goldInk : KdColors.gold, weight: FontWeight.w700, height: 1)),
+            ),
+            const SizedBox(width: 6),
+            Text(widget.title, style: KdText.body(12.5, color: KdColors.muted)),
+          ]),
+        ),
+        if (on) ...[const SizedBox(height: 4), widget.body],
+      ]),
+    );
+  }
+}

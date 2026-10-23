@@ -128,7 +128,10 @@ class SocialFabs extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final o = g.online;
-    if (!o.on) return const SizedBox.shrink();
+    // 상점 버튼 (U-2 ③): 늘 보임 · 할 일·무료 선물이 남았고 아직 안 봤으면 점
+    final shop = _btn('icon_shop', () => g.setTab(GameTab.sh),
+        g.dotOn(GameTab.sh) ? Positioned(top: -3, right: -3, child: Container(width: 11, height: 11, decoration: BoxDecoration(color: KdColors.bad, shape: BoxShape.circle, border: Border.all(color: Colors.white)))) : null);
+    if (!o.on) return shop;
     return ValueListenableBuilder<int>(
       valueListenable: o.ver,
       builder: (_, __, ___) {
@@ -154,6 +157,8 @@ class SocialFabs extends StatelessWidget {
                     ),
                   ),
           ),
+          const SizedBox(height: 8),
+          shop,
         ]);
       },
     );
@@ -868,6 +873,7 @@ class _MailState extends State<_Mail> {
                       ),
                       const SizedBox(width: 8),
                       KdBuy(
+                        kind: BuyKind.claim,
                         minWidth: 0,
                         text: '받기',
                         onTap: _busy.contains(asNum(m['id']).toInt())
@@ -885,7 +891,7 @@ class _MailState extends State<_Mail> {
             ],
           ],
           acts: KdActs(buttons: [
-            if (ms.length > 1) KdAct('모두 받기', primary: true, onTap: () => o.mailClaim(null)),
+            if (ms.length > 1) KdAct('모두 받기', primary: true, claim: true, onTap: () => o.mailClaim(null)),
             KdAct('닫기', primary: ms.length <= 1, onTap: () => Navigator.of(widget.sheet).pop()),
           ]),
         );

@@ -326,7 +326,12 @@ class PtPage extends StatelessWidget {
     TextSpan gt(String n, int col) => TextSpan(text: n, style: TextStyle(color: Color(col), fontWeight: FontWeight.w700));
     final uc = c.owned(GameCalc.chiefId) || c.chiefShop() || c.ucard > 0;
     return [
-      Text.rich(
+      HelpNote(
+        k: 'cardgr',
+        title: '카드 등급·얻는 곳',
+        seen: g.helpSeen,
+        open: g.helpOpen,
+        body: Text.rich(
         TextSpan(children: [
           const TextSpan(text: '카드 등급: '),
           gt('일반', 0xFFB8C0CC),
@@ -346,6 +351,7 @@ class PtPage extends StatelessWidget {
           ],
         ]),
         style: KdText.body(12, color: KdColors.muted, height: 1.6),
+      ),
       ),
       if (uc) _ucard(),
       for (final id in ids) _ccard(id),
