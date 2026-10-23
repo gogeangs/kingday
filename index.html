@@ -300,8 +300,18 @@ body {
   cursor: pointer;
   min-width: 0;
 }
+/* 프로필 아래 버튼 줄은 스크롤해도 늘 보이게 (「저장」을 찾으러 내려가지 않게) */
+.pfacts {
+  position: sticky;
+  bottom: -8px;
+  z-index: 2;
+  background: var(--panel);
+  padding: 8px 0;
+  margin-bottom: -8px;
+}
 .pfc.on {
   border-color: var(--gold);
+  box-shadow: 0 0 10px rgba(255, 201, 74, 0.35);
 }
 .pfc.lock {
   opacity: 0.55;
@@ -18700,62 +18710,110 @@ function pfCheck() {
     im.className = 'pfr' + pfTall(S.pf || 'wood');
   }
 }
-function profileSheet() {
-  S.pfSeen = 1;
-  const nw = S.pfNew || {};
-  S.pfNew = {};
+/* 프로필 꾸미기: 칸을 눌러 고르기만 하고(금테), 「저장」으로 한 번에 적용. 맨 위 미리보기는 고른 대로 바로 바뀜.
+   저장하지 않고 닫으려 하면 「저장할까요?」 한 번 묻기 (2026-10-23 대표님 의견) */
+let pfDraft = null;
+const pfNow = () => ({ pf: S.pf || 'wood', badge: S.badge && bdHas(S.badge) ? S.badge : null, face: pubFace(), photo: !!(S.facePhoto && photoData()) });
+const pfDirty = () => {
+  if (!pfDraft) return false;
+  const a = pfNow();
+  return a.pf !== pfDraft.pf || a.badge !== pfDraft.badge || a.face !== pfDraft.face || a.photo !== pfDraft.photo;
+};
+function pfSave() {
+  const d = pfDraft;
+  if (!d) return;
+  S.pf = d.pf;
+  S.badge = d.badge;
+  S.face = d.face === 'kael' ? null : d.face;
+  S.facePhoto = d.photo;
+  faceSync();
   pfCheck();
-  const cur = S.pf || 'wood',
-    ri = rankIdx();
+  save();
+  drawMyFace();
+  renderAll();
+  toast('프로필을 저장했어요');
+}
+/* 저장 안 한 채로 나가려 할 때: then 은 나간 뒤 할 일(닫기·설정·랭킹·닉네임) */
+function pfLeave(then) {
+  if (!pfDirty()) {
+    pfDraft = null;
+    return then();
+  }
+  $('sheet').innerHTML = `<div class="eyebrow">프로필</div><h2>바꾼 꾸미기를 저장할까요?</h2><p class="note" style="text-align:center">저장하지 않으면 고른 얼굴·테두리·배지가 원래대로 돌아가요.</p><div class="acts"><button id="pfNo">저장 안 함</button><button class="pri" id="pfYes">저장</button></div>`;
+  $('modal').hidden = false;
+  $('pfNo').onclick = () => {
+    pfDraft = null;
+    then();
+  };
+  $('pfYes').onclick = () => {
+    pfSave();
+    pfDraft = null;
+    then();
+  };
+}
+function profileSheet(keep) {
+  S.pfSeen = 1;
+  if (!keep || !pfDraft) {
+    pfDraft = pfNow();
+    profileSheet.nw = S.pfNew || {};
+    S.pfNew = {};
+    pfCheck();
+  }
+  const nw = profileSheet.nw || {},
+    d = pfDraft,
+    dirty = pfDirty(),
+    cur = d.pf,
+    ri = rankIdx(),
+    nb = '<small>&nbsp;</small>';
   $('sheet').innerHTML =
-    `<div class="hdban" style="--hb:url(assets/ui/hd_profile.png)"><span>프로필</span></div><div class="pfhead"><div class="pfbig"><canvas id="pfCv"></canvas><img class="pfr${pfTall(cur)}" src="assets/profile/frame_${cur}.png" alt=""></div><div class="pfinfo"><b>카엘${S.badge && bdHas(S.badge) ? `<img class="pfbd" data-k="${S.badge}" src="${bdSrc(S.badge)}" alt="" onerror="bdErr(this)">` : ''}</b><small class="pfnick">닉네임 <b>${esc(S.nick || '준비 중')}</b>${S.nickTemp ? ' <i>임시</i>' : ''}${sbOn() ? '<button class="buy" id="pfNick">' + (S.nickTemp || !S.nick ? '정하기' : '바꾸기') + '</button>' : ''}</small><small>${RANKS[ri].n} · 전투력 ${fmt(power())}</small><small>최고 영지 ${Math.min(S.best, MAXLAND)} · 은퇴 ${S.retires || 0}번 · 은퇴의 추억 ${S.memory || 0}개</small>${S.chOpen ? `<small>시련의 탑 최고 ${S.tower.top || 0}층</small>` : ''}</div></div>
+    `<div class="hdban" style="--hb:url(assets/ui/hd_profile.png)"><span>프로필</span></div><div class="pfhead"><div class="pfbig"><canvas id="pfCv"></canvas><img class="pfr${pfTall(cur)}" src="assets/profile/frame_${cur}.png" alt=""></div><div class="pfinfo"><b>카엘${d.badge ? `<img class="pfbd" data-k="${d.badge}" src="${bdSrc(d.badge)}" alt="" onerror="bdErr(this)">` : ''}</b><small class="pfnick">닉네임 <b>${esc(S.nick || '준비 중')}</b>${S.nickTemp ? ' <i>임시</i>' : ''}${sbOn() ? '<button class="buy" id="pfNick">' + (S.nickTemp || !S.nick ? '정하기' : '바꾸기') + '</button>' : ''}</small><small>${RANKS[ri].n} · 전투력 ${fmt(power())}</small><small>최고 영지 ${Math.min(S.best, MAXLAND)} · 은퇴 ${S.retires || 0}번 · 은퇴의 추억 ${S.memory || 0}개</small>${S.chOpen ? `<small>시련의 탑 최고 ${S.tower.top || 0}층</small>` : ''}</div></div>
+ <p class="note pfhint">${dirty ? '고른 대로 위에 미리 보여요. <b>저장</b>을 눌러야 바뀌어요.' : '칸을 눌러 고른 뒤 <b>저장</b>을 누르세요.'}</p>
  <div class="sec">얼굴 <small>합류한 동료 · 내 사진</small></div>
  <div class="pfgrid fcgrid">${(() => {
-   const pub = pubFace(),
-     ph = S.facePhoto && photoData();
    const ids = ['kael', ...Object.keys(COMP).filter(id => id !== 'kael' && owned(id))];
    return (
-     `<button class="pfc fc${ph ? ' on' : ''}" data-face="photo"><span class="pv">${photoData() ? '<canvas class="fcv" data-fc="photo"></canvas>' : '<span class="fcam">📷</span>'}</span><b>내 사진</b><small>${ph ? '사용 중' : photoData() ? '쓰기' : '올리기'}</small></button>` +
-     ids
-       .map(
-         id =>
-           `<button class="pfc fc${!ph && pub === id ? ' on' : ''}" data-face="${id}"><span class="pv"><canvas class="fcv" data-fc="${id}"></canvas></span><b>${id === 'kael' ? '카엘' : COMP[id].n}</b><small>${!ph && pub === id ? '사용 중' : '바꾸기'}</small></button>`
-       )
-       .join('')
+     `<button class="pfc fc${d.photo ? ' on' : ''}" data-face="photo"><span class="pv">${photoData() ? '<canvas class="fcv" data-fc="photo"></canvas>' : '<span class="fcam">📷</span>'}</span><b>내 사진</b>${photoData() ? nb : '<small>올리기</small>'}</button>` +
+     ids.map(id => `<button class="pfc fc${!d.photo && d.face === id ? ' on' : ''}" data-face="${id}"><span class="pv"><canvas class="fcv" data-fc="${id}"></canvas></span><b>${id === 'kael' ? '카엘' : COMP[id].n}</b>${nb}</button>`).join('')
    );
  })()}</div>
- ${photoData() ? `<p class="note fcnote">내 사진은 이 기기에서만 보여요. 다른 영주에게는 <b>${pubFace() === 'kael' ? '카엘' : COMP[pubFace()].n}</b> 얼굴이 보여요. <button class="lnk" id="fcNew">다른 사진</button> · <button class="lnk" id="fcDel">사진 지우기</button></p>` : ''}
+ ${photoData() ? `<p class="note fcnote">내 사진은 이 기기에서만 보여요. 다른 영주에게는 <b>${d.face === 'kael' ? '카엘' : COMP[d.face].n}</b> 얼굴이 보여요. <button class="lnk" id="fcNew">다른 사진</button> · <button class="lnk" id="fcDel">사진 지우기</button></p>` : ''}
  <div class="sec">테두리 <small>${PFRAMES.filter(f => pfHas(f.k)).length} / ${PFRAMES.length}</small></div>
  <div class="pfgrid">${PFRAMES.map(f => {
    const has = pfHas(f.k);
-   return `<button class="pfc${f.k === cur ? ' on' : ''}${has ? '' : ' lock'}${f.rare || f.rk ? ' rare' : ''}" data-pf="${f.k}"><span class="pv"><i></i><img class="pfr${pfTall(f.k)}" src="assets/profile/frame_${f.k}.png" alt="">${has ? '' : '<img class="lk" src="assets/ui/icon_lock.png" alt="잠김">'}${f.rk ? '<em class="rkt">랭킹</em>' : ''}</span><b>${f.n}</b>${nw['f_' + f.k] ? '<i class="nwb">NEW</i>' : ''}<small>${f.k === cur ? '사용 중' : has ? '바꾸기' : '🔒 ' + f.d}</small></button>`;
+   return `<button class="pfc${f.k === cur ? ' on' : ''}${has ? '' : ' lock'}${f.rare || f.rk ? ' rare' : ''}" data-pf="${f.k}"><span class="pv"><i></i><img class="pfr${pfTall(f.k)}" src="assets/profile/frame_${f.k}.png" alt="">${has ? '' : '<img class="lk" src="assets/ui/icon_lock.png" alt="잠김">'}${f.rk ? '<em class="rkt">랭킹</em>' : ''}</span><b>${f.n}</b>${nw['f_' + f.k] ? '<i class="nwb">NEW</i>' : ''}${has ? nb : '<small>🔒 ' + f.d + '</small>'}</button>`;
  }).join('')}</div>
- <div class="sec">대표 배지 <small>${BADGES.filter(b => bdHas(b.k)).length + attBds().length} / ${BADGES.length + attBds().length}</small></div>
+ <div class="sec">대표 배지 <small>${BADGES.filter(b => bdHas(b.k)).length + attBds().length} / ${BADGES.length + attBds().length} · 한 번 더 누르면 떼기</small></div>
  <div class="pfgrid">${attBds()
-   .map(k => {
-     const on = S.badge === k;
-     return `<button class="pfc bd${on ? ' on' : ''} rare" data-bd="${k}"><span class="pv"><img class="pfr" data-k="${k}" src="${bdSrc(k)}" alt="" onerror="bdErr(this)"></span><b>${BDN(k)}</b>${nw['b_' + k] ? '<i class="nwb">NEW</i>' : ''}<small>${on ? '다는 중' : '달기'}</small></button>`;
-   })
+   .map(k => `<button class="pfc bd${d.badge === k ? ' on' : ''} rare" data-bd="${k}"><span class="pv"><img class="pfr" data-k="${k}" src="${bdSrc(k)}" alt="" onerror="bdErr(this)"></span><b>${BDN(k)}</b>${nw['b_' + k] ? '<i class="nwb">NEW</i>' : ''}${nb}</button>`)
    .join('')}${BADGES.map(b => {
-   const has = bdHas(b.k),
-     on = S.badge === b.k;
-   return `<button class="pfc bd${on ? ' on' : ''}${has ? '' : ' lock'}${b.rare || b.rk ? ' rare' : ''}" data-bd="${b.k}"><span class="pv"><img class="pfr" src="assets/profile/badge_${b.k}.png" alt="">${has ? '' : '<img class="lk" src="assets/ui/icon_lock.png" alt="잠김">'}${b.rk ? '<em class="rkt">랭킹</em>' : ''}</span><b>${b.n}</b>${nw['b_' + b.k] ? '<i class="nwb">NEW</i>' : ''}<small>${on ? '다는 중' : has ? '달기' : '🔒 ' + b.d}</small></button>`;
+   const has = bdHas(b.k);
+   return `<button class="pfc bd${d.badge === b.k ? ' on' : ''}${has ? '' : ' lock'}${b.rare || b.rk ? ' rare' : ''}" data-bd="${b.k}"><span class="pv"><img class="pfr" src="assets/profile/badge_${b.k}.png" alt="">${has ? '' : '<img class="lk" src="assets/ui/icon_lock.png" alt="잠김">'}${b.rk ? '<em class="rkt">랭킹</em>' : ''}</span><b>${b.n}</b>${nw['b_' + b.k] ? '<i class="nwb">NEW</i>' : ''}${has ? nb : '<small>🔒 ' + b.d + '</small>'}</button>`;
  }).join('')}</div>
- <div class="acts three"><button id="pfSet">⚙ 설정</button><button id="pfRank">🏆 랭킹</button><button class="pri" id="mGo">닫기</button></div>`;
+ <div class="acts three pfacts"><button id="mX" hidden>닫기</button><button id="pfSet">⚙ 설정</button><button id="pfRank">🏆 랭킹</button>${dirty ? '<button class="pri" id="pfOk">저장</button>' : '<button class="pri" id="mGo">닫기</button>'}</div>`;
   $('modal').hidden = false;
   drawMyFace();
+  faceTo($('pfCv'), d.photo ? 'photo' : d.face);
   document.querySelectorAll('[data-fc]').forEach(c => {
     if (c.dataset.fc !== 'photo') faceTo(c, c.dataset.fc);
     else if (photoData()) faceTo(c, 'photo');
   });
-  $('mGo').onclick = closeModal;
-  $('pfSet').onclick = () => settingsSheet();
-  $('pfRank').onclick = () => rankSheet();
-  if ($('pfNick'))
-    $('pfNick').onclick = () => {
-      if (!S.nick) sbEnsure();
-      nickSheet(() => profileSheet());
+  const re = () => profileSheet(true);
+  $('mX').onclick = () => pfLeave(closeModal);
+  if ($('mGo')) $('mGo').onclick = () => pfLeave(closeModal);
+  if ($('pfOk'))
+    $('pfOk').onclick = () => {
+      pfSave();
+      pfDraft = null;
+      closeModal();
     };
+  $('pfSet').onclick = () => pfLeave(() => settingsSheet());
+  $('pfRank').onclick = () => pfLeave(() => rankSheet());
+  if ($('pfNick'))
+    $('pfNick').onclick = () =>
+      pfLeave(() => {
+        if (!S.nick) sbEnsure();
+        nickSheet(() => profileSheet());
+      });
   document.querySelectorAll('[data-bd]').forEach(
     b =>
       (b.onclick = () => {
@@ -18763,10 +18821,8 @@ function profileSheet() {
           f = BADGES.find(x => x.k === k);
         if (!bdHas(k))
           return toast(f.rk ? f.d + '로 우편함에 도착해요' : f.rare ? '황금 고블린을 잡으면 아주 드물게 얻어요' : f.d + ' 달성 시 얻어요');
-        S.badge = S.badge === k ? null : k;
-        pfCheck();
-        save();
-        profileSheet();
+        d.badge = d.badge === k ? null : k;
+        re();
       })
   );
   document.querySelectorAll('[data-face]').forEach(
@@ -18774,19 +18830,26 @@ function profileSheet() {
       (b.onclick = () => {
         const k = b.dataset.face;
         if (k === 'photo') {
-          if (!photoData()) return pickPhoto(() => profileSheet());
-          S.facePhoto = true;
+          /* 사진 올리기는 고르는 즉시 이 기기에 저장되고 바로 씀 */
+          if (!photoData())
+            return pickPhoto(() => {
+              d.photo = true;
+              re();
+            });
+          d.photo = true;
         } else {
-          S.face = k === 'kael' ? null : k;
-          S.facePhoto = false;
-          faceSync();
+          d.face = k;
+          d.photo = false;
         }
-        save();
-        drawMyFace();
-        profileSheet();
+        re();
       })
   );
-  if ($('fcNew')) $('fcNew').onclick = () => pickPhoto(() => profileSheet());
+  if ($('fcNew'))
+    $('fcNew').onclick = () =>
+      pickPhoto(() => {
+        d.photo = true;
+        re();
+      });
   if ($('fcDel'))
     $('fcDel').onclick = () => {
       try {
@@ -18794,10 +18857,11 @@ function profileSheet() {
       } catch (e) {}
       PHOTO = null;
       S.facePhoto = false;
+      d.photo = false;
       save();
       drawMyFace();
       toast('사진을 지웠어요');
-      profileSheet();
+      re();
     };
   document.querySelectorAll('[data-pf]').forEach(
     b =>
@@ -18806,10 +18870,8 @@ function profileSheet() {
           f = PFRAMES.find(x => x.k === k);
         if (!pfHas(k))
           return toast(f.rk ? f.d + '로 우편함에 도착해요' : f.rare ? '황금 고블린을 잡으면 아주 드물게 얻어요' : f.d + ' 달성 시 얻어요');
-        S.pf = k;
-        pfCheck();
-        save();
-        profileSheet();
+        d.pf = k;
+        re();
       })
   );
 }
