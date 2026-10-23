@@ -797,14 +797,16 @@ class GameCalc {
     return -1;
   }
 
-  /// 비용 대비 전투력이 가장 많이 오르는 단련 (골드와 상관없이) — 단련 탭 「추천」 배지와 길잡이가 같이 씀 (웹 upBest)
+  /// 비용 대비 전투력이 가장 많이 오르는 단련 — 지금 살 수 있는 것이 있으면 그중에서, 없으면 전체에서.
+  /// 단련 탭 「추천」 배지와 길잡이가 같이 씀 (웹 upBest)
   String? upBest() {
     final p0 = power();
+    final can = upgrades.any((u) => s.upLv(u.k) < u.max && s.gold >= upgradeCost(u.k, s.upLv(u.k)));
     String? best;
     num bv = 0;
     for (final u in upgrades) {
       final l = s.upLv(u.k);
-      if (l >= u.max) continue;
+      if (l >= u.max || (can && s.gold < upgradeCost(u.k, l))) continue;
       s.up[u.k] = l + 1;
       final g = (power() - p0) / upgradeCost(u.k, l);
       s.up[u.k] = l;
