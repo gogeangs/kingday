@@ -275,7 +275,8 @@ class _RetireBox extends StatelessWidget {
           KdBuy(
             key: const ValueKey('diaryBtn'),
             text: '은퇴 일기',
-            kind: BuyKind.ghost,
+            // 노란 버튼은 하나만: 은퇴할 수 없고 찍을 포인트가 있을 때만 노란색 (웹 diaryBtn .alt, UX 점검 15)
+            kind: !can && mp > 0 ? BuyKind.gold : BuyKind.ghost,
             minWidth: 0,
             onTap: g.openDiary,
           ),

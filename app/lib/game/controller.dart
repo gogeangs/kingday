@@ -347,34 +347,36 @@ class GameController extends ChangeNotifier {
                     textAlign: TextAlign.center, style: KdText.body(12, color: const Color(0xFFFFC94A))),
               ]),
             ),
-            if (adN > 0)
-              KdBuy(
-                kind: BuyKind.ad,
-                minWidth: 0,
-                text: '▶ 광고 보고 2배 · 오늘 $adN회',
-                // 창을 닫고 「닫힌 다음」 광고를 띄움 (바로 부르면 창이 아직 열린 것으로 보여 광고가 안 뜸)
-                onTap: () => chainSheet(c, () => watchAd('offline', twice)),
+            // 2배 받기는 작은 줄 두 개, 기본은 「받기」 하나 (웹 .dblrow, UX 점검 5)
+            Row(children: [
+              if (adN > 0) ...[
+                Expanded(
+                  child: _DblBtn(
+                    text: '▶ 광고 보고 2배',
+                    sub: '오늘 $adN회',
+                    // 창을 닫고 「닫힌 다음」 광고를 띄움 (바로 부르면 창이 아직 열린 것으로 보여 광고가 안 뜸)
+                    onTap: () => chainSheet(c, () => watchAd('offline', twice)),
+                  ),
+                ),
+                const SizedBox(width: 6),
+              ],
+              Expanded(
+                child: _DblBtn(
+                  icon: gemIcon,
+                  text: '이삭 $gemOffline로 2배',
+                  onTap: () {
+                    if (!acts.spendGem(gemOffline)) {
+                      _flush();
+                      return;
+                    }
+                    twice();
+                    Navigator.of(c).pop();
+                  },
+                ),
               ),
+            ]),
           ],
           acts: KdActs(buttons: [
-            KdAct(
-              '2배 받기',
-              onTap: () {
-                if (!acts.spendGem(gemOffline)) {
-                  _flush();
-                  return;
-                }
-                twice();
-                Navigator.of(c).pop();
-              },
-              child: FittedBox(
-                fit: BoxFit.scaleDown,
-                child: Row(mainAxisSize: MainAxisSize.min, children: [
-                  Text('2배 받기 · ', style: KdText.display(15, color: const Color(0xFFFFE08A))),
-                  iconNum(gemIcon, '$gemOffline', size: 16, style: KdText.figure(15, color: const Color(0xFFFFE08A))),
-                ]),
-              ),
-            ),
             KdAct('받기', primary: true, onTap: () => Navigator.of(c).pop()),
           ]),
         );
@@ -448,7 +450,27 @@ class GameController extends ChangeNotifier {
   /// 원정대 초상화 줄 (알림을 그 바로 위에 띄움)
   final partyRowKey = GlobalKey();
 
+  /// 열린 탭 창·아래 탭 줄 (탭이 열려 있으면 알림을 그 바로 위에, UX 점검 2)
+  final pageKey = GlobalKey(), tabsKey = GlobalKey();
+
+  /// 이야기 창(scene·탈환 보고서)이 떠 있는 동안 알림은 모아 두었다가 닫으면 보여 줌 (웹 sceneOn·toastHold, 3회차 리뷰 14)
+  bool sceneOn = false;
+  final List<String> _toastHold = [];
+
+  void _sceneDone() {
+    sceneOn = false;
+    if (_toastHold.isEmpty) return;
+    final h = List.of(_toastHold);
+    _toastHold.clear();
+    Timer(const Duration(milliseconds: 200), () => h.forEach(toast));
+  }
+
   void toast(String m) {
+    if (sceneOn && modalOpen) {
+      if (!_toastHold.contains(m)) _toastHold.add(m);
+      if (_toastHold.length > 3) _toastHold.removeAt(0);
+      return;
+    }
     if (toastMsg.value != null) {
       if (m == toastMsg.value || _toastQ.contains(m)) return;
       _toastQ.add(m);
@@ -559,7 +581,10 @@ class GameController extends ChangeNotifier {
   /// 웹 scene(eyebrow,title,paras,btn,alt,illust): 이야기 창. 대기열에 넣는다.
   void scene(String eyebrow, String title, List<String> paras, String btn,
       {String? altLabel, VoidCallback? onGo, VoidCallback? onAlt, String? illust, String? illustFace, Widget? titleWidget, bool closable = false}) {
-    queue((ctx) => showKdSheet<void>(ctx, closable: closable, builder: (c) {
+    queue((ctx) async {
+      sceneOn = true;
+      try {
+        await showKdSheet<void>(ctx, closable: closable, builder: (c) {
           return KdSheetBody(
             illust: illust,
             illustFace: illustFace,
@@ -579,7 +604,11 @@ class GameController extends ChangeNotifier {
               }),
             ]),
           );
-        }));
+        });
+      } finally {
+        _sceneDone();
+      }
+    });
   }
 
   // ── 매 프레임 ──
@@ -637,10 +666,17 @@ class GameController extends ChangeNotifier {
     _rpBuf.clear();
     if (b.length == 1) {
       final it = b.first;
-      scene(it.eb, it.t, it.p, it.btn, titleWidget: it.titleWidget);
+      scene(it.eb, it.t, it.p, it.btn, titleWidget: it.titleWidget, onGo: it.go);
       return;
     }
-    queue((ctx) => showKdSheet<void>(ctx, builder: (c) => ReportSheet(items: b, onDone: () => Navigator.of(c).pop())));
+    queue((ctx) async {
+      sceneOn = true;
+      try {
+        await showKdSheet<void>(ctx, builder: (c) => ReportSheet(items: b, onDone: () => Navigator.of(c).pop()));
+      } finally {
+        _sceneDone();
+      }
+    });
   }
 
   // ── 누르면 일어나는 일 (core/actions.dart) ──
@@ -791,7 +827,9 @@ class GameController extends ChangeNotifier {
 
   String vbTab(String k) {
     final t = vbTabs(k), m = vbTabM[k];
-    return m != null && t.contains(m) ? m : t.first;
+    if (m != null && t.contains(m)) return m;
+    // 아직 안 지은 건물은 「정보」(재건 버튼) 탭부터 (3회차 리뷰 11: 식당이 부엌 탭으로 열림)
+    return state.bldLv(k) <= 0 && t.contains('info') ? 'info' : t.first;
   }
 
   /// 건물 고르기: 마을 탭으로 가서 아래 건물 창을 연다 (웹 vlSelect)
@@ -954,6 +992,24 @@ class GameController extends ChangeNotifier {
   }
 
   /// 장비 비교 창 (웹 showItem) — 고르기 전에는 닫히지 않음
+  /// 약한 장비를 10번 팔면 한 번만 「약한 장비는 바로 팔까요?」 (웹 sellAsk, 3회차 리뷰 12 · done.sellN·sellAsk)
+  void _sellAsk() {
+    final d = state.done;
+    if (truthy(state.raw['autoSell']) || truthy(d['sellAsk'])) return;
+    d['sellN'] = orNum(d['sellN'], 0) + 1;
+    if (orNum(d['sellN'], 0) < 10) return;
+    d['sellAsk'] = 1;
+    scene('피트의 제안', '약한 장비는 바로 팔까요?', const [
+      'm:피트|형씨, 약한 물건 파느라 손목 나가겠어. 지금 것보다 약한 건 내가 알아서 사 갈까?',
+      'sys:켜 두면 지금 장비보다 약하거나 같은 장비는 창 없이 바로 팔아요. 장비 탭 「약한 장비 바로 판매」에서 언제든 바꿀 수 있어요.',
+    ], '바로 팔기 켜기', altLabel: '괜찮아요', onGo: () {
+      state.raw['autoSell'] = true;
+      toast('약한 장비 바로 판매 켜짐');
+      save();
+      refresh();
+    });
+  }
+
   Future<void> showItemSheet(BuildContext ctx, Relic it, Relic? cur,
           {({num gold, num gem, String? card, List<(String, String)> rare})? gob}) =>
       showKdSheet<void>(ctx, closable: false, builder: (c) {
@@ -968,6 +1024,7 @@ class GameController extends ChangeNotifier {
           Navigator.of(c).pop();
           sound('coin');
           act((a) => a.sell(it));
+          if (weak) _sellAsk();
         });
         final eqBtn = KdAct('장착', primary: !weak, onTap: () {
           Navigator.of(c).pop();
@@ -1081,7 +1138,8 @@ class GameController extends ChangeNotifier {
         }
       case StoryEvent(:final id):
         final ev = storyEvents.firstWhere((x) => x.id == id);
-        _rpAdd((face: reportFace(ev.lines), eb: ev.eyebrow, t: ev.title, p: ev.lines, btn: ev.button, titleWidget: null));
+        // 마르타 「밭으로 간다」: 마을 밭을 열어 줌 (웹 EVENTS marta.go)
+        _rpAdd((face: reportFace(ev.lines), eb: ev.eyebrow, t: ev.title, p: ev.lines, btn: ev.button, titleWidget: null, go: id == 'marta' ? () => vlSelect('farm') : null));
       case RankUpEvent(:final rankIdx, :final gem):
         sound('fanfare');
         final r = ranks[rankIdx];
@@ -1104,6 +1162,7 @@ class GameController extends ChangeNotifier {
             kdImg('assets/game/ui/${rankImg[rankIdx]}.png', w: 96, h: 96),
             Text('${r.n} 카엘', textAlign: TextAlign.center, style: const TextStyle(fontFamily: 'Hahmlet', fontSize: 22, fontWeight: FontWeight.w700)),
           ]),
+          go: null,
         ));
       case GemEvent(:final n, :final why):
         // 웹: 군단장 첫 처치 이삭은 2.3초 뒤 (「○○ 처치」 알림에 덮이지 않게) + 진동
@@ -1117,8 +1176,8 @@ class GameController extends ChangeNotifier {
         final was = state.raw['autoSkill'];
         state.raw['autoSkill'] = false;
         scene('특수 스킬', '동료들의 힘이 모였다', [
-          'q@proud:주인, 원정대의 힘이 가득 찼다! 빛나는 초상화를 눌러 봐라.',
-          'sys:초상화 둘레의 금색 고리가 다 차면 특수 스킬을 쓸 수 있어요. 오른쪽 아래 AUTO를 켜 두면 알아서 써요. 초상화를 길게 누르면 스킬 설명이 나와요.',
+          'q@proud:주인, 원정대의 힘이 가득 찼다! 빛나는 초상화가 특수 스킬이다. 지금은 알아서 쓰고 있다.',
+          'sys:초상화 둘레의 금색 고리가 다 차면 특수 스킬이 나가요. 오른쪽 아래 「자동」을 끄면 빛나는 초상화를 직접 눌러 쓸 수 있어요. 초상화를 길게 누르면 스킬 설명이 나와요.',
         ], '알겠어', onGo: () => state.raw['autoSkill'] = was);
       case StageClearedEvent(:final chapter):
         sound('clear');
@@ -1161,8 +1220,8 @@ class GameController extends ChangeNotifier {
       'k@flustered:…그럼 은퇴는 언제 해?',
       'm:브론|탑 말고 내 폐광도 좀 봐 줘. 요일마다 광석이 쏟아진다고.',
       'sys:지도 탭의 「⚔ 도전」에서 시련의 탑과 요일 던전에 들어갈 수 있어요.',
-    ], '도전 보러 가기', altLabel: '나중에', onGo: () => openChallenge(this), onAlt: () {
-      // 「나중에」: 지도 탭에 빨간 점 (웹 dotSeen2.mp 지움)
+    ], '나중에 (지도에서 보기)', altLabel: '도전 보러 가기', onAlt: () => openChallenge(this), onGo: () {
+      // 노란 버튼 「나중에」: 지도 탭에 빨간 점 (웹 dotSeen2.mp 지움, 3회차 리뷰 13)
       asMap(state.raw['dotSeen2'])?.remove('mp');
       refresh();
     });
@@ -1348,7 +1407,7 @@ class GameController extends ChangeNotifier {
   /// 할 일을 누르면 그곳으로 (웹 guideNow().go). k: 'g0'~'g8' · 'up:..' · 'b:..'
   void guideGo(String k) {
     if (k.startsWith('up:')) return upGo();
-    if (k.startsWith('b:')) return vlSelect(k.substring(2));
+    if (k.startsWith('b:')) return vlSelect(k.substring(2), tab: 'info');
     switch (int.tryParse(k.substring(1)) ?? -1) {
       case 0:
         hintBoxAt = DateTime.now().millisecondsSinceEpoch;
@@ -1666,6 +1725,7 @@ class GameController extends ChangeNotifier {
         kdImg('assets/game/portraits/portrait_${bossIds[i]}_idle.png', w: 120, h: 120),
         Text(r.n, textAlign: TextAlign.center, style: const TextStyle(fontFamily: 'Hahmlet', fontSize: 22, fontWeight: FontWeight.w700)),
       ]),
+      go: null,
     ));
   }
 
@@ -1814,6 +1874,32 @@ class _AdCountdownState extends State<_AdCountdown> {
             const SizedBox(height: 6),
             Text('초 뒤 보상을 받아요', style: KdText.body(14, color: Colors.white)),
           ]),
+        ),
+      );
+}
+
+/// 방치 보상 창의 작은 「2배」 버튼 (웹 .dblrow button)
+class _DblBtn extends StatelessWidget {
+  const _DblBtn({required this.text, this.sub, this.icon, required this.onTap});
+  final String text;
+  final String? sub, icon;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) => Pressable(
+        onTap: onTap,
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 7),
+          alignment: Alignment.center,
+          decoration: BoxDecoration(color: KdColors.panel2, borderRadius: BorderRadius.circular(10), border: Border.all(color: KdColors.line)),
+          child: FittedBox(
+            fit: BoxFit.scaleDown,
+            child: Row(mainAxisSize: MainAxisSize.min, children: [
+              if (icon != null) ...[kdImg(icon!, w: 14, h: 14), const SizedBox(width: 3)],
+              Text(text, style: KdText.body(12.5, color: const Color(0xFFFFE08A), weight: FontWeight.w700)),
+              if (sub != null) ...[const SizedBox(width: 4), Text(sub!, style: KdText.body(11, color: KdColors.muted))],
+            ]),
+          ),
         ),
       );
 }

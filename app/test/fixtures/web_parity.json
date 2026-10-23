@@ -13112,7 +13112,7 @@
      "aps": 1,
      "crit": 0.05
     },
-    "guide": "up:hp"
+    "guide": "g1"
    },
    "retire": {
     "tl": {
@@ -19889,7 +19889,7 @@
      "aps": 1,
      "crit": 0.05
     },
-    "guide": "up:hp"
+    "guide": "g7"
    },
    "retire": {
     "tl": {
@@ -23408,7 +23408,7 @@
      "aps": 1,
      "crit": 0.05
     },
-    "guide": "up:hp"
+    "guide": "g8"
    },
    "retire": {
     "tl": {
@@ -27018,7 +27018,7 @@
      "aps": 1,
      "crit": 0.05
     },
-    "guide": "up:hp"
+    "guide": "g3"
    },
    "retire": {
     "tl": {

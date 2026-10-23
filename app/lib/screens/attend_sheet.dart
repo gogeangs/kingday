@@ -281,16 +281,16 @@ class _AttendSheetState extends State<AttendSheet> {
             ]),
           ),
       ],
-      acts: KdActs(buttons: [
-        KdAct('닫기', onTap: () => Navigator.of(widget.sheet).pop()),
-        st == 'back'
-            ? const KdAct('날짜를 확인해 주세요', primary: true)
-            : !done
-                ? KdAct('출석하기', primary: true, onTap: _claim)
-                : adOk
-                    ? KdAct('▶ 광고 보고 한 번 더 받기', primary: true, onTap: _ad)
-                    : const KdAct('내일 또 만나요', primary: true),
-      ]),
+      // 받은 뒤에는 노란 버튼이 「닫기」, 광고는 보조 버튼 (웹 attSheet, UX 점검 6)
+      acts: KdActs(buttons: done && st != 'back'
+          ? [
+              adOk ? KdAct('▶ 광고로 한 번 더', onTap: _ad) : const KdAct('내일 또 만나요'),
+              KdAct('닫기', primary: true, onTap: () => Navigator.of(widget.sheet).pop()),
+            ]
+          : [
+              KdAct('닫기', onTap: () => Navigator.of(widget.sheet).pop()),
+              st == 'back' ? const KdAct('날짜를 확인해 주세요', primary: true) : KdAct('출석하기', primary: true, onTap: _claim),
+            ]),
     );
   }
 }

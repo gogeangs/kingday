@@ -831,7 +831,8 @@ class GameCalc {
       return null;
     }
     final i = guideIndex();
-    if (i != 0) {
+    // 추천 강화는 기다리는 단계에서만: 할 일을 다 했거나 · 「1-10 성주」 · 아직 은퇴 못 하는 「첫 은퇴」 (3회차 리뷰 10)
+    if (i < 0 || i == 2 || (i == 8 && !retCan())) {
       num mc = double.infinity;
       for (final u in upgrades) {
         final l = s.upLv(u.k);

@@ -7,7 +7,7 @@ import 'theme.dart';
 import 'widgets.dart';
 
 /// 보고서 한 칸: 얼굴 · 머리글 · 한 줄 제목 · 펼칠 대사
-typedef ReportItem = ({String face, String eb, String t, List<String> p, String btn, Widget? titleWidget});
+typedef ReportItem = ({String face, String eb, String t, List<String> p, String btn, Widget? titleWidget, VoidCallback? go});
 
 /// 대사 중 처음 나오는 「m:이름|」의 얼굴, 없으면 카엘 (웹 rpFace)
 String reportFace(List<String> ps) {
