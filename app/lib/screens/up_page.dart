@@ -156,7 +156,7 @@ class _UpRowState extends State<_UpRow> {
       // 후반에 숫자가 커서 「454K → 454K」처럼 차이가 안 보이면 오르는 비율로 (웹 upGain, UX 점검 13)
       if (next == _val(u.k, t) && (u.k == 'atk' || u.k == 'hp')) {
         final x = u.k == 'atk' ? t.atk : t.hp, y = u.k == 'atk' ? n.atk : n.hp, p = x > 0 ? (y / x - 1) * 100 : 0;
-        next = '+${p >= .01 ? p.toStringAsFixed(p >= 1 ? 1 : 2) : '0.01 미만'}%';
+        next = p >= .01 ? '+${p.toStringAsFixed(p >= 1 ? 1 : 2)}%' : '+0.01% 미만';
       }
     }
     final plan = g.acts.upPlan(u);

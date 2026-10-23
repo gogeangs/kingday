@@ -353,8 +353,8 @@ class GameController extends ChangeNotifier {
               if (adN > 0) ...[
                 Expanded(
                   child: _DblBtn(
-                    text: '▶ 광고 보고 2배',
-                    sub: '오늘 $adN회',
+                    text: '▶ 광고 2배',
+                    sub: '· $adN회',
                     // 창을 닫고 「닫힌 다음」 광고를 띄움 (바로 부르면 창이 아직 열린 것으로 보여 광고가 안 뜸)
                     onTap: () => chainSheet(c, () => watchAd('offline', twice)),
                   ),
@@ -663,7 +663,8 @@ class GameController extends ChangeNotifier {
 
   /// 1개면 원래 창 그대로, 2개 이상이면 칸마다 「보러 가기」. 고르지 않은 것은 나중에(later)
   void _nwFlush() {
-    if (_nwBuf.isEmpty) return;
+    // 제목 화면에서는 모아 두기만 (처음 들어올 때 탑·새 빈터가 따로 뜨지 않게, 웹 nwFlush)
+    if (_nwBuf.isEmpty || titleOpen) return;
     final b = List.of(_nwBuf);
     _nwBuf.clear();
     if (b.length == 1) return b.first.one();
