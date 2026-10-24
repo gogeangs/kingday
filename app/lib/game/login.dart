@@ -16,7 +16,7 @@ import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 class Login {
   /// Google Cloud「kingday web」OAuth 클라이언트 ID (…apps.googleusercontent.com).
   /// 안드로이드는 이 ID 로 ID 토큰을 받아야 Supabase 가 받아 줌. (docs/RELEASE_NATIVE.md)
-  static const googleWebClientId = '';
+  static const googleWebClientId = '784535946419-qrselu11h6qteqdugkpc9f7su3d0rfkl.apps.googleusercontent.com';
 
   /// Google Cloud 의 iOS OAuth 클라이언트 ID (아이폰용)
   static const googleIosClientId = '';
