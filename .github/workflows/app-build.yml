@@ -277,10 +277,15 @@ jobs:
           K="$RUNNER_TEMP/keys/AuthKey_$KEY_ID.p8"
           printf '%s\n' "$KEY_P8" > "$K"
           AUTH=(-allowProvisioningUpdates -authenticationKeyPath "$K" -authenticationKeyID "$KEY_ID" -authenticationKeyIssuerID "$ISSUER_ID")
-          set -o pipefail
+          fail() {  # 실패하면 오류 줄을 Annotations 에 모아 보여 줌
+            msg=$( { grep -E "error:|Error|failed|requires|No profiles|No signing|provisioning|certificate" "$1" | awk '!seen[$0]++' | head -40; } | sed -e 's/%/%25/g' | awk '{printf "%s%%0A", $0}')
+            echo "::error title=$2::$msg"; exit 1; }
+          # 아카이브는 서명 없이 만들고(개발용 프로필은 등록된 기기가 있어야 해서 실패함),
+          # 내보낼 때 App Store 배포용 인증서·프로필을 애플 클라우드에서 자동으로 받아 서명
           xcodebuild -workspace ios/Runner.xcworkspace -scheme Runner -configuration Release \
             -archivePath "$RUNNER_TEMP/Runner.xcarchive" -destination 'generic/platform=iOS' \
-            DEVELOPMENT_TEAM=TGYFG9R2C7 CODE_SIGN_STYLE=Automatic "${AUTH[@]}" archive | tail -40
+            CODE_SIGNING_ALLOWED=NO archive > archive.log 2>&1 || { tail -60 archive.log; fail archive.log archive-fail; }
+          tail -15 archive.log
           cat > "$RUNNER_TEMP/export.plist" <<PL
           <?xml version="1.0" encoding="UTF-8"?>
           <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
@@ -293,6 +298,7 @@ jobs:
           </dict></plist>
           PL
           xcodebuild -exportArchive -archivePath "$RUNNER_TEMP/Runner.xcarchive" \
-            -exportOptionsPlist "$RUNNER_TEMP/export.plist" -exportPath "$RUNNER_TEMP/out" "${AUTH[@]}" | tail -40
+            -exportOptionsPlist "$RUNNER_TEMP/export.plist" -exportPath "$RUNNER_TEMP/out" "${AUTH[@]}" > export.log 2>&1 || { tail -60 export.log; fail export.log upload-fail; }
+          tail -20 export.log
           echo "::notice title=testflight::빌드 ${{ github.run_number }} 을 App Store Connect 에 올림 (처리에 10~30분)"
           rm -f "$K"
