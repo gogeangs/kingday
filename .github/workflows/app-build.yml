@@ -256,7 +256,15 @@ jobs:
           KEY_ID: ${{ secrets.APPSTORE_KEY_ID }}
         run: |
           if [ -n "$KEY_ID" ]; then echo "비밀값 있음 → 다음 단계에서 서명 빌드"; exit 0; fi
-          flutter build ios --release --no-codesign --build-number=${{ github.run_number }}
+          set +e
+          flutter build ios --release --no-codesign --build-number=${{ github.run_number }} > ios.log 2>&1
+          code=$?
+          tail -60 ios.log
+          if [ $code -ne 0 ]; then
+            msg=$( { grep -E "error|Error|failed|Failed|requires|not found|Could not" ios.log | awk '!seen[$0]++' | head -40; } | sed -e 's/%/%25/g' | awk '{printf "%s%%0A", $0}')
+            echo "::error title=ios-fail::$msg"
+            exit $code
+          fi
 
       - name: 서명 빌드 → TestFlight 업로드 (비밀값이 있을 때만)
         env:
