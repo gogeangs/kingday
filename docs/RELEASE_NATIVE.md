@@ -55,6 +55,8 @@
 
 웹 로그인용 프로젝트 `kingday-512207`를 그대로 써요.
 
+> **안드로이드 완료 (2026-10-25)**: 안드로이드 클라이언트 2개 `kingday android upload`(업로드 키 `17:E1:74:80:DE:71:8D:FD:B8:53:8D:4F:71:C2:89:97:79:9A:92:59`)·`kingday android play`(앱 서명 키 `B3:83:E4:0B:A0:65:65:8D:03:DB:2A:9F:AF:2C:16:3D:6A:33:9B:86`) 만듦. 웹 클라이언트 ID를 `app/lib/game/login.dart`에 넣어 안드로이드 구글 로그인 켬. 남은 것: iOS 클라이언트(아이폰 낼 때).
+
 1. Google Cloud → API 및 서비스 → 사용자 인증 정보 → **OAuth 클라이언트 ID 만들기 → Android**를 2개 만들어 주세요.
    - 패키지 이름: `kr.co.project30s.kingday`
    - SHA-1: 하나는 **업로드 키 SHA-1**, 다른 하나는 **앱 서명 키 SHA-1**
