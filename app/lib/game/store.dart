@@ -15,9 +15,9 @@ import 'package:in_app_purchase/in_app_purchase.dart';
 import 'controller.dart';
 
 class IapStore {
-  /// 실제 스토어 결제를 쓰는지. 안드로이드는 Play Console 상품 9개·서버 함수 kd-iap 준비 끝 (2026-10-25).
-  /// 아이폰은 App Store Connect 상품·애플 키를 넣은 뒤 `|| Platform.isIOS` 를 더함 (docs/RELEASE_NATIVE.md)
-  static bool get enabled => Platform.isAndroid;
+  /// 실제 스토어 결제를 쓰는지. 안드로이드(Play Console 상품 9개)·아이폰(App Store Connect 상품 9개) 모두
+  /// 서버 함수 kd-iap 로 확인 (2026-10-25 · 애플 인앱 구매 키는 Supabase Secret)
+  static bool get enabled => Platform.isAndroid || Platform.isIOS;
 
   /// 게임 상품 키 → 스토어 상품 ID (Play Console·App Store Connect 에 이 ID 로 등록)
   static const ids = {
