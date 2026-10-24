@@ -3,7 +3,7 @@ description: "왕이 되는 그날까지 — 은퇴만 꿈꾸는 농부 카엘�
 publish_to: "none"
 
 # 스토어 버전: 이름(사람이 보는 버전)+빌드 번호(올릴 때마다 1씩 증가)
-version: 0.0.1+1
+version: 0.0.2+2
 
 environment:
   sdk: ">=3.5.0 <4.0.0"
