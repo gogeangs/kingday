@@ -166,6 +166,9 @@ class SkillTimers {
   /// 덕배 불굴 남은 시간, 안단테 꿀벌 교향곡 (남은 시간·강화·다음 박자)
   num guts = 0, sym = 0, symK = 1, symTick = 0;
 
+  /// 베티 「등불 밝히기」 치명타 확률↑, 엘름 「생명의 수액」 흡혈 (남은 시간·강화)
+  num lamp = 0, lampK = 1, sap = 0, sapK = 1;
+
   /// 카엘 촌장 「다 함께 울력」 남은 시간·공격 배수·공속 배수 (웹 ULB)
   num ul = 0, ulA = 1, ulS = 1;
 }
@@ -334,7 +337,7 @@ class BattleSim {
   int chRi() => ch == null ? 0 : ch!.mode == 'tower' ? 3 : dunDef(ch!.k).ri;
 
   void _chPartyReset() {
-    skx.shield = skx.honey = skx.feast = skx.guts = skx.sym = 0;
+    skx.shield = skx.honey = skx.feast = skx.guts = skx.sym = skx.lamp = skx.sap = 0;
     skx.ul = 0;
     for (final id in c.members()) {
       final p = party[id];
@@ -906,6 +909,81 @@ class BattleSim {
           addFloat(m.x, m.y - 80 * sc, '꽁꽁!', 0xFF9BE3FF, 13);
         }
         if (fxOk('skill_nella')) spawnFx('skill_nella', cx, cy - 40 * sc, 170 * sc, .8);
+      case 'salo':
+        // 상처에 소금: 맨 앞 적 1배 + 6초 지속 피해
+        final k = c.skPow(id), tg = alive.first;
+        hitMon(tg, t.atk * k * feast, true, sc);
+        tg.psn = 6;
+        tg.psnD = t.atk * .15 * k;
+        tg.psnT = 0;
+        addFloat(tg.x, tg.y - 80 * sc, '따끔!', 0xFFFF9A7A, 13);
+        if (fxOk('skill_salo')) spawnFx('skill_salo', tg.x, tg.y - 40 * sc, 150 * sc, .8);
+      case 'betty':
+        // 등불 밝히기: 8초 동안 원정대 치명타 확률 +20%
+        skx.lamp = 8;
+        skx.lampK = c.skPow(id);
+        for (final j in c.members()) {
+          final q = party[j];
+          if (q != null && !q.down) addFloat(pos[j]!, py[j]! - (heightOf(j) + 8) * sc, '치명타↑', 0xFFFFD36B, 12);
+        }
+        if (fxOk('skill_betty')) spawnFx('skill_betty', pos[id]!, py[id]! - 50 * sc, 170 * sc, .9);
+      case 'naia':
+        // 바다의 자장가: 쓰러진 동료 일으켜 40%, 나머지 25% 회복
+        final k = c.skPow(id);
+        for (final j in c.members()) {
+          final q = party[j];
+          if (q == null) continue;
+          if (q.down) {
+            q.down = false;
+            q.hp = c.stats(j).hp * math.min(1, .4 * k);
+            addFloat(pos[j]!, py[j]! - (heightOf(j) + 8) * sc, '부활!', 0xFF9BE3FF, 14);
+          } else if (healOk()) {
+            q.hp = math.min(c.stats(j).hp, q.hp + c.stats(j).hp * .25 * k);
+          }
+          spawnFx('heal', pos[j]!, py[j]! - 24 * sc, 64 * sc, .6);
+        }
+        if (fxOk('skill_naia')) _teamFx('skill_naia', sc, pos, py);
+      case 'bernard':
+        // 칼질 폭풍: 모든 적에게 1.2배를 3번
+        final k = c.skPow(id);
+        for (var n = 0; n < 3; n++) {
+          for (final m in alive) {
+            if (m.hp > 0) hitMon(m, t.atk * 1.2 * k * feast, true, sc);
+          }
+        }
+        shakeT = .3;
+        if (fxOk('skill_bernard')) spawnFx('skill_bernard', cx, cy - 30 * sc, 190 * sc, .8);
+      case 'elm':
+        // 생명의 수액: 8초 동안 때릴 때마다 20% 흡혈
+        skx.sap = 8;
+        skx.sapK = c.skPow(id);
+        for (final j in c.members()) {
+          final q = party[j];
+          if (q != null && !q.down) addFloat(pos[j]!, py[j]! - (heightOf(j) + 8) * sc, '수액!', 0xFF9CF08A, 12);
+        }
+        if (fxOk('skill_elm')) {
+          final ids = c.members();
+          num mx = 0, my = 0;
+          for (final j in ids) {
+            mx = mx + pos[j]!;
+            my = my + py[j]!;
+          }
+          spawnFx('skill_elm', mx / ids.length, my / ids.length - 50 * sc, 170 * sc, .9);
+        }
+      case 'hagrin':
+        // 바위 깨기: 체력 25% 이하 일반 적은 처치, 나머지 3배(보스 4배)
+        final k = c.skPow(id);
+        for (final m in alive) {
+          if (!m.boss && m.hp <= m.max * .25) {
+            hitMon(m, m.hp, true, sc);
+            m.hp = math.min(m.hp, 0);
+            addFloat(m.x, m.y - 80 * sc, '쾅!', 0xFFFFE27A, 14);
+          } else {
+            hitMon(m, t.atk * (m.boss ? 4 : 3) * k * feast, true, sc);
+          }
+        }
+        shakeT = .4;
+        if (fxOk('skill_hagrin')) spawnFx('skill_hagrin', cx, cy - 20 * sc, 190 * sc, .9);
       case 'luka':
         final k = c.skPow(id);
         _healAll(.2 * k, 64 * sc, sc, pos, py);
@@ -950,6 +1028,8 @@ class BattleSim {
     skx.mount = math.max(0, skx.mount - dt);
     skx.wall = math.max(0, skx.wall - dt);
     skx.guts = math.max(0, skx.guts - dt);
+    skx.lamp = math.max(0, skx.lamp - dt);
+    skx.sap = math.max(0, skx.sap - dt);
     skx.ul = math.max(0, skx.ul - dt);
     if (skx.sym > 0) {
       // 안단테 「꿀벌 교향곡」: 0.5초마다 벌떼가 모든 적을 쏨
@@ -1139,7 +1219,7 @@ class BattleSim {
   void resetFight(String msg) {
     if (ch != null) return _chLose();
     final dem = mons.any((m) => m.dem);
-    skx.shield = skx.honey = skx.feast = skx.guts = skx.sym = 0;
+    skx.shield = skx.honey = skx.feast = skx.guts = skx.sym = skx.lamp = skx.sap = 0;
     skx.ul = 0;
     for (final id in c.members()) {
       party[id]!.hp = c.stats(id).hp;
@@ -1383,7 +1463,7 @@ class BattleSim {
         }
       }
       if (tgt == null) continue;
-      final cr = rng.next() < t.crit;
+      final cr = rng.next() < t.crit + (skx.lamp > 0 ? .2 * skx.lampK : 0);
       final d = t.atk * (cr ? c.crX() : 1) * (.9 + rng.next() * .2) * (skx.feast > 0 ? 1.2 : 1);
       p.swing = .22;
       if (id == 'daisy') {
@@ -1424,6 +1504,8 @@ class BattleSim {
       } else {
         hitMon(tgt, d, cr, sc);
       }
+      // 엘름 「생명의 수액」: 때린 만큼 20% 회복
+      if (skx.sap > 0 && healOk()) p.hp = math.min(t.hp, p.hp + d * .2 * skx.sapK);
     }
   }
 
@@ -1484,7 +1566,7 @@ class BattleSim {
 
   void _kill(Mon m, num sc) {
     spawnFx('coin', m.x, m.y - 26 * sc, 34 * sc, .6, -60 * sc);
-    final g = GameCalc.reward(c.fightSt(), m.boss) * (c.buff('gold') ? 1.5 : 1) * (c.blOn('gold') ? 1.3 : 1) * c.memMul();
+    final g = GameCalc.reward(c.fightSt(), m.boss) * (c.buff('gold') ? 1.5 : 1) * (c.blOn('gold') ? 1.3 : 1) * c.memMul() * (m.boss ? c.vpFeast() : 1);
     s.gold = s.gold + g;
     final d = c.daily();
     d['kill'] = orNum(d['kill'], 0) + 1;

@@ -1,6 +1,6 @@
 # 전설 양봉가 「엘름」 기획 기록
 
-작성일: 2026-10-25 · 상태: **기획·그림 완료, 게임 등록은 보류**
+작성일: 2026-10-25 · 상태: **게임 등록 완료 (2026-10-25, 웹·앱)**
 
 ## 추가 배경
 - 전설 동료 2차 4명(정통 판타지 스타일) 중 세 번째. 나이아·베르나르 완료 후 **엘름** 진행 (대표님 결정, 2026-10-25). 하그린(광부)은 아직 미진행.
@@ -49,3 +49,9 @@
 
 ## 등록할 때 할 일 (COMPANION_GUIDE.md 6장)
 COMP · JOB(양봉가) · RECRUITS(리엘을 꼬마 요정이라 부름) · GRADE(`legend`) · VPAS(작물 성장 속도) · HEIGHT/SPRITES/FORM · SKILLS · castSkill(아군 흡혈 버프) · FXDEF(`skill_elm:4`) · SPRITE_ALT/DRAW · NPCID(`'엘름':'elm'`) · extract_skill_fx.py
+
+
+## 게임 등록 결과 (2026-10-25)
+- 스킬 생명의 수액 — 8초 동안 기본 공격 피해의 20% 흡혈, need 24 (★3 ×1.3, ★5 ×1.6)
+- 마을 스킬 천 년 나무의 숨결 — 작물 자라는 속도 +50%(★1)~+100%(★5)
+- 그림: `assets/characters/elm_*`, 초상화·스킬 아이콘·효과 (동작 시트 자르기는 `tools/extract_sprites.py` 또는 `tools/slice_frames.py` CUTS)

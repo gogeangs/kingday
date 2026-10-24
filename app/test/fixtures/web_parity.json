@@ -2388,6 +2388,114 @@
      "cwLv": 0,
      "cwMul": 1
     },
+    "salo": {
+     "stats": {
+      "atk": 10,
+      "hp": 96,
+      "aps": 0.85,
+      "crit": 0.05
+     },
+     "cPow": 139.23000000000002,
+     "owned": false,
+     "recStar": 0,
+     "starMul": 1,
+     "skPow": 1,
+     "cardOpen": false,
+     "starNeed": 30,
+     "starMax": 3,
+     "cwLv": 0,
+     "cwMul": 1
+    },
+    "betty": {
+     "stats": {
+      "atk": 7,
+      "hp": 205,
+      "aps": 0.8,
+      "crit": 0.05
+     },
+     "cPow": 207.48000000000002,
+     "owned": false,
+     "recStar": 0,
+     "starMul": 1,
+     "skPow": 1,
+     "cardOpen": false,
+     "starNeed": 30,
+     "starMax": 3,
+     "cwLv": 0,
+     "cwMul": 1
+    },
+    "naia": {
+     "stats": {
+      "atk": 14.850000000000001,
+      "hp": 168.75,
+      "aps": 0.8,
+      "crit": 0.05
+     },
+     "cPow": 216.59400000000005,
+     "owned": false,
+     "recStar": 0,
+     "starMul": 1.35,
+     "skPow": 1,
+     "cardOpen": false,
+     "starNeed": 30,
+     "starMax": 5,
+     "cwLv": 0,
+     "cwMul": 1
+    },
+    "bernard": {
+     "stats": {
+      "atk": 13.5,
+      "hp": 175.5,
+      "aps": 0.85,
+      "crit": 0.05
+     },
+     "cPow": 228.92624999999998,
+     "owned": false,
+     "recStar": 0,
+     "starMul": 1.35,
+     "skPow": 1,
+     "cardOpen": false,
+     "starNeed": 30,
+     "starMax": 5,
+     "cwLv": 0,
+     "cwMul": 1
+    },
+    "elm": {
+     "stats": {
+      "atk": 12.15,
+      "hp": 182.25,
+      "aps": 0.7,
+      "crit": 0.05
+     },
+     "cPow": 262.54935,
+     "owned": false,
+     "recStar": 0,
+     "starMul": 1.35,
+     "skPow": 1,
+     "cardOpen": false,
+     "starNeed": 30,
+     "starMax": 5,
+     "cwLv": 0,
+     "cwMul": 1
+    },
+    "hagrin": {
+     "stats": {
+      "atk": 14.850000000000001,
+      "hp": 391.5,
+      "aps": 0.7,
+      "crit": 0.05
+     },
+     "cPow": 353.24100000000004,
+     "owned": false,
+     "recStar": 0,
+     "starMul": 1.35,
+     "skPow": 1,
+     "cardOpen": false,
+     "starNeed": 30,
+     "starMax": 5,
+     "cwLv": 0,
+     "cwMul": 1
+    },
     "kael_chief": {
      "stats": {
       "atk": 10,
@@ -4057,6 +4165,78 @@
       0.1,
       0.2,
       0.1
+     ],
+     "salo": [
+      0.1,
+      0.1,
+      0.1,
+      0.2,
+      0.1,
+      0.1,
+      0.1,
+      0.2,
+      0.1,
+      0.1
+     ],
+     "betty": [
+      0.1,
+      0.1,
+      0.1,
+      0.1,
+      0.1,
+      0.2,
+      0.2,
+      0.1,
+      0.1,
+      0.1
+     ],
+     "naia": [
+      0.3,
+      0.3,
+      0.3,
+      0.6,
+      0.3,
+      0.3,
+      0.3,
+      0.6,
+      0.3,
+      0.3
+     ],
+     "bernard": [
+      0.3,
+      0.3,
+      0.6,
+      0.3,
+      0.3,
+      0.3,
+      0.3,
+      0.3,
+      0.6,
+      0.3
+     ],
+     "elm": [
+      0.3,
+      0.3,
+      0.3,
+      0.3,
+      0.6,
+      0.3,
+      0.3,
+      0.3,
+      0.3,
+      0.6
+     ],
+     "hagrin": [
+      0.3,
+      0.3,
+      0.3,
+      0.3,
+      0.3,
+      0.6,
+      0.6,
+      0.3,
+      0.3,
+      0.3
      ]
     },
     "cookMs": 600000,
@@ -5844,6 +6024,114 @@
      "cwLv": 1,
      "cwMul": 1.08
     },
+    "salo": {
+     "stats": {
+      "atk": 1056.9461111193605,
+      "hp": 2924.615232,
+      "aps": 0.85,
+      "crit": 0.05
+     },
+     "cPow": 8270.165519604176,
+     "owned": false,
+     "recStar": 0,
+     "starMul": 1,
+     "skPow": 1,
+     "cardOpen": true,
+     "starNeed": 30,
+     "starMax": 3,
+     "cwLv": 4,
+     "cwMul": 1.32
+    },
+    "betty": {
+     "stats": {
+      "atk": 922.1618578636801,
+      "hp": 2773.684816,
+      "aps": 0.8,
+      "crit": 0.05
+     },
+     "cPow": 6977.591009072949,
+     "owned": false,
+     "recStar": 0,
+     "starMul": 1,
+     "skPow": 1,
+     "cardOpen": true,
+     "starNeed": 30,
+     "starMax": 3,
+     "cwLv": 2,
+     "cwMul": 1.16
+    },
+    "naia": {
+     "stats": {
+      "atk": 1430.2925314191366,
+      "hp": 4031.4321432000006,
+      "aps": 0.8,
+      "crit": 0.05
+     },
+     "cPow": 10595.07735864045,
+     "owned": false,
+     "recStar": 0,
+     "starMul": 1.35,
+     "skPow": 1,
+     "cardOpen": true,
+     "starNeed": 30,
+     "starMax": 5,
+     "cwLv": 4,
+     "cwMul": 1.32
+    },
+    "bernard": {
+     "stats": {
+      "atk": 1167.4450227363845,
+      "hp": 3310.1813808000006,
+      "aps": 0.85,
+      "crit": 0.05
+     },
+     "cPow": 9206.004979117339,
+     "owned": false,
+     "recStar": 0,
+     "starMul": 1.35,
+     "skPow": 1,
+     "cardOpen": true,
+     "starNeed": 30,
+     "starMax": 5,
+     "cwLv": 1,
+     "cwMul": 1.08
+    },
+    "elm": {
+     "stats": {
+      "atk": 1078.3802792448002,
+      "hp": 3075.85026,
+      "aps": 0.7,
+      "crit": 0.05
+     },
+     "cPow": 9822.969761597396,
+     "owned": false,
+     "recStar": 0,
+     "starMul": 1.35,
+     "skPow": 1,
+     "cardOpen": true,
+     "starNeed": 30,
+     "starMax": 5,
+     "cwLv": 0,
+     "cwMul": 1
+    },
+    "hagrin": {
+     "stats": {
+      "atk": 1256.9237397319685,
+      "hp": 3958.7816016,
+      "aps": 0.7,
+      "crit": 0.05
+     },
+     "cPow": 8452.73816939398,
+     "owned": false,
+     "recStar": 0,
+     "starMul": 1.35,
+     "skPow": 1,
+     "cardOpen": true,
+     "starNeed": 30,
+     "starMax": 5,
+     "cwLv": 2,
+     "cwMul": 1.16
+    },
     "kael_chief": {
      "stats": {
       "atk": 3352.344576,
@@ -7528,6 +7816,78 @@
       0.1,
       0.2,
       0.1
+     ],
+     "salo": [
+      0.1,
+      0.1,
+      0.1,
+      0.2,
+      0.1,
+      0.1,
+      0.1,
+      0.2,
+      0.1,
+      0.1
+     ],
+     "betty": [
+      0.1,
+      0.1,
+      0.1,
+      0.1,
+      0.1,
+      0.2,
+      0.2,
+      0.1,
+      0.1,
+      0.1
+     ],
+     "naia": [
+      0.3,
+      0.3,
+      0.3,
+      0.6,
+      0.3,
+      0.3,
+      0.3,
+      0.6,
+      0.3,
+      0.3
+     ],
+     "bernard": [
+      0.3,
+      0.3,
+      0.6,
+      0.3,
+      0.3,
+      0.3,
+      0.3,
+      0.3,
+      0.6,
+      0.3
+     ],
+     "elm": [
+      0.3,
+      0.3,
+      0.3,
+      0.3,
+      0.6,
+      0.3,
+      0.3,
+      0.3,
+      0.3,
+      0.6
+     ],
+     "hagrin": [
+      0.3,
+      0.3,
+      0.3,
+      0.3,
+      0.3,
+      0.6,
+      0.6,
+      0.3,
+      0.3,
+      0.3
      ]
     },
     "cookMs": 600000,
@@ -8449,54 +8809,54 @@
      "gordon",
      "gordon",
      "gordon",
-     "melo",
-     "crab",
-     "mora",
-     "haral",
+     "pori",
      "gram",
+     "melo",
+     "haral",
+     "betty",
      "gordon",
      "andante",
-     "pori",
+     "crab",
      "peppy",
      "nella",
      "gordon",
      "luka",
      "gordon",
      "gordon",
-     "melo",
-     "gram",
+     "pori",
+     "betty",
      "riel",
      "margo",
      "gordon",
      "margo",
      "gordon",
+     "gram",
+     "gordon",
+     "gordon",
+     "rollo",
+     "crab",
      "birch",
-     "gordon",
-     "gordon",
-     "pori",
-     "rollo",
-     "rollo",
-     "rollo",
+     "birch",
      "haral",
-     "beryl",
+     "mora",
      "gordon",
      "bron",
      "gordon",
      "gordon",
      "haral",
+     "melo",
+     "gordon",
      "mora",
      "gordon",
-     "kara",
-     "gordon",
-     "rollo",
+     "birch",
      "peppy",
      "haral",
-     "kara",
+     "beryl",
      "gordon",
      "gordon",
      "andante",
      "gordon",
-     "margo"
+     "gordon"
     ],
     "chunks": {
      "got": [
@@ -8529,24 +8889,24 @@
     },
     "cardsAfter": {
      "daisy": 11,
-     "gordon": 54,
+     "gordon": 56,
      "luka": 9,
      "haral": 16,
-     "melo": 2,
-     "crab": 1,
-     "mora": 3,
-     "gram": 2,
-     "andante": 3,
      "pori": 2,
+     "gram": 2,
+     "melo": 3,
+     "betty": 2,
+     "andante": 3,
+     "crab": 2,
      "peppy": 3,
      "nella": 1,
      "riel": 1,
-     "margo": 4,
-     "birch": 1,
-     "rollo": 34,
-     "beryl": 2,
+     "margo": 2,
+     "rollo": 1,
+     "birch": 33,
+     "mora": 4,
      "bron": 7,
-     "kara": 4
+     "beryl": 2
     },
     "goldAfter": 123456.7
    },
@@ -9731,6 +10091,114 @@
      "starMax": 3,
      "cwLv": 12,
      "cwMul": 1.96
+    },
+    "salo": {
+     "stats": {
+      "atk": 481811.70585599996,
+      "hp": 3307898.88,
+      "aps": 1.02,
+      "crit": 0.15000000000000002
+     },
+     "cPow": 7271156.172054527,
+     "owned": false,
+     "recStar": 0,
+     "starMul": 1,
+     "skPow": 1,
+     "cardOpen": true,
+     "starNeed": 30,
+     "starMax": 3,
+     "cwLv": 20,
+     "cwMul": 2.6
+    },
+    "betty": {
+     "stats": {
+      "atk": 437308.72197119996,
+      "hp": 3003295.2192,
+      "aps": 0.96,
+      "crit": 0.15000000000000002
+     },
+     "cPow": 6212370.896334028,
+     "owned": false,
+     "recStar": 0,
+     "starMul": 1,
+     "skPow": 1,
+     "cardOpen": true,
+     "starNeed": 30,
+     "starMax": 3,
+     "cwLv": 17,
+     "cwMul": 2.3600000000000003
+    },
+    "naia": {
+     "stats": {
+      "atk": 650459.7126144,
+      "hp": 4465956.6432,
+      "aps": 0.96,
+      "crit": 0.15000000000000002
+     },
+     "cPow": 9239061.270450585,
+     "owned": false,
+     "recStar": 0,
+     "starMul": 1.35,
+     "skPow": 1,
+     "cardOpen": true,
+     "starNeed": 30,
+     "starMax": 5,
+     "cwLv": 20,
+     "cwMul": 2.6
+    },
+    "bernard": {
+     "stats": {
+      "atk": 490336.06680576,
+      "hp": 3366682.3411200005,
+      "aps": 1.02,
+      "crit": 0.15000000000000002
+     },
+     "cPow": 7400103.6243127,
+     "owned": false,
+     "recStar": 0,
+     "starMul": 1.35,
+     "skPow": 1,
+     "cardOpen": true,
+     "starNeed": 30,
+     "starMax": 5,
+     "cwLv": 12,
+     "cwMul": 1.96
+    },
+    "elm": {
+     "stats": {
+      "atk": 550365.4480896001,
+      "hp": 3778971.9264000007,
+      "aps": 0.84,
+      "crit": 0.15000000000000002
+     },
+     "cPow": 9576567.025241612,
+     "owned": false,
+     "recStar": 0,
+     "starMul": 1.35,
+     "skPow": 1,
+     "cardOpen": true,
+     "starNeed": 30,
+     "starMax": 5,
+     "cwLv": 15,
+     "cwMul": 2.2
+    },
+    "hagrin": {
+     "stats": {
+      "atk": 590417.27760384,
+      "hp": 4055228.4787200005,
+      "aps": 0.84,
+      "crit": 0.15000000000000002
+     },
+     "cPow": 7339409.251435377,
+     "owned": false,
+     "recStar": 0,
+     "starMul": 1.35,
+     "skPow": 1,
+     "cardOpen": true,
+     "starNeed": 30,
+     "starMax": 5,
+     "cwLv": 17,
+     "cwMul": 2.3600000000000003
     },
     "kael_chief": {
      "stats": {
@@ -11428,6 +11896,78 @@
       0.1,
       0.2,
       0.1
+     ],
+     "salo": [
+      0.1,
+      0.1,
+      0.1,
+      0.2,
+      0.1,
+      0.1,
+      0.1,
+      0.2,
+      0.1,
+      0.1
+     ],
+     "betty": [
+      0.1,
+      0.1,
+      0.1,
+      0.1,
+      0.1,
+      0.2,
+      0.2,
+      0.1,
+      0.1,
+      0.1
+     ],
+     "naia": [
+      0.3,
+      0.3,
+      0.3,
+      0.6,
+      0.3,
+      0.3,
+      0.3,
+      0.6,
+      0.3,
+      0.3
+     ],
+     "bernard": [
+      0.3,
+      0.3,
+      0.6,
+      0.3,
+      0.3,
+      0.3,
+      0.3,
+      0.3,
+      0.6,
+      0.3
+     ],
+     "elm": [
+      0.3,
+      0.3,
+      0.3,
+      0.3,
+      0.6,
+      0.3,
+      0.3,
+      0.3,
+      0.3,
+      0.6
+     ],
+     "hagrin": [
+      0.3,
+      0.3,
+      0.3,
+      0.3,
+      0.3,
+      0.6,
+      0.6,
+      0.3,
+      0.3,
+      0.3
      ]
     },
     "cookMs": 600000,
@@ -12536,77 +13076,73 @@
     ],
     "cards": [
      "bron",
-     "haral",
+     "riel",
      "toby",
-     "rollo",
-     "rollo",
      "crab",
-     "pori",
      "birch",
+     "gram",
+     "rollo",
+     "salo",
      "haral",
-     "pori",
-     "haral",
+     "crab",
+     "riel",
      "bron",
-     "mora",
-     "pori",
+     "melo",
+     "crab",
      "peppy",
      "luka",
-     "kara",
+     "beryl",
      "luka",
-     "",
-     "kara",
-     "gram",
+     "toby",
+     "beryl",
+     "betty",
      "riel",
-     "gram",
-     "gram",
-     "gram",
+     "betty",
+     "betty",
+     "betty",
      "margo",
+     "",
+     "gram",
      "gordon",
+     "pori",
+     "gram",
+     "mora",
+     "riel",
+     "pori",
+     "toby",
      "crab",
-     "gordon",
-     "melo",
+     "betty",
+     "pori",
      "birch",
-     "beryl",
-     "haral",
+     "melo",
+     "gordon",
      "mora",
      "",
-     "rollo",
-     "gram",
-     "melo",
-     "rollo",
-     "mora",
-     "margo",
-     "beryl",
-     "gordon",
-     "pori",
+     "crab",
      "andante",
-     "pori",
-     "birch",
+     "crab",
+     "gram",
      "haral",
-     "rollo",
-     "gordon",
-     "pori"
+     "birch",
+     "",
+     "crab"
     ],
     "chunks": {
      "got": [
       [
-       "kara",
+       "mora",
+       5
+      ],
+      [
+       "riel",
+       5
+      ],
+      [
+       "gram",
        5
       ],
       [
        "haral",
-       5
-      ],
-      [
-       "birch",
-       5
-      ],
-      [
-       "haral",
-       5
-      ],
-      [
-       "gordon",
        5
       ],
       [
@@ -12614,32 +13150,33 @@
        5
       ]
      ],
-     "gold": 0
+     "gold": 30857
     },
     "cardsAfter": {
      "brida": 70,
      "luka": 31,
      "nella": 0,
-     "gordon": 26,
+     "gordon": 18,
      "daisy": 79,
      "bron": 5,
-     "haral": 22,
-     "toby": 1,
-     "rollo": 8,
-     "crab": 2,
-     "pori": 9,
-     "birch": 38,
-     "mora": 5,
-     "peppy": 1,
-     "kara": 7,
-     "gram": 6,
-     "riel": 1,
-     "margo": 3,
+     "riel": 10,
+     "toby": 4,
+     "crab": 11,
+     "birch": 5,
+     "gram": 39,
+     "rollo": 1,
+     "salo": 1,
+     "haral": 13,
      "melo": 3,
-     "beryl": 4,
+     "peppy": 1,
+     "beryl": 2,
+     "betty": 6,
+     "margo": 1,
+     "pori": 5,
+     "mora": 9,
      "andante": 2
     },
-    "goldAfter": 987000000018514
+    "goldAfter": 987000000061714
    },
    "retired": {
     "gold": 60,
@@ -13716,6 +14253,114 @@
      "cardOpen": false,
      "starNeed": 30,
      "starMax": 3,
+     "cwLv": 0,
+     "cwMul": 1
+    },
+    "salo": {
+     "stats": {
+      "atk": 11.648,
+      "hp": 99.84,
+      "aps": 0.85,
+      "crit": 0.05
+     },
+     "cPow": 151.48224000000002,
+     "owned": false,
+     "recStar": 0,
+     "starMul": 1,
+     "skPow": 1,
+     "cardOpen": false,
+     "starNeed": 30,
+     "starMax": 3,
+     "cwLv": 0,
+     "cwMul": 1
+    },
+    "betty": {
+     "stats": {
+      "atk": 8.527999999999999,
+      "hp": 213.20000000000002,
+      "aps": 0.8,
+      "crit": 0.05
+     },
+     "cPow": 222.06912000000003,
+     "owned": false,
+     "recStar": 0,
+     "starMul": 1,
+     "skPow": 1,
+     "cardOpen": false,
+     "starNeed": 30,
+     "starMax": 3,
+     "cwLv": 0,
+     "cwMul": 1
+    },
+    "naia": {
+     "stats": {
+      "atk": 17.128800000000002,
+      "hp": 175.50000000000003,
+      "aps": 0.8,
+      "crit": 0.05
+     },
+     "cPow": 233.7491520000001,
+     "owned": false,
+     "recStar": 0,
+     "starMul": 1.35,
+     "skPow": 1,
+     "cardOpen": false,
+     "starNeed": 30,
+     "starMax": 5,
+     "cwLv": 0,
+     "cwMul": 1
+    },
+    "bernard": {
+     "stats": {
+      "atk": 15.7248,
+      "hp": 182.52,
+      "aps": 0.85,
+      "crit": 0.05
+     },
+     "cPow": 247.105404,
+     "owned": false,
+     "recStar": 0,
+     "starMul": 1.35,
+     "skPow": 1,
+     "cardOpen": false,
+     "starNeed": 30,
+     "starMax": 5,
+     "cwLv": 0,
+     "cwMul": 1
+    },
+    "elm": {
+     "stats": {
+      "atk": 14.3208,
+      "hp": 189.54000000000002,
+      "aps": 0.7,
+      "crit": 0.05
+     },
+     "cPow": 283.45327919999994,
+     "owned": false,
+     "recStar": 0,
+     "starMul": 1.35,
+     "skPow": 1,
+     "cardOpen": false,
+     "starNeed": 30,
+     "starMax": 5,
+     "cwLv": 0,
+     "cwMul": 1
+    },
+    "hagrin": {
+     "stats": {
+      "atk": 17.128800000000002,
+      "hp": 407.16,
+      "aps": 0.7,
+      "crit": 0.05
+     },
+     "cPow": 374.80060800000007,
+     "owned": false,
+     "recStar": 0,
+     "starMul": 1.35,
+     "skPow": 1,
+     "cardOpen": false,
+     "starNeed": 30,
+     "starMax": 5,
      "cwLv": 0,
      "cwMul": 1
     },
@@ -15388,6 +16033,78 @@
       0.1,
       0.2,
       0.1
+     ],
+     "salo": [
+      0.1,
+      0.1,
+      0.1,
+      0.2,
+      0.1,
+      0.1,
+      0.1,
+      0.2,
+      0.1,
+      0.1
+     ],
+     "betty": [
+      0.1,
+      0.1,
+      0.1,
+      0.1,
+      0.1,
+      0.2,
+      0.2,
+      0.1,
+      0.1,
+      0.1
+     ],
+     "naia": [
+      0.3,
+      0.3,
+      0.3,
+      0.6,
+      0.3,
+      0.3,
+      0.3,
+      0.6,
+      0.3,
+      0.3
+     ],
+     "bernard": [
+      0.3,
+      0.3,
+      0.6,
+      0.3,
+      0.3,
+      0.3,
+      0.3,
+      0.3,
+      0.6,
+      0.3
+     ],
+     "elm": [
+      0.3,
+      0.3,
+      0.3,
+      0.3,
+      0.6,
+      0.3,
+      0.3,
+      0.3,
+      0.3,
+      0.6
+     ],
+     "hagrin": [
+      0.3,
+      0.3,
+      0.3,
+      0.3,
+      0.3,
+      0.6,
+      0.6,
+      0.3,
+      0.3,
+      0.3
      ]
     },
     "cookMs": 600000,
@@ -17079,6 +17796,114 @@
      "cwLv": 0,
      "cwMul": 1
     },
+    "salo": {
+     "stats": {
+      "atk": 11.648,
+      "hp": 99.84,
+      "aps": 0.85,
+      "crit": 0.05
+     },
+     "cPow": 151.48224000000002,
+     "owned": false,
+     "recStar": 0,
+     "starMul": 1,
+     "skPow": 1,
+     "cardOpen": false,
+     "starNeed": 30,
+     "starMax": 3,
+     "cwLv": 0,
+     "cwMul": 1
+    },
+    "betty": {
+     "stats": {
+      "atk": 8.527999999999999,
+      "hp": 213.20000000000002,
+      "aps": 0.8,
+      "crit": 0.05
+     },
+     "cPow": 222.06912000000003,
+     "owned": false,
+     "recStar": 0,
+     "starMul": 1,
+     "skPow": 1,
+     "cardOpen": false,
+     "starNeed": 30,
+     "starMax": 3,
+     "cwLv": 0,
+     "cwMul": 1
+    },
+    "naia": {
+     "stats": {
+      "atk": 17.128800000000002,
+      "hp": 175.50000000000003,
+      "aps": 0.8,
+      "crit": 0.05
+     },
+     "cPow": 233.7491520000001,
+     "owned": false,
+     "recStar": 0,
+     "starMul": 1.35,
+     "skPow": 1,
+     "cardOpen": false,
+     "starNeed": 30,
+     "starMax": 5,
+     "cwLv": 0,
+     "cwMul": 1
+    },
+    "bernard": {
+     "stats": {
+      "atk": 15.7248,
+      "hp": 182.52,
+      "aps": 0.85,
+      "crit": 0.05
+     },
+     "cPow": 247.105404,
+     "owned": false,
+     "recStar": 0,
+     "starMul": 1.35,
+     "skPow": 1,
+     "cardOpen": true,
+     "starNeed": 30,
+     "starMax": 5,
+     "cwLv": 0,
+     "cwMul": 1
+    },
+    "elm": {
+     "stats": {
+      "atk": 14.3208,
+      "hp": 189.54000000000002,
+      "aps": 0.7,
+      "crit": 0.05
+     },
+     "cPow": 283.45327919999994,
+     "owned": false,
+     "recStar": 0,
+     "starMul": 1.35,
+     "skPow": 1,
+     "cardOpen": false,
+     "starNeed": 30,
+     "starMax": 5,
+     "cwLv": 0,
+     "cwMul": 1
+    },
+    "hagrin": {
+     "stats": {
+      "atk": 17.128800000000002,
+      "hp": 407.16,
+      "aps": 0.7,
+      "crit": 0.05
+     },
+     "cPow": 374.80060800000007,
+     "owned": false,
+     "recStar": 0,
+     "starMul": 1.35,
+     "skPow": 1,
+     "cardOpen": false,
+     "starNeed": 30,
+     "starMax": 5,
+     "cwLv": 0,
+     "cwMul": 1
+    },
     "kael_chief": {
      "stats": {
       "atk": 26,
@@ -18750,6 +19575,78 @@
       0.1,
       0.2,
       0.1
+     ],
+     "salo": [
+      0.1,
+      0.1,
+      0.1,
+      0.2,
+      0.1,
+      0.1,
+      0.1,
+      0.2,
+      0.1,
+      0.1
+     ],
+     "betty": [
+      0.1,
+      0.1,
+      0.1,
+      0.1,
+      0.1,
+      0.2,
+      0.2,
+      0.1,
+      0.1,
+      0.1
+     ],
+     "naia": [
+      0.3,
+      0.3,
+      0.3,
+      0.6,
+      0.3,
+      0.3,
+      0.3,
+      0.6,
+      0.3,
+      0.3
+     ],
+     "bernard": [
+      0.3,
+      0.3,
+      0.6,
+      0.3,
+      0.3,
+      0.3,
+      0.3,
+      0.3,
+      0.6,
+      0.3
+     ],
+     "elm": [
+      0.3,
+      0.3,
+      0.3,
+      0.3,
+      0.6,
+      0.3,
+      0.3,
+      0.3,
+      0.3,
+      0.6
+     ],
+     "hagrin": [
+      0.3,
+      0.3,
+      0.3,
+      0.3,
+      0.3,
+      0.6,
+      0.6,
+      0.3,
+      0.3,
+      0.3
      ]
     },
     "cookMs": 600000,
@@ -20496,6 +21393,114 @@
      "cwLv": 0,
      "cwMul": 1
     },
+    "salo": {
+     "stats": {
+      "atk": 10.8,
+      "hp": 103.68,
+      "aps": 0.85,
+      "crit": 0.05
+     },
+     "cPow": 150.3684,
+     "owned": false,
+     "recStar": 0,
+     "starMul": 1,
+     "skPow": 1,
+     "cardOpen": false,
+     "starNeed": 30,
+     "starMax": 3,
+     "cwLv": 0,
+     "cwMul": 1
+    },
+    "betty": {
+     "stats": {
+      "atk": 7.5600000000000005,
+      "hp": 221.4,
+      "aps": 0.8,
+      "crit": 0.05
+     },
+     "cPow": 224.07840000000002,
+     "owned": false,
+     "recStar": 0,
+     "starMul": 1,
+     "skPow": 1,
+     "cardOpen": false,
+     "starNeed": 30,
+     "starMax": 3,
+     "cwLv": 0,
+     "cwMul": 1
+    },
+    "naia": {
+     "stats": {
+      "atk": 16.038000000000004,
+      "hp": 182.25000000000003,
+      "aps": 0.8,
+      "crit": 0.05
+     },
+     "cPow": 233.92152000000007,
+     "owned": false,
+     "recStar": 0,
+     "starMul": 1.35,
+     "skPow": 1,
+     "cardOpen": false,
+     "starNeed": 30,
+     "starMax": 5,
+     "cwLv": 0,
+     "cwMul": 1
+    },
+    "bernard": {
+     "stats": {
+      "atk": 14.580000000000002,
+      "hp": 189.54000000000002,
+      "aps": 0.85,
+      "crit": 0.05
+     },
+     "cPow": 247.24035000000003,
+     "owned": false,
+     "recStar": 0,
+     "starMul": 1.35,
+     "skPow": 1,
+     "cardOpen": true,
+     "starNeed": 30,
+     "starMax": 5,
+     "cwLv": 0,
+     "cwMul": 1
+    },
+    "elm": {
+     "stats": {
+      "atk": 13.122000000000002,
+      "hp": 196.83,
+      "aps": 0.7,
+      "crit": 0.05
+     },
+     "cPow": 283.553298,
+     "owned": false,
+     "recStar": 0,
+     "starMul": 1.35,
+     "skPow": 1,
+     "cardOpen": false,
+     "starNeed": 30,
+     "starMax": 5,
+     "cwLv": 0,
+     "cwMul": 1
+    },
+    "hagrin": {
+     "stats": {
+      "atk": 16.038000000000004,
+      "hp": 422.82000000000005,
+      "aps": 0.7,
+      "crit": 0.05
+     },
+     "cPow": 381.5002800000001,
+     "owned": false,
+     "recStar": 0,
+     "starMul": 1.35,
+     "skPow": 1,
+     "cardOpen": false,
+     "starNeed": 30,
+     "starMax": 5,
+     "cwLv": 0,
+     "cwMul": 1
+    },
     "kael_chief": {
      "stats": {
       "atk": 20.520000000000003,
@@ -22167,6 +23172,78 @@
       0.1,
       0.2,
       0.1
+     ],
+     "salo": [
+      0.1,
+      0.1,
+      0.1,
+      0.2,
+      0.1,
+      0.1,
+      0.1,
+      0.2,
+      0.1,
+      0.1
+     ],
+     "betty": [
+      0.1,
+      0.1,
+      0.1,
+      0.1,
+      0.1,
+      0.2,
+      0.2,
+      0.1,
+      0.1,
+      0.1
+     ],
+     "naia": [
+      0.3,
+      0.3,
+      0.3,
+      0.6,
+      0.3,
+      0.3,
+      0.3,
+      0.6,
+      0.3,
+      0.3
+     ],
+     "bernard": [
+      0.3,
+      0.3,
+      0.6,
+      0.3,
+      0.3,
+      0.3,
+      0.3,
+      0.3,
+      0.6,
+      0.3
+     ],
+     "elm": [
+      0.3,
+      0.3,
+      0.3,
+      0.3,
+      0.6,
+      0.3,
+      0.3,
+      0.3,
+      0.3,
+      0.6
+     ],
+     "hagrin": [
+      0.3,
+      0.3,
+      0.3,
+      0.3,
+      0.3,
+      0.6,
+      0.6,
+      0.3,
+      0.3,
+      0.3
      ]
     },
     "cookMs": 600000,
@@ -24015,6 +25092,114 @@
      "cwLv": 0,
      "cwMul": 1
     },
+    "salo": {
+     "stats": {
+      "atk": 11.200000000000001,
+      "hp": 107.52000000000001,
+      "aps": 0.85,
+      "crit": 0.05
+     },
+     "cPow": 155.93760000000003,
+     "owned": false,
+     "recStar": 0,
+     "starMul": 1,
+     "skPow": 1,
+     "cardOpen": false,
+     "starNeed": 30,
+     "starMax": 3,
+     "cwLv": 0,
+     "cwMul": 1
+    },
+    "betty": {
+     "stats": {
+      "atk": 7.840000000000001,
+      "hp": 229.60000000000002,
+      "aps": 0.8,
+      "crit": 0.05
+     },
+     "cPow": 232.37760000000003,
+     "owned": false,
+     "recStar": 0,
+     "starMul": 1,
+     "skPow": 1,
+     "cardOpen": false,
+     "starNeed": 30,
+     "starMax": 3,
+     "cwLv": 0,
+     "cwMul": 1
+    },
+    "naia": {
+     "stats": {
+      "atk": 16.632,
+      "hp": 189.00000000000003,
+      "aps": 0.8,
+      "crit": 0.05
+     },
+     "cPow": 242.58528000000007,
+     "owned": false,
+     "recStar": 0,
+     "starMul": 1.35,
+     "skPow": 1,
+     "cardOpen": false,
+     "starNeed": 30,
+     "starMax": 5,
+     "cwLv": 0,
+     "cwMul": 1
+    },
+    "bernard": {
+     "stats": {
+      "atk": 15.120000000000003,
+      "hp": 196.56000000000003,
+      "aps": 0.85,
+      "crit": 0.05
+     },
+     "cPow": 256.39740000000006,
+     "owned": false,
+     "recStar": 0,
+     "starMul": 1.35,
+     "skPow": 1,
+     "cardOpen": true,
+     "starNeed": 30,
+     "starMax": 5,
+     "cwLv": 0,
+     "cwMul": 1
+    },
+    "elm": {
+     "stats": {
+      "atk": 13.608000000000002,
+      "hp": 204.12000000000003,
+      "aps": 0.7,
+      "crit": 0.05
+     },
+     "cPow": 294.055272,
+     "owned": false,
+     "recStar": 0,
+     "starMul": 1.35,
+     "skPow": 1,
+     "cardOpen": false,
+     "starNeed": 30,
+     "starMax": 5,
+     "cwLv": 0,
+     "cwMul": 1
+    },
+    "hagrin": {
+     "stats": {
+      "atk": 16.632,
+      "hp": 438.4800000000001,
+      "aps": 0.7,
+      "crit": 0.05
+     },
+     "cPow": 395.62991999999997,
+     "owned": false,
+     "recStar": 0,
+     "starMul": 1.35,
+     "skPow": 1,
+     "cardOpen": false,
+     "starNeed": 30,
+     "starMax": 5,
+     "cwLv": 0,
+     "cwMul": 1
+    },
     "kael_chief": {
      "stats": {
       "atk": 21.28,
@@ -25686,6 +26871,78 @@
       0.1,
       0.2,
       0.1
+     ],
+     "salo": [
+      0.1,
+      0.1,
+      0.1,
+      0.2,
+      0.1,
+      0.1,
+      0.1,
+      0.2,
+      0.1,
+      0.1
+     ],
+     "betty": [
+      0.1,
+      0.1,
+      0.1,
+      0.1,
+      0.1,
+      0.2,
+      0.2,
+      0.1,
+      0.1,
+      0.1
+     ],
+     "naia": [
+      0.3,
+      0.3,
+      0.3,
+      0.6,
+      0.3,
+      0.3,
+      0.3,
+      0.6,
+      0.3,
+      0.3
+     ],
+     "bernard": [
+      0.3,
+      0.3,
+      0.6,
+      0.3,
+      0.3,
+      0.3,
+      0.3,
+      0.3,
+      0.6,
+      0.3
+     ],
+     "elm": [
+      0.3,
+      0.3,
+      0.3,
+      0.3,
+      0.6,
+      0.3,
+      0.3,
+      0.3,
+      0.3,
+      0.6
+     ],
+     "hagrin": [
+      0.3,
+      0.3,
+      0.3,
+      0.3,
+      0.3,
+      0.6,
+      0.6,
+      0.3,
+      0.3,
+      0.3
      ]
     },
     "cookMs": 600000,
@@ -27625,6 +28882,114 @@
      "cwLv": 0,
      "cwMul": 1
     },
+    "salo": {
+     "stats": {
+      "atk": 10.8,
+      "hp": 103.68,
+      "aps": 0.85,
+      "crit": 0.05
+     },
+     "cPow": 150.3684,
+     "owned": false,
+     "recStar": 0,
+     "starMul": 1,
+     "skPow": 1,
+     "cardOpen": false,
+     "starNeed": 30,
+     "starMax": 3,
+     "cwLv": 0,
+     "cwMul": 1
+    },
+    "betty": {
+     "stats": {
+      "atk": 7.5600000000000005,
+      "hp": 221.4,
+      "aps": 0.8,
+      "crit": 0.05
+     },
+     "cPow": 224.07840000000002,
+     "owned": false,
+     "recStar": 0,
+     "starMul": 1,
+     "skPow": 1,
+     "cardOpen": false,
+     "starNeed": 30,
+     "starMax": 3,
+     "cwLv": 0,
+     "cwMul": 1
+    },
+    "naia": {
+     "stats": {
+      "atk": 16.038000000000004,
+      "hp": 182.25000000000003,
+      "aps": 0.8,
+      "crit": 0.05
+     },
+     "cPow": 233.92152000000007,
+     "owned": false,
+     "recStar": 0,
+     "starMul": 1.35,
+     "skPow": 1,
+     "cardOpen": false,
+     "starNeed": 30,
+     "starMax": 5,
+     "cwLv": 0,
+     "cwMul": 1
+    },
+    "bernard": {
+     "stats": {
+      "atk": 14.580000000000002,
+      "hp": 189.54000000000002,
+      "aps": 0.85,
+      "crit": 0.05
+     },
+     "cPow": 247.24035000000003,
+     "owned": false,
+     "recStar": 0,
+     "starMul": 1.35,
+     "skPow": 1,
+     "cardOpen": true,
+     "starNeed": 30,
+     "starMax": 5,
+     "cwLv": 0,
+     "cwMul": 1
+    },
+    "elm": {
+     "stats": {
+      "atk": 13.122000000000002,
+      "hp": 196.83,
+      "aps": 0.7,
+      "crit": 0.05
+     },
+     "cPow": 283.553298,
+     "owned": false,
+     "recStar": 0,
+     "starMul": 1.35,
+     "skPow": 1,
+     "cardOpen": false,
+     "starNeed": 30,
+     "starMax": 5,
+     "cwLv": 0,
+     "cwMul": 1
+    },
+    "hagrin": {
+     "stats": {
+      "atk": 16.038000000000004,
+      "hp": 422.82000000000005,
+      "aps": 0.7,
+      "crit": 0.05
+     },
+     "cPow": 381.5002800000001,
+     "owned": false,
+     "recStar": 0,
+     "starMul": 1.35,
+     "skPow": 1,
+     "cardOpen": false,
+     "starNeed": 30,
+     "starMax": 5,
+     "cwLv": 0,
+     "cwMul": 1
+    },
     "kael_chief": {
      "stats": {
       "atk": 10.8,
@@ -29296,6 +30661,78 @@
       0.1,
       0.2,
       0.1
+     ],
+     "salo": [
+      0.1,
+      0.1,
+      0.1,
+      0.2,
+      0.1,
+      0.1,
+      0.1,
+      0.2,
+      0.1,
+      0.1
+     ],
+     "betty": [
+      0.1,
+      0.1,
+      0.1,
+      0.1,
+      0.1,
+      0.2,
+      0.2,
+      0.1,
+      0.1,
+      0.1
+     ],
+     "naia": [
+      0.3,
+      0.3,
+      0.3,
+      0.6,
+      0.3,
+      0.3,
+      0.3,
+      0.6,
+      0.3,
+      0.3
+     ],
+     "bernard": [
+      0.3,
+      0.3,
+      0.6,
+      0.3,
+      0.3,
+      0.3,
+      0.3,
+      0.3,
+      0.6,
+      0.3
+     ],
+     "elm": [
+      0.3,
+      0.3,
+      0.3,
+      0.3,
+      0.6,
+      0.3,
+      0.3,
+      0.3,
+      0.3,
+      0.6
+     ],
+     "hagrin": [
+      0.3,
+      0.3,
+      0.3,
+      0.3,
+      0.3,
+      0.6,
+      0.6,
+      0.3,
+      0.3,
+      0.3
      ]
     },
     "cookMs": 600000,
@@ -31273,6 +32710,114 @@
      "cwLv": 12,
      "cwMul": 1.96
     },
+    "salo": {
+     "stats": {
+      "atk": 2782462.601318401,
+      "hp": 17366469.12,
+      "aps": 1.02,
+      "crit": 0.15000000000000002
+     },
+     "cPow": 41517251.19885,
+     "owned": false,
+     "recStar": 0,
+     "starMul": 1,
+     "skPow": 1,
+     "cardOpen": true,
+     "starNeed": 30,
+     "starMax": 3,
+     "cwLv": 20,
+     "cwMul": 2.6
+    },
+    "betty": {
+     "stats": {
+      "atk": 2525457.86938368,
+      "hp": 15767299.900800003,
+      "aps": 0.96,
+      "crit": 0.15000000000000002
+     },
+     "cPow": 35471478.052739516,
+     "owned": false,
+     "recStar": 0,
+     "starMul": 1,
+     "skPow": 1,
+     "cardOpen": true,
+     "starNeed": 30,
+     "starMax": 3,
+     "cwLv": 17,
+     "cwMul": 2.3600000000000003
+    },
+    "naia": {
+     "stats": {
+      "atk": 3756404.8403481604,
+      "hp": 23446272.376800004,
+      "aps": 0.96,
+      "crit": 0.15000000000000002
+     },
+     "cPow": 52753649.46774943,
+     "owned": false,
+     "recStar": 0,
+     "starMul": 1.35,
+     "skPow": 1,
+     "cardOpen": true,
+     "starNeed": 30,
+     "starMax": 5,
+     "cwLv": 20,
+     "cwMul": 2.6
+    },
+    "bernard": {
+     "stats": {
+      "atk": 2831690.7858032635,
+      "hp": 17675082.29088,
+      "aps": 1.02,
+      "crit": 0.15000000000000002
+     },
+     "cPow": 42253445.197247215,
+     "owned": false,
+     "recStar": 0,
+     "starMul": 1.35,
+     "skPow": 1,
+     "cardOpen": true,
+     "starNeed": 30,
+     "starMax": 5,
+     "cwLv": 12,
+     "cwMul": 1.96
+    },
+    "elm": {
+     "stats": {
+      "atk": 3178360.462717441,
+      "hp": 19839602.613600004,
+      "aps": 0.84,
+      "crit": 0.15000000000000002
+     },
+     "cPow": 54680671.4977408,
+     "owned": false,
+     "recStar": 0,
+     "starMul": 1.35,
+     "skPow": 1,
+     "cardOpen": true,
+     "starNeed": 30,
+     "starMax": 5,
+     "cwLv": 15,
+     "cwMul": 2.2
+    },
+    "hagrin": {
+     "stats": {
+      "atk": 3409659.778162177,
+      "hp": 21289949.513280008,
+      "aps": 0.84,
+      "crit": 0.15000000000000002
+     },
+     "cPow": 41906550.233345635,
+     "owned": false,
+     "recStar": 0,
+     "starMul": 1.35,
+     "skPow": 1,
+     "cardOpen": true,
+     "starNeed": 30,
+     "starMax": 5,
+     "cwLv": 17,
+     "cwMul": 2.3600000000000003
+    },
     "kael_chief": {
      "stats": {
       "atk": 3146375.2320000003,
@@ -32969,6 +34514,78 @@
       0.1,
       0.2,
       0.1
+     ],
+     "salo": [
+      0.1,
+      0.1,
+      0.1,
+      0.2,
+      0.1,
+      0.1,
+      0.1,
+      0.2,
+      0.1,
+      0.1
+     ],
+     "betty": [
+      0.1,
+      0.1,
+      0.1,
+      0.1,
+      0.1,
+      0.2,
+      0.2,
+      0.1,
+      0.1,
+      0.1
+     ],
+     "naia": [
+      0.3,
+      0.3,
+      0.3,
+      0.6,
+      0.3,
+      0.3,
+      0.3,
+      0.6,
+      0.3,
+      0.3
+     ],
+     "bernard": [
+      0.3,
+      0.3,
+      0.6,
+      0.3,
+      0.3,
+      0.3,
+      0.3,
+      0.3,
+      0.6,
+      0.3
+     ],
+     "elm": [
+      0.3,
+      0.3,
+      0.3,
+      0.3,
+      0.6,
+      0.3,
+      0.3,
+      0.3,
+      0.3,
+      0.6
+     ],
+     "hagrin": [
+      0.3,
+      0.3,
+      0.3,
+      0.3,
+      0.3,
+      0.6,
+      0.6,
+      0.3,
+      0.3,
+      0.3
      ]
     },
     "cookMs": 720000,
@@ -33637,77 +35254,73 @@
     ],
     "cards": [
      "bron",
-     "haral",
+     "riel",
      "toby",
-     "rollo",
-     "rollo",
      "crab",
-     "pori",
      "birch",
+     "gram",
+     "rollo",
+     "salo",
      "haral",
-     "pori",
-     "haral",
+     "crab",
+     "riel",
      "bron",
-     "mora",
-     "pori",
+     "melo",
+     "crab",
      "peppy",
      "luka",
-     "kara",
+     "beryl",
      "luka",
-     "",
-     "kara",
-     "gram",
+     "toby",
+     "beryl",
+     "betty",
      "riel",
-     "gram",
-     "gram",
-     "gram",
+     "betty",
+     "betty",
+     "betty",
      "margo",
+     "",
+     "gram",
      "gordon",
+     "pori",
+     "gram",
+     "mora",
+     "riel",
+     "pori",
+     "toby",
      "crab",
-     "gordon",
-     "melo",
+     "betty",
+     "pori",
      "birch",
-     "beryl",
-     "haral",
+     "melo",
+     "gordon",
      "mora",
      "",
-     "rollo",
-     "gram",
-     "melo",
-     "rollo",
-     "mora",
-     "margo",
-     "beryl",
-     "gordon",
-     "pori",
+     "crab",
      "andante",
-     "pori",
-     "birch",
+     "crab",
+     "gram",
      "haral",
-     "rollo",
-     "gordon",
-     "pori"
+     "birch",
+     "",
+     "crab"
     ],
     "chunks": {
      "got": [
       [
-       "kara",
+       "mora",
+       5
+      ],
+      [
+       "riel",
+       5
+      ],
+      [
+       "gram",
        5
       ],
       [
        "haral",
-       5
-      ],
-      [
-       "birch",
-       5
-      ],
-      [
-       "haral",
-       5
-      ],
-      [
-       "gordon",
        5
       ],
       [
@@ -33715,32 +35328,33 @@
        5
       ]
      ],
-     "gold": 0
+     "gold": 41522
     },
     "cardsAfter": {
      "brida": 70,
      "luka": 31,
      "nella": 0,
-     "gordon": 26,
+     "gordon": 18,
      "daisy": 79,
      "bron": 5,
-     "haral": 22,
-     "toby": 1,
-     "rollo": 8,
-     "crab": 2,
-     "pori": 9,
-     "birch": 38,
-     "mora": 5,
-     "peppy": 1,
-     "kara": 7,
-     "gram": 6,
-     "riel": 1,
-     "margo": 3,
+     "riel": 10,
+     "toby": 4,
+     "crab": 11,
+     "birch": 5,
+     "gram": 39,
+     "rollo": 1,
+     "salo": 1,
+     "haral": 13,
      "melo": 3,
-     "beryl": 4,
+     "peppy": 1,
+     "beryl": 2,
+     "betty": 6,
+     "margo": 1,
+     "pori": 5,
+     "mora": 9,
      "andante": 2
     },
-    "goldAfter": 987000000024912
+    "goldAfter": 987000000083042
    },
    "retired": {
     "gold": 133275,
@@ -34987,6 +36601,114 @@
      "starMax": 3,
      "cwLv": 12,
      "cwMul": 1.96
+    },
+    "salo": {
+     "stats": {
+      "atk": 481811.70585599996,
+      "hp": 3307898.88,
+      "aps": 1.02,
+      "crit": 0.15000000000000002
+     },
+     "cPow": 7271156.172054527,
+     "owned": false,
+     "recStar": 0,
+     "starMul": 1,
+     "skPow": 1,
+     "cardOpen": true,
+     "starNeed": 30,
+     "starMax": 3,
+     "cwLv": 20,
+     "cwMul": 2.6
+    },
+    "betty": {
+     "stats": {
+      "atk": 437308.72197119996,
+      "hp": 3003295.2192,
+      "aps": 0.96,
+      "crit": 0.15000000000000002
+     },
+     "cPow": 6212370.896334028,
+     "owned": false,
+     "recStar": 0,
+     "starMul": 1,
+     "skPow": 1,
+     "cardOpen": true,
+     "starNeed": 30,
+     "starMax": 3,
+     "cwLv": 17,
+     "cwMul": 2.3600000000000003
+    },
+    "naia": {
+     "stats": {
+      "atk": 650459.7126144,
+      "hp": 4465956.6432,
+      "aps": 0.96,
+      "crit": 0.15000000000000002
+     },
+     "cPow": 9239061.270450585,
+     "owned": false,
+     "recStar": 0,
+     "starMul": 1.35,
+     "skPow": 1,
+     "cardOpen": true,
+     "starNeed": 30,
+     "starMax": 5,
+     "cwLv": 20,
+     "cwMul": 2.6
+    },
+    "bernard": {
+     "stats": {
+      "atk": 490336.06680576,
+      "hp": 3366682.3411200005,
+      "aps": 1.02,
+      "crit": 0.15000000000000002
+     },
+     "cPow": 7400103.6243127,
+     "owned": false,
+     "recStar": 0,
+     "starMul": 1.35,
+     "skPow": 1,
+     "cardOpen": true,
+     "starNeed": 30,
+     "starMax": 5,
+     "cwLv": 12,
+     "cwMul": 1.96
+    },
+    "elm": {
+     "stats": {
+      "atk": 550365.4480896001,
+      "hp": 3778971.9264000007,
+      "aps": 0.84,
+      "crit": 0.15000000000000002
+     },
+     "cPow": 9576567.025241612,
+     "owned": false,
+     "recStar": 0,
+     "starMul": 1.35,
+     "skPow": 1,
+     "cardOpen": true,
+     "starNeed": 30,
+     "starMax": 5,
+     "cwLv": 15,
+     "cwMul": 2.2
+    },
+    "hagrin": {
+     "stats": {
+      "atk": 590417.27760384,
+      "hp": 4055228.4787200005,
+      "aps": 0.84,
+      "crit": 0.15000000000000002
+     },
+     "cPow": 7339409.251435377,
+     "owned": false,
+     "recStar": 0,
+     "starMul": 1.35,
+     "skPow": 1,
+     "cardOpen": true,
+     "starNeed": 30,
+     "starMax": 5,
+     "cwLv": 17,
+     "cwMul": 2.3600000000000003
     },
     "kael_chief": {
      "stats": {
@@ -36684,6 +38406,78 @@
       0.1,
       0.2,
       0.1
+     ],
+     "salo": [
+      0.1,
+      0.1,
+      0.1,
+      0.2,
+      0.1,
+      0.1,
+      0.1,
+      0.2,
+      0.1,
+      0.1
+     ],
+     "betty": [
+      0.1,
+      0.1,
+      0.1,
+      0.1,
+      0.1,
+      0.2,
+      0.2,
+      0.1,
+      0.1,
+      0.1
+     ],
+     "naia": [
+      0.3,
+      0.3,
+      0.3,
+      0.6,
+      0.3,
+      0.3,
+      0.3,
+      0.6,
+      0.3,
+      0.3
+     ],
+     "bernard": [
+      0.3,
+      0.3,
+      0.6,
+      0.3,
+      0.3,
+      0.3,
+      0.3,
+      0.3,
+      0.6,
+      0.3
+     ],
+     "elm": [
+      0.3,
+      0.3,
+      0.3,
+      0.3,
+      0.6,
+      0.3,
+      0.3,
+      0.3,
+      0.3,
+      0.6
+     ],
+     "hagrin": [
+      0.3,
+      0.3,
+      0.3,
+      0.3,
+      0.3,
+      0.6,
+      0.6,
+      0.3,
+      0.3,
+      0.3
      ]
     },
     "cookMs": 600000,
@@ -37792,77 +39586,73 @@
     ],
     "cards": [
      "bron",
-     "haral",
+     "riel",
      "toby",
-     "rollo",
-     "rollo",
      "crab",
-     "pori",
      "birch",
+     "gram",
+     "rollo",
+     "salo",
      "haral",
-     "pori",
-     "haral",
+     "crab",
+     "riel",
      "bron",
-     "mora",
-     "pori",
+     "melo",
+     "crab",
      "peppy",
      "luka",
-     "kara",
+     "beryl",
      "luka",
-     "",
-     "kara",
-     "gram",
+     "toby",
+     "beryl",
+     "betty",
      "riel",
-     "gram",
-     "gram",
-     "gram",
+     "betty",
+     "betty",
+     "betty",
      "margo",
+     "",
+     "gram",
      "gordon",
+     "pori",
+     "gram",
+     "mora",
+     "riel",
+     "pori",
+     "toby",
      "crab",
-     "gordon",
-     "melo",
+     "betty",
+     "pori",
      "birch",
-     "beryl",
-     "haral",
+     "melo",
+     "gordon",
      "mora",
      "",
-     "rollo",
-     "gram",
-     "melo",
-     "rollo",
-     "mora",
-     "margo",
-     "beryl",
-     "gordon",
-     "pori",
+     "crab",
      "andante",
-     "pori",
-     "birch",
+     "crab",
+     "gram",
      "haral",
-     "rollo",
-     "gordon",
-     "pori"
+     "birch",
+     "",
+     "crab"
     ],
     "chunks": {
      "got": [
       [
-       "kara",
+       "mora",
+       5
+      ],
+      [
+       "riel",
+       5
+      ],
+      [
+       "gram",
        5
       ],
       [
        "haral",
-       5
-      ],
-      [
-       "birch",
-       5
-      ],
-      [
-       "haral",
-       5
-      ],
-      [
-       "gordon",
        5
       ],
       [
@@ -37870,32 +39660,33 @@
        5
       ]
      ],
-     "gold": 0
+     "gold": 30857
     },
     "cardsAfter": {
      "brida": 70,
      "luka": 31,
      "nella": 0,
-     "gordon": 26,
+     "gordon": 18,
      "daisy": 79,
      "bron": 5,
-     "haral": 22,
-     "toby": 1,
-     "rollo": 8,
-     "crab": 2,
-     "pori": 9,
-     "birch": 38,
-     "mora": 5,
-     "peppy": 1,
-     "kara": 7,
-     "gram": 6,
-     "riel": 1,
-     "margo": 3,
+     "riel": 10,
+     "toby": 4,
+     "crab": 11,
+     "birch": 5,
+     "gram": 39,
+     "rollo": 1,
+     "salo": 1,
+     "haral": 13,
      "melo": 3,
-     "beryl": 4,
+     "peppy": 1,
+     "beryl": 2,
+     "betty": 6,
+     "margo": 1,
+     "pori": 5,
+     "mora": 9,
      "andante": 2
     },
-    "goldAfter": 987000000018514
+    "goldAfter": 987000000061714
    },
    "retired": {
     "gold": 60,
@@ -39150,6 +40941,114 @@
      "starMax": 3,
      "cwLv": 12,
      "cwMul": 1.96
+    },
+    "salo": {
+     "stats": {
+      "atk": 401509.75488,
+      "hp": 4945308.825599999,
+      "aps": 1.02,
+      "crit": 0.05
+     },
+     "cPow": 7876527.43707648,
+     "owned": false,
+     "recStar": 0,
+     "starMul": 1,
+     "skPow": 1,
+     "cardOpen": true,
+     "starNeed": 30,
+     "starMax": 3,
+     "cwLv": 20,
+     "cwMul": 2.6
+    },
+    "betty": {
+     "stats": {
+      "atk": 364423.934976,
+      "hp": 4489926.352704,
+      "aps": 0.96,
+      "crit": 0.05
+     },
+     "cPow": 6729881.72226048,
+     "owned": false,
+     "recStar": 0,
+     "starMul": 1,
+     "skPow": 1,
+     "cardOpen": true,
+     "starNeed": 30,
+     "starMax": 3,
+     "cwLv": 17,
+     "cwMul": 2.3600000000000003
+    },
+    "naia": {
+     "stats": {
+      "atk": 542049.7605120001,
+      "hp": 6676605.181584,
+      "aps": 0.96,
+      "crit": 0.05
+     },
+     "cPow": 10008334.974613247,
+     "owned": false,
+     "recStar": 0,
+     "starMul": 1.35,
+     "skPow": 1,
+     "cardOpen": true,
+     "starNeed": 30,
+     "starMax": 5,
+     "cwLv": 20,
+     "cwMul": 2.6
+    },
+    "bernard": {
+     "stats": {
+      "atk": 408613.3890048,
+      "hp": 5033190.0999744,
+      "aps": 1.02,
+      "crit": 0.05
+     },
+     "cPow": 8016296.2348174285,
+     "owned": false,
+     "recStar": 0,
+     "starMul": 1.35,
+     "skPow": 1,
+     "cardOpen": true,
+     "starNeed": 30,
+     "starMax": 5,
+     "cwLv": 12,
+     "cwMul": 1.96
+    },
+    "elm": {
+     "stats": {
+      "atk": 458637.87340800004,
+      "hp": 5649563.029968001,
+      "aps": 0.84,
+      "crit": 0.05
+     },
+     "cPow": 10374036.705909675,
+     "owned": false,
+     "recStar": 0,
+     "starMul": 1.35,
+     "skPow": 1,
+     "cardOpen": true,
+     "starNeed": 30,
+     "starMax": 5,
+     "cwLv": 15,
+     "cwMul": 2.2
+    },
+    "hagrin": {
+     "stats": {
+      "atk": 492014.39800320007,
+      "hp": 6062566.5756864,
+      "aps": 0.84,
+      "crit": 0.05
+     },
+     "cPow": 7950923.913988339,
+     "owned": false,
+     "recStar": 0,
+     "starMul": 1.35,
+     "skPow": 1,
+     "cardOpen": true,
+     "starNeed": 30,
+     "starMax": 5,
+     "cwLv": 17,
+     "cwMul": 2.3600000000000003
     },
     "kael_chief": {
      "stats": {
@@ -40859,6 +42758,78 @@
       0.1,
       0.2,
       0.1
+     ],
+     "salo": [
+      0.1,
+      0.1,
+      0.1,
+      0.2,
+      0.1,
+      0.1,
+      0.1,
+      0.2,
+      0.1,
+      0.1
+     ],
+     "betty": [
+      0.1,
+      0.1,
+      0.1,
+      0.1,
+      0.1,
+      0.2,
+      0.2,
+      0.1,
+      0.1,
+      0.1
+     ],
+     "naia": [
+      0.3,
+      0.3,
+      0.3,
+      0.6,
+      0.3,
+      0.3,
+      0.3,
+      0.6,
+      0.3,
+      0.3
+     ],
+     "bernard": [
+      0.3,
+      0.3,
+      0.6,
+      0.3,
+      0.3,
+      0.3,
+      0.3,
+      0.3,
+      0.6,
+      0.3
+     ],
+     "elm": [
+      0.3,
+      0.3,
+      0.3,
+      0.3,
+      0.6,
+      0.3,
+      0.3,
+      0.3,
+      0.3,
+      0.6
+     ],
+     "hagrin": [
+      0.3,
+      0.3,
+      0.3,
+      0.3,
+      0.3,
+      0.6,
+      0.6,
+      0.3,
+      0.3,
+      0.3
      ]
     },
     "cookMs": 600000,
@@ -42053,77 +44024,73 @@
     ],
     "cards": [
      "bron",
-     "haral",
+     "riel",
      "toby",
-     "rollo",
-     "rollo",
      "crab",
-     "pori",
      "birch",
+     "gram",
+     "rollo",
+     "salo",
      "haral",
-     "pori",
-     "haral",
+     "crab",
+     "riel",
      "bron",
-     "mora",
-     "pori",
+     "melo",
+     "crab",
      "peppy",
      "luka",
-     "kara",
+     "beryl",
      "luka",
-     "",
-     "kara",
-     "gram",
+     "toby",
+     "beryl",
+     "betty",
      "riel",
-     "gram",
-     "gram",
-     "gram",
+     "betty",
+     "betty",
+     "betty",
      "margo",
+     "",
+     "gram",
      "gordon",
+     "pori",
+     "gram",
+     "mora",
+     "riel",
+     "pori",
+     "toby",
      "crab",
-     "gordon",
-     "melo",
+     "betty",
+     "pori",
      "birch",
-     "beryl",
-     "haral",
+     "melo",
+     "gordon",
      "mora",
      "",
-     "rollo",
-     "gram",
-     "melo",
-     "rollo",
-     "mora",
-     "margo",
-     "beryl",
-     "gordon",
-     "pori",
+     "crab",
      "andante",
-     "pori",
-     "birch",
+     "crab",
+     "gram",
      "haral",
-     "rollo",
-     "gordon",
-     "pori"
+     "birch",
+     "",
+     "crab"
     ],
     "chunks": {
      "got": [
       [
-       "kara",
+       "mora",
+       5
+      ],
+      [
+       "riel",
+       5
+      ],
+      [
+       "gram",
        5
       ],
       [
        "haral",
-       5
-      ],
-      [
-       "birch",
-       5
-      ],
-      [
-       "haral",
-       5
-      ],
-      [
-       "gordon",
        5
       ],
       [
@@ -42131,32 +44098,33 @@
        5
       ]
      ],
-     "gold": 0
+     "gold": 30857
     },
     "cardsAfter": {
      "brida": 70,
      "luka": 31,
      "nella": 0,
-     "gordon": 26,
+     "gordon": 18,
      "daisy": 79,
      "bron": 5,
-     "haral": 22,
-     "toby": 1,
-     "rollo": 8,
-     "crab": 2,
-     "pori": 9,
-     "birch": 38,
-     "mora": 5,
-     "peppy": 1,
-     "kara": 7,
-     "gram": 6,
-     "riel": 1,
-     "margo": 3,
+     "riel": 10,
+     "toby": 4,
+     "crab": 11,
+     "birch": 5,
+     "gram": 39,
+     "rollo": 1,
+     "salo": 1,
+     "haral": 13,
      "melo": 3,
-     "beryl": 4,
+     "peppy": 1,
+     "beryl": 2,
+     "betty": 6,
+     "margo": 1,
+     "pori": 5,
+     "mora": 9,
      "andante": 2
     },
-    "goldAfter": 987000000018514
+    "goldAfter": 987000000061714
    },
    "retired": {
     "gold": 60,
@@ -43484,6 +45452,114 @@
      "starMax": 3,
      "cwLv": 12,
      "cwMul": 1.96
+    },
+    "salo": {
+     "stats": {
+      "atk": 401509.75488,
+      "hp": 4945308.825599999,
+      "aps": 1.02,
+      "crit": 0.05
+     },
+     "cPow": 7876527.43707648,
+     "owned": false,
+     "recStar": 0,
+     "starMul": 1,
+     "skPow": 1,
+     "cardOpen": true,
+     "starNeed": 30,
+     "starMax": 3,
+     "cwLv": 20,
+     "cwMul": 2.6
+    },
+    "betty": {
+     "stats": {
+      "atk": 364423.934976,
+      "hp": 4489926.352704,
+      "aps": 0.96,
+      "crit": 0.05
+     },
+     "cPow": 6729881.72226048,
+     "owned": false,
+     "recStar": 0,
+     "starMul": 1,
+     "skPow": 1,
+     "cardOpen": true,
+     "starNeed": 30,
+     "starMax": 3,
+     "cwLv": 17,
+     "cwMul": 2.3600000000000003
+    },
+    "naia": {
+     "stats": {
+      "atk": 542049.7605120001,
+      "hp": 6676605.181584,
+      "aps": 0.96,
+      "crit": 0.05
+     },
+     "cPow": 10008334.974613247,
+     "owned": false,
+     "recStar": 0,
+     "starMul": 1.35,
+     "skPow": 1,
+     "cardOpen": true,
+     "starNeed": 30,
+     "starMax": 5,
+     "cwLv": 20,
+     "cwMul": 2.6
+    },
+    "bernard": {
+     "stats": {
+      "atk": 408613.3890048,
+      "hp": 5033190.0999744,
+      "aps": 1.02,
+      "crit": 0.05
+     },
+     "cPow": 8016296.2348174285,
+     "owned": false,
+     "recStar": 0,
+     "starMul": 1.35,
+     "skPow": 1,
+     "cardOpen": true,
+     "starNeed": 30,
+     "starMax": 5,
+     "cwLv": 12,
+     "cwMul": 1.96
+    },
+    "elm": {
+     "stats": {
+      "atk": 458637.87340800004,
+      "hp": 5649563.029968001,
+      "aps": 0.84,
+      "crit": 0.05
+     },
+     "cPow": 10374036.705909675,
+     "owned": false,
+     "recStar": 0,
+     "starMul": 1.35,
+     "skPow": 1,
+     "cardOpen": true,
+     "starNeed": 30,
+     "starMax": 5,
+     "cwLv": 15,
+     "cwMul": 2.2
+    },
+    "hagrin": {
+     "stats": {
+      "atk": 492014.39800320007,
+      "hp": 6062566.5756864,
+      "aps": 0.84,
+      "crit": 0.05
+     },
+     "cPow": 7950923.913988339,
+     "owned": false,
+     "recStar": 0,
+     "starMul": 1.35,
+     "skPow": 1,
+     "cardOpen": true,
+     "starNeed": 30,
+     "starMax": 5,
+     "cwLv": 17,
+     "cwMul": 2.3600000000000003
     },
     "kael_chief": {
      "stats": {
@@ -45189,6 +47265,78 @@
       0.1,
       0.2,
       0.1
+     ],
+     "salo": [
+      0.1,
+      0.1,
+      0.1,
+      0.2,
+      0.1,
+      0.1,
+      0.1,
+      0.2,
+      0.1,
+      0.1
+     ],
+     "betty": [
+      0.1,
+      0.1,
+      0.1,
+      0.1,
+      0.1,
+      0.2,
+      0.2,
+      0.1,
+      0.1,
+      0.1
+     ],
+     "naia": [
+      0.3,
+      0.3,
+      0.3,
+      0.6,
+      0.3,
+      0.3,
+      0.3,
+      0.6,
+      0.3,
+      0.3
+     ],
+     "bernard": [
+      0.3,
+      0.3,
+      0.6,
+      0.3,
+      0.3,
+      0.3,
+      0.3,
+      0.3,
+      0.6,
+      0.3
+     ],
+     "elm": [
+      0.3,
+      0.3,
+      0.3,
+      0.3,
+      0.6,
+      0.3,
+      0.3,
+      0.3,
+      0.3,
+      0.6
+     ],
+     "hagrin": [
+      0.3,
+      0.3,
+      0.3,
+      0.3,
+      0.3,
+      0.6,
+      0.6,
+      0.3,
+      0.3,
+      0.3
      ]
     },
     "cookMs": 744000,
@@ -46322,69 +48470,69 @@
     ],
     "cards": [
      "bron",
-     "haral",
+     "riel",
      "toby",
-     "rollo",
-     "rollo",
      "crab",
-     "pori",
      "birch",
+     "gram",
+     "rollo",
+     "salo",
      "haral",
-     "pori",
-     "haral",
+     "crab",
+     "riel",
      "bron",
-     "mora",
-     "pori",
+     "melo",
+     "crab",
      "peppy",
      "luka",
-     "kara",
+     "beryl",
      "luka",
-     "",
-     "kara",
-     "gram",
+     "toby",
+     "beryl",
+     "betty",
      "riel",
-     "gram",
-     "gram",
-     "gram",
+     "betty",
+     "betty",
+     "betty",
      "margo",
+     "",
+     "gram",
+     "",
+     "pori",
+     "gram",
+     "mora",
+     "riel",
+     "pori",
+     "toby",
+     "crab",
+     "betty",
+     "pori",
+     "birch",
+     "melo",
+     "",
+     "mora",
      "",
      "crab",
-     "",
-     "melo",
-     "birch",
-     "beryl",
-     "haral",
-     "mora",
-     "",
-     "rollo",
-     "gram",
-     "melo",
-     "rollo",
-     "mora",
-     "margo",
-     "beryl",
-     "",
-     "pori",
      "andante",
-     "pori",
-     "birch",
+     "crab",
+     "gram",
      "haral",
-     "rollo",
+     "birch",
      "",
-     "pori"
+     "crab"
     ],
     "chunks": {
      "got": [
       [
-       "kara",
+       "mora",
        5
       ],
       [
-       "haral",
+       "riel",
        5
       ],
       [
-       "birch",
+       "gram",
        5
       ],
       [
@@ -46405,23 +48553,24 @@
      "gordon": 15,
      "daisy": 79,
      "bron": 5,
-     "haral": 22,
-     "toby": 1,
-     "rollo": 8,
-     "crab": 2,
-     "pori": 9,
-     "birch": 38,
-     "mora": 5,
-     "peppy": 1,
-     "kara": 7,
-     "gram": 6,
-     "riel": 1,
-     "margo": 3,
+     "riel": 10,
+     "toby": 4,
+     "crab": 11,
+     "birch": 5,
+     "gram": 39,
+     "rollo": 1,
+     "salo": 1,
+     "haral": 13,
      "melo": 3,
-     "beryl": 4,
+     "peppy": 1,
+     "beryl": 2,
+     "betty": 6,
+     "margo": 1,
+     "pori": 5,
+     "mora": 9,
      "andante": 2
     },
-    "goldAfter": 987000000086399
+    "goldAfter": 987000000080228
    },
    "retired": {
     "gold": 60,
@@ -47752,6 +49901,114 @@
      "starMax": 3,
      "cwLv": 12,
      "cwMul": 1.96
+    },
+    "salo": {
+     "stats": {
+      "atk": 401509.75488,
+      "hp": 4945308.825599999,
+      "aps": 1.02,
+      "crit": 0.05
+     },
+     "cPow": 7876527.43707648,
+     "owned": false,
+     "recStar": 0,
+     "starMul": 1,
+     "skPow": 1,
+     "cardOpen": true,
+     "starNeed": 30,
+     "starMax": 3,
+     "cwLv": 20,
+     "cwMul": 2.6
+    },
+    "betty": {
+     "stats": {
+      "atk": 364423.934976,
+      "hp": 4489926.352704,
+      "aps": 0.96,
+      "crit": 0.05
+     },
+     "cPow": 6729881.72226048,
+     "owned": false,
+     "recStar": 0,
+     "starMul": 1,
+     "skPow": 1,
+     "cardOpen": true,
+     "starNeed": 30,
+     "starMax": 3,
+     "cwLv": 17,
+     "cwMul": 2.3600000000000003
+    },
+    "naia": {
+     "stats": {
+      "atk": 542049.7605120001,
+      "hp": 6676605.181584,
+      "aps": 0.96,
+      "crit": 0.05
+     },
+     "cPow": 10008334.974613247,
+     "owned": false,
+     "recStar": 0,
+     "starMul": 1.35,
+     "skPow": 1,
+     "cardOpen": true,
+     "starNeed": 30,
+     "starMax": 5,
+     "cwLv": 20,
+     "cwMul": 2.6
+    },
+    "bernard": {
+     "stats": {
+      "atk": 408613.3890048,
+      "hp": 5033190.0999744,
+      "aps": 1.02,
+      "crit": 0.05
+     },
+     "cPow": 8016296.2348174285,
+     "owned": false,
+     "recStar": 0,
+     "starMul": 1.35,
+     "skPow": 1,
+     "cardOpen": true,
+     "starNeed": 30,
+     "starMax": 5,
+     "cwLv": 12,
+     "cwMul": 1.96
+    },
+    "elm": {
+     "stats": {
+      "atk": 458637.87340800004,
+      "hp": 5649563.029968001,
+      "aps": 0.84,
+      "crit": 0.05
+     },
+     "cPow": 10374036.705909675,
+     "owned": false,
+     "recStar": 0,
+     "starMul": 1.35,
+     "skPow": 1,
+     "cardOpen": true,
+     "starNeed": 30,
+     "starMax": 5,
+     "cwLv": 15,
+     "cwMul": 2.2
+    },
+    "hagrin": {
+     "stats": {
+      "atk": 492014.39800320007,
+      "hp": 6062566.5756864,
+      "aps": 0.84,
+      "crit": 0.05
+     },
+     "cPow": 7950923.913988339,
+     "owned": false,
+     "recStar": 0,
+     "starMul": 1.35,
+     "skPow": 1,
+     "cardOpen": true,
+     "starNeed": 30,
+     "starMax": 5,
+     "cwLv": 17,
+     "cwMul": 2.3600000000000003
     },
     "kael_chief": {
      "stats": {
@@ -49461,6 +51718,78 @@
       0.1,
       0.2,
       0.1
+     ],
+     "salo": [
+      0.1,
+      0.1,
+      0.1,
+      0.2,
+      0.1,
+      0.1,
+      0.1,
+      0.2,
+      0.1,
+      0.1
+     ],
+     "betty": [
+      0.1,
+      0.1,
+      0.1,
+      0.1,
+      0.1,
+      0.2,
+      0.2,
+      0.1,
+      0.1,
+      0.1
+     ],
+     "naia": [
+      0.3,
+      0.3,
+      0.3,
+      0.6,
+      0.3,
+      0.3,
+      0.3,
+      0.6,
+      0.3,
+      0.3
+     ],
+     "bernard": [
+      0.3,
+      0.3,
+      0.6,
+      0.3,
+      0.3,
+      0.3,
+      0.3,
+      0.3,
+      0.6,
+      0.3
+     ],
+     "elm": [
+      0.3,
+      0.3,
+      0.3,
+      0.3,
+      0.6,
+      0.3,
+      0.3,
+      0.3,
+      0.3,
+      0.6
+     ],
+     "hagrin": [
+      0.3,
+      0.3,
+      0.3,
+      0.3,
+      0.3,
+      0.6,
+      0.6,
+      0.3,
+      0.3,
+      0.3
      ]
     },
     "cookMs": 600000,
@@ -50655,77 +52984,73 @@
     ],
     "cards": [
      "bron",
-     "haral",
+     "riel",
      "toby",
-     "rollo",
-     "rollo",
      "crab",
-     "pori",
      "birch",
+     "gram",
+     "rollo",
+     "salo",
      "haral",
-     "pori",
-     "haral",
+     "crab",
+     "riel",
      "bron",
-     "mora",
-     "pori",
+     "melo",
+     "crab",
      "peppy",
      "luka",
-     "kara",
+     "beryl",
      "luka",
-     "",
-     "kara",
-     "gram",
+     "toby",
+     "beryl",
+     "betty",
      "riel",
-     "gram",
-     "gram",
-     "gram",
+     "betty",
+     "betty",
+     "betty",
      "margo",
+     "",
+     "gram",
      "gordon",
+     "pori",
+     "gram",
+     "mora",
+     "riel",
+     "pori",
+     "toby",
      "crab",
-     "gordon",
-     "melo",
+     "betty",
+     "pori",
      "birch",
-     "beryl",
-     "haral",
+     "melo",
+     "gordon",
      "mora",
      "",
-     "rollo",
-     "gram",
-     "melo",
-     "rollo",
-     "mora",
-     "margo",
-     "beryl",
-     "gordon",
-     "pori",
+     "crab",
      "andante",
-     "pori",
-     "birch",
+     "crab",
+     "gram",
      "haral",
-     "rollo",
-     "gordon",
-     "pori"
+     "birch",
+     "",
+     "crab"
     ],
     "chunks": {
      "got": [
       [
-       "kara",
+       "mora",
+       5
+      ],
+      [
+       "riel",
+       5
+      ],
+      [
+       "gram",
        5
       ],
       [
        "haral",
-       5
-      ],
-      [
-       "birch",
-       5
-      ],
-      [
-       "haral",
-       5
-      ],
-      [
-       "gordon",
        5
       ],
       [
@@ -50733,32 +53058,33 @@
        5
       ]
      ],
-     "gold": 0
+     "gold": 30857
     },
     "cardsAfter": {
      "brida": 70,
      "luka": 31,
      "nella": 0,
-     "gordon": 26,
+     "gordon": 18,
      "daisy": 79,
      "bron": 5,
-     "haral": 22,
-     "toby": 1,
-     "rollo": 8,
-     "crab": 2,
-     "pori": 9,
-     "birch": 38,
-     "mora": 5,
-     "peppy": 1,
-     "kara": 7,
-     "gram": 6,
-     "riel": 1,
-     "margo": 3,
+     "riel": 10,
+     "toby": 4,
+     "crab": 11,
+     "birch": 5,
+     "gram": 39,
+     "rollo": 1,
+     "salo": 1,
+     "haral": 13,
      "melo": 3,
-     "beryl": 4,
+     "peppy": 1,
+     "beryl": 2,
+     "betty": 6,
+     "margo": 1,
+     "pori": 5,
+     "mora": 9,
      "andante": 2
     },
-    "goldAfter": 987000000018514
+    "goldAfter": 987000000061714
    },
    "retired": {
     "gold": 60,
@@ -52092,7 +54418,13 @@
    "rollo",
    "crab",
    "birch",
-   "gram"
+   "gram",
+   "salo",
+   "betty",
+   "naia",
+   "bernard",
+   "elm",
+   "hagrin"
   ],
   "odds": [
    [
@@ -52313,6 +54645,12 @@
    "crab",
    "birch",
    "gram",
+   "salo",
+   "betty",
+   "naia",
+   "bernard",
+   "elm",
+   "hagrin",
    "kael_chief",
    "luka"
   ]

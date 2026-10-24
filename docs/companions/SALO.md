@@ -1,6 +1,6 @@
 # 일반 어부 「살로」 기획 기록
 
-작성일: 2026-10-25 · 상태: **기획·그림 완료, 게임 등록은 보류**
+작성일: 2026-10-25 · 상태: **게임 등록 완료 (2026-10-25, 웹·앱)**
 
 ## 추가 배경
 - 일반 동료 2명 제안(베티·살로) 중 대표님이 **어부(살로)부터** 진행 결정 (2026-10-25). 베티(광부, 아군 전체 치명타 버프)는 아직 미진행.
@@ -50,3 +50,8 @@
 
 ## 등록할 때 할 일 (COMPANION_GUIDE.md 6장)
 COMP · JOB(`fisher`) · RECRUITS(하랄과 티격태격, 마고가 소개) · GRADE(`common`) · HEIGHT/SPRITES/FORM · SKILLS · castSkill(단일 지속 피해) · FXDEF(`skill_salo:4`) · SPRITE_ALT/DRAW · NPCID(`'살로':'salo'`) · extract_skill_fx.py
+
+
+## 게임 등록 결과 (2026-10-25)
+- 스킬 상처에 소금 — 맨 앞 적 공격력 1배 + 6초 동안 0.5초마다 15% 지속 피해, need 18 (★3 ×1.3, ★5 ×1.6)
+- 그림: `assets/characters/salo_*`, 초상화·스킬 아이콘·효과 (동작 시트 자르기는 `tools/extract_sprites.py` 또는 `tools/slice_frames.py` CUTS)

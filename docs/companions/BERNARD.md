@@ -1,6 +1,6 @@
 # 전설 요리사 「베르나르」 기획 기록
 
-작성일: 2026-10-25 · 상태: **기획·그림 완료, 게임 등록은 보류**
+작성일: 2026-10-25 · 상태: **게임 등록 완료 (2026-10-25, 웹·앱)**
 
 ## 추가 배경
 - 전설 동료 2차 4명(정통 판타지 스타일) 중 두 번째. 나이아 완료 후 **베르나르** 진행 (대표님 결정, 2026-10-25). 하그린(광부)·엘름(양봉가)은 아직 미진행.
@@ -48,3 +48,9 @@
 
 ## 등록할 때 할 일 (COMPANION_GUIDE.md 6장)
 COMP · JOB(요리사) · RECRUITS(덕배와 맞수) · GRADE(`legend`) · VPAS(탈환 골드) · HEIGHT/SPRITES/FORM · SKILLS · castSkill(적 전체 3연속 피해) · FXDEF(`skill_bernard:4`) · SPRITE_ALT/DRAW · NPCID(`'베르나르':'bernard'`) · extract_skill_fx.py
+
+
+## 게임 등록 결과 (2026-10-25)
+- 스킬 칼질 폭풍 — 모든 적 공격력 1.2배 × 3번, need 26 (★3 ×1.3, ★5 ×1.6)
+- 마을 스킬 궁정 연회 — 성주·군단장 처치 골드 +50%(★1)~+100%(★5)
+- 그림: `assets/characters/bernard_*`, 초상화·스킬 아이콘·효과 (동작 시트 자르기는 `tools/extract_sprites.py` 또는 `tools/slice_frames.py` CUTS)

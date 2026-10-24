@@ -1,6 +1,6 @@
 # 일반 광부 「베티」 기획 기록
 
-작성일: 2026-10-25 · 상태: **기획·그림 완료, 게임 등록은 보류**
+작성일: 2026-10-25 · 상태: **게임 등록 완료 (2026-10-25, 웹·앱)**
 
 ## 추가 배경
 - 일반 동료 2명 제안(베티·살로) 중 살로를 먼저 진행했고, 전설 2차 4명을 마친 뒤 **베티** 진행 (대표님 결정, 2026-10-25).
@@ -53,3 +53,8 @@
 
 ## 등록할 때 할 일 (COMPANION_GUIDE.md 6장)
 COMP · JOB(광부) · RECRUITS(롤로의 손녀, 기름 아끼라는 잔소리) · GRADE(`common`) · HEIGHT/SPRITES/FORM · SKILLS · castSkill(아군 전체 치명타 확률 버프, 일정 시간) · FXDEF(`skill_betty:4`) · SPRITE_ALT/DRAW · NPCID(`'베티':'betty'`) · extract_skill_fx.py
+
+
+## 게임 등록 결과 (2026-10-25)
+- 스킬 등불 밝히기 — 8초 동안 원정대 치명타 확률 +20%p, need 20 (★3 ×1.3, ★5 ×1.6)
+- 그림: `assets/characters/betty_*`, 초상화·스킬 아이콘·효과 (동작 시트 자르기는 `tools/extract_sprites.py` 또는 `tools/slice_frames.py` CUTS)

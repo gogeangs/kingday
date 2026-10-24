@@ -143,6 +143,12 @@ const CASES = {
     'set:keeper:malbong', 'set:cook:deokbae', 'set:miner:peppy', 'time:' + 20 * M, 'items:wheat:30', 'items:fish:30', 'cook:bread', 'cook:stew',
     'card:malbong:9999', 'rec:malbong', 'rec:malbong', 'rec:malbong', 'rec:malbong', 'card:deokbae:9999', 'rec:deokbae', 'rec:deokbae', 'time:' + 30 * M, 'cook:bread',
     'set:keeper:andante', 'auto', 'card:andante:200', 'rec:andante', 'rec:andante', 'lv:peppy', 'cw:malbong', 'time:' + 2 * H]],
+  // 새 동료 6명(살로·베티·나이아·베르나르·엘름·하그린): 맞이하기·별·편성 + 마을 스킬(강화 광석·작물 시간·방치 시간)
+  newcomp: [base.mid, ['ensure', 'gold:1e12', 'items:ore:9999', 'en:weapon', 'card:salo:30', 'rec:salo', 'card:betty:50', 'rec:betty', 'rec:betty',
+    'card:naia:30', 'rec:naia', 'card:bernard:30', 'rec:bernard', 'card:elm:30', 'rec:elm', 'card:hagrin:30', 'rec:hagrin',
+    'set:fisher:naia', 'set:cook:bernard', 'set:keeper:elm', 'set:miner:hagrin', 'en:weapon', 'en:helm', 'cw:hagrin', 'seeds:wheat:9', 'plantall', 'time:' + 3 * M, 'harvre',
+    'card:hagrin:9999', 'rec:hagrin', 'rec:hagrin', 'rec:hagrin', 'rec:hagrin', 'en:weapon', 'card:elm:9999', 'rec:elm', 'rec:elm', 'plantall', 'time:' + 2 * M, 'harvre',
+    'card:naia:9999', 'rec:naia', 'rec:naia', 'set:fisher:salo', 'set:miner:betty', 'auto', 'time:' + 10 * H]],
   // 출석체크: 7일 판 반복·한달 판 초기화·건너뛰기·같은 날·날짜 되돌리기·광고 2배·큰 보상(7·14·21·28)·배지·무료권 사용
   attend: [base.mid, ['att:2026-10-21', 'att:2026-10-22', 'att:2026-10-23', 'att:2026-10-24', 'att:2026-10-25', 'att:2026-10-26', 'att:2026-10-27',
     'attad:2026-10-27', 'attad:2026-10-27', 'att:2026-10-27', 'att:2026-10-29', 'att:2026-10-28', 'att:2026-11-1', 'att:2026-11-2',
