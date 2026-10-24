@@ -89,6 +89,9 @@
 ## 5. 인앱결제 (상품·결제 확인 서버)
 
 ### 5-1. 상품 등록 (Play Console → 수익 창출 → 상품)
+
+> **안드로이드 완료 (2026-10-25)**: 아래 9개 모두 Play Console에 등록·활성(일회성 제품은 구매 옵션 ID `buy`, 정기 결제는 기본 요금제 `monthly` 매월 자동 갱신). 서비스 계정 `kingday-iap@kingday-512207.iam.gserviceaccount.com`(재무 데이터 보기·주문 및 구독 관리), Android Developer API 사용, `stage4_iap.sql` 실행, `kd-iap` 배포, Secret `GOOGLE_SERVICE_ACCOUNT_JSON`(대표님 입력), 라이선스 테스트 목록 「kingday 결제 시험」(ceo@itso.co.kr). 앱 `IapStore.enabled` 는 안드로이드에서 켬. 남은 것: 아이폰.
+
 **인앱 상품(관리형)**:
 
 | 상품 ID | 이름 | 가격 |
