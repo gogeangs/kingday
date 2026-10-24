@@ -19,7 +19,7 @@ class Login {
   static const googleWebClientId = '784535946419-qrselu11h6qteqdugkpc9f7su3d0rfkl.apps.googleusercontent.com';
 
   /// Google Cloud 의 iOS OAuth 클라이언트 ID (아이폰용)
-  static const googleIosClientId = '';
+  static const googleIosClientId = '784535946419-6lcj1p50e5jptq7am9v7vpsrr6nv417b.apps.googleusercontent.com';
 
   /// 구글 로그인을 쓸 수 있는지 (클라이언트 ID 를 넣은 뒤)
   static bool get googleReady => googleWebClientId.isNotEmpty && (!Platform.isIOS || googleIosClientId.isNotEmpty);
