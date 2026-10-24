@@ -1,6 +1,6 @@
 # 전설 광부 「하그린」 기획 기록
 
-작성일: 2026-10-25 · 상태: **기획·그림 완료, 게임 등록은 보류**
+작성일: 2026-10-25 · 상태: **게임 등록 완료 (2026-10-25, 웹·앱)**
 
 ## 추가 배경
 - 전설 동료 2차 4명(정통 판타지 스타일) 중 마지막. 나이아·베르나르·엘름 완료 후 **하그린** 진행 (대표님 결정, 2026-10-25). 이로써 2차 전설 4명 모두 기획·그림 완료.
@@ -49,3 +49,9 @@
 
 ## 등록할 때 할 일 (COMPANION_GUIDE.md 6장)
 COMP · JOB(광부) · RECRUITS(대장간 문에 머리 찧기) · GRADE(`legend`) · VPAS(강화 광석 감소) · HEIGHT/SPRITES/FORM · SKILLS · castSkill(체력 낮은 적 처형, 보스는 큰 피해) · FXDEF(`skill_hagrin:4`) · SPRITE_ALT/DRAW · NPCID(`'하그린':'hagrin'`) · extract_skill_fx.py
+
+
+## 게임 등록 결과 (2026-10-25)
+- 스킬 바위 깨기 — 체력 25% 이하 일반 적 처치, 나머지 3배·보스 4배, need 26 (★3 ×1.3, ★5 ×1.6)
+- 마을 스킬 거인의 손힘 — 장비·동료 무기 강화 광석 −25%(★1)~−50%(★5)
+- 그림: `assets/characters/hagrin_*`, 초상화·스킬 아이콘·효과 (동작 시트 자르기는 `tools/extract_sprites.py` 또는 `tools/slice_frames.py` CUTS)

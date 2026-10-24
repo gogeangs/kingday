@@ -162,11 +162,11 @@ class GameCalc {
   /// 치명타 기대 배수 (전투력·방치 골드 계산용, 웹 critE)
   num critE(Stats t) => 1 + t.crit * (crX() - 1);
   /// 작물 자라는 시간: 은퇴 특성 · 밭 일꾼 · 대지의 축복(2배 빠름)
-  num cropT(CropDef c) => c.t * (1 - .05 * tl('soil')) / (1 + this.workBonus('farm')) / (this.blOn('earth') ? 2 : 1);
+  num cropT(CropDef c) => c.t * (1 - .05 * tl('soil')) / (1 + this.workBonus('farm')) / (this.blOn('earth') ? 2 : 1) / vpGrow();
   num trProd() => 1 + .06 * tl('hands');
   num trBld() => 1 - .05 * tl('carpenter');
   num trCook() => .1 * tl('stew');
-  num offCapH() => 6 + s.bldLv('inn') + tl('inn');
+  num offCapH() => 6 + s.bldLv('inn') + tl('inn') + vpOffH();
   num trUp() => 1 - .04 * tl('knack');
 
   /// 보스 제한 시간 (+끈질긴 농부) — 웹 bossLim
@@ -224,7 +224,19 @@ class GameCalc {
   /// 덕배 「수라간의 손맛」: 요리 버프 시간 (웹 vpCook)
   num vpCook() => vpSt('deokbae') != 0 ? 1 + vpPct(vpSt('deokbae')) / 100 : 1;
   num vpTime() => 1;
-  num vpOre() => 1;
+
+  /// 하그린 「거인의 손힘」: 장비 강화 광석 −25~50% (웹 vpOre)
+  num vpOre() => vpSt('hagrin') != 0 ? 1 - vpPct(vpSt('hagrin')) / 200 : 1;
+
+  /// 베르나르 「궁정 연회」: 성주·군단장 처치 골드 (웹 vpFeast)
+  num vpFeast() => vpSt('bernard') != 0 ? 1 + vpPct(vpSt('bernard')) / 100 : 1;
+
+  /// 엘름 「천 년 나무의 숨결」: 작물 자라는 속도 (웹 vpGrow)
+  num vpGrow() => vpSt('elm') != 0 ? 1 + vpPct(vpSt('elm')) / 100 : 1;
+
+  /// 나이아 「인어의 보물 상자」: 방치 보상 최대 시간 +2~4시간 (웹 vpNaiaH·vpOffH)
+  static num vpNaiaH(int st) => 2 + (st - 1) * .5;
+  num vpOffH() => vpSt('naia') != 0 ? vpNaiaH(vpSt('naia')) : 0;
 
   // ───────────── 편성 ─────────────
   /// slotMember(j): 그 직업 자리에 출전 중인 동료

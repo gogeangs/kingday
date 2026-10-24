@@ -6728,6 +6728,54 @@ const COMP = {
     base: { atk: 4, hp: 92, aps: 0.8 },
     per: { atk: 1.4, hp: 18 }
   },
+  salo: {
+    n: '살로',
+    role: '어부 · 지속 피해',
+    desc: '바닷물을 말려 소금을 만드는 호탕한 소금 장수. 「짠맛이 있어야 세상이 돌아가지!」 마고 식당의 단골 납품업자로, 하랄과는 생선이 귀하냐 소금이 귀하냐로 늘 티격태격한다.',
+    join: '동료 카드 30장을 모으면 합류',
+    base: { atk: 10, hp: 96, aps: 0.85 },
+    per: { atk: 3, hp: 19 }
+  },
+  betty: {
+    n: '베티',
+    role: '광부 · 치명타',
+    desc: '깜깜한 갱도 구석구석에 등불을 켜고 다니는 스무 살 등불지기. 겁은 많지만 맡은 불은 절대 꺼뜨리지 않는다. 롤로 할아버지의 손녀.',
+    join: '동료 카드 30장을 모으면 합류',
+    base: { atk: 7, hp: 205, aps: 0.8 },
+    per: { atk: 2.2, hp: 41 }
+  },
+  naia: {
+    n: '나이아',
+    role: '어부 · 부활',
+    desc: '마족에게 바다를 빼앗기고 뭍으로 올라온 인어 공주. 걸을 수 없어 물통 수레를 타고 다니는데, 수레는 늘 하랄이 투덜대며 민다. 뭍의 모든 것이 신기하다.',
+    join: '동료 카드 30장을 모으면 합류',
+    base: { atk: 11, hp: 125, aps: 0.8 },
+    per: { atk: 3.4, hp: 25 }
+  },
+  bernard: {
+    n: '베르나르',
+    role: '요리사 · 연속 공격',
+    desc: '서쪽 왕국의 기사단장이었다가 칼을 내려놓고 궁정 요리장이 된 신사. 지금도 식칼 두 자루를 검처럼 다룬다. 덕배와는 어느 왕궁 요리가 최고인지로 맞수.',
+    join: '동료 카드 30장을 모으면 합류',
+    base: { atk: 10, hp: 130, aps: 0.85 },
+    per: { atk: 3.2, hp: 26 }
+  },
+  elm: {
+    n: '엘름',
+    role: '양봉가 · 흡혈',
+    desc: '몸 곳곳에 벌집을 품은 천 년 된 고목 정령. 느릿느릿 말이 아주 느리고 늘 졸린다. 리엘이 어릴 때 놀던 나무라 리엘을 아직도 「꼬마 요정」이라 부른다.',
+    join: '동료 카드 30장을 모으면 합류',
+    base: { atk: 9, hp: 135, aps: 0.7 },
+    per: { atk: 3, hp: 27 }
+  },
+  hagrin: {
+    n: '하그린',
+    role: '광부 · 마무리',
+    desc: '옛날에 맨손으로 산맥을 파서 왕국의 길을 낸 늙은 거인. 순하고 수줍음이 많아 힘 조절을 못 할 때마다 「…미안…」 한다. 브리다의 대장간 문에 늘 머리를 찧는다.',
+    join: '동료 카드 30장을 모으면 합류',
+    base: { atk: 11, hp: 290, aps: 0.7 },
+    per: { atk: 3.2, hp: 58 }
+  },
   kael_chief: {
     n: '카엘 촌장',
     role: '촌장 · 원정대 전원 강화',
@@ -6768,7 +6816,13 @@ const JOB = {
     rollo: 'miner',
     crab: 'fisher',
     birch: 'keeper',
-    gram: 'cook'
+    gram: 'cook',
+    salo: 'fisher',
+    betty: 'miner',
+    naia: 'fisher',
+    bernard: 'cook',
+    elm: 'keeper',
+    hagrin: 'miner'
   },
   JOBN = { miner: '광부', fisher: '어부', keeper: '양봉가', cook: '요리사' };
 const JSLOT = ['miner', 'kael', 'fisher', 'keeper', 'cook'],
@@ -7008,6 +7062,78 @@ const RECRUITS = {
         'sys:요리사 자리에서 마고 대신 출전할 수 있어요.'
       ],
       ok: '잘 부탁드려요, 그램 할아버지'
+    },
+    salo: {
+      job: 'fisher',
+      title: '소금 장수 살로',
+      lines: [
+        '바닷바람에 짭짤한 냄새가 실려 왔다.',
+        'm:살로|짠맛이 있어야 세상이 돌아가지! 하랄 영감, 생선도 소금 없인 그냥 비린내여!',
+        'm:하랄|흥, 소금이야 바닷물만 퍼 담으면 되는 거 아니냐?',
+        'm:마고|두 분 다 그만! 살로 씨 소금 없으면 우리 식당 문 닫아요.',
+        'sys:어부 자리에서 하랄 대신 출전할 수 있어요.'
+      ],
+      ok: '잘 부탁해요, 살로 아저씨'
+    },
+    betty: {
+      job: 'miner',
+      title: '갱도 등불지기 베티',
+      lines: [
+        '캄캄한 갱도 저편에서 작은 불빛 하나가 흔들리며 다가왔다.',
+        'm:베티|제, 제가 비출게요! …근데 저기 뭐 있어요?',
+        'm:롤로|베티야, 등불 기름 아껴라. 그거 한 통에 얼만 줄 아냐.',
+        'k@smile:롤로 할아버지 손녀였구나.',
+        'sys:광부 자리에서 브론 대신 출전할 수 있어요.'
+      ],
+      ok: '잘 부탁해, 베티'
+    },
+    naia: {
+      job: 'fisher',
+      title: '바다의 공주 나이아',
+      lines: [
+        '덜컹덜컹, 물이 찰랑이는 커다란 나무 물통 수레가 다가왔다. 미는 사람은… 하랄이었다.',
+        'm:하랄|헉헉… 바다를 빼앗겨 뭍에 올라온 인어 공주님이시다. 수레는 왜 늘 나만 미냐!',
+        'm:나이아@laugh|뭍은 정말 신기해요! 저 하늘의 노란 공은 뭐예요? …아, 해라고요?',
+        'k@surprised:…인어는 처음 봐.',
+        'sys:전설 동료 · 마을 스킬 「인어의 보물 상자」 방치 보상 최대 시간 +2시간 (출전 안 해도 적용)'
+      ],
+      ok: '잘 부탁해요, 나이아 공주님'
+    },
+    bernard: {
+      job: 'cook',
+      title: '궁정 요리장 베르나르',
+      lines: [
+        '식칼 두 자루를 검처럼 찬 꼿꼿한 신사가 모자를 벗어 정중히 인사했다.',
+        'm:베르나르|서쪽 왕국 기사단장 출신, 지금은 궁정 요리장 베르나르라 하오.',
+        'm:덕배|궁정? 요리는 수라간이 최고지!',
+        'm:베르나르@laugh|그 말, 오늘 저녁 상에서 증명해 보시오.',
+        'sys:전설 동료 · 마을 스킬 「궁정 연회」 성주·군단장 처치 골드 +50% (출전 안 해도 적용)'
+      ],
+      ok: '잘 부탁드려요, 베르나르 경'
+    },
+    elm: {
+      job: 'keeper',
+      title: '천 년 고목 엘름',
+      lines: [
+        '숲 가장자리의 고목이… 천천히… 걸어 나왔다. 몸 곳곳의 벌집에서 꿀이 흘렀다.',
+        'm:엘름|오오… 꼬마 요정… 아직도… 내 가지에서… 노니…?',
+        'm:리엘|엘름 할아버지! 나 이제 400살이라니까!',
+        'k@surprised:…리엘이 꼬마라니.',
+        'sys:전설 동료 · 마을 스킬 「천 년 나무의 숨결」 작물이 자라는 속도 +50% (출전 안 해도 적용)'
+      ],
+      ok: '잘 부탁드려요, 엘름 할아버지'
+    },
+    hagrin: {
+      job: 'miner',
+      title: '산맥의 거인 하그린',
+      lines: [
+        '쿵! 브리다의 대장간 문틀이 또 흔들렸다.',
+        'm:하그린|…미안… 또 부쉈네…',
+        'm:브리다|하그린, 고개 좀 숙이고 들어오라고 백 년째 말하잖니!',
+        'k@surprised:산맥을 맨손으로 팠다는 그 거인…?',
+        'sys:전설 동료 · 마을 스킬 「거인의 손힘」 장비 강화 광석 −25% (출전 안 해도 적용)'
+      ],
+      ok: '잘 부탁해요, 하그린'
     }
   },
   STAR_NEED = [30, 20, 40, 80, 150],
@@ -7038,6 +7164,12 @@ const GRADE = {
   crab: 'common',
   birch: 'common',
   gram: 'common',
+  salo: 'common',
+  betty: 'common',
+  naia: 'legend',
+  bernard: 'legend',
+  elm: 'legend',
+  hagrin: 'legend',
   kael_chief: 'unique'
 };
 const GR = {
@@ -7053,9 +7185,14 @@ const VPAS = {
   makrye: { n: '물질 대장', d: st => '낚시터 생선 생산 +' + vpPct(st) + '%' },
   malbong: { n: '말벌 퇴치반', d: st => '양봉장 꿀 생산 +' + vpPct(st) + '%' },
   deokbae: { n: '수라간의 손맛', d: st => '요리 버프 시간 +' + vpPct(st) + '%' },
+  naia: { n: '인어의 보물 상자', d: st => '방치 보상 최대 시간 +' + vpNaiaH(st) + '시간' },
+  bernard: { n: '궁정 연회', d: st => '성주·군단장 처치 골드 +' + vpPct(st) + '%' },
+  elm: { n: '천 년 나무의 숨결', d: st => '작물이 자라는 속도 +' + vpPct(st) + '%' },
+  hagrin: { n: '거인의 손힘', d: st => '장비 강화 광석 −' + Math.round(vpPct(st) / 2) + '%' },
   kael_chief: { n: '새벽 종소리', d: st => '마을 건물 생산 +' + chPct(st) + '%' }
 };
 const vpPct = st => Math.round(50 + (st - 1) * 12.5);
+const vpNaiaH = st => 2 + (st - 1) * 0.5; /* 나이아: 방치 보상 최대 시간 +2~4시간 */
 const vpBox = id =>
   VPAS[id]
     ? `<div class="skl vpas"><img src="assets/ui/village_skill.png" alt="" onerror="this.remove()"><div><b>마을 스킬 · ${VPAS[id].n}</b><span>${VPAS[id].d(Math.max(1, recStar(id)))}${owned(id) ? ' · 출전하지 않아도 늘 적용' : ' · 합류하면 적용'}</span></div></div>`
@@ -7063,10 +7200,13 @@ const vpBox = id =>
 const vpSt = id => (VPAS[id] && owned(id) ? recStar(id) : 0);
 const vpMine = () => (vpSt('brida') ? 1 + vpPct(vpSt('brida')) / 100 : 1),
   vpTime = () => 1,
-  vpOre = () => 1,
+  vpOre = () => (vpSt('hagrin') ? 1 - vpPct(vpSt('hagrin')) / 200 : 1),
   vpFish = () => (vpSt('makrye') ? 1 + vpPct(vpSt('makrye')) / 100 : 1),
   vpHoney = () => (vpSt('malbong') ? 1 + vpPct(vpSt('malbong')) / 100 : 1),
-  vpCook = () => (vpSt('deokbae') ? 1 + vpPct(vpSt('deokbae')) / 100 : 1);
+  vpCook = () => (vpSt('deokbae') ? 1 + vpPct(vpSt('deokbae')) / 100 : 1),
+  vpFeast = () => (vpSt('bernard') ? 1 + vpPct(vpSt('bernard')) / 100 : 1) /* 베르나르: 성주·군단장 처치 골드 */,
+  vpGrow = () => (vpSt('elm') ? 1 + vpPct(vpSt('elm')) / 100 : 1) /* 엘름: 작물 자라는 속도 */,
+  vpOffH = () => (vpSt('naia') ? vpNaiaH(vpSt('naia')) : 0); /* 나이아: 방치 보상 최대 시간(시간) */
 /* ---------- 유니크 동료 카엘 촌장 (docs/companions/KAEL_CHIEF.md) ----------
    카엘 자리 교체형: 편성에서 카엘 대신 출전. 장비·칭호·강화는 카엘 것 그대로 + 별 보너스. 별은 유니크 카드(S.ucard)로만 */
 const CHIEF = 'kael_chief',
@@ -7460,7 +7600,13 @@ const HEIGHT = {
   rollo: 58,
   crab: 60,
   birch: 60,
-  gram: 54
+  gram: 54,
+  salo: 66,
+  betty: 64,
+  naia: 66,
+  bernard: 68,
+  elm: 64,
+  hagrin: 76
 };
 const compCost = l => Math.floor(25 * Math.pow(1.16, l - 1));
 const UPG = [
@@ -8954,11 +9100,11 @@ const trAtk = () => 1 + 0.04 * tl('sharp'),
 const crX = () => 2 + 0.1 * tl('critd'); /* 치명타 배수(기본 ×2) */
 const critE = t => 1 + t.crit * (crX() - 1); /* 치명타 기대 배수 (전투력·방치 골드 계산용) */
 const cropT = c =>
-  (c.t * (1 - 0.05 * tl('soil'))) / (1 + workBonus('farm')) / (blOn('earth') ? 2 : 1); /* 밭 일꾼·대지의 축복은 자라는 속도 */
+  (c.t * (1 - 0.05 * tl('soil'))) / (1 + workBonus('farm')) / (blOn('earth') ? 2 : 1) / vpGrow(); /* 밭 일꾼·대지의 축복은 자라는 속도 */
 const trProd = () => 1 + 0.06 * tl('hands');
 const trBld = () => 1 - 0.05 * tl('carpenter');
 const trCook = () => 0.1 * tl('stew');
-const offCapH = () => 6 + S.bld.inn + tl('inn');
+const offCapH = () => 6 + S.bld.inn + tl('inn') + vpOffH();
 const trUp = () => 1 - 0.04 * tl('knack');
 /* 지름길: 은퇴 후 시작 영지. one=영지 1부터 시작을 고름 */
 const retStart = one => (one ? 1 : Math.max(1, Math.min(1 + 5 * tl('shortcut'), Math.floor((S.best || 1) / 2))));
@@ -9041,6 +9187,12 @@ const NPCID = {
   크랩: 'crab',
   버치: 'birch',
   그램: 'gram',
+  살로: 'salo',
+  베티: 'betty',
+  나이아: 'naia',
+  베르나르: 'bernard',
+  엘름: 'elm',
+  하그린: 'hagrin',
   고든: 'gordon',
   데이지: 'daisy',
   브리다: 'brida',
@@ -12008,6 +12160,48 @@ const SKILLS = {
     need: 20,
     face: 'laugh'
   },
+  salo: {
+    n: '상처에 소금',
+    d: '소금을 뿌려 맨 앞의 적에게 공격력 1배 피해 + 6초 동안 0.5초마다 공격력 15% 지속 피해 (★3에서 강화)',
+    line: '짠맛 좀 봐라!',
+    need: 18,
+    face: 'laugh'
+  },
+  betty: {
+    n: '등불 밝히기',
+    d: '등불을 높이 들어 8초 동안 원정대 전원 치명타 확률 +20% (★3에서 강화)',
+    line: '제가 비출게요!',
+    need: 20,
+    face: 'laugh'
+  },
+  naia: {
+    n: '바다의 자장가',
+    d: '노래로 쓰러진 동료를 모두 일으켜 체력 40%, 나머지 동료는 체력 25% 회복 (★3·★5에서 강화)',
+    line: '자장자장, 다시 일어나요~',
+    need: 28,
+    face: 'laugh'
+  },
+  bernard: {
+    n: '칼질 폭풍',
+    d: '식칼 쌍검으로 모든 적에게 공격력 1.2배 피해를 3번 연달아 (★3·★5에서 강화)',
+    line: '기사도 정신으로, 썰겠소!',
+    need: 26,
+    face: 'laugh'
+  },
+  elm: {
+    n: '생명의 수액',
+    d: '8초 동안 원정대가 때릴 때마다 준 피해의 20%만큼 체력 회복 (★3·★5에서 강화)',
+    line: '천천히… 나눠… 마셔…',
+    need: 24,
+    face: 'laugh'
+  },
+  hagrin: {
+    n: '바위 깨기',
+    d: '체력 25% 이하인 일반 적은 한 번에 쓰러뜨리고, 나머지 적은 공격력 3배·보스는 4배 피해 (★3·★5에서 강화)',
+    line: '…미안… 세게 친다…',
+    need: 26,
+    face: 'laugh'
+  },
   pori: {
     n: '따끈한 수프 배달',
     d: '체력이 가장 낮은 동료 하나의 체력을 35% 회복 (쓰러졌으면 일으킴, ★3에서 강화)',
@@ -12064,7 +12258,7 @@ for (const id in SKILLS) {
   b.onload = () => (CUTIMG[id] = b);
   b.src = 'assets/portraits/portrait_' + id + '_' + SKILLS[id].face + '.png';
 }
-const SKX = { shield: 0, honey: 0, feast: 0, honeyTick: 0, bake: 0, mount: 0, mountK: 1, wall: 0, guts: 0, sym: 0, symK: 1, symTick: 0 };
+const SKX = { shield: 0, honey: 0, feast: 0, honeyTick: 0, bake: 0, mount: 0, mountK: 1, wall: 0, guts: 0, sym: 0, symK: 1, symTick: 0, lamp: 0, lampK: 1, sap: 0, sapK: 1 };
 let cut = null;
 const skFull = id => P[id] && !P[id].down && (P[id].sg || 0) >= SKILLS[id].need;
 /* 아침 체조: 보스 등장·도전 시작 때 스킬 게이지를 단계마다 10% 채워 둠 */
@@ -12422,6 +12616,64 @@ function castSkill(id) {
       addFloat(m.x, m.y - 80 * s, '꽁꽁!', '#9be3ff', 13);
     }
     if (fxOk('skill_nella')) spawnFx('skill_nella', cx, cy - 40 * s, 170 * s, 0.8);
+  } else if (id === 'salo') {
+    const k = skPow(id),
+      tg = alive[0];
+    hitMon(tg, t.atk * k * (SKX.feast > 0 ? 1.2 : 1), true, s, 0);
+    tg.psn = 6;
+    tg.psnD = t.atk * 0.15 * k;
+    tg.psnT = 0;
+    addFloat(tg.x, tg.y - 80 * s, '따끔!', '#ff9a7a', 13);
+    if (fxOk('skill_salo')) spawnFx('skill_salo', tg.x, tg.y - 40 * s, 150 * s, 0.8);
+  } else if (id === 'betty') {
+    SKX.lamp = 8;
+    SKX.lampK = skPow(id);
+    for (const j of members()) if (P[j] && !P[j].down) addFloat(pos[j], py[j] - (HEIGHT[j] + 8) * s, '치명타↑', '#ffd36b', 12);
+    if (fxOk('skill_betty')) spawnFx('skill_betty', pos[id], py[id] - 50 * s, 170 * s, 0.9);
+  } else if (id === 'naia') {
+    const k = skPow(id);
+    for (const j of members()) {
+      const q = P[j];
+      if (!q) continue;
+      if (q.down) {
+        q.down = false;
+        q.hp = stats(j).hp * Math.min(1, 0.4 * k);
+        addFloat(pos[j], py[j] - (HEIGHT[j] + 8) * s, '부활!', '#9be3ff', 14);
+      } else if (healOk()) q.hp = Math.min(stats(j).hp, q.hp + stats(j).hp * 0.25 * k);
+      spawnFx('heal', pos[j], py[j] - 24 * s, 64 * s, 0.6);
+    }
+    {
+      const ids = members(),
+        mx = ids.reduce((a, j) => a + pos[j], 0) / ids.length,
+        my = ids.reduce((a, j) => a + py[j], 0) / ids.length;
+      if (fxOk('skill_naia')) spawnFx('skill_naia', mx, my - 60 * s, 190 * s, 0.9);
+    }
+  } else if (id === 'bernard') {
+    const k = skPow(id);
+    for (let n = 0; n < 3; n++) for (const m of alive) if (m.hp > 0) hitMon(m, t.atk * 1.2 * k * (SKX.feast > 0 ? 1.2 : 1), true, s, 0);
+    shakeT = 0.3;
+    if (fxOk('skill_bernard')) spawnFx('skill_bernard', cx, cy - 30 * s, 190 * s, 0.8);
+  } else if (id === 'elm') {
+    SKX.sap = 8;
+    SKX.sapK = skPow(id);
+    for (const j of members()) if (P[j] && !P[j].down) addFloat(pos[j], py[j] - (HEIGHT[j] + 8) * s, '수액!', '#9cf08a', 12);
+    {
+      const ids = members(),
+        mx = ids.reduce((a, j) => a + pos[j], 0) / ids.length,
+        my = ids.reduce((a, j) => a + py[j], 0) / ids.length;
+      if (fxOk('skill_elm')) spawnFx('skill_elm', mx, my - 50 * s, 170 * s, 0.9);
+    }
+  } else if (id === 'hagrin') {
+    const k = skPow(id);
+    for (const m of alive) {
+      if (!m.boss && m.hp <= m.max * 0.25) {
+        hitMon(m, m.hp, true, s, 0);
+        m.hp = Math.min(m.hp, 0);
+        addFloat(m.x, m.y - 80 * s, '쾅!', '#ffe27a', 14);
+      } else hitMon(m, t.atk * (m.boss ? 4 : 3) * k * (SKX.feast > 0 ? 1.2 : 1), true, s, 0);
+    }
+    shakeT = 0.4;
+    if (fxOk('skill_hagrin')) spawnFx('skill_hagrin', cx, cy - 20 * s, 190 * s, 0.9);
   } else if (id === 'luka') {
     const k = skPow(id);
     for (const j of members()) {
@@ -12449,7 +12701,7 @@ function castSkill(id) {
 }
 function stepSkills(dt, L, alive) {
   const { ids, s } = L;
-  for (const k of ['shield', 'feast', 'bake', 'mount', 'wall', 'guts']) SKX[k] = Math.max(0, SKX[k] - dt);
+  for (const k of ['shield', 'feast', 'bake', 'mount', 'wall', 'guts', 'lamp', 'sap']) SKX[k] = Math.max(0, SKX[k] - dt);
   ULB.t = Math.max(0, ULB.t - dt);
   if (SKX.sym > 0) {
     SKX.sym -= dt;
@@ -12606,7 +12858,13 @@ const FORM = {
   rollo: [0.58, 0.72],
   crab: [0.31, 1],
   birch: [0.17, 0.16],
-  gram: [0.1, 0.58]
+  gram: [0.1, 0.58],
+  salo: [0.31, 1],
+  betty: [0.58, 0.72],
+  naia: [0.31, 1],
+  bernard: [0.1, 0.58],
+  elm: [0.17, 0.16],
+  hagrin: [0.58, 0.72]
 };
 function layout() {
   const ids = members(),
@@ -12854,7 +13112,7 @@ function hitMon(m, d, cr, s, gy) {
 function resetFight(msg) {
   if (CH) return chLose();
   const dem = mons.some(m => m.dem);
-  SKX.shield = SKX.honey = SKX.feast = SKX.guts = SKX.sym = 0;
+  SKX.shield = SKX.honey = SKX.feast = SKX.guts = SKX.sym = SKX.lamp = SKX.sap = 0;
   ULB.t = 0;
   for (const id of members()) {
     P[id].hp = stats(id).hp;
@@ -13245,7 +13503,7 @@ function step(dt) {
           }
         }
         if (!tgt) continue;
-        const cr = Math.random() < t.crit,
+        const cr = Math.random() < t.crit + (SKX.lamp > 0 ? 0.2 * SKX.lampK : 0),
           d = t.atk * (cr ? crX() : 1) * (0.9 + Math.random() * 0.2) * (SKX.feast > 0 ? 1.2 : 1);
         p.swing = 0.22;
         if (id === 'daisy') {
@@ -13279,6 +13537,7 @@ function step(dt) {
           hitMon(tgt, d, cr, s, gy);
           proj.push({ x: pos[id] + 10 * s, y: py[id] - 50 * s, tx: tgt.x, ty: tgt.y - 30 * s, t: 0, d: 0.3, kind: 'soup' });
         } else hitMon(tgt, d, cr, s, gy);
+        if (SKX.sap > 0 && healOk()) p.hp = Math.min(t.hp, p.hp + d * 0.2 * SKX.sapK); /* 엘름 「생명의 수액」 */
       }
       stepSkills(dt, L, alive);
       for (const m of alive) {
@@ -13331,7 +13590,7 @@ function step(dt) {
       if (m.hp <= 0 && !m.dead && !m.gob) {
         m.dead = 0.35;
         spawnFx('coin', m.x, m.y - 26 * s, 34 * s, 0.6, -60 * s);
-        const g = reward(fightSt(), m.boss) * (buff('gold') ? 1.5 : 1) * (blOn('gold') ? 1.3 : 1) * memMul();
+        const g = reward(fightSt(), m.boss) * (buff('gold') ? 1.5 : 1) * (blOn('gold') ? 1.3 : 1) * memMul() * (m.boss ? vpFeast() : 1);
         S.gold += g;
         dailyAdd('kill', 1);
         addFloat(m.x, m.y - 30 * s, '+' + fmt(g), '#ffc94a', 14);
@@ -13604,7 +13863,7 @@ function chCheck() {
 }
 const chDot = () => !!S.chOpen && (supplyCan() || dunLeft() > 0);
 function chPartyReset() {
-  SKX.shield = SKX.honey = SKX.feast = SKX.guts = SKX.sym = 0;
+  SKX.shield = SKX.honey = SKX.feast = SKX.guts = SKX.sym = SKX.lamp = SKX.sap = 0;
   ULB.t = 0;
   for (const id of members()) {
     if (!P[id]) continue;
@@ -14794,6 +15053,42 @@ const DRAW = {
     drawMargo(x, y, s, o);
     ctx.restore();
   },
+  salo: (x, y, s, o) => {
+    ctx.save();
+    ctx.filter = 'hue-rotate(160deg) saturate(1.1)';
+    drawHaral(x, y, s, o);
+    ctx.restore();
+  },
+  betty: (x, y, s, o) => {
+    ctx.save();
+    ctx.filter = 'hue-rotate(30deg) saturate(1.3)';
+    drawBron(x, y, s, o);
+    ctx.restore();
+  },
+  naia: (x, y, s, o) => {
+    ctx.save();
+    ctx.filter = 'hue-rotate(150deg) saturate(1.5)';
+    drawHaral(x, y, s, o);
+    ctx.restore();
+  },
+  bernard: (x, y, s, o) => {
+    ctx.save();
+    ctx.filter = 'grayscale(.7) brightness(1.2)';
+    drawMargo(x, y, s, o);
+    ctx.restore();
+  },
+  elm: (x, y, s, o) => {
+    ctx.save();
+    ctx.filter = 'hue-rotate(60deg) saturate(.8)';
+    drawRiel(x, y, s, o);
+    ctx.restore();
+  },
+  hagrin: (x, y, s, o) => {
+    ctx.save();
+    ctx.filter = 'grayscale(.5) brightness(.9)';
+    drawBron(x, y, s, o);
+    ctx.restore();
+  },
   brida: (x, y, s, o) => {
     ctx.save();
     ctx.filter = 'hue-rotate(260deg) saturate(1.4) brightness(1.1)';
@@ -14843,7 +15138,13 @@ const SPRITES = {
   rollo: { idle: 4, walk: 6, attack: 4, hit: 2, h: 70 },
   crab: { idle: 4, walk: 6, attack: 4, hit: 2, h: 70 },
   birch: { idle: 4, walk: 6, attack: 4, hit: 2, h: 70 },
-  gram: { idle: 4, walk: 6, attack: 4, hit: 2, h: 64 }
+  gram: { idle: 4, walk: 6, attack: 4, hit: 2, h: 64 },
+  salo: { idle: 4, walk: 6, attack: 4, hit: 2, h: 66 },
+  betty: { idle: 4, walk: 6, attack: 4, hit: 2, h: 64 },
+  naia: { idle: 4, walk: 6, attack: 4, hit: 2, h: 66 },
+  bernard: { idle: 4, walk: 6, attack: 4, hit: 2, h: 68 },
+  elm: { idle: 4, walk: 6, attack: 4, hit: 2, h: 64 },
+  hagrin: { idle: 4, walk: 6, attack: 4, hit: 2, h: 76 }
 };
 const SPR_FRAME = 256,
   SPR_FOOT = 250,
@@ -14888,6 +15189,12 @@ const FXDEF = {
     skill_crab: 4,
     skill_birch: 4,
     skill_gram: 4,
+    skill_salo: 4,
+    skill_betty: 4,
+    skill_naia: 4,
+    skill_bernard: 4,
+    skill_elm: 4,
+    skill_hagrin: 4,
     net: 2,
     boss_seal: 4
   },
@@ -15225,7 +15532,13 @@ const SPRITE_ALT = {
   rollo: 'bron',
   crab: 'haral',
   birch: 'riel',
-  gram: 'margo'
+  gram: 'margo',
+  salo: 'haral',
+  betty: 'bron',
+  naia: 'haral',
+  bernard: 'margo',
+  elm: 'riel',
+  hagrin: 'bron'
 };
 const hasSprite = id => !!SPR[id] && ['idle', 'walk', 'attack', 'hit'].every(a => SPR[id][a].ok);
 function spriteFrame(id, p, walk) {
@@ -16228,7 +16541,13 @@ const WLINE = {
   rollo: '광차는 내가 끈다, 꼬맹이들.',
   crab: '…게는 거짓말을 안 해.',
   birch: '튼튼한 벌통부터 짜죠.',
-  gram: '뜨끈하게 해 주마.'
+  gram: '뜨끈하게 해 주마.',
+  salo: '소금기 있는 일은 나한테 맡겨!',
+  betty: '불은 제가 안 꺼뜨릴게요!',
+  naia: '물이라면 제가 제일이에요!',
+  bernard: '정성은 기사도의 기본이오.',
+  elm: '천천히… 그래도… 확실히…',
+  hagrin: '…살살 할게…'
 };
 function drawVillage() {
   if (!VW || !VIMG.map) return;
