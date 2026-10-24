@@ -34,6 +34,9 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+  # 아이폰: 플러그인 일부(webview 등)가 Swift Package 로는 iOS 15 를 못 맞춰서 CocoaPods 사용 (ios/Podfile 15.0)
+  config:
+    enable-swift-package-manager: false
   # 그림은 저장소 맨 위 assets/ 를 tools/sync_app_assets.py 가 app/assets/game/ 으로 복사해서 씁니다.
   # (웹과 앱이 같은 그림을 쓰고, 복사본은 git에 올리지 않음)
   # 단계가 진행될 때마다 필요한 폴더를 여기에 추가합니다.

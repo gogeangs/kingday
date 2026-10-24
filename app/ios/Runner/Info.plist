@@ -68,6 +68,23 @@
 		<true/>
 		<key>UIViewControllerBasedStatusBarAppearance</key>
 		<false/>
+		<!-- 구글 로그인: 아이폰 클라이언트 ID 를 거꾸로 쓴 주소 (공개 값) -->
+		<key>CFBundleURLTypes</key>
+		<array>
+			<dict>
+				<key>CFBundleTypeRole</key>
+				<string>Editor</string>
+				<key>CFBundleURLSchemes</key>
+				<array>
+					<string>com.googleusercontent.apps.784535946419-6lcj1p50e5jptq7am9v7vpsrr6nv417b</string>
+				</array>
+			</dict>
+		</array>
+		<key>GIDClientID</key>
+		<string>784535946419-6lcj1p50e5jptq7am9v7vpsrr6nv417b.apps.googleusercontent.com</string>
+		<!-- 암호화: HTTPS 만 씀 (수출 규정 질문 생략) -->
+		<key>ITSAppUsesNonExemptEncryption</key>
+		<false/>
 		<!-- AdMob 앱 ID: 지금은 구글 공식 시험용 -->
 		<key>GADApplicationIdentifier</key>
 		<string>ca-app-pub-3940256099942544~1458002511</string>

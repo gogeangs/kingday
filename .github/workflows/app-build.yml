@@ -211,3 +211,88 @@ jobs:
           name: kingday-apk
           path: app/build/app/outputs/flutter-apk/app-release.apk
           retention-days: 14
+
+  # ── 아이폰: GitHub 의 맥에서 빌드 → (비밀값이 있으면) TestFlight 로 바로 올림 ──
+  # 비밀값(대표님만 입력): APPSTORE_KEY_ID · APPSTORE_ISSUER_ID · APPSTORE_KEY_P8 (App Store Connect API 키, 관리 권한)
+  # 서명 인증서·프로필은 애플이 클라우드에서 자동으로 만들어 씀 (맥·인증서 파일 필요 없음)
+  ios:
+    if: github.ref == 'refs/heads/main' || contains(github.ref, 'ios') || github.event_name == 'workflow_dispatch'
+    runs-on: macos-latest
+    timeout-minutes: 60
+    defaults:
+      run:
+        working-directory: app
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: 가장 새 Xcode 고르기
+        run: |
+          X=$(ls -d /Applications/Xcode_*.app | grep -v beta | sort -V | tail -1)
+          sudo xcode-select -s "$X"
+          xcodebuild -version
+
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: 그림 복사 (assets/ → app/assets/game/)
+        working-directory: .
+        run: |
+          pip3 install --quiet --break-system-packages fonttools brotli || pip3 install --quiet fonttools brotli
+          python3 tools/sync_app_assets.py
+
+      - name: 패키지·아이콘·시작 화면
+        run: |
+          flutter pub get
+          dart run flutter_launcher_icons
+          dart run flutter_native_splash:create
+
+      - name: 빌드 설정 (빌드 번호 = 실행 번호)
+        run: flutter build ios --release --config-only --build-number=${{ github.run_number }}
+
+      - name: 서명 없이 빌드되는지 확인 (비밀값이 없을 때)
+        env:
+          KEY_ID: ${{ secrets.APPSTORE_KEY_ID }}
+        run: |
+          if [ -n "$KEY_ID" ]; then echo "비밀값 있음 → 다음 단계에서 서명 빌드"; exit 0; fi
+          set +e
+          flutter build ios --release --no-codesign --build-number=${{ github.run_number }} > ios.log 2>&1
+          code=$?
+          tail -60 ios.log
+          if [ $code -ne 0 ]; then
+            msg=$( { grep -E "error|Error|failed|Failed|requires|not found|Could not" ios.log | awk '!seen[$0]++' | head -40; } | sed -e 's/%/%25/g' | awk '{printf "%s%%0A", $0}')
+            echo "::error title=ios-fail::$msg"
+            exit $code
+          fi
+
+      - name: 서명 빌드 → TestFlight 업로드 (비밀값이 있을 때만)
+        env:
+          KEY_ID: ${{ secrets.APPSTORE_KEY_ID }}
+          ISSUER_ID: ${{ secrets.APPSTORE_ISSUER_ID }}
+          KEY_P8: ${{ secrets.APPSTORE_KEY_P8 }}
+        run: |
+          if [ -z "$KEY_ID" ]; then echo "비밀값 없음 → 건너뜀"; exit 0; fi
+          mkdir -p "$RUNNER_TEMP/keys"
+          K="$RUNNER_TEMP/keys/AuthKey_$KEY_ID.p8"
+          printf '%s\n' "$KEY_P8" > "$K"
+          AUTH=(-allowProvisioningUpdates -authenticationKeyPath "$K" -authenticationKeyID "$KEY_ID" -authenticationKeyIssuerID "$ISSUER_ID")
+          set -o pipefail
+          xcodebuild -workspace ios/Runner.xcworkspace -scheme Runner -configuration Release \
+            -archivePath "$RUNNER_TEMP/Runner.xcarchive" -destination 'generic/platform=iOS' \
+            DEVELOPMENT_TEAM=TGYFG9R2C7 CODE_SIGN_STYLE=Automatic "${AUTH[@]}" archive | tail -40
+          cat > "$RUNNER_TEMP/export.plist" <<PL
+          <?xml version="1.0" encoding="UTF-8"?>
+          <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+          <plist version="1.0"><dict>
+            <key>method</key><string>app-store-connect</string>
+            <key>destination</key><string>upload</string>
+            <key>teamID</key><string>TGYFG9R2C7</string>
+            <key>signingStyle</key><string>automatic</string>
+            <key>uploadSymbols</key><true/>
+          </dict></plist>
+          PL
+          xcodebuild -exportArchive -archivePath "$RUNNER_TEMP/Runner.xcarchive" \
+            -exportOptionsPlist "$RUNNER_TEMP/export.plist" -exportPath "$RUNNER_TEMP/out" "${AUTH[@]}" | tail -40
+          echo "::notice title=testflight::빌드 ${{ github.run_number }} 을 App Store Connect 에 올림 (처리에 10~30분)"
+          rm -f "$K"
