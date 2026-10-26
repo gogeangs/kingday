@@ -72,6 +72,11 @@ void main() {
           b.party.remove(cur);
           b.party[id] = Member(hp: c.stats(id).hp * (r < 0 ? 0 : r), cd: .5)..down = r <= 0;
         };
+      // 원정 일지 점수·성장 패키지 (진행 담당과 같은 연결, 웹 passAdd·passKill·growCheck)
+      b
+        ..onPass = ((k) => a.passAdd(k))
+        ..onKill = a.passKill
+        ..onGrow = (() => a.growCheck());
       final snaps = (cs['snaps'] as List).cast<Map<String, dynamic>>();
       var k = 0;
       final frames = cs['frames'] as int;

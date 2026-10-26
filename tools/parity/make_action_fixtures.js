@@ -74,7 +74,7 @@ function op(o) {
     case 'harvre': return F('harvestAll')();
     // ── 피트의 상점 ──
     case 'daily': return w.run(`daily()[${q(a)}]=${b}`);
-    case 'mis': return w.run(`(()=>{const k=${q(a)},m=MISSIONS.find(x=>x.k===k);if(!misCan(m||null))return;daily().claim[k]=true;if(k==='all'){gainCard(5,'shop')}gainGem(m?m.r:MIS_ALL,m?m.n:'오늘의 할 일 완료')})()`);
+    case 'mis': return w.run(`(()=>{const k=${q(a)},m=MISSIONS.find(x=>x.k===k);if(!misCan(m||null))return;daily().claim[k]=true;passAdd(k==='all'?'misall':'mis');if(k==='all'){gainCard(5,'shop')}gainGem(m?m.r:MIS_ALL,m?m.n:'오늘의 할 일 완료')})()`);
     case 'gx': return F('buyGoldX')(a);
     case 'cp': return w.run(`(()=>{const c=CARDPK[${+a}];if(!CARDIDS().some(x=>cardOpen(x)&&recStar(x)<starMax(x)))return;if(!spendGem(c.gem))return;gainCards(c.n,'shop',c.n>=30?5:1)})()`);
     case 'pack': return F('buyPack')(F('PACKS').find((p) => p.k === a));
