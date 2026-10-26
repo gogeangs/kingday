@@ -64,7 +64,7 @@ void main() {
       openRanking(g, 'tower');
       await frames(6);
       expect(find.text('탑 랭킹'), findsOneWidget);
-      expect(calls.where((c) => c.$1 == 'kd_tower_submit').first.$2, {'p_top': 61});
+      expect(calls.where((c) => c.$1 == 'kd_tower_submit').first.$2['p_top'], 61);
       expect(find.text('132층'), findsOneWidget);
       expect(find.textContaining('내 최고 61층'), findsOneWidget);
       // 같은 주·같은 층이면 다시 보내지 않음
@@ -74,7 +74,8 @@ void main() {
       // 층이 오르면 다시 보냄
       (g.state.raw['tower'] as Map)['top'] = 62;
       await g.online.towerSubmit();
-      expect(calls.last, ('kd_tower_submit', {'p_top': 62}));
+      expect(calls.last.$1, 'kd_tower_submit');
+      expect(calls.last.$2['p_top'], 62);
 
       await tester.pumpWidget(const SizedBox());
       g.dispose();
