@@ -6091,6 +6091,25 @@ canvas {
   align-items: center;
   gap: 6px;
   font-size: 12.5px;
+  white-space: nowrap;
+}
+.affnx {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 2px 0 4px;
+}
+.affnx .xp {
+  flex: 1;
+}
+.affnx .xp div {
+  background: #ff7a9c;
+}
+.affnx small {
+  flex: none;
+  font-size: 11.5px;
+  color: var(--muted);
+  white-space: nowrap;
 }
 .qb {
   width: 20px;
@@ -6132,6 +6151,13 @@ canvas {
   color: var(--fg);
   font: inherit;
   cursor: pointer;
+}
+.bdc.new {
+  border-color: #ffd34a;
+  box-shadow: 0 0 10px rgba(255, 211, 74, 0.35);
+}
+.bdc.new small {
+  color: #ffd34a;
 }
 .bdc.seen {
   border-color: #ff7a9c;
@@ -12458,10 +12484,12 @@ function bondDiary() {
       miss = [b.a, b.b].filter(id => !owned(id));
     const sub = seen
       ? '다시 보기'
-      : miss.length
+      : ok
+        ? '새 이야기 · 눌러서 보기'
+        : miss.length
         ? miss.map(id => COMP[id].n + josa(COMP[id].n, '을', '를')).join(' · ') + ' 만나면 열려요'
         : COMP[b.a].n + ' ♥' + affLv(b.a) + ' · ' + COMP[b.b].n + ' ♥' + affLv(b.b) + (ok ? '' : ' · 둘 다 ♥3');
-    return `<button class="bdc${seen ? ' seen' : ''}" ${seen || ok ? `data-bd="${b.k}"` : 'disabled'}><span class="bdf">${face(b.a)}${face(b.b)}</span><b>${seen || !miss.length ? b.t : '???'}</b><small>${sub}</small></button>`;
+    return `<button class="bdc${seen ? ' seen' : ok ? ' new' : ''}" ${seen || ok ? `data-bd="${b.k}"` : 'disabled'}><span class="bdf">${face(b.a)}${face(b.b)}</span><b>${seen || !miss.length ? b.t : '???'}</b><small>${sub}</small></button>`;
   };
   $('sheet').innerHTML = `<div class="eyebrow">원정대의 정</div><h2>원정대 일기</h2><p class="note" style="text-align:center">짝이 있는 동료가 둘 다 ♥3이 되면 이야기가 열려요</p><div class="bdg">${BONDS.map(cell).join('')}</div><div class="acts one"><button class="pri" id="mGo">닫기</button></div>`;
   $('modal').hidden = false;
@@ -12781,10 +12809,12 @@ function ngoalHtml() {
  <div class="info"><small>${g.title}</small><b>${g.name}</b>${g.face ? `<div class="xp"><div style="width:${Math.min(100, (g.n / g.need) * 100)}%"></div></div><small>카드 ${g.n} / ${g.need}</small>` : `<small>${g.desc}</small>`}</div>${g.face ? `<button class="buy${g.can ? ' glow' : ''}" id="ngGo">${g.can ? (recStar(g.id) ? '★ 올리기' : '맞이하기') : '카드 보기'}</button>` : ''}</div>`;
 }
 /* 동료 창 한 줄: 호감도 ♥3 · 다음 ♥까지 62% · 공격·체력 +6% + 「?」 */
-const affLine = id =>
-  affOk(id) && owned(id)
-    ? `<div class="kv affkv"><span>호감도 ${affHearts(id)}</span><b>${affLv(id) >= 5 ? '단짝' : '다음 ♥까지 ' + affPct(id) + '%'} · 공격·체력 +${affLv(id) * 2}% <button class="qb" onclick="this.closest('.affkv').nextElementSibling.hidden^=1" aria-label="호감도 오르는 방법">?</button></b></div><p class="note affq" hidden>함께 싸우거나 마을 일꾼으로 일하면 5분마다 1점, 마을 길 위에서 말을 걸면 하루 1번 +10점. ♥마다 공격·체력 +2%, ♥5는 단짝. 은퇴해도 남아요.</p>`
-    : '';
+const affLine = id => {
+  if (!(affOk(id) && owned(id))) return '';
+  const l = affLv(id),
+    pc = affPct(id);
+  return `<div class="affw"><div class="kv affkv"><span>호감도 ${affHearts(id)}</span><b>공격·체력 +${l * 2}% <button class="qb" onclick="this.closest('.affw').querySelector('.affq').hidden^=1" aria-label="호감도 오르는 방법">?</button></b></div><div class="affnx"><div class="xp"><div style="width:${pc}%"></div></div><small>${l >= 5 ? '단짝 · ♥5' : '다음 ♥까지 ' + pc + '%'}</small></div><p class="note affq" hidden>함께 싸우거나 마을 일꾼으로 일하면 5분마다 1점, 마을 길 위에서 말을 걸면 하루 1번 +10점. ♥마다 공격·체력 +2%, ♥5는 단짝. 은퇴해도 남아요.</p></div>`;
+};
 /* 원정대 탭 아래 고른 동료 상세: 레벨업 · ★ 올리기 · 출전 + 모두 올리기 · 모두 레벨업 (나중에 이야기·호감도 자리) */
 function tpanelHtml(id, upN) {
   const c = COMP[id],
@@ -23474,6 +23504,7 @@ function start(data) {
     const rw = retRwCheck();
     if (rw) queue(() => toast(retRwText(rw)));
     chiefCheck();
+    bondCheck(); /* 원정대의 정: 열렸는데 아직 못 본 관계 이야기 (지난번에 보기 전에 껐을 때) */
   }
   passS();
   growCheck();

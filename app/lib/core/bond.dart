@@ -138,6 +138,7 @@ extension BondAct on GameActions {
     final seen = c.bondSeen, first = !truthy(seen['$k']);
     seen['$k'] = 1;
     if (first) s.gem = s.gem + 20;
+    s.last = c.now; // 웹 save()
     out.add(ActBondScene(k, first));
     if (first) out.add(ActToast('황금 이삭 +20 · 원정대 일기'));
   }
@@ -152,6 +153,7 @@ extension BondAct on GameActions {
     if (m['ids'] is! Map) m['ids'] = <String, dynamic>{};
     (m['ids'] as Map)[id] = 1;
     affAdd(id, 10);
+    s.last = c.now; // 웹 save()
     return true;
   }
 }

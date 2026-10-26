@@ -51,19 +51,13 @@ class _AffLineState extends State<AffLine> {
   @override
   Widget build(BuildContext context) {
     final c = widget.c, id = widget.id, l = c.affLv(id);
+    final pc = c.affPct(id);
     return Column(crossAxisAlignment: CrossAxisAlignment.stretch, mainAxisSize: MainAxisSize.min, children: [
       Row(children: [
         Text('호감도 ', style: KdText.body(13, color: KdColors.muted)),
         AffHearts(l, size: 12),
-        const SizedBox(width: 6),
-        Expanded(
-          child: Text('${l >= 5 ? '단짝' : '다음 ♥까지 ${c.affPct(id)}%'} · 공격·체력 +${l * 2}%',
-              key: const ValueKey('affLine'),
-              textAlign: TextAlign.right,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: KdText.figure(12.5, weight: FontWeight.w600)),
-        ),
+        const Spacer(),
+        Text('공격·체력 +${l * 2}%', key: const ValueKey('affLine'), maxLines: 1, style: KdText.figure(12.5, weight: FontWeight.w600)),
         const SizedBox(width: 6),
         GestureDetector(
           key: const ValueKey('affQ'),
@@ -81,6 +75,13 @@ class _AffLineState extends State<AffLine> {
             ),
           ),
         ),
+      ]),
+      const SizedBox(height: 4),
+      // 다음 ♥까지 진행 막대 (♥5 단짝이면 꽉 참)
+      Row(children: [
+        Expanded(child: XpBar(pc / 100, color: _pink)),
+        const SizedBox(width: 8),
+        Text(l >= 5 ? '단짝 · ♥5' : '다음 ♥까지 $pc%', key: const ValueKey('affNext'), style: KdText.body(11.5, color: KdColors.muted)),
       ]),
       if (_open)
         Padding(
@@ -133,7 +134,9 @@ void bondDiary(GameController g) {
             final miss = [b.a, b.b].where((id) => !c.owned(id)).toList();
             final sub = seen
                 ? '다시 보기'
-                : miss.isNotEmpty
+                : ok
+                    ? '새 이야기 · 눌러서 보기'
+                    : miss.isNotEmpty
                     ? '${miss.map((id) => '${comps[id]!.n}${GameCalc.josa(comps[id]!.n, '을', '를')}').join(' · ')} 만나면 열려요'
                     : '${comps[b.a]!.n} ♥${c.affLv(b.a)} · ${comps[b.b]!.n} ♥${c.affLv(b.b)}${ok ? '' : ' · 둘 다 ♥3'}';
             Widget face(String id) => CompFrame(id, w: 38, h: 44, hidden: !c.owned(id), dim: c.owned(id) && !seen);
@@ -152,7 +155,8 @@ void bondDiary(GameController g) {
                   padding: const EdgeInsets.fromLTRB(6, 8, 6, 8),
                   decoration: BoxDecoration(
                     color: KdColors.panel2,
-                    border: Border.all(color: seen ? const Color(0x99FFC23A) : KdColors.line),
+                    border: Border.all(color: seen ? _pink : ok ? const Color(0xFFFFD34A) : KdColors.line),
+                    boxShadow: !seen && ok ? const [BoxShadow(color: Color(0x59FFD34A), blurRadius: 10)] : null,
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Column(mainAxisSize: MainAxisSize.min, children: [
@@ -165,7 +169,7 @@ void bondDiary(GameController g) {
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
                         textAlign: TextAlign.center,
-                        style: KdText.body(11, color: seen ? KdColors.gold : KdColors.muted, height: 1.3)),
+                        style: KdText.body(11, color: !seen && ok ? const Color(0xFFFFD34A) : KdColors.muted, height: 1.3)),
                   ]),
                 ),
               ),

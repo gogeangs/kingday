@@ -105,6 +105,10 @@ class GameController extends ChangeNotifier {
       _intro();
     } else {
       offline();
+      // 원정대의 정: 열렸는데 아직 못 본 관계 이야기 (웹 시작의 bondCheck)
+      for (final b in calc.bondNew()) {
+        bondOpenFx(b.k);
+      }
       attAuto();
       // 은퇴 횟수 보상: 업데이트 전에 넘긴 단계는 첫 접속 때 바로 지급 (웹 start → retRwCheck)
       final rw = calc.retRwCheck();
