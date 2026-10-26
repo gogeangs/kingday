@@ -263,8 +263,9 @@ class _MineState extends State<_Mine> {
           _pill(inqKindName(q['kind']), KdColors.fg),
           const SizedBox(width: 6),
           _pill(inqStatus[st] ?? st, st == 'new' ? KdColors.gold : st == 'answered' ? const Color(0xFF8FE3A2) : KdColors.muted),
-          const Spacer(),
-          Text(_date(q['created_at']), style: KdText.body(12, color: KdColors.muted)),
+          const SizedBox(width: 6),
+          // 좁은 화면에서는 날짜가 줄어듦 (종류·상태는 그대로)
+          Expanded(child: Text(_date(q['created_at']), textAlign: TextAlign.right, maxLines: 1, overflow: TextOverflow.ellipsis, style: KdText.body(12, color: KdColors.muted))),
         ]),
         const SizedBox(height: 5),
         SelectableText('${q['body'] ?? ''}', style: KdText.body(13.5)),
