@@ -230,6 +230,7 @@ class VillageSkillBox extends StatelessWidget {
       'elm' => '작물이 자라는 속도 +${GameCalc.vpPct(st)}%',
       'hagrin' => '장비 강화 광석 −${(GameCalc.vpPct(st) / 2).round()}%',
       'ttukttak' => '방치 보상 골드 +${(GameCalc.vpPct(st) / 2).round()}%',
+      'lucian' => '시장 주문 골드 +${GameCalc.vpPct(st)}%',
       'kael_chief' => '마을 건물 생산 +${pctTxt(GameCalc.chPct(st))}%',
       _ => '',
     };

@@ -2552,6 +2552,24 @@
      "cwLv": 0,
      "cwMul": 1
     },
+    "lucian": {
+     "stats": {
+      "atk": 8.399999999999999,
+      "hp": 161,
+      "aps": 0.85,
+      "crit": 0.05
+     },
+     "cPow": 188.6745,
+     "owned": false,
+     "recStar": 0,
+     "starMul": 1.4,
+     "skPow": 1,
+     "cardOpen": false,
+     "starNeed": 30,
+     "starMax": 5,
+     "cwLv": 0,
+     "cwMul": 1
+    },
     "oscar": {
      "stats": {
       "atk": 9.6,
@@ -6305,6 +6323,24 @@
      "starMax": 5,
      "cwLv": 2,
      "cwMul": 1.16
+    },
+    "lucian": {
+     "stats": {
+      "atk": 1199.0924691701762,
+      "hp": 3396.2658911999997,
+      "aps": 0.85,
+      "crit": 0.05
+     },
+     "cPow": 9452.307480302294,
+     "owned": false,
+     "recStar": 0,
+     "starMul": 1.4,
+     "skPow": 1,
+     "cardOpen": true,
+     "starNeed": 30,
+     "starMax": 5,
+     "cwLv": 1,
+     "cwMul": 1.08
     },
     "oscar": {
      "stats": {
@@ -10491,6 +10527,24 @@
      "starMax": 5,
      "cwLv": 17,
      "cwMul": 2.3600000000000003
+    },
+    "lucian": {
+     "stats": {
+      "atk": 508453.1653017599,
+      "hp": 3491255.7388799996,
+      "aps": 1.02,
+      "crit": 0.15000000000000002
+     },
+     "cPow": 7673736.359100026,
+     "owned": false,
+     "recStar": 0,
+     "starMul": 1.4,
+     "skPow": 1,
+     "cardOpen": true,
+     "starNeed": 30,
+     "starMax": 5,
+     "cwLv": 12,
+     "cwMul": 1.96
     },
     "oscar": {
      "stats": {
@@ -14775,6 +14829,24 @@
      "cwLv": 0,
      "cwMul": 1
     },
+    "lucian": {
+     "stats": {
+      "atk": 10.4832,
+      "hp": 167.44,
+      "aps": 0.85,
+      "crit": 0.05
+     },
+     "cPow": 205.57773600000002,
+     "owned": false,
+     "recStar": 0,
+     "starMul": 1.4,
+     "skPow": 1,
+     "cardOpen": false,
+     "starNeed": 30,
+     "starMax": 5,
+     "cwLv": 0,
+     "cwMul": 1
+    },
     "oscar": {
      "stats": {
       "atk": 11.481599999999998,
@@ -18428,6 +18500,24 @@
      "starMul": 1.4,
      "skPow": 1,
      "cardOpen": false,
+     "starNeed": 30,
+     "starMax": 5,
+     "cwLv": 0,
+     "cwMul": 1
+    },
+    "lucian": {
+     "stats": {
+      "atk": 10.4832,
+      "hp": 167.44,
+      "aps": 0.85,
+      "crit": 0.05
+     },
+     "cPow": 205.57773600000002,
+     "owned": false,
+     "recStar": 0,
+     "starMul": 1.4,
+     "skPow": 1,
+     "cardOpen": true,
      "starNeed": 30,
      "starMax": 5,
      "cwLv": 0,
@@ -22144,6 +22234,24 @@
      "starMul": 1.4,
      "skPow": 1,
      "cardOpen": false,
+     "starNeed": 30,
+     "starMax": 5,
+     "cwLv": 0,
+     "cwMul": 1
+    },
+    "lucian": {
+     "stats": {
+      "atk": 9.072,
+      "hp": 173.88,
+      "aps": 0.85,
+      "crit": 0.05
+     },
+     "cPow": 203.76846,
+     "owned": false,
+     "recStar": 0,
+     "starMul": 1.4,
+     "skPow": 1,
+     "cardOpen": true,
      "starNeed": 30,
      "starMax": 5,
      "cwLv": 0,
@@ -25962,6 +26070,24 @@
      "starMul": 1.4,
      "skPow": 1,
      "cardOpen": false,
+     "starNeed": 30,
+     "starMax": 5,
+     "cwLv": 0,
+     "cwMul": 1
+    },
+    "lucian": {
+     "stats": {
+      "atk": 9.408000000000001,
+      "hp": 180.32,
+      "aps": 0.85,
+      "crit": 0.05
+     },
+     "cPow": 211.31544,
+     "owned": false,
+     "recStar": 0,
+     "starMul": 1.4,
+     "skPow": 1,
+     "cardOpen": true,
      "starNeed": 30,
      "starMax": 5,
      "cwLv": 0,
@@ -29871,6 +29997,24 @@
      "starMul": 1.4,
      "skPow": 1,
      "cardOpen": false,
+     "starNeed": 30,
+     "starMax": 5,
+     "cwLv": 0,
+     "cwMul": 1
+    },
+    "lucian": {
+     "stats": {
+      "atk": 9.072,
+      "hp": 173.88,
+      "aps": 0.85,
+      "crit": 0.05
+     },
+     "cPow": 203.76846,
+     "owned": false,
+     "recStar": 0,
+     "starMul": 1.4,
+     "skPow": 1,
+     "cardOpen": true,
      "starNeed": 30,
      "starMax": 5,
      "cwLv": 0,
@@ -33822,6 +33966,24 @@
      "starMax": 5,
      "cwLv": 17,
      "cwMul": 2.3600000000000003
+    },
+    "lucian": {
+     "stats": {
+      "atk": 2936317.0296176635,
+      "hp": 18329092.629119996,
+      "aps": 1.02,
+      "crit": 0.15000000000000002
+     },
+     "cPow": 43815791.970040195,
+     "owned": false,
+     "recStar": 0,
+     "starMul": 1.4,
+     "skPow": 1,
+     "cardOpen": true,
+     "starNeed": 30,
+     "starMax": 5,
+     "cwLv": 12,
+     "cwMul": 1.96
     },
     "oscar": {
      "stats": {
@@ -37833,6 +37995,24 @@
      "starMax": 5,
      "cwLv": 17,
      "cwMul": 2.3600000000000003
+    },
+    "lucian": {
+     "stats": {
+      "atk": 508453.1653017599,
+      "hp": 3491255.7388799996,
+      "aps": 1.02,
+      "crit": 0.15000000000000002
+     },
+     "cPow": 7673736.359100026,
+     "owned": false,
+     "recStar": 0,
+     "starMul": 1.4,
+     "skPow": 1,
+     "cardOpen": true,
+     "starNeed": 30,
+     "starMax": 5,
+     "cwLv": 12,
+     "cwMul": 1.96
     },
     "oscar": {
      "stats": {
@@ -42292,6 +42472,24 @@
      "starMax": 5,
      "cwLv": 17,
      "cwMul": 2.3600000000000003
+    },
+    "lucian": {
+     "stats": {
+      "atk": 423710.9710847999,
+      "hp": 5219427.329625599,
+      "aps": 1.02,
+      "crit": 0.05
+     },
+     "cPow": 8312773.370219942,
+     "owned": false,
+     "recStar": 0,
+     "starMul": 1.4,
+     "skPow": 1,
+     "cardOpen": true,
+     "starNeed": 30,
+     "starMax": 5,
+     "cwLv": 12,
+     "cwMul": 1.96
     },
     "oscar": {
      "stats": {
@@ -46923,6 +47121,24 @@
      "cwLv": 17,
      "cwMul": 2.3600000000000003
     },
+    "lucian": {
+     "stats": {
+      "atk": 423710.9710847999,
+      "hp": 5219427.329625599,
+      "aps": 1.02,
+      "crit": 0.05
+     },
+     "cPow": 8312773.370219942,
+     "owned": false,
+     "recStar": 0,
+     "starMul": 1.4,
+     "skPow": 1,
+     "cardOpen": true,
+     "starNeed": 30,
+     "starMax": 5,
+     "cwLv": 12,
+     "cwMul": 1.96
+    },
     "oscar": {
      "stats": {
       "atk": 407669.39136,
@@ -51490,6 +51706,24 @@
      "starMax": 5,
      "cwLv": 17,
      "cwMul": 2.3600000000000003
+    },
+    "lucian": {
+     "stats": {
+      "atk": 423710.9710847999,
+      "hp": 5219427.329625599,
+      "aps": 1.02,
+      "crit": 0.05
+     },
+     "cPow": 8312773.370219942,
+     "owned": false,
+     "recStar": 0,
+     "starMul": 1.4,
+     "skPow": 1,
+     "cardOpen": true,
+     "starNeed": 30,
+     "starMax": 5,
+     "cwLv": 12,
+     "cwMul": 1.96
     },
     "oscar": {
      "stats": {
@@ -56199,6 +56433,7 @@
    "hagrin",
    "sophie",
    "ttukttak",
+   "lucian",
    "oscar",
    "kael_chief",
    "luka"

@@ -462,6 +462,7 @@ class PtPage extends StatelessWidget {
       ),
       if (uc) _ucard(GameCalc.chiefId),
       _ucard(GameCalc.ttukId),
+      _ucard(GameCalc.lucId),
       for (final id in ids) _ccard(id),
     ];
   }
@@ -496,7 +497,7 @@ class PtPage extends StatelessWidget {
               ]),
             ),
             if (!has)
-              Text(chief ? '유니크 카드 $n장 모아 둠 · ${cd.join ?? ''}' : '피트의 상점 ${won(GameCalc.ttukWon)}', style: KdText.body(12, color: KdColors.muted))
+              Text(chief ? '유니크 카드 $n장 모아 둠 · ${cd.join ?? ''}' : '피트의 상점 ${won(id == GameCalc.lucId ? GameCalc.lucWon : GameCalc.ttukWon)}', style: KdText.body(12, color: KdColors.muted))
             else if (mx)
               Text('별을 모두 모았어요', style: KdText.body(12, color: KdColors.muted))
             else ...[

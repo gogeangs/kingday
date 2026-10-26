@@ -283,7 +283,7 @@ extension VillageCalc on GameCalc {
     for (final e in (o['need'] as Map).entries) {
       a = a + itemPrice(e.key as String) * (e.value as num);
     }
-    return jsFloor(a * ordMul * (1 + ordLvPct * orNum(s.bld['market'], 0) + wkReal('market', workBonus('market'))));
+    return jsFloor(a * ordMul * (1 + ordLvPct * orNum(s.bld['market'], 0) + wkReal('market', workBonus('market'))) * vpRoyal());
   }
 
   bool ordCan(Object? x) {

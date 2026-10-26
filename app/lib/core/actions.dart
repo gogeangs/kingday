@@ -62,7 +62,11 @@ class ActChiefScene extends ActResult {
 }
 
 /// 뚝딱이 합류 장면 (「바로 출전」 → 광부 자리)
-class ActTtukScene extends ActResult {}
+/// 결제로 합류한 유니크 동료(뚝딱이·루시안) 합류 장면 (「바로 출전」 → 그 직업 자리)
+class ActUqScene extends ActResult {
+  ActUqScene(this.id);
+  final String id;
+}
 
 class ActRecruitScene extends ActResult {
   ActRecruitScene(this.id);
@@ -1118,14 +1122,19 @@ class GameActions {
   }
 
   // ───────────── 뚝딱이 (웹 ttukJoin · uqUp · buyTtuk) ─────────────
-  bool ttukJoin() {
-    const id = GameCalc.ttukId;
+  bool ttukJoin() => uqJoin(GameCalc.ttukId);
+
+  /// 루시안 합류 (웹 lucianJoin)
+  bool lucianJoin() => uqJoin(GameCalc.lucId);
+
+  /// 결제로 합류하는 유니크 동료 ★1 합류 (웹 uqJoin)
+  bool uqJoin(String id) {
     if (c.owned(id)) return false;
     s.recW[id] = 1;
     if (!truthy(s.lv[id])) s.lv[id] = 1;
     s.last = c.now;
     out.add(ActHaptic(const [30, 40, 30]));
-    out.add(ActTtukScene());
+    out.add(ActUqScene(id));
     return true;
   }
 
@@ -1141,6 +1150,18 @@ class GameActions {
     ttukJoin();
   }
 
+  /// 5,500원 상품 루시안 (처음부터 상점)
+  void buyLucian() {
+    if (!c.lucShop()) return;
+    _pay('lucian', lucianJoin);
+  }
+
+  /// 스토어 결제 확인 우편으로 받은 루시안
+  void grantLucian() {
+    buys['lucian'] = orNum(buys['lucian'], 0) + 1;
+    lucianJoin();
+  }
+
   /// 유니크 카드로 ★ 올리기 (카엘 촌장 외 유니크)
   bool uqUp(String id) {
     if (id == GameCalc.chiefId) return chiefUp();
@@ -1152,7 +1173,7 @@ class GameActions {
     s.last = c.now;
     out.add(ActHaptic(const [25, 40, 25]));
     final st = c.recStar(id);
-    _toast('${comps[id]!.n} ★$st! 능력치 +${((starMulTable[st] - 1) * 100).round()}%${id == GameCalc.ttukId ? ' · 방치 보상 골드 +${(GameCalc.vpPct(st) / 2).round()}%' : ''}');
+    _toast('${comps[id]!.n} ★$st! 능력치 +${((starMulTable[st] - 1) * 100).round()}%${id == GameCalc.ttukId ? ' · 방치 보상 골드 +${(GameCalc.vpPct(st) / 2).round()}%' : id == GameCalc.lucId ? ' · 시장 주문 골드 +${GameCalc.vpPct(st)}%' : ''}');
     return true;
   }
 
