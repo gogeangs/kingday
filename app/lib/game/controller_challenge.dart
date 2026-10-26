@@ -38,7 +38,7 @@ extension GameChallengeX on GameController {
       'k@flustered:…그럼 은퇴는 언제 해?',
       'm:브론|탑 말고 내 폐광도 좀 봐 줘. 요일마다 광석이 쏟아진다고.',
       'sys:지도 탭의 「⚔ 도전」에서 시련의 탑과 요일 던전에 들어갈 수 있어요.',
-      ], '나중에 (지도에서 보기)', altLabel: '도전 보러 가기', onAlt: () => openChallenge(this), onGo: mpDot),
+      ], '도전 보러 가기', altLabel: '나중에', onGo: () => openChallenge(this), onAlt: mpDot),
     );
   }
 

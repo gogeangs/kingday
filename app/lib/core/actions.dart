@@ -111,6 +111,14 @@ class ActLaterToast extends ActResult {
   final int ms;
 }
 
+/// 스토어 결제로 받은 황금 이삭 꾸러미 — 애플·구글 「구입 완료」 창에 알림이 가려지지 않게 창으로 보여 줌
+class ActPackGot extends ActResult {
+  ActPackGot(this.gem, this.first, this.ucard);
+  final num gem;
+  final bool first;
+  final int ucard;
+}
+
 /// 원정대 교체로 전투 중 체력을 옮겨 줘야 할 때 (웹 P[cur] → P[id])
 typedef PartySwap = void Function(String cur, String id);
 
@@ -1006,14 +1014,16 @@ class GameActions {
   void grantPack(String k) {
     final first = !truthy(buys[k]);
     buys[k] = orNum(buys[k], 0) + 1;
-    _givePack(k, first);
+    _givePack(k, first, quiet: true);
+    final p = gemPacks.firstWhere((x) => x.k == k);
+    out.add(ActPackGot(p.gem * (first ? 2 : 1), first, GameCalc.ucardPack[k] ?? 0));
   }
 
-  void _givePack(String k, bool first) {
+  void _givePack(String k, bool first, {bool quiet = false}) {
     final p = gemPacks.firstWhere((x) => x.k == k), n = p.gem * (first ? 2 : 1), u = GameCalc.ucardPack[k] ?? 0;
     s.gem = s.gem + n;
     s.raw['ucard'] = c.ucard + u;
-    _toast('황금 이삭 +${fmt(n)}${first ? ' (첫 구매 2배)' : ''}${u > 0 ? ' · 유니크 카드 +$u' : ''}');
+    if (!quiet) _toast('황금 이삭 +${fmt(n)}${first ? ' (첫 구매 2배)' : ''}${u > 0 ? ' · 유니크 카드 +$u' : ''}');
   }
 
   /// 첫 거래 특가: 전설 성유물 1개 + 이삭 100 (한 번만)
