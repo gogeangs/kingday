@@ -437,7 +437,6 @@ void main() {
       expect(g.state.raw['snd'], true);
       // 저장 코드 자체(웹에서 옮겨 올 때 쓰는 형식)는 그대로
       expect(importSaveCode(exportSaveCode(g.state))!['stage'], 12);
-      final g2 = g;
 
       // 게임 초기화 (두 번 확인)
       await press('게임 초기화');
