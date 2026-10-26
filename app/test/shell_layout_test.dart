@@ -138,6 +138,18 @@ void main() {
           g.setTab(t);
           await frames(2);
         }
+        // 단련 「강화」 버튼을 손가락으로 눌러 실제로 오르는지 (2026-10-26 아이폰 「강화가 안 눌려요」)
+        g.state.raw['upMul'] = 1;
+        g.state.gold = 1e9;
+        g.refresh();
+        await frames(2);
+        final upSum0 = ['atk', 'hp', 'spd', 'crit'].fold<num>(0, (a, k) => a + g.state.upLv(k));
+        final upBtn = find.text('강화').first;
+        await tester.ensureVisible(upBtn);
+        await frames(1);
+        await tester.tap(upBtn);
+        await frames(2);
+        expect(['atk', 'hp', 'spd', 'crit'].fold<num>(0, (a, k) => a + g.state.upLv(k)), upSum0 + 1, reason: '강화 버튼을 누르면 한 단계 올라야 함');
         for (final sub in ['form', 'list', 'card']) {
           g.state.raw['ptTab'] = sub;
           g.setTab(null);
