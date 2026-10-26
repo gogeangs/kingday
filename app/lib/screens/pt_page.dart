@@ -15,6 +15,7 @@ import '../ui/fx.dart';
 import '../ui/game_widgets.dart';
 import '../ui/theme.dart';
 import '../ui/widgets.dart';
+import 'shop_page.dart' show won;
 
 class PtPage extends StatelessWidget {
   const PtPage(this.g, {super.key});
@@ -270,7 +271,7 @@ class PtPage extends StatelessWidget {
     final c = g.calc, cd = comps[id]!, has = c.owned(id), kael = id == 'kael', chief = id == GameCalc.chiefId;
     final on = kael || (chief ? c.chiefOn() : c.slotMember(jobOf[id]!) == id);
     final wk = !kael && !chief && c.working()[id] != null;
-    final up = chief ? c.chiefCan() : c.cardReady().contains(id);
+    final up = chief ? c.chiefCan() : gradeOf[id] == 'unique' ? c.uqCan(id) : c.cardReady().contains(id);
     final named = has || chief;
     final sub = kael
         ? ranks[c.rankIdx()].n
@@ -459,14 +460,15 @@ class PtPage extends StatelessWidget {
         style: KdText.body(12, color: KdColors.muted, height: 1.6),
       ),
       ),
-      if (uc) _ucard(),
+      if (uc) _ucard(GameCalc.chiefId),
+      _ucard(GameCalc.ttukId),
       for (final id in ids) _ccard(id),
     ];
   }
 
-  /// 유니크 카드 줄 (웹 ucRow): 카엘 촌장 별 올리기
-  Widget _ucard() {
-    const id = GameCalc.chiefId;
+  /// 유니크 카드 줄 (웹 ucRow·ttRow): 카엘 촌장·뚝딱이 별 올리기
+  Widget _ucard(String id) {
+    final chief = id == GameCalc.chiefId;
     final c = g.calc, cd = comps[id]!, has = c.owned(id), stv = c.recStar(id), n = c.ucard;
     final mx = has && stv >= c.starMax(id), need = c.starNeed(id) ?? 1;
     final col = compColor(id);
@@ -482,7 +484,7 @@ class PtPage extends StatelessWidget {
             Wrap(crossAxisAlignment: WrapCrossAlignment.center, spacing: 5, runSpacing: 2, children: [
               Text(cd.n, style: KdText.display(15)),
               GradeTag(id),
-              Text('카엘 자리', style: KdText.body(11.5, color: KdColors.muted)),
+              Text(chief ? '카엘 자리' : '${jobName[jobOf[id]]} 자리', style: KdText.body(11.5, color: KdColors.muted)),
               if (stv > 0) Stars(c, id),
             ]),
             Padding(
@@ -494,7 +496,7 @@ class PtPage extends StatelessWidget {
               ]),
             ),
             if (!has)
-              Text('유니크 카드 $n장 모아 둠 · ${cd.join ?? ''}', style: KdText.body(12, color: KdColors.muted))
+              Text(chief ? '유니크 카드 $n장 모아 둠 · ${cd.join ?? ''}' : '피트의 상점 ${won(GameCalc.ttukWon)}', style: KdText.body(12, color: KdColors.muted))
             else if (mx)
               Text('별을 모두 모았어요', style: KdText.body(12, color: KdColors.muted))
             else ...[
@@ -512,12 +514,23 @@ class PtPage extends StatelessWidget {
         const SizedBox(width: 8),
         SizedBox(
           width: 92,
-          child: KdBuy(
-            text: has && !mx ? '★ 올리기' : '보기',
-            glow: c.chiefCan(),
-            minWidth: 0,
-            onTap: () => c.chiefCan() ? g.act((a) => a.chiefUp()) : chiefSheet(g),
-          ),
+          child: chief
+              ? KdBuy(
+                  text: has && !mx ? '★ 올리기' : '보기',
+                  glow: c.chiefCan(),
+                  minWidth: 0,
+                  onTap: () => c.chiefCan() ? g.act((a) => a.chiefUp()) : chiefSheet(g),
+                )
+              : KdBuy(
+                  text: !has ? '상점 보기' : c.uqCan(id) ? '★ 올리기' : '보기',
+                  glow: c.uqCan(id),
+                  minWidth: 0,
+                  onTap: () => !has
+                      ? g.setTab(GameTab.sh)
+                      : c.uqCan(id)
+                          ? g.act((a) => a.uqUp(id))
+                          : compSheet(g, id),
+                ),
         ),
       ]),
     );
@@ -642,6 +655,11 @@ void compSheet(GameController g, String id) {
               KdKv('전투력', fmt(c.cPow(id))),
               SkillBox(id),
               VillageSkillBox(c, id),
+              if (gradeOf[id] == 'unique' && c.recStar(id) < c.starMax(id))
+                KdActs(buttons: [
+                  KdAct('★ 올리기 · 유니크 카드 ${c.ucard} / ${c.starNeed(id) ?? 0}',
+                      primary: c.uqCan(id), onTap: c.uqCan(id) ? () => g.act((a) => a.uqUp(id)) : null),
+                ]),
             ],
             acts: KdActs(buttons: [
               on

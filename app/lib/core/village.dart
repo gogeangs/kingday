@@ -111,7 +111,7 @@ extension VillageCalc on GameCalc {
   /// 쉬는 동료(일꾼 포함)
   List<String> restIds() {
     final mem = members();
-    return GameCalc.cardIds().where((id) => owned(id) && !mem.contains(id)).toList();
+    return GameCalc.compIds().where((id) => owned(id) && !mem.contains(id)).toList();
   }
 
   /// 일도 안 하는 동료
@@ -238,7 +238,7 @@ extension VillageCalc on GameCalc {
       }
     }
     final okM = mats.where((k) => (used[k] ?? 0) < 2).toList(), pool = okM.isNotEmpty ? okM : mats;
-    final whos = [...GameCalc.cardIds().where(owned), 'marta', 'timo', 'pete'];
+    final whos = [...GameCalc.compIds().where(owned), 'marta', 'timo', 'pete'];
     final who = whos[(r.next() * whos.length).floor()];
     final likeRaw = wLike[who] ?? (who == 'pete' ? pool : wLike[jobOf[who]]) ?? const <String>[];
     final lk = [for (final k in likeRaw) if (pool.contains(k)) k];

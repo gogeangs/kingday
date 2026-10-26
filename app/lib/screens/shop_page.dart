@@ -399,6 +399,17 @@ class _ShopPageState extends State<ShopPage> {
         ),
         const SizedBox(height: 10),
       ],
+      if (g.calc.ttukShop()) ...[
+        _shopRow(
+          img: 'assets/game/portraits/portrait_ttukttak_laugh.png',
+          title: '뚝딱이 맞이하기',
+          tag: '유니크',
+          hot: true,
+          info: const Text('유니크 동료 ★1 · 광부 자리에서 출전\n스킬 「금 나와라 뚝딱」 · 마을 스킬 방치 골드 +25%'),
+          btn: KdBuy(minWidth: 0, text: _price('ttuk', GameCalc.ttukWon), onTap: () => _buy('ttuk', () => g.act((x) => x.buyTtuk()))),
+        ),
+        const SizedBox(height: 10),
+      ],
       if (g.calc.chiefShop()) ...[
         _shopRow(
           img: 'assets/game/portraits/portrait_kael_chief_laugh.png',

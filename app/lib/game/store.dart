@@ -29,6 +29,7 @@ class IapStore {
     'p6': 'kd_gem_6480',
     'starter': 'kd_starter',
     'chief': 'kd_chief',
+    'ttuk': 'kd_ttukttak',
     'sub': 'kd_sub_monthly',
     // 상점·패스 (docs/content/SHOP.md): 원정 일지(소모성, 시즌마다) · 영주의 첫걸음(비소모성, 계정당 1번)
     'pass': 'kd_pass',

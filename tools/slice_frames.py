@@ -53,7 +53,15 @@ CUTS = {"daisy": {"bands": [(235, 285), (465, 515), (680, 740)],
         # 하그린: 공격 3프레임의 앞으로 뻗은 곡괭이 날이 4프레임에 붙어 있음
         "hagrin": {"bands": [(252, 264), (499, 506), (770, 782)],
                    "rows": [("idle", [280, 547, 797, 1049, 1300], 256), ("walk", [15, 277, 527, 770, 1037, 1286, 1530], 256),
-                            ("attack", [100, 440, 765, 1156, 1440], 384), ("hit", [440, 760, 1070], 256)]}}
+                            ("attack", [100, 440, 765, 1156, 1440], 384), ("hit", [440, 760, 1070], 256)]},
+        # 소피: 줄 사이(모자 챙)가 붙어 있고 공격 3프레임 거품기가 앞으로 길게 나옴 · 모자가 커서 발 기준으로 가운데 맞춤
+        "sophie": {"bands": [(262, 282), (520, 545), (800, 815)], "anchor": "foot",
+                   "rows": [("idle", [230, 500, 780, 1060, 1300], 256), ("walk", [15, 275, 520, 780, 1025, 1280, 1530], 256),
+                            ("attack", [140, 470, 760, 1130, 1400], 384), ("hit", [440, 770, 1060], 320)]},
+        # 뚝딱이: 걷기 1·2·3프레임이 붙어 있고 공격 줄이 위아래 줄에 닿음 · 방망이 머리가 몸 뒤로 크게 나와 발 기준으로 가운데 맞춤
+        "ttukttak": {"bands": [(236, 250), (484, 502), (744, 758)], "anchor": "foot", "scale": 0.875,
+                     "rows": [("idle", [191, 485, 806, 1127, 1426], 320), ("walk", [14, 291, 564, 835, 1111, 1385, 1660], 320),
+                              ("attack", [126, 446, 783, 1186, 1483], 384), ("hit", [535, 800, 1081], 320)]}}
 SCALE, FOOT, FR = 0.795, 250, 256
 
 
@@ -81,6 +89,8 @@ for r, (name, b, cw) in enumerate(cfg["rows"]):
         keep = band.copy(); keep[:, :b[i]] = False; keep[:, b[i + 1]:] = False; keep &= A >= 140
         ys, xs = np.nonzero(keep); pc = arr.copy(); pc[..., 3] = np.where(keep, A, 0)
         top = keep[ys.min(): ys.min() + int((ys.max() - ys.min()) * .45)]; hx = np.nonzero(top)[1].mean()
+        if cfg.get("anchor") == "foot":  # 무기가 몸 뒤로 크게 나오는 캐릭터: 아래쪽 30%(다리·발) 가운데로
+            bot = keep[ys.max() - int((ys.max() - ys.min()) * .3): ys.max() + 1]; hx = np.nonzero(bot)[1].mean()
         pic = Image.fromarray(pc).crop((xs.min(), ys.min(), xs.max() + 1, ys.max() + 1))
         pic = pic.resize((round(pic.width * SCALE), round(pic.height * SCALE)), Image.LANCZOS)
         cell = Image.new("RGBA", (cw, FR)); cell.alpha_composite(pic, (round(cw / 2 - (hx - xs.min()) * SCALE), FOOT - pic.height))

@@ -1,6 +1,6 @@
 # 영웅 양봉가 「오스카」 기획 기록
 
-작성일: 2026-10-26 · 상태: **기획·그림 완료, 게임 등록은 보류**
+작성일: 2026-10-26 · 상태: **게임 등록 완료 (2026-10-26, 웹·앱)**
 
 ## 추가 배경
 - 영웅 동료 2명 제안(소피·오스카) 중 소피 완료 후 **오스카** 진행 (대표님 결정, 2026-10-26). 이로써 영웅 2명 모두 기획·그림 완료.
@@ -47,7 +47,13 @@
 | ② 초상화 | `art/source/portraits/portrait_oscar_idle.png`, `portrait_oscar_laugh.png` |
 | ③ 스킬 아이콘 | `art/source/skills/skill_oscar.png` |
 | ④ 스킬 효과 | `art/source/fx/fx_skill_oscar.png` |
-- `assets/`·`index.html`은 아직 손대지 않음.
 
 ## 등록할 때 할 일 (COMPANION_GUIDE.md 6장)
 COMP · JOB(`keeper`) · RECRUITS(리엘 벌통을 지키겠다며 따라옴) · GRADE(`epic`) · VPAS(영웅 규칙) · HEIGHT/SPRITES/FORM · SKILLS · castSkill(원정대 전체 보호막, 피해 먼저 흡수) · FXDEF(`skill_oscar:4`) · SPRITE_ALT/DRAW · NPCID(`'오스카':'oscar'`) · extract_skill_fx.py
+
+## 게임 등록 결과 (2026-10-26)
+- 능력치: 공격 8 · 체력 92 · 공속 0.75 (레벨당 공격 +2.8, 체력 +18.5), 영웅 배율 ×1.2 → 같은 직업 일반 평균 대비 1.31
+- 스킬 밀랍 방패 — 8초 동안 원정대 모두에게 각자 최대 체력 25%만큼 보호막, 피해를 보호막이 먼저 받음(다 받으면 「막음!」), need 24 (★3 ×1.3, ★5 ×1.6)
+- 마을 스킬 없음 (영웅 규칙: 마을 스킬은 전설만)
+- 그림: 동작 시트는 `tools/extract_sprites.py` 자동 자르기, 초상화·스킬 아이콘·효과(돔은 원정대 가운데)
+- 대체 그림(그림이 안 올 때): 리엘 그림 색 바꿈

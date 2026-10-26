@@ -139,6 +139,11 @@ void main() {
             a.growGive();
           case 'growchk':
             a.growCheck();
+          // ── 유니크 뚝딱이 ──
+          case 'tbuy':
+            a.buyTtuk();
+          case 'uqup':
+            a.uqUp(o[1]);
           case 'open10':
             a.open10();
           case 'mul':
