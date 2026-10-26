@@ -155,6 +155,18 @@ void main() {
           g.setTab(GameTab.pt);
           await frames(2);
         }
+        // 원정대 B안: 격자에서 카엘을 누르면 아래 상세가 카엘로 (장비 탭 가기)
+        g.state.raw['ptTab'] = 'team';
+        g.setTab(null);
+        g.setTab(GameTab.pt);
+        await frames(2);
+        expect(find.byKey(const ValueKey('tpanel')), findsOneWidget);
+        await tester.ensureVisible(find.byKey(const ValueKey('tsel-kael')));
+        await frames(1);
+        await tester.tap(find.byKey(const ValueKey('tsel-kael')));
+        await frames(2);
+        expect(g.ptSel, 'kael');
+        expect(find.text('장비 탭 가기'), findsOneWidget);
         g.setTab(null);
         await frames(2);
 

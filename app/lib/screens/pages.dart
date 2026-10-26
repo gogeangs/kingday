@@ -132,6 +132,8 @@ class _PageSheetState extends State<PageSheet> {
                     ]),
                   );
                 }
+                // 원정대: 고른 동료 상세는 목록 아래에 늘 보이게 (B안, 웹 .tpanel sticky)
+                if (t == GameTab.pt && ptTeam(g)) return Column(children: [Expanded(child: list), PtPanel(g)]);
                 if (t != GameTab.vl || !g.vbOpen) return list;
                 return LayoutBuilder(
                   builder: (_, cs) => Stack(children: [
