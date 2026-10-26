@@ -7,6 +7,7 @@ import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../core/app_info.dart';
 import '../game/controller.dart';
@@ -56,6 +57,18 @@ String get _platform => Platform.isIOS
     : Platform.isAndroid
         ? 'android'
         : Platform.operatingSystem;
+
+/// 게임 웹사이트의 페이지를 휴대폰 브라우저로 열기 (support.html · privacy.html)
+const siteBase = 'https://gogeangs.github.io/kingday/';
+
+Future<void> openSitePage(GameController g, String page) async {
+  try {
+    final ok = await launchUrl(Uri.parse('$siteBase$page'), mode: LaunchMode.externalApplication);
+    if (!ok) g.toast('페이지를 열 수 없어요 · $siteBase$page');
+  } catch (_) {
+    g.toast('페이지를 열 수 없어요 · $siteBase$page');
+  }
+}
 
 void openInquiry(GameController g) => g.openSheet<void>((c) => _Inquiry(g, c));
 
@@ -171,7 +184,8 @@ class _InquiryState extends State<_Inquiry> {
       eyebrow: '카엘의 수첩',
       title: '문의하기',
       children: [
-        const KdNote('불편한 점을 알려 주세요. 답은 우편함으로 보내 드려요(보통 1~3일).'),
+        const KdNote('불편한 점을 알려 주세요. 답은 우편함으로 보내 드려요(보통 1~3일). 자주 묻는 질문도 먼저 확인해 보세요.'),
+        Row(children: [KdBuy(kind: BuyKind.ghost, minWidth: 0, small: true, text: '❓ 자주 묻는 질문', onTap: () => openSitePage(g, 'support.html'))]),
         const KdSec('종류'),
         _kinds(),
         ValueListenableBuilder<TextEditingValue>(
@@ -206,7 +220,8 @@ class _InquiryState extends State<_Inquiry> {
           ])
         else
           Row(children: [KdBuy(kind: BuyKind.ghost, minWidth: 0, text: '📷 사진 붙이기', onTap: _pick)]),
-        const KdNote('함께 보내는 정보: 닉네임 · 계정 번호 · 게임 버전 · 기기 정보. 보내면 이 정보와 내용·사진을 문의 답변에만 쓰는 데 동의하는 것으로 봐요 (개인정보처리방침: gogeangs.github.io/kingday/privacy.html).'),
+        const KdNote('함께 보내는 정보: 닉네임 · 계정 번호 · 게임 버전 · 기기 정보. 보내면 이 정보와 내용·사진을 문의 답변에만 쓰는 데 동의하는 것으로 봐요.'),
+        Row(children: [KdBuy(kind: BuyKind.ghost, minWidth: 0, small: true, text: '개인정보처리방침', onTap: () => openSitePage(g, 'privacy.html'))]),
       ],
       acts: KdActs(buttons: [
         KdAct('돌아가기', onTap: _busy ? null : () => g.chainSheet(widget.sheet, () => openSettings(g))),

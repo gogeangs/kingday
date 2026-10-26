@@ -73,6 +73,7 @@ class Online {
       ..add(Timer.periodic(const Duration(seconds: 30), (_) {
         rankSubmit(false);
         gobSubmit();
+        towerSubmit();
       }))
       ..add(Timer.periodic(const Duration(minutes: 5), (_) {
         if (!g.backgrounded) mailFetch();
@@ -202,6 +203,25 @@ class Online {
     }
   }
 
+  /// 시련의 탑 최고 층 보내기 (웹 towerSubmit, supabase/stage9_tower.sql): 층이 올랐거나 새 주가 되면 한 번
+  (int, int) _twSent = (0, 0);
+  bool _twBusy = false;
+
+  int get towerTop => asNum(asMap(s.raw['tower'])?['top']).toInt();
+
+  Future<void> towerSubmit() async {
+    final top = towerTop, w = g.sim.curWeek();
+    if (!on || nick == null || _twBusy || top < 1 || (_twSent.$1 == w && _twSent.$2 >= top)) return;
+    _twBusy = true;
+    try {
+      final r = await rpc('kd_tower_submit', {'p_top': top});
+      if (r == 'ok' || r == 'range') _twSent = (w, top);
+    } catch (_) {
+    } finally {
+      _twBusy = false;
+    }
+  }
+
   /// 웹 gobRankToast(): 고블린을 잡고 2.6초 뒤 「이번 주 N마리 · 지금 M위」
   Future<void> gobRankToast() async {
     final n = asNum(g.sim.gobWeek()['n']);
@@ -241,13 +261,16 @@ class Online {
     }
   }
 
-  /// 랭킹 표 받아 오기 (tab: season · hall · goblin)
+  /// 랭킹 표 받아 오기 (tab: season · hall · goblin · tower)
   Future<List<Map<String, dynamic>>> ranking(String tab) async {
     dynamic rows;
     if (tab == 'goblin') {
       gobDirty = true;
       await gobSubmit();
       rows = await rpc('kd_gob_ranking', {});
+    } else if (tab == 'tower') {
+      await towerSubmit();
+      rows = await rpc('kd_tower_ranking', {});
     } else {
       await rankSubmit(false);
       rows = await rpc('kd_ranking', {'p_season': tab == 'hall' ? 0 : null});
@@ -418,6 +441,8 @@ class Online {
         'p_device': device.length > 200 ? device.substring(0, 200) : device,
         'p_platform': platform,
       });
+      // 대표님께 새 문의 메일 알림 (Edge Function kd-inq-notify). 기다리지 않고, 실패해도 문의는 이미 저장됨
+      if (r == 'ok') unawaited(sv!.function('kd-inq-notify', {}).then((_) {}, onError: (_) {}));
       return (r is String ? r : 'bad', photoFail);
     } catch (e) {
       lastError = e;
