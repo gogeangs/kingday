@@ -43,6 +43,8 @@ const TABLES = [
   ['VTABN', 'VTABN'], ['VFN', 'VFN'],
   // ── 2026-10-23 대륙 지도 (docs/content/WORLDMAP.md) ──
   ['MAPPOS', 'MAPPOS'], ['REG_FOG', 'REG_FOG'], ['P2', 'P2'],
+  // ── 2026-10-26 상점·패스 (docs/content/SHOP.md) ──
+  ['SEAS0', 'SEAS0'], ['PASS', 'PASS'], ['PASS_SRC', 'PASS_SRC'], ['PASS_REW', 'PASS_REW'], ['GROW', 'GROW'],
 ];
 
 function dartStr(s) {

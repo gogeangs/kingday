@@ -669,6 +669,7 @@ class GameActions {
     for (final e in (o['need'] as Map).entries) {
       s.items[e.key] = asNum(s.items[e.key]) - (e.value as num);
     }
+    passAdd('ord');
     final g = c.ordGold(o);
     s.gold = s.gold + g;
     var ex = '';
@@ -921,6 +922,7 @@ class GameActions {
     if (k != 'all' && m == null) return;
     if (!misCan(m)) return;
     (asMap(c.daily()['claim'])!)[k] = true;
+    passAdd(k == 'all' ? 'misall' : 'mis');
     if (k == 'all') {
       final cid = c.gainCard(rng, 5, 'shop');
       final t = cardToastText(cid, 5);
@@ -1104,4 +1106,351 @@ class GameActions {
 
   /// 남은 정기 배송 일수
   int subLeft() => math.max(0, ((orNum(sub['until'], 0) - c.now) / 864e5).ceil());
+
+  // ════════════════════ 원정 일지(시즌 패스) · 영주의 첫걸음(성장 패키지) — docs/content/SHOP.md ════════════════════
+  // 웹 index.html 의 passS · passAdd · passKill · passGive · passClaim · passOpen · buyPass · growCheck · growGive · buyGrow 와 같은 규칙.
+
+  static int get passSteps => asNum(wPass['steps']).toInt();
+  static int get passPer => asNum(wPass['per']).toInt();
+
+  Map<String, dynamic> get _passRaw {
+    var p = s.raw['pass'];
+    if (p is! Map) p = s.raw['pass'] = GameState.freshMap(c.now)['pass'];
+    if (p is! Map<String, dynamic>) p = s.raw['pass'] = Map<String, dynamic>.from(p as Map);
+    return p;
+  }
+
+  List<dynamic> _passGot(Map<String, dynamic> p, String row) {
+    var g = p['got'];
+    if (g is! Map) g = p['got'] = <String, dynamic>{'f': <dynamic>[], 'p': <dynamic>[]};
+    final l = (g as Map)[row];
+    if (l is List) return l;
+    return g[row] = <dynamic>[];
+  }
+
+  /// 지금 시즌의 원정 일지 (시즌이 바뀌었으면 남은 보상을 우편으로 넘기고 새로)
+  Map<String, dynamic> passS() {
+    final p = _passRaw, sn = c.seasonNo();
+    if (!truthy(p['s'])) {
+      p['s'] = sn;
+    } else if (asNum(p['s']) != sn) {
+      _passRoll(sn);
+    }
+    return _passRaw;
+  }
+
+  Map<String, dynamic> _passDay() {
+    final p = _passRaw;
+    var d = p['day'];
+    if (d is! Map || d['d'] != c.today()) d = p['day'] = <String, dynamic>{'d': c.today(), 'src': <String, dynamic>{}, 'kc': 0};
+    if ((d as Map)['src'] is! Map) d['src'] = <String, dynamic>{};
+    return d.cast<String, dynamic>();
+  }
+
+  /// 오늘 할 일별로 얻은 점수 (화면 「오늘 얻은 점수」)
+  num passToday(String src) {
+    passS();
+    return orNum(asMap(_passDay()['src'])?[src], 0);
+  }
+
+  int passLv() => math.min(passSteps, (orNum(passS()['pt'], 0) / passPer).floor());
+  bool passHas(String row, int i) => _passGot(passS(), row).contains(i);
+  bool passCan(String row, int i) => i < passLv() && !passHas(row, i) && (row == 'f' || truthy(passS()['paid']));
+  int passCanN() {
+    var n = 0;
+    for (var i = 0; i < passSteps; i++) {
+      n += (passCan('f', i) ? 1 : 0) + (passCan('p', i) ? 1 : 0);
+    }
+    return n;
+  }
+
+  static String passFrameK(int sn) => 'pass_$sn';
+
+  /// 보상 묶음 더하기 (테두리는 시즌 번호를 붙여 따로 저장할 키로)
+  void _passMerge(Map<String, dynamic> a, Map r, int sn) {
+    for (final e in r.entries) {
+      if (e.key == 'frame') {
+        ((a['frame'] ??= <dynamic>[]) as List).add(passFrameK(sn));
+      } else {
+        a['${e.key}'] = orNum(a[e.key], 0) + asNum(e.value);
+      }
+    }
+  }
+
+  void _passRoll(int sn) {
+    final p = _passRaw, old = asNum(p['s']).toInt(), lv = math.min(passSteps, (orNum(p['pt'], 0) / passPer).floor());
+    final r = <String, dynamic>{};
+    var n = 0;
+    final gf = _passGot(p, 'f'), gp = _passGot(p, 'p');
+    for (var i = 0; i < lv; i++) {
+      if (!gf.contains(i)) {
+        _passMerge(r, wPassRew[i]['f']!, old);
+        n++;
+      }
+      if (truthy(p['paid']) && !gp.contains(i)) {
+        _passMerge(r, wPassRew[i]['p']!, old);
+        n++;
+      }
+    }
+    final mail = p['mail'] is List ? p['mail'] as List : <dynamic>[];
+    if (n > 0) mail.add(<String, dynamic>{'id': 'pass$old', 's': old, 'title': '원정 일지 시즌 $old — 받지 못한 보상이에요', 'r': r});
+    s.raw['pass'] = <String, dynamic>{
+      's': sn, 'pt': 0, 'paid': 0, 'got': <String, dynamic>{'f': <dynamic>[], 'p': <dynamic>[]},
+      'day': <String, dynamic>{'d': '', 'src': <String, dynamic>{}, 'kc': 0}, 'intro': truthy(p['intro']) ? p['intro'] : 0, 'mail': mail,
+    };
+  }
+
+  /// 점수 얻기: 하루 한도 안에서만 (웹 passAdd)
+  num passAdd(String src, [num? n]) {
+    if (!truthy(s.raw['started'])) return 0;
+    final cfg = wPassSrc[src];
+    if (cfg == null) return 0;
+    final p = passS(), d = _passDay(), m = d['src'] as Map, used = orNum(m[src], 0);
+    final add = math.min(n ?? asNum(cfg[0]), asNum(cfg[1]) - used);
+    if (add <= 0) return 0;
+    final lv0 = passLv();
+    m[src] = used + add;
+    p['pt'] = math.min(passSteps * passPer, orNum(p['pt'], 0) + add);
+    if (passLv() > lv0) _toast('📖 원정 일지 ${passLv()}단계! 상점에서 보상을 받아요');
+    return add;
+  }
+
+  /// 마물 1,000마리마다 10점 (웹 passKill)
+  void passKill() {
+    if (!truthy(s.raw['started'])) return;
+    passS();
+    final d = _passDay();
+    d['kc'] = orNum(d['kc'], 0) + 1;
+    if (asNum(d['kc']) % 1000 == 0) passAdd('kill');
+  }
+
+  /// 테두리 저장 (시즌 테두리 pass_시즌)
+  void _unlockFrame(String k) {
+    final u = asMap(s.raw['pfUnl']) ?? (s.raw['pfUnl'] = <String, dynamic>{});
+    if (!truthy(u[k])) {
+      u[k] = 1;
+      (asMap(s.raw['pfNew']) ?? (s.raw['pfNew'] = <String, dynamic>{}))['f_$k'] = 1;
+    }
+  }
+
+  /// 보상 주기 → 받은 것 글 목록 (웹 passGive)
+  List<String> passGive(Map r, String why) {
+    final o = <String>[];
+    var got = <(String, int)>[];
+    num cg = 0;
+    if (truthy(r['idle'])) {
+      final g = jsFloor(c.idleGold(asNum(r['idle']) * 3600));
+      s.gold = s.gold + g;
+      o.add('골드 +${fmt(g)}');
+    }
+    if (truthy(r['ore'])) {
+      s.items['ore'] = orNum(s.items['ore'], 0) + asNum(r['ore']);
+      o.add('광석 +${fmt(asNum(r['ore']))}');
+    }
+    if (truthy(r['seed'])) {
+      final n = asNum(r['seed']);
+      s.seeds['wheat'] = orNum(s.seeds['wheat'], 0) + 6 * n;
+      s.seeds['carrot'] = orNum(s.seeds['carrot'], 0) + 3 * n;
+      s.seeds['pumpkin'] = orNum(s.seeds['pumpkin'], 0) + n;
+      o.add('씨앗 묶음 ×${fmt(n)}');
+    }
+    if (truthy(r['gem'])) {
+      s.gem = s.gem + asNum(r['gem']);
+      o.add('황금 이삭 +${fmt(asNum(r['gem']))}');
+    }
+    if (truthy(r['box10'])) {
+      final t = asMap(s.raw['tickets']) ?? (s.raw['tickets'] = <String, dynamic>{'box': 0, 'box10': 0});
+      t['box10'] = orNum(t['box10'], 0) + asNum(r['box10']);
+      o.add('상자 10연속 무료권 +${fmt(asNum(r['box10']))}');
+    }
+    if (truthy(r['card'])) {
+      final n = asNum(r['card']).toInt();
+      final res = c.gainCards(rng, n, 'shop', 3);
+      if (res != null) {
+        got = res.got;
+        cg = res.gold;
+        o.add('동료 카드 $n장');
+      } else {
+        s.gem = s.gem + n * 3;
+        o.add('동료 카드 대신 황금 이삭 +${n * 3}');
+      }
+    }
+    final fr = r['frame'];
+    if (fr is List) {
+      for (final k in fr) {
+        _unlockFrame('$k');
+        o.add('${passFrameName('$k')} 테두리');
+      }
+    }
+    out.add(ActHaptic(const [25]));
+    s.last = c.now;
+    if (got.isNotEmpty || cg > 0) out.add(ActCardReveal(got, why, cg));
+    return o;
+  }
+
+  /// 시즌 테두리 이름 (원정 일지 · 시즌 ○)
+  static String passFrameName(String k) {
+    final m = RegExp(r'^pass_(\d+)$').firstMatch(k);
+    return m == null ? k : '원정 일지 · 시즌 ${m[1]}';
+  }
+
+  /// 칸 하나 받기 (row 'f' 무료 · 'p' 유료, i 0~19) · row 가 null 이면 모두 받기 (웹 passClaim)
+  void passClaim([String? row, int i = 0]) {
+    final p = passS();
+    final rows = <(String, int)>[if (row != null) (row, i)];
+    if (row == null) {
+      for (var j = 0; j < passSteps; j++) {
+        for (final w in const ['f', 'p']) {
+          if (passCan(w, j)) rows.add((w, j));
+        }
+      }
+    }
+    final r = <String, dynamic>{};
+    var n = 0;
+    for (final (w, j) in rows) {
+      if (!passCan(w, j)) continue;
+      _passGot(p, w).add(j);
+      _passMerge(r, wPassRew[j][w]!, asNum(p['s']).toInt());
+      n++;
+    }
+    if (n == 0) return;
+    final o = passGive(r, (wPass['n'] as String));
+    _toast('${n > 1 ? '보상 $n개 · ' : ''}${o.join(' · ')}');
+  }
+
+  /// 유료 줄 열기 (웹 바로 지급 · 앱은 결제 확인 우편 {pass: 시즌}) (웹 passOpen)
+  void passOpen(int? sn) {
+    final p = passS();
+    if (sn != null && sn != 0 && sn != asNum(p['s'])) {
+      // 결제한 사이 시즌이 바뀜: 그 시즌 값만큼 이삭으로
+      s.gem = s.gem + 200;
+      s.last = c.now;
+      _toast('지난 시즌 원정 일지 결제예요. 황금 이삭 +200으로 돌려 드려요');
+      return;
+    }
+    if (truthy(p['paid'])) {
+      _toast('이번 시즌 원정 일지는 이미 열려 있어요');
+      return;
+    }
+    p['paid'] = 1;
+    final r = <String, dynamic>{};
+    var n = 0;
+    final gp = _passGot(p, 'p');
+    for (var i = 0; i < passLv(); i++) {
+      if (!gp.contains(i)) {
+        gp.add(i);
+        _passMerge(r, wPassRew[i]['p']!, asNum(p['s']).toInt());
+        n++;
+      }
+    }
+    if (n > 0) {
+      passGive(r, (wPass['n'] as String));
+    } else {
+      s.last = c.now;
+    }
+    _toast('원정 일지를 열었어요! 지난 단계 보상 $n개를 받았어요');
+  }
+
+  /// 유료 줄 사기 (웹 buyPass · 시험용 바로 지급)
+  void buyPass() {
+    final p = passS();
+    if (truthy(p['paid'])) {
+      _toast('이번 시즌 원정 일지는 이미 열려 있어요');
+      return;
+    }
+    _pay((wPass['k'] as String), () => passOpen(asNum(p['s']).toInt()));
+  }
+
+  /// 마감 3일 전 알림 (하루 한 번, 웹 passWarn)
+  void passWarn() {
+    if (!truthy(s.raw['started'])) return;
+    final p = passS(), left = c.seasonLeft();
+    if (left > asNum(wPass['warn']) || p['warn'] == c.today() || (passCanN() == 0 && !truthy(p['paid']) && !truthy(p['pt']))) return;
+    p['warn'] = c.today();
+    _toast('이번 시즌이 ${math.max(1, left.ceil())}일 남았어요. 받을 보상을 챙기세요!');
+  }
+
+  /// 시즌이 끝나 우편으로 넘어온 원정 일지 보상 (이 기기 저장에 있음)
+  List<Map<String, dynamic>> passMails() {
+    final p = s.raw['pass'];
+    final l = p is Map ? p['mail'] : null;
+    return l is List ? [for (final m in l) if (m is Map) m.cast<String, dynamic>()] : const [];
+  }
+
+  /// 우편 받기 (id 가 null 이면 모두, 웹 passMailClaim)
+  void passMailClaim(String? id) {
+    final l = _passRaw['mail'];
+    if (l is! List) return;
+    final i = l.indexWhere((m) => id == null || (m is Map && m['id'] == id));
+    if (i < 0) return;
+    final all = id == null ? List.of(l) : [l[i]];
+    if (id == null) {
+      l.clear();
+    } else {
+      l.removeAt(i);
+    }
+    final r = <String, dynamic>{};
+    for (final m in all) {
+      for (final e in ((m as Map)['r'] as Map).entries) {
+        if (e.key == 'frame') {
+          ((r['frame'] ??= <dynamic>[]) as List).addAll(e.value as List);
+        } else {
+          r['${e.key}'] = orNum(r[e.key], 0) + asNum(e.value);
+        }
+      }
+    }
+    _toast(passGive(r, '우편 보상').join(' · '));
+  }
+
+  // ---- 영주의 첫걸음 (성장 패키지): 계정당 1번, 영지 3 이후 상점에 보임 ----
+  Map<String, dynamic> growG() {
+    var g = s.raw['grow'];
+    if (g is! Map) g = s.raw['grow'] = <String, dynamic>{'buy': 0, 'got': <String, dynamic>{}};
+    if (g is! Map<String, dynamic>) g = s.raw['grow'] = Map<String, dynamic>.from(g as Map);
+    if (g['got'] is! Map) g['got'] = <String, dynamic>{};
+    return g;
+  }
+
+  static List<(int, int)> get growAt => [for (final x in wGrow['at'] as List) (asNum((x as List)[0]).toInt(), asNum(x[1]).toInt())];
+  bool _growGot(int l) => truthy((growG()['got'] as Map)['$l']);
+  bool growShop() => !truthy(growG()['buy']) ? s.best > 3 : growAt.any((x) => !_growGot(x.$1));
+  (int, int)? growNext() => growAt.where((x) => !_growGot(x.$1)).firstOrNull;
+  bool growHas(int l) => _growGot(l);
+
+  /// 영지 l 「처음 탈환」 = S.best 가 l 을 넘음 (은퇴해도 다시 받지 않음, 웹 growCheck)
+  num growCheck() {
+    final g = growG();
+    if (!truthy(g['buy'])) return 0;
+    num n = 0;
+    final ls = <int>[];
+    for (final (l, v) in growAt) {
+      if (s.best > l && !_growGot(l)) {
+        (g['got'] as Map)['$l'] = 1;
+        n += v;
+        ls.add(l);
+      }
+    }
+    if (n == 0) return 0;
+    s.gem = s.gem + n;
+    s.last = c.now;
+    _toast('영주의 첫걸음 · 영지 ${ls.join('·')} 탈환 보상 황금 이삭 +${fmt(n)}');
+    return n;
+  }
+
+  /// 산 뒤 지급 (웹 growGive · 결제 확인 우편 {grow: 1})
+  void growGive() {
+    final g = growG();
+    if (truthy(g['buy'])) return;
+    g['buy'] = 1;
+    (g['got'] as Map)['0'] = 1;
+    s.gem = s.gem + asNum(wGrow['now']);
+    _toast('영주의 첫걸음을 샀어요! 황금 이삭 +${fmt(asNum(wGrow['now']))}');
+    growCheck();
+    s.last = c.now;
+  }
+
+  void buyGrow() {
+    if (truthy(growG()['buy'])) return;
+    _pay((wGrow['k'] as String), growGive);
+  }
 }

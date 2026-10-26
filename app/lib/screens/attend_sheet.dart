@@ -139,6 +139,7 @@ class _AttendSheetState extends State<AttendSheet> {
     if (r == 'done') return g.toast('오늘은 이미 받았어요. 내일 자정에 또 만나요');
     if (r == 'back') return g.toast('날짜가 이상해요. 휴대폰 시간을 확인해 주세요.');
     final res = r as AttResult;
+    g.act((a) => a.passAdd('att'));
     g.haptic(const [30, 40, 70]);
     g.calc.pfCheck();
     g.save();

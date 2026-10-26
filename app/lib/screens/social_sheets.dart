@@ -47,7 +47,7 @@ class FramedFace extends StatelessWidget {
   Widget build(BuildContext context) {
     final tall = isTallFrame(frame);
     final inset = size * (portrait ? .12 : .11);
-    final img = kdImg('assets/game/profile/frame_$frame.png', fit: BoxFit.fill);
+    final img = kdImg(frameAsset(frame), fit: BoxFit.fill);
     return SizedBox(
       width: size,
       height: size,
@@ -154,13 +154,21 @@ class SocialFabs extends StatelessWidget {
                   )
                 : null)
         : null;
-    if (!o.on) return Column(mainAxisSize: MainAxisSize.min, children: [shop, if (att != null) ...[const SizedBox(height: 8), att]]);
+    // 원정 일지 시즌이 끝나 넘어온 보상 (이 기기 저장 · 인터넷 없어도 받음)
+    final lm = g.acts.passMails().length;
+    if (!o.on) {
+      return Column(mainAxisSize: MainAxisSize.min, children: [
+        if (lm > 0) ...[_btn('icon_mail', () => openMail(g), Positioned(top: -5, right: -5, child: CountDot(lm))), const SizedBox(height: 8)],
+        shop,
+        if (att != null) ...[const SizedBox(height: 8), att],
+      ]);
+    }
     return ValueListenableBuilder<int>(
       valueListenable: o.ver,
       builder: (_, __, ___) {
         final left = (seasonEndAt(DateTime.now().millisecondsSinceEpoch) - DateTime.now().millisecondsSinceEpoch) / 864e5;
         return Column(mainAxisSize: MainAxisSize.min, children: [
-          _btn('icon_mail', () => openMail(g), o.mails.isEmpty ? null : Positioned(top: -5, right: -5, child: CountDot(o.mails.length))),
+          _btn('icon_mail', () => openMail(g), o.mails.length + lm == 0 ? null : Positioned(top: -5, right: -5, child: CountDot(o.mails.length + lm))),
           const SizedBox(height: 8),
           _btn(
             'icon_rank',
@@ -280,7 +288,7 @@ class _ProfileState extends State<_Profile> {
     final c = g.calc;
     final has = frame ? c.pfHas(d.k) : c.bdHas(d.k);
     if (!has) {
-      g.toast(d.rk ? '${d.d}로 우편함에 도착해요' : d.rare ? '황금 고블린을 잡으면 아주 드물게 얻어요' : '${d.d} 달성 시 얻어요');
+      g.toast(passFrameNo(d.k) != null ? '${d.d} 보상이에요' : d.rk ? '${d.d}로 우편함에 도착해요' : d.rare ? '황금 고블린을 잡으면 아주 드물게 얻어요' : '${d.d} 달성 시 얻어요');
       return;
     }
     setState(() {
@@ -492,8 +500,8 @@ class _ProfileState extends State<_Profile> {
               TextSpan(text: '사진 지우기', style: KdText.body(12, color: KdColors.gold).copyWith(decoration: TextDecoration.underline), recognizer: TapGestureRecognizer()..onTap = _delPhoto),
             ]),
           ),
-        KdSec('테두리', small: '${pframes.where((f) => c.pfHas(f.k)).length} / ${pframes.length}'),
-        _grid(pframes, true),
+        KdSec('테두리', small: '${c.pfList().where((f) => c.pfHas(f.k)).length} / ${c.pfList().length}'),
+        _grid(c.pfList(), true),
         KdSec('대표 배지', small: '${badges.where((b) => c.bdHas(b.k)).length + c.attBadges().length} / ${badges.length + c.attBadges().length} · 한 번 더 누르면 떼기'),
         _grid([...c.attBadges(), ...badges], false),
       ],
@@ -864,7 +872,7 @@ class _RankState extends State<_Rank> {
 
 // ════════════════════ 우편함 (웹 mailSheet) ════════════════════
 void openMail(GameController g) {
-  if (!g.online.on) {
+  if (!g.online.on && g.acts.passMails().isEmpty) {
     g.openSheet<void>((c) => KdSheetBody(
           titleWidget: const HdBanner('hd_mail', '우편함', size: 16),
           children: [Text('우편함을 준비하고 있어요.', textAlign: TextAlign.center, style: _muted())],
@@ -897,6 +905,13 @@ class _MailState extends State<_Mail> {
 
   Future<void> _load() async {
     final o = widget.g.online;
+    if (!o.on) {
+      setState(() {
+        _loading = false;
+        _offline = true;
+      });
+      return;
+    }
     if (o.nick == null) {
       await o.ensure();
     } else {
@@ -926,11 +941,23 @@ class _MailState extends State<_Mail> {
         ]),
       );
 
+  /// 원정 일지 우편 보상 칩
+  List<Widget> _passChips(Map<String, dynamic> r) => [
+        if (asNum(r['idle']) > 0) _chip('assets/game/ui/ui_gold.png', '골드 ${fmt(asNum(r['idle']))}시간'),
+        if (asNum(r['ore']) > 0) _chip('assets/game/ui/item_ore.png', '광석 ${fmt(asNum(r['ore']))}'),
+        if (asNum(r['seed']) > 0) _chip('assets/game/ui/seed_wheat.png', '씨앗 ×${fmt(asNum(r['seed']))}'),
+        if (asNum(r['gem']) > 0) _chip(gemIcon, fmt(asNum(r['gem']))),
+        if (asNum(r['card']) > 0) _chip('assets/game/ui/card_pack3.png', '동료 카드 ${fmt(asNum(r['card']))}장'),
+        if (asNum(r['box10']) > 0) _chip('assets/game/ui/item_box10ticket.png', '상자 10연속 ${fmt(asNum(r['box10']))}'),
+        if (r['frame'] is List)
+          for (final f in r['frame'] as List) _chip(frameAsset('$f'), '${frameName('$f')} 테두리'),
+      ];
+
   List<Widget> _chips(Map<String, dynamic> r) => [
         if (asNum(r['gem']) > 0) _chip(gemIcon, fmt(asNum(r['gem']))),
         if (asNum(r['cards']) > 0) _chip('assets/game/ui/card_pack30.png', '동료 카드 ${fmt(asNum(r['cards']))}장'),
         if (asNum(r['ucard']) > 0) _chip('assets/game/ui/card_unique.png', '유니크 카드 ${fmt(asNum(r['ucard']))}장'),
-        if (r['frame'] is String) _chip('assets/game/profile/frame_${r['frame']}.png', '${frameName(r['frame'])} 테두리'),
+        if (r['frame'] is String) _chip(frameAsset(r['frame'] as String), '${frameName(r['frame'])} 테두리'),
         if (r['badge'] is String) _chip(badgeAsset(r['badge'] as String), '${badgeName(r['badge'])} 배지'),
       ];
 
@@ -940,11 +967,35 @@ class _MailState extends State<_Mail> {
     return ValueListenableBuilder<int>(
       valueListenable: o.ver,
       builder: (_, __, ___) {
-        final ms = o.mails;
+        final ms = o.mails, lm = g.acts.passMails(), tot = ms.length + lm.length;
         return KdSheetBody(
           titleWidget: const HdBanner('hd_mail', '우편함', size: 16),
           children: [
-            if (_loading && ms.isEmpty)
+            // 원정 일지 시즌 끝 보상 (이 기기 저장)
+            for (final m in lm)
+              Container(
+                padding: const EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                  color: const Color(0x0AFFFFFF),
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: const Color(0x40FFC94A)),
+                ),
+                child: Row(children: [
+                  Expanded(
+                    child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                      Text('📖 ${m['title'] ?? ''}', style: KdText.body(14, weight: FontWeight.w600)),
+                      Text('시즌이 끝나 받지 않은 보상을 모아 보냈어요.', style: _muted(12)),
+                      const SizedBox(height: 3),
+                      Wrap(spacing: 4, runSpacing: 4, children: _passChips(asMap(m['r']) ?? const {})),
+                    ]),
+                  ),
+                  const SizedBox(width: 8),
+                  KdBuy(kind: BuyKind.claim, minWidth: 0, text: '받기', onTap: () => g.act((x) => x.passMailClaim('${m['id']}'))),
+                ]),
+              ),
+            if (_offline && lm.isNotEmpty)
+              const SizedBox.shrink()
+            else if (_loading && ms.isEmpty)
               Text('우편을 확인하는 중…', textAlign: TextAlign.center, style: _muted())
             else if (_offline)
               Text('인터넷에 연결되면 우편을 받을 수 있어요.', textAlign: TextAlign.center, style: _muted())
@@ -992,8 +1043,12 @@ class _MailState extends State<_Mail> {
             ],
           ],
           acts: KdActs(buttons: [
-            if (ms.length > 1) KdAct('모두 받기', primary: true, claim: true, onTap: () => o.mailClaim(null)),
-            KdAct('닫기', primary: ms.length <= 1, onTap: () => Navigator.of(widget.sheet).pop()),
+            if (tot > 1)
+              KdAct('모두 받기', primary: true, claim: true, onTap: () {
+                if (lm.isNotEmpty) g.act((x) => x.passMailClaim(null));
+                if (ms.isNotEmpty) o.mailClaim(null);
+              }),
+            KdAct('닫기', primary: tot <= 1, onTap: () => Navigator.of(widget.sheet).pop()),
           ]),
         );
       },

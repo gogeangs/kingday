@@ -17,6 +17,7 @@ import '../game/store.dart';
 import '../ui/game_widgets.dart';
 import '../ui/theme.dart';
 import '../ui/widgets.dart';
+import 'pass_sheet.dart';
 
 String won(num n) => '₩${n.toInt().toString().replaceAllMapped(RegExp(r'\B(?=(\d{3})+(?!\d))'), (_) => ',')}';
 
@@ -275,6 +276,8 @@ class _ShopPageState extends State<ShopPage> {
               style: KdText.body(12, color: const Color(0xFFFFE08A), height: 1.5)),
         ),
       const SizedBox(height: 12),
+      // 원정 일지 배너 (상점 맨 위, docs/content/SHOP.md 4장)
+      if (truthy(s.raw['started'])) ...[PassBanner(g), const SizedBox(height: 12)],
       // 바로 가기 (웹 .shjump) — 무료로 받을 게 있으면 빨간 점
       Row(children: [
         for (final (k, n, dot) in [('free', '🎁 매일 무료', freeDot), ('gem', '🌾 이삭으로', false), ('pay', '💰 상품', false)]) ...[
@@ -408,6 +411,8 @@ class _ShopPageState extends State<ShopPage> {
         const SizedBox(height: 10),
       ],
       if (!subOn) ...[subRow, const SizedBox(height: 12)],
+      // 영주의 첫걸음 (성장 패키지): 이삭 꾸러미 위
+      if (a.growShop()) ...[GrowCard(g), const SizedBox(height: 12)],
       const KdSec('황금 이삭'),
       _grid(gap: 6, [
         for (var i = 0; i < gemPacks.length; i++)

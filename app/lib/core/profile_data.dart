@@ -66,7 +66,26 @@ final List<Deco> badges = [
   const Deco('crown3', '전당의 동관', '명예의 전당 3위 보상', _no, rk: true),
 ];
 
-Deco? frameOf(String k) => pframes.where((f) => f.k == k).firstOrNull;
+/// 원정 일지 시즌 테두리 pass_시즌번호 (시즌마다 따로 저장, 그림은 시즌 번호 % 6 색) — 웹 pfPass · pfSrc
+final _passRe = RegExp(r'^pass_(\d+)$');
+int? passFrameNo(String k) {
+  final m = _passRe.firstMatch(k);
+  return m == null ? null : int.parse(m[1]!);
+}
+
+Deco passFrameDeco(int n) => Deco('pass_$n', '원정 일지 · 시즌 $n', '원정 일지 시즌 $n 20단계(유료 줄)', _no, tall: true);
+
+/// 테두리 그림 경로
+String frameAsset(String k) {
+  final n = passFrameNo(k);
+  return 'assets/game/profile/frame_${n == null ? k : 'pass_${n % 6}'}.png';
+}
+
+Deco? frameOf(String k) {
+  final n = passFrameNo(k);
+  if (n != null) return passFrameDeco(n);
+  return pframes.where((f) => f.k == k).firstOrNull;
+}
 Deco? badgeOf(String k) => badges.where((b) => b.k == k).firstOrNull;
 String frameName(String k) => frameOf(k)?.n ?? k;
 String badgeName(String k) => isAttBadge(k) ? attBadgeName(k) : badgeOf(k)?.n ?? k;
@@ -86,6 +105,16 @@ extension ProfileCalc on GameCalc {
   }
 
   bool bdHas(String k) => truthy(asMap(s.raw['bdUnl'])?[k]);
+
+  /// 테두리 목록: 기본 + 원정 일지 시즌 테두리(얻은 것 + 이번 시즌) (웹 pfList)
+  List<Deco> pfList() {
+    final ks = <int>[for (final k in (asMap(s.raw['pfUnl'])?.keys ?? const <String>[])) if (passFrameNo(k) != null) passFrameNo(k)!];
+    final p = s.raw['pass'];
+    final cur = truthy(s.raw['started']) && p is Map ? asNum(p['s']).toInt() : 0;
+    if (cur > 0 && !ks.contains(cur)) ks.add(cur);
+    ks.sort();
+    return [...pframes, for (final n in ks) passFrameDeco(n)];
+  }
   bool pfHas(String k) => k == 'wood' || truthy(asMap(s.raw['pfUnl'])?[k]);
 
   /// 끼운 테두리 (없으면 나무 울타리)

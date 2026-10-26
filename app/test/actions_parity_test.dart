@@ -106,6 +106,39 @@ void main() {
           case 'tk':
             a.attA();
             (s.raw['tickets'] as Map)[o[1]] = int.parse(o[2]);
+          // ── 상점·패스 (docs/content/SHOP.md) ──
+          case 'started':
+            s.raw['started'] = true;
+          case 'padd':
+            a.passAdd(o[1]);
+          case 'pkill':
+            for (var i = 0; i < int.parse(o[1]); i++) {
+              a.passKill();
+            }
+          case 'ppt':
+            a.passS()['pt'] = int.parse(o[1]);
+          case 'pclaim':
+            if (o.length > 1) {
+              a.passClaim(o[1], int.parse(o[2]));
+            } else {
+              a.passClaim();
+            }
+          case 'pbuy':
+            a.buyPass();
+          case 'popen':
+            a.passOpen(int.parse(o[1]));
+          case 'pmail':
+            a.passMailClaim(o.length > 1 ? o[1] : null);
+          case 'pwarn':
+            a.passWarn();
+          case 'best':
+            s.best = int.parse(o[1]);
+          case 'grow':
+            a.buyGrow();
+          case 'growgive':
+            a.growGive();
+          case 'growchk':
+            a.growCheck();
           case 'open10':
             a.open10();
           case 'mul':
