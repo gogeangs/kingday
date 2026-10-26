@@ -338,11 +338,11 @@ class PtPage extends StatelessWidget {
     bool full(String x) => c.cardOpen(x) && c.recStar(x) >= c.starMax(x);
     bool uqFull(String x) => c.owned(x) && c.recStar(x) >= c.starMax(x);
     final ids = sorted.where((x) => !full(x)).toList();
-    final upN = ready.length + (c.chiefCan() ? 1 : 0) + (c.uqCan(GameCalc.ttukId) ? 1 : 0) + (c.uqCan(GameCalc.lucId) ? 1 : 0);
+    final upN = ready.length + (c.chiefCan() ? 1 : 0) + (c.uqCan(GameCalc.ttukId) ? 1 : 0) + (c.uqCan(GameCalc.lucId) ? 1 : 0) + (c.uqCan(GameCalc.goldId) ? 1 : 0);
     TextSpan gt(String n, int col) => TextSpan(text: n, style: TextStyle(color: Color(col), fontWeight: FontWeight.w700));
     final uc = c.owned(GameCalc.chiefId) || c.chiefShop() || c.ucard > 0;
     final maxed = [
-      for (final u in [GameCalc.chiefId, GameCalc.ttukId, GameCalc.lucId])
+      for (final u in [GameCalc.chiefId, GameCalc.ttukId, GameCalc.lucId, GameCalc.goldId])
         if (uqFull(u)) u,
       ...sorted.where(full),
     ];
@@ -400,6 +400,7 @@ class PtPage extends StatelessWidget {
       if (uc && !uqFull(GameCalc.chiefId)) _ucard(GameCalc.chiefId),
       if (!uqFull(GameCalc.ttukId)) _ucard(GameCalc.ttukId),
       if (!uqFull(GameCalc.lucId)) _ucard(GameCalc.lucId),
+      if (!uqFull(GameCalc.goldId)) _ucard(GameCalc.goldId),
       for (final id in ids) _ccard(id),
       if (maxed.isNotEmpty) ...[
         const SizedBox(height: 4),
@@ -478,7 +479,7 @@ class PtPage extends StatelessWidget {
               ]),
             ),
             if (!has)
-              Text(chief ? '유니크 카드 $n장 모아 둠 · ${cd.join ?? ''}' : '피트의 상점 ${won(id == GameCalc.lucId ? GameCalc.lucWon : GameCalc.ttukWon)}', style: KdText.body(12, color: KdColors.muted))
+              Text(chief ? '유니크 카드 $n장 모아 둠 · ${cd.join ?? ''}' : '피트의 상점 ${won(id == GameCalc.lucId ? GameCalc.lucWon : id == GameCalc.goldId ? GameCalc.goldWon : GameCalc.ttukWon)}', style: KdText.body(12, color: KdColors.muted))
             else if (mx)
               Text('별을 모두 모았어요', style: KdText.body(12, color: KdColors.muted))
             else ...[

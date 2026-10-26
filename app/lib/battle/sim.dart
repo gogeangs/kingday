@@ -38,6 +38,9 @@ class Member {
 
   /// 루시안 「불사조의 만찬」: 쓰러지면 한 번 체력 50%로 부활 (웹 P[id].phx)
   bool phx = false;
+
+  /// 바오 「찜통 뚜껑」: 남은 막기 횟수 (웹 P[id].blk)
+  int blk = 0;
 }
 
 /// 마물 한 마리 (웹 mons[] 원소)
@@ -62,6 +65,9 @@ class Mon {
   num vul = 0, vulM = 1.3, kb = 0, brn = 0, brnD = 0, brnT = 0;
   /// 묶임 종류: 'net' 넬라 그물 · 'stun' 기절 (그림만 다름)
   String? bindK;
+
+  /// 2026-10-27 새 동료: 마리 먹물(공격력 −weakK) · 반 데르 홀림(다른 적을 charmD 로 공격) · 젬젬 수정 표식(쓰러지면 gemD 폭발)
+  num weak = 0, weakK = 0, charm = 0, charmD = 0, gem = 0, gemD = 0;
   bool flee = false, gone = false;
   num? tx, barY;
   num y = 0;
@@ -183,6 +189,12 @@ class SkillTimers {
 
   /// 루시안 「불사조의 만찬」 부활 남은 시간 (웹 SKX.phx)
   num phx = 0;
+
+  /// 2026-10-27 새 동료: 그룩 스튜(최대 체력↑) · 브루노 도발 · 바오 막기 · 플로라 꽃밭 (웹 SKX.stew·taunt·blk·bloom)
+  num stew = 0, stewK = 1, taunt = 0, tauntK = 1, blk = 0, bloom = 0, bloomK = 1, bloomTick = 0;
+
+  /// 폴리 「따라 해!」가 따라 쓸 마지막 스킬 (웹 SKX.lastSk)
+  String lastSk = '';
 
   /// 카엘 촌장 「다 함께 울력」 남은 시간·공격 배수·공속 배수 (웹 ULB)
   num ul = 0, ulA = 1, ulS = 1;
@@ -309,6 +321,7 @@ class BattleSim {
     this.gobT = gobT ?? 150 + this.rng.next() * 120;
     c.bakeProbe = () => skx.bake > 0;
     c.ulProbe = () => skx.ul > 0 ? (a: skx.ulA, s: skx.ulS) : null;
+    c.stewProbe = () => skx.stew > 0 ? 1 + .2 * skx.stewK : 1;
   }
 
   final GameCalc c;
@@ -364,6 +377,7 @@ class BattleSim {
 
   void _chPartyReset() {
     skx.shield = skx.honey = skx.feast = skx.guts = skx.sym = skx.lamp = skx.sap = skx.ward = skx.dok = skx.phx = 0;
+    skx.stew = skx.taunt = skx.blk = skx.bloom = 0;
     skx.ul = 0;
     for (final id in c.members()) {
       final p = party[id];
@@ -621,17 +635,20 @@ class BattleSim {
   }
 
   /// castSkill(id): 초상화를 누르거나 AUTO 일 때
-  bool castSkill(String id) {
+  /// [cp]: 폴리 「따라 해!」가 대신 쓰는 것 (게이지·컷인 그대로, 웹 castSkill(id, cp))
+  bool castSkill(String id, {bool cp = false}) {
     final p = party[id];
-    if (!skFull(id) || !engaged) return false;
+    if (!cp && (!skFull(id) || !engaged)) return false;
     final l = layout(), pos = l.pos, py = l.py, sc = l.s, t = c.stats(id);
     final alive = mons.where((m) => m.hp > 0 && m.dead == 0).toList();
     if (alive.isEmpty) return false;
-    p!.sg = 0;
-    p.swing = .4;
-    cut = CutIn(id);
-    events.add(SoundEvent('skill'));
-    quip = null;
+    if (!cp) {
+      p!.sg = 0;
+      p.swing = .4;
+      cut = CutIn(id);
+      events.add(SoundEvent('skill'));
+      quip = null;
+    }
     num cx = 0, cy = 0;
     for (final m in alive) {
       cx = cx + m.x;
@@ -1057,12 +1074,123 @@ class BattleSim {
           addFloat(pos[j]!, py[j]! - (heightOf(j) + 8) * sc, '보호막!', 0xFFFFD34A, 12);
         }
         if (fxOk('skill_oscar')) _teamFx('skill_oscar', sc, pos, py, size: 170, dy: 30);
+      case 'gruk':
+        // 오크 고기 스튜: 8초 동안 최대 체력 +20% (늘어난 만큼 체력도 채움)
+        final k = c.skPow(id);
+        final h0 = <String, num>{for (final j in c.members()) j: c.stats(j).hp};
+        skx.stew = 8;
+        skx.stewK = k;
+        for (final j in c.members()) {
+          final q = party[j];
+          if (q == null || q.down) continue;
+          q.hp = q.hp + (c.stats(j).hp - h0[j]!);
+          addFloat(pos[j]!, py[j]! - (heightOf(j) + 8) * sc, '체력↑', 0xFF9CF08A, 12);
+        }
+        if (fxOk('skill_gruk')) _teamFx('skill_gruk', sc, pos, py, size: 150, dy: 40);
+      case 'mari':
+        // 먹물 뿌리기: 모든 적 1배 + 6초 동안 공격력 30% 감소
+        final k = c.skPow(id);
+        for (final m in alive) {
+          hitMon(m, t.atk * k * feast, false, sc);
+          m.weak = 6;
+          m.weakK = math.min(.6, .3 * k);
+        }
+        if (fxOk('skill_mari')) spawnFx('skill_mari', cx, cy - 40 * sc, 170 * sc, .9);
+      case 'bruno':
+        // 이리 와 봐!: 6초 동안 적이 브루노만 공격, 브루노가 받는 피해 40% 감소
+        skx.taunt = 6;
+        skx.tauntK = c.skPow(id);
+        addFloat(pos[id]!, py[id]! - (heightOf(id) + 8) * sc, '이리 와 봐!', 0xFFFFD36B, 13);
+        if (fxOk('skill_bruno')) spawnFx('skill_bruno', pos[id]!, py[id]! - 30 * sc, 150 * sc, .9);
+      case 'vander':
+        // 유령의 노래: 보스가 아닌 적 중 체력이 가장 많은 적을 홀림. 보스만 남으면 3배 피해
+        final k = c.skPow(id);
+        Mon? tg;
+        for (final m in alive) {
+          if (!m.boss && m.hp > 0 && (tg == null || m.hp > tg.hp)) tg = m;
+        }
+        if (tg != null) {
+          tg.charm = 4 * k;
+          tg.charmD = t.atk * 1.5 * k;
+          addFloat(tg.x, tg.y - 80 * sc, '홀림!', 0xFF9BE3FF, 13);
+        } else {
+          tg = alive[0];
+          hitMon(tg, t.atk * 3 * k * feast, true, sc);
+        }
+        if (fxOk('skill_vander')) spawnFx('skill_vander', tg.x, tg.y - 40 * sc, 150 * sc, .9);
+      case 'pipps':
+        // 연쇄 번개: 앞의 적부터 최대 5마리, 튈 때마다 20% 약해짐
+        final k = c.skPow(id);
+        final idx = [for (var i = 0; i < alive.length; i++) i]..sort((a, b) {
+            final d = alive[a].x.compareTo(alive[b].x);
+            return d != 0 ? d : a.compareTo(b);
+          });
+        final chain = [for (final i in idx.take(5)) alive[i]];
+        for (var i = 0; i < chain.length; i++) {
+          final m = chain[i];
+          hitMon(m, t.atk * 2.4 * k * math.pow(.8, i) * feast, true, sc);
+          if (fxOk('skill_pipps')) spawnFx('skill_pipps', m.x, m.y - 40 * sc, 110 * sc, .6);
+        }
+        if (chain.isNotEmpty) addFloat(chain[0].x, chain[0].y - 80 * sc, '찌릿!', 0xFF9BE3FF, 13);
+        shakeT = .25;
+      case 'goldie':
+        // 황금 브레스: 모든 적 4배 + 겁먹어 2.5초 행동 불가 (보스 1초)
+        final k = c.skPow(id);
+        for (final m in alive) {
+          hitMon(m, t.atk * 4 * k * feast, true, sc);
+          m.bind = math.max(m.bind, m.boss ? 1 : 2.5);
+          m.bindK = 'stun';
+          addFloat(m.x, m.y - 80 * sc, '덜덜!', 0xFFFFD34A, 13);
+        }
+        shakeT = .4;
+        if (fxOk('skill_goldie')) spawnFx('skill_goldie', cx, cy - 30 * sc, 190 * sc, .9);
+      case 'bao':
+        // 찜통 뚜껑: 10초 동안 원정대 모두 공격 2번(★3 3번 · ★5 4번) 완전히 막음
+        final k = c.skPow(id), n = (2 + (k - 1) * 2.5).round();
+        skx.blk = 10;
+        for (final j in c.members()) {
+          final q = party[j];
+          if (q == null || q.down) continue;
+          q.blk = n;
+          addFloat(pos[j]!, py[j]! - (heightOf(j) + 8) * sc, '막기 ×$n', 0xFFFFE7A6, 12);
+        }
+        if (fxOk('skill_bao')) _teamFx('skill_bao', sc, pos, py, size: 170, dy: 40);
+      case 'polly':
+        // 따라 해!: 앞의 적 1.5배 쪼기 + 바로 전에 다른 동료가 쓴 스킬을 한 번 더
+        final k = c.skPow(id), src = skx.lastSk;
+        hitMon(alive[0], t.atk * 1.5 * k * feast, true, sc);
+        if (fxOk('skill_polly')) spawnFx('skill_polly', pos[id]!, py[id]! - (heightOf(id) + 20) * sc, 90 * sc, .8);
+        if (src.isNotEmpty && party[src] != null && c.members().contains(src)) {
+          addFloat(pos[id]!, py[id]! - (heightOf(id) + 8) * sc, '따라 해!', 0xFF9CF08A, 13);
+          castSkill(src, cp: true);
+        } else {
+          addFloat(pos[id]!, py[id]! - (heightOf(id) + 8) * sc, '삐약?', 0xFFFFFFFF, 13);
+        }
+      case 'gemgem':
+        // 수정 표식: 모든 적 0.8배 + 8초 표식, 표식 적이 쓰러지면 다른 적 모두 2배
+        final k = c.skPow(id);
+        for (final m in alive) {
+          hitMon(m, t.atk * .8 * k * feast, false, sc);
+          m.gem = 8;
+          m.gemD = t.atk * 2 * k;
+        }
+        if (fxOk('skill_gemgem')) spawnFx('skill_gemgem', cx, cy - 40 * sc, 150 * sc, .8);
+      case 'flora':
+        // 치유의 꽃밭: 6초 동안 0.5초마다 최대 체력 3% 회복
+        skx.bloom = 6;
+        skx.bloomK = c.skPow(id);
+        skx.bloomTick = 0;
+        for (final j in c.members()) {
+          final q = party[j];
+          if (q != null && !q.down && fxOk('skill_flora')) spawnFx('skill_flora', pos[j]!, py[j]! - 10 * sc, 90 * sc, .9);
+        }
       case 'luka':
         final k = c.skPow(id);
         _healAll(.2 * k, 64 * sc, sc, pos, py);
         skx.bake = 8 * k;
         _teamFx('skill_luka', sc, pos, py);
     }
+    if (!cp && id != 'polly' && id != 'sophie') skx.lastSk = id;
     return true;
   }
 
@@ -1102,6 +1230,15 @@ class BattleSim {
     return dm - a;
   }
 
+  /// 바오 「찜통 뚜껑」: 막기 횟수가 남았으면 공격 한 번을 통째로 막음, 아니면 오스카 보호막 (웹 blkEat)
+  num _blkEat(Member q, num dm) {
+    if (skx.blk > 0 && q.blk > 0) {
+      q.blk--;
+      return 0;
+    }
+    return _wardEat(q, dm);
+  }
+
   void _stepSkills(num dt, BattleLayout l, List<Mon> alive) {
     skx.shield = math.max(0, skx.shield - dt);
     skx.feast = math.max(0, skx.feast - dt);
@@ -1114,6 +1251,32 @@ class BattleSim {
     skx.ward = math.max(0, skx.ward - dt);
     skx.dok = math.max(0, skx.dok - dt);
     skx.phx = math.max(0, skx.phx - dt);
+    skx.taunt = math.max(0, skx.taunt - dt);
+    skx.blk = math.max(0, skx.blk - dt);
+    if (skx.stew > 0) {
+      skx.stew = math.max(0, skx.stew - dt);
+      // 스튜가 끝나면 늘었던 체력만큼 다시 줄임
+      if (skx.stew <= 0) {
+        for (final j in l.ids) {
+          final q = party[j];
+          if (q != null) q.hp = math.min(q.hp, c.stats(j).hp);
+        }
+      }
+    }
+    if (skx.bloom > 0) {
+      // 플로라 「치유의 꽃밭」: 0.5초마다 최대 체력 3% 회복
+      skx.bloom -= dt;
+      skx.bloomTick -= dt;
+      if (skx.bloomTick <= 0) {
+        skx.bloomTick = .5;
+        if (healOk()) {
+          for (final j in l.ids) {
+            final q = party[j];
+            if (q != null && !q.down) q.hp = math.min(c.stats(j).hp, q.hp + c.stats(j).hp * .03 * skx.bloomK);
+          }
+        }
+      }
+    }
     skx.ul = math.max(0, skx.ul - dt);
     if (skx.sym > 0) {
       // 안단테 「꿀벌 교향곡」: 0.5초마다 벌떼가 모든 적을 쏨
@@ -1304,6 +1467,7 @@ class BattleSim {
     if (ch != null) return _chLose();
     final dem = mons.any((m) => m.dem);
     skx.shield = skx.honey = skx.feast = skx.guts = skx.sym = skx.lamp = skx.sap = skx.ward = skx.dok = skx.phx = 0;
+    skx.stew = skx.taunt = skx.blk = skx.bloom = 0;
     skx.ul = 0;
     for (final id in c.members()) {
       party[id]!.hp = c.stats(id).hp;
@@ -1390,6 +1554,9 @@ class BattleSim {
       if (m.bind > 0) m.bind -= dt;
       if (m.vul > 0) m.vul -= dt;
       if (m.kb > 0) m.kb -= dt;
+      if (m.weak > 0) m.weak -= dt;
+      if (m.charm > 0) m.charm -= dt;
+      if (m.gem > 0) m.gem -= dt;
       if (m.brn > 0 && m.hp > 0 && m.dead == 0) {
         m.brn -= dt;
         m.brnT -= dt;
@@ -1467,6 +1634,15 @@ class BattleSim {
         _monstersAttack(dt, l, alive);
       }
       for (final m in mons) {
+        // 젬젬 「수정 표식」: 표식 붙은 적이 쓰러지면 수정이 터져 다른 적 모두에게 피해
+        if (m.hp <= 0 && m.dead == 0 && m.gem > 0) {
+          final gd = m.gemD;
+          m.gem = 0;
+          for (final o in mons) {
+            if (!identical(o, m) && o.hp > 0 && o.dead == 0) hitMon(o, gd, false, sc);
+          }
+          if (fxOk('skill_gemgem')) spawnFx('skill_gemgem', m.x, m.y - 30 * sc, 120 * sc, .6);
+        }
         if (ch != null && m.hp <= 0 && m.dead == 0 && !m.flee) {
           m.dead = m.gob ? .5 : .35;
           _chKill(m, sc);
@@ -1516,11 +1692,20 @@ class BattleSim {
       if (p.cd > 0) continue;
       p.cd = 1 / t.aps;
       chargeSkill(id);
+      // 반 데르에게 홀린 적은 우리 편이라 때리지 않음 (다른 적이 없으면 그대로)
       Mon? tgt;
       for (final m in alive) {
-        if (m.hp > 0) {
+        if (m.hp > 0 && !(m.charm > 0)) {
           tgt = m;
           break;
+        }
+      }
+      if (tgt == null) {
+        for (final m in alive) {
+          if (m.hp > 0) {
+            tgt = m;
+            break;
+          }
         }
       }
       final job = jobOf[id];
@@ -1602,6 +1787,18 @@ class BattleSim {
       if (m.cd > 0) continue;
       m.cd = 1.2 * orNum(m.cdm, 1);
       m.sw = .4;
+      // 반 데르 「유령의 노래」: 홀린 적은 다른 적을 공격
+      if (m.charm > 0) {
+        Mon? o;
+        for (final x in alive) {
+          if (!identical(x, m) && x.hp > 0 && !(x.charm > 0)) {
+            o = x;
+            break;
+          }
+        }
+        if (o != null) hitMon(o, m.charmD, false, sc);
+        continue;
+      }
       String? tk;
       for (final i in ids) {
         if (jobOf[i] == 'miner') {
@@ -1609,8 +1806,12 @@ class BattleSim {
           break;
         }
       }
+      // 브루노 도발
+      final tb = skx.taunt > 0 && ids.contains('bruno') && party['bruno'] != null && !party['bruno']!.down;
       String? tid;
-      if (tk != null && party[tk] != null && !party[tk]!.down) {
+      if (tb) {
+        tid = 'bruno';
+      } else if (tk != null && party[tk] != null && !party[tk]!.down) {
         tid = tk;
       } else {
         for (final i in ids) {
@@ -1622,7 +1823,7 @@ class BattleSim {
       }
       if (tid == null) continue;
       final q = party[tid]!;
-      final dm = m.atk * (skx.shield > 0 ? .5 : 1) * (skx.mount > 0 ? .3 : 1) * (q.bsh > 0 ? 1 - .4 * q.bshK : 1) / _pmNow;
+      final dm = m.atk * (skx.shield > 0 ? .5 : 1) * (skx.mount > 0 ? .3 : 1) * (q.bsh > 0 ? 1 - .4 * q.bshK : 1) * (m.weak > 0 ? 1 - m.weakK : 1) * (tb ? 1 - math.min(.6, .4 * skx.tauntK) : 1) / _pmNow;
       if (skx.mount > 0 && party.containsKey('brida')) {
         final rf = m.atk * .7 * .5 * skx.mountK;
         hitMon(m, rf, false, sc);
@@ -1631,7 +1832,7 @@ class BattleSim {
         hitMon(m, c.stats('gordon').atk * .6 * c.skPow('gordon'), false, sc);
         party['gordon']!.swing = .22;
       }
-      final dd = _wardEat(q, dm);
+      final dd = _blkEat(q, dm);
       q.hp -= dd;
       q.hit = .15;
       addFloat(pos[tid]!, py[tid]! - (heightOf(tid) + 8) * sc, dd > 0 ? '-${fmt(dd)}' : '막음!', 0xFFFF6B7D, 13);
@@ -1657,7 +1858,7 @@ class BattleSim {
 
   void _kill(Mon m, num sc) {
     spawnFx('coin', m.x, m.y - 26 * sc, 34 * sc, .6, -60 * sc);
-    final g = GameCalc.reward(c.fightSt(), m.boss) * (c.buff('gold') ? 1.5 : 1) * (c.blOn('gold') ? 1.3 : 1) * c.memMul() * (m.boss ? c.vpFeast() : 1) * (skx.dok > 0 ? 1 + .5 * skx.dokK : 1);
+    final g = GameCalc.reward(c.fightSt(), m.boss) * (c.buff('gold') ? 1.5 : 1) * (c.blOn('gold') ? 1.3 : 1) * c.memMul() * (m.boss ? c.vpFeast() : 1) * (skx.dok > 0 ? 1 + .5 * skx.dokK : 1) * c.vpHoard();
     s.gold = s.gold + g;
     final d = c.daily();
     d['kill'] = orNum(d['kill'], 0) + 1;
@@ -1768,8 +1969,8 @@ class BattleSim {
     for (final id in l.ids) {
       final q = party[id];
       if (q == null || q.down) continue;
-      final dm = bm.atk * Balance.seal * (skx.shield > 0 ? .5 : 1) * (skx.mount > 0 ? .3 : 1) * (q.bsh > 0 ? 1 - .4 * q.bshK : 1) / _pmNow;
-      final dd = _wardEat(q, dm);
+      final dm = bm.atk * Balance.seal * (skx.shield > 0 ? .5 : 1) * (skx.mount > 0 ? .3 : 1) * (q.bsh > 0 ? 1 - .4 * q.bshK : 1) * (bm.weak > 0 ? 1 - bm.weakK : 1) / _pmNow;
+      final dd = _blkEat(q, dm);
       q.hp -= dd;
       q.hit = .2;
       addFloat(l.pos[id]!, l.py[id]! - (heightOf(id) + 8) * l.s, dd > 0 ? '-${fmt(dd)}' : '막음!', 0xFFFFD34A, 14);

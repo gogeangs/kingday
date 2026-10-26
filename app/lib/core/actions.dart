@@ -1127,6 +1127,9 @@ class GameActions {
   /// 루시안 합류 (웹 lucianJoin)
   bool lucianJoin() => uqJoin(GameCalc.lucId);
 
+  /// 골디 합류 (웹 goldieJoin)
+  bool goldieJoin() => uqJoin(GameCalc.goldId);
+
   /// 결제로 합류하는 유니크 동료 ★1 합류 (웹 uqJoin)
   bool uqJoin(String id) {
     if (c.owned(id)) return false;
@@ -1162,6 +1165,18 @@ class GameActions {
     lucianJoin();
   }
 
+  /// 5,500원 상품 골디 (처음부터 상점)
+  void buyGoldie() {
+    if (!c.goldShop()) return;
+    _pay('goldie', goldieJoin);
+  }
+
+  /// 스토어 결제 확인 우편으로 받은 골디
+  void grantGoldie() {
+    buys['goldie'] = orNum(buys['goldie'], 0) + 1;
+    goldieJoin();
+  }
+
   /// 유니크 카드로 ★ 올리기 (카엘 촌장 외 유니크)
   bool uqUp(String id) {
     if (id == GameCalc.chiefId) return chiefUp();
@@ -1173,7 +1188,7 @@ class GameActions {
     s.last = c.now;
     out.add(ActHaptic(const [25, 40, 25]));
     final st = c.recStar(id);
-    _toast('${comps[id]!.n} ★$st! 능력치 +${((starMulTable[st] - 1) * 100).round()}%${id == GameCalc.ttukId ? ' · 방치 보상 골드 +${(GameCalc.vpPct(st) / 2).round()}%' : id == GameCalc.lucId ? ' · 시장 주문 골드 +${GameCalc.vpPct(st)}%' : ''}');
+    _toast('${comps[id]!.n} ★$st! 능력치 +${((starMulTable[st] - 1) * 100).round()}%${id == GameCalc.ttukId ? ' · 방치 보상 골드 +${(GameCalc.vpPct(st) / 2).round()}%' : id == GameCalc.lucId ? ' · 시장 주문 골드 +${GameCalc.vpPct(st)}%' : id == GameCalc.goldId ? ' · 마물 처치 골드 +${(GameCalc.vpPct(st) / 2).round()}%' : ''}');
     return true;
   }
 

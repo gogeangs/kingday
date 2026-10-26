@@ -31,6 +31,7 @@ class IapStore {
     'chief': 'kd_chief',
     'ttuk': 'kd_ttukttak',
     'lucian': 'kd_lucian',
+    'goldie': 'kd_goldie',
     'sub': 'kd_sub_monthly',
     // 상점·패스 (docs/content/SHOP.md): 원정 일지(소모성, 시즌마다) · 영주의 첫걸음(비소모성, 계정당 1번)
     'pass': 'kd_pass',

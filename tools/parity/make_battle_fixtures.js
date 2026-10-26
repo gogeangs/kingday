@@ -54,6 +54,12 @@ const CASES = [
   ['lucian', withTut(base.late, { stage: 86, best: 88, wave: 3, rec: Object.assign({}, base.late.rec || {}, { lucian: 3, naia: 3, hagrin: 3, oscar: 3 }), lv: Object.assign({}, base.late.lv || {}, { lucian: 50, naia: 50, hagrin: 50, oscar: 50 }), party: { fisher: 'naia', keeper: 'oscar', cook: 'lucian', miner: 'hagrin' } }), 200, 240],
   // 유니크 카엘 촌장 ★3 (다 함께 울력)
   ['chief', withTut(base.chief, { stage: 66, best: 68, wave: 2 }), 200, 120],
+  // 2026-10-27 새 동료 10명: 그룩(최대 체력↑)·마리(적 약화)·브루노(도발)·핍스(연쇄 번개)
+  ['new10a', withTut(base.late, { stage: 84, best: 86, wave: 3, rec: Object.assign({}, base.late.rec || {}, { gruk: 3, mari: 3, bruno: 4, pipps: 5 }), lv: Object.assign({}, base.late.lv || {}, { gruk: 50, mari: 50, bruno: 50, pipps: 50 }), party: { miner: 'pipps', fisher: 'mari', keeper: 'bruno', cook: 'gruk' } }), 200, 240],
+  // 젬젬(수정 표식 폭발)·반 데르(홀림)·플로라(꽃밭 회복)·바오(막기)
+  ['new10b', withTut(base.late, { stage: 84, best: 86, wave: 3, rec: Object.assign({}, base.late.rec || {}, { gemgem: 3, vander: 5, flora: 3, bao: 5 }), lv: Object.assign({}, base.late.lv || {}, { gemgem: 50, vander: 50, flora: 50, bao: 50 }), party: { miner: 'gemgem', fisher: 'vander', keeper: 'flora', cook: 'bao' } }), 200, 240],
+  // 폴리(따라 해!)·골디(황금 브레스, 유니크)·소피(게이지 충전 — 폴리는 따라 하지 않음)·하그린
+  ['new10c', withTut(base.late, { stage: 84, best: 86, wave: 3, rec: Object.assign({}, base.late.rec || {}, { polly: 3, goldie: 3, sophie: 3, hagrin: 3 }), lv: Object.assign({}, base.late.lv || {}, { polly: 50, goldie: 50, sophie: 50, hagrin: 50 }), party: { miner: 'hagrin', fisher: 'polly', keeper: 'goldie', cook: 'sophie' } }), 200, 240],
 ];
 
 const out = { now: NOW, w: W, ht: HT, dt: DT, snap: SNAP, cases: {} };
