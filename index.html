@@ -5871,6 +5871,133 @@ canvas {
   color: var(--muted);
   font-size: 12.5px;
 }
+/* 설정 켬/끔 한 줄 (대표님 제보 10-27: 「진동 켜기」가 상태인지 할 일인지 헷갈림) */
+.tglrow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 8px 10px 8px 12px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--panel2);
+  color: var(--fg);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+.tglrow > span {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+.tglrow small {
+  color: var(--muted);
+  font-size: 11.5px;
+}
+.tglrow em {
+  font-style: normal;
+  font-weight: 700;
+  font-size: 12.5px;
+  color: var(--muted);
+}
+.tglrow .tgl.on ~ em,
+.tglrow em:has(+ .tgl.on) {
+  color: #9be3a8;
+}
+.tgl {
+  position: relative;
+  flex-shrink: 0;
+  width: 46px;
+  height: 26px;
+  border-radius: 13px;
+  background: #3a4256;
+  transition: background 0.15s;
+}
+.tgl::after {
+  content: '';
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #fff;
+  transition: left 0.15s;
+}
+.tgl.on {
+  background: #2f8f55;
+}
+.tgl.on::after {
+  left: 23px;
+}
+/* 프로필 이름 줄 옆 ⚙ 설정 · 🏆 랭킹 (대표님 제보 10-27: 설정이 창 맨 아래라 찾기 어려움) */
+.pfnm {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+.pfq {
+  display: inline-flex;
+  gap: 4px;
+  margin-left: auto;
+}
+.pfq .buy {
+  min-width: 0;
+  padding: 4px 8px;
+  font-size: 12px;
+}
+.cupbar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  margin-bottom: 8px;
+  border: 1px solid #ffd34a;
+  border-radius: 12px;
+  background: linear-gradient(180deg, rgba(255, 211, 74, 0.16), rgba(255, 211, 74, 0.04));
+}
+.cupbar > span {
+  flex: 1;
+  min-width: 0;
+  font-size: 13px;
+}
+.cupbar b {
+  color: #ffd34a;
+}
+.cupbar small {
+  display: block;
+  color: var(--muted);
+  font-size: 11px;
+}
+.cupbar .buy {
+  flex-shrink: 0;
+}
+.cmaxl {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.cmax {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 9px;
+  border-radius: 999px;
+  border: 1px solid var(--g);
+  background: var(--panel2);
+  color: var(--fg);
+  font: inherit;
+  font-size: 12px;
+  cursor: pointer;
+}
+.cmax i {
+  font-style: normal;
+  color: #ffd34a;
+  font-size: 11px;
+}
 .blcs {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(96px, 1fr));
@@ -8240,7 +8367,7 @@ function cardReveal(list, title, gold, keep, again) {
     }, 200);
   };
 }
-function recruitUp(id) {
+function recruitUp(id, quiet) {
   const stv = recStar(id),
     need = starNeed(id),
     n = (S.cards && S.cards[id]) || 0;
@@ -8267,7 +8394,7 @@ function recruitUp(id) {
         );
       }
     });
-  } else
+  } else if (!quiet)
     toast(
       COMP[id].n +
         ' ★' +
@@ -8277,7 +8404,25 @@ function recruitUp(id) {
         '%' +
         (isRec(id) && (stv + 1 === 3 || stv + 1 === 5) ? ' · 스킬 강화' : '')
     );
+  if (!quiet) renderAll();
+}
+/* 카드 탭 「모두 올리기」: 카드가 충분한 동료를 모두 맞이하기·★ 올리기 (별을 여러 개 올릴 수 있으면 끝까지). 유니크 카드는 한 동료씩 골라 씀 */
+function cardUpAll() {
+  const got = {};
+  for (let k = 0; k < 200; k++) {
+    const r = cardReady();
+    if (!r.length) break;
+    r.forEach(id => {
+      recruitUp(id, true);
+      got[id] = recStar(id);
+    });
+  }
+  const ids = Object.keys(got);
+  if (!ids.length) return;
+  partySig = '';
+  save();
   renderAll();
+  toast(ids.length === 1 ? COMP[ids[0]].n + ' ★' + got[ids[0]] + '!' : '동료 ' + ids.length + '명 ★ 올리기 · ' + ids.map(id => COMP[id].n + ' ★' + got[id]).join(', '));
 }
 /* 카드 뽑기 (2026-10-21 규칙): 영웅·전설은 등급 확률 고정, 일반·희귀는 동료마다 비중. 별을 다 채운 동료 몫은 골드로 */
 const CARD_FIX = { shop: { legend: 0.01, epic: 0.1 }, battle: { legend: 0, epic: 0.1 } },
@@ -11218,7 +11363,7 @@ function renderFarm() {
   if (sig === farmSig) return;
   farmSig = sig;
   fb.innerHTML = `<div class="sec">카엘의 밭 <small>Lv.${S.bld.farm} · ${S.plots.length}칸${S.gemPlots ? ' (황금 밭 ' + S.gemPlots + '칸)' : ''} · 카엘의 진짜 꿈</small></div><div class="inv">${seeds}</div>${plotEdit ? '<p class="note" style="color:#ffe08a">밭을 누를 때마다 자유 → 밀 → 은빛 당근 → 달빛 호박 순서로 바뀌어요. 지정한 밭에는 그 작물만 심어져요.</p>' : ''}<div class="plots">${cells}</div>${!farmFirst() && GEM_PLOTS.length - (S.gemPlots || 0) > 1 ? `<p class="note gpl">🔒 황금 밭 ${GEM_PLOTS.length - (S.gemPlots || 0) - 1}칸 더 열 수 있어요 · 앞의 밭부터 차례로</p>` : ''}
-  <div class="btns">${farmFirst() ? '' : `<button class="buy ghost${plotEdit ? ' on' : ''}" id="plotEdit">${plotEdit ? '지정 끝내기' : '밭 지정'}</button>`}<button class="buy ghost" id="plantAll" ${anyEmpty && !plotEdit ? '' : 'disabled'}>모두 심기</button><button class="buy claim" id="harvAll" ${anyReady ? '' : 'disabled'}>모두 수확</button></div>${farmFirst() ? '<p class="note">빈 밭을 눌러 씨앗을 심고, 다 자라면 눌러 수확해요. 첫 수확을 하면 밭 지정·바로 키우기가 열려요.</p>' : ''}${nGrow && !farmFirst() ? `<button class="buy gem" id="growNow">${GEMIMG}${nGrow * GEM_PLOT}로 자라는 작물 ${nGrow}칸 바로 키우기</button>${adLeft('farm') ? `<button class="buy ad" id="adFarm">▶ 광고 보고 바로 키우기 · 오늘 ${adLeft('farm')}회</button>` : ''}` : ''}
+  <div class="btns">${farmFirst() ? '' : `<button class="buy ghost${plotEdit ? ' on' : ''}" id="plotEdit">${plotEdit ? '지정 끝내기' : '밭 지정'}</button>`}<button class="buy ghost" id="plantAll" ${anyEmpty && !plotEdit ? '' : 'disabled'}>모두 심기</button><button class="buy claim" id="harvAll" ${anyReady ? '' : 'disabled'}>모두 수확</button></div>${farmFirst() ? '<p class="note">빈 밭을 눌러 씨앗을 심고, 다 자라면 눌러 수확해요. 첫 수확을 하면 밭 지정·바로 키우기가 열려요.</p>' : ''}${nGrow && !farmFirst() ? `<button class="buy gem" id="growNow"><span class="bl">자라는 작물 ${nGrow}칸 바로 키우기</span><span class="bc">${GEMIMG}${nGrow * GEM_PLOT}</span></button>${adLeft('farm') ? `<button class="buy ad" id="adFarm">▶ 광고 보고 바로 키우기 · 오늘 ${adLeft('farm')}회</button>` : ''}` : ''}
   <p class="note">씨앗은 마물이 가끔 떨어뜨려요. 작물은 게임을 꺼 둔 동안에도 자라요.</p>`;
   fb.querySelectorAll('[data-gp]').forEach(
     b =>
@@ -11968,9 +12113,21 @@ function renderParty() {
         );
       })
       .join('');
+    /* 별 올리기 찾기 (대표님 결정 10-27 ①②③): 올릴 수 있는 동료 맨 위 · 별을 다 모은 동료는 맨 아래 작은 줄 */
+    const ready0 = cardReady(),
+      cmax = [];
     const recs = CARDIDS()
       .sort((a, b) => (cardOpen(b) ? 2 : 0) + (owned(b) ? 1 : 0) - ((cardOpen(a) ? 2 : 0) + (owned(a) ? 1 : 0)) || gr(a).w - gr(b).w)
+      .sort((a, b) => (ready0.includes(b) ? 1 : 0) - (ready0.includes(a) ? 1 : 0))
+      .filter(id => {
+        if (cardOpen(id) && recStar(id) >= starMax(id)) {
+          cmax.push(id);
+          return false;
+        }
+        return true;
+      })
       .map(id => {
+        const html = (() => {
         const c = COMP[id],
           op = cardOpen(id),
           stv = recStar(id),
@@ -11980,8 +12137,11 @@ function renderParty() {
         return `<div class="ccard${op ? '' : ' locked'}${stv ? ' own' : ''}" style="--g:${gr(id).c}"><span class="cfr"><img src="assets/ui/frame_${gr(id).fr}.png" alt="" onerror="this.remove()"><canvas class="portrait" id="pcd-${id}"></canvas></span><div class="info"><b>${op ? c.n : '???'}</b>${gradeTag(id)}<span class="role"><img class="jobi" src="assets/ui/job_${JOB[id]}.png" alt="" onerror="this.remove()">${JOBN[JOB[id]]}</span>${stv ? starTxt(id) : ''}
     ${VPAS[id] ? `<div class="vpline"><img src="assets/ui/village_skill.png" alt="" style="width:16px;height:16px;vertical-align:-3px;margin-right:3px">마을 스킬 · ${VPAS[id].n}</div>` : ''}${!op ? `<div>${isRec(id) ? COMP[STORY[RECRUITS[id].job]].n + '이(가) 합류하면 카드가 나오기 시작해요' : c.join}</div>` : mx ? '<div>별을 모두 모았어요</div>' : `<div class="xp"><div style="width:${Math.min(100, (n / need) * 100)}%"></div></div><div>카드 ${n} / ${need}</div>`}</div>
     ${op && !mx ? `<div class="cbtns"><button class="buy${n >= need ? ' glow' : ''}" id="rc-${id}" ${n >= need ? '' : 'disabled'}>${stv ? '★ 올리기' : '맞이하기'}</button>${GRADE[id] === 'legend' && (S.lcard || 0) > 0 && n < need ? `<button class="buy lcbtn" id="lc-${id}">만능 ${Math.min(S.lcard, need - n)}장 넣기</button>` : ''}<button class="wish${S.wish === id ? ' on' : ''}" id="ws-${id}">${S.wish === id ? '♥ 희망 중' : '♡ 희망'}</button></div>` : ''}</div>`;
-      })
-      .join('');
+        })();
+        return { id, html };
+      });
+    const recsReady = recs.filter(x => ready0.includes(x.id)).map(x => x.html).join(''),
+      recsRest = recs.filter(x => !ready0.includes(x.id)).map(x => x.html).join('');
     const ucRow =
       owned(CHIEF) || chiefShop() || (S.ucard || 0) > 0
         ? (() => {
@@ -11991,6 +12151,10 @@ function renderParty() {
               mx = has && stv >= starMax(id),
               need = starNeed(id),
               n = S.ucard || 0;
+            if (mx) {
+              cmax.unshift(id);
+              return '';
+            }
             return `<div class="ccard${stv ? ' own' : ''}" style="--g:${gr(id).c}"><span class="cfr"><img src="assets/ui/frame_unique.png" alt="" onerror="this.remove()"><canvas class="portrait" id="pcd-${id}"></canvas></span><div class="info"><b>${COMP[id].n}</b>${gradeTag(id)}<span class="role">카엘 자리</span>${stv ? starTxt(id) : ''}<div class="vpline"><img src="assets/ui/village_skill.png" alt="" style="width:16px;height:16px;vertical-align:-3px;margin-right:3px">마을 스킬 · ${VPAS[id].n}</div>${!has ? `<div>${UCIMG} ${n}장 모아 둠</div><div>${chiefShop() ? '상점 ' + won(CHIEF_PK.won) + ' 또는 ' : ''}은퇴 ${Math.min(S.retires || 0, CHIEF_RET)}/${CHIEF_RET}번</div>` : mx ? '<div>별을 모두 모았어요</div>' : `<div class="xp"><div style="width:${Math.min(100, (n / need) * 100)}%"></div></div><div>${UCIMG} 유니크 카드 ${n} / ${need}</div>`}</div><div class="cbtns"><button class="buy${chiefCan() ? ' glow' : ''}" id="ucUp">${has && chiefCan() ? '★ 올리기' : '보기'}</button></div></div>`;
           })()
         : '';
@@ -12001,9 +12165,20 @@ function renderParty() {
         mx = has && stv >= starMax(id),
         need = starNeed(id),
         n = S.ucard || 0;
+      if (mx) {
+        cmax.unshift(id);
+        return '';
+      }
       return `<div class="ccard${stv ? ' own' : ''}" style="--g:${gr(id).c}"><span class="cfr"><img src="assets/ui/frame_unique.png" alt="" onerror="this.remove()"><canvas class="portrait" id="pcd-${id}"></canvas></span><div class="info"><b>${COMP[id].n}</b>${gradeTag(id)}<span class="role">${JOBN[JOB[id]]} 자리</span>${stv ? starTxt(id) : ''}<div class="vpline"><img src="assets/ui/village_skill.png" alt="" style="width:16px;height:16px;vertical-align:-3px;margin-right:3px">마을 스킬 · ${VPAS[id].n}</div>${!has ? `<div>피트의 상점 ${won(pk.won)}</div>` : mx ? '<div>별을 모두 모았어요</div>' : `<div class="xp"><div style="width:${Math.min(100, (n / need) * 100)}%"></div></div><div>${UCIMG} 유니크 카드 ${n} / ${need}</div>`}</div><div class="cbtns"><button class="buy${uqCan(id) ? ' glow' : ''}" id="${bid}">${has ? (mx || !uqCan(id) ? '보기' : '★ 올리기') : '상점 보기'}</button></div></div>`;
     };
     const ttRow = uqRow(TTUK, TTUK_PK, 'ttUp') + uqRow(LUC, LUC_PK, 'luUp');
+    const upN = ready0.length + (chiefCan() ? 1 : 0) + (uqCan(TTUK) ? 1 : 0) + (uqCan(LUC) ? 1 : 0);
+    const cupBar = upN
+      ? `<div class="cupbar"><span>★ 올릴 수 있는 동료 <b>${upN}명</b>${ready0.length ? '' : '<small>유니크 카드는 한 동료씩 골라 올려요</small>'}</span>${ready0.length ? '<button class="buy glow" id="cupAll">모두 올리기</button>' : ''}</div>`
+      : '';
+    const maxSec = cmax.length
+      ? `<div class="sec">별을 모두 모은 동료 <small>${cmax.length}명</small></div><div class="cmaxl">${cmax.map(id => `<button class="cmax" data-det="${id}" style="--g:${gr(id).c}"><b>${COMP[id].n}</b><i>★${recStar(id)}</i></button>`).join('')}</div>`
+      : '';
     const board = `<div class="sec">편성 <small>자리를 눌러 동료를 바꿔요</small></div><div class="board">${JSLOT.map(j => {
       const id = slotMember(j),
         multi = j === 'kael' ? owned(CHIEF) : jobMembers(j).length > 1;
@@ -12045,7 +12220,7 @@ function renderParty() {
         : ptTab === 'list'
           ? `<div class="pvsw"><p class="note">동료를 누르면 자세한 정보·스킬·출전을 볼 수 있어요.</p><div class="seg"><button data-pv="list" class="${S.ptGrid ? '' : 'on'}">목록</button><button data-pv="grid" class="${S.ptGrid ? 'on' : ''}">격자</button></div></div>` +
             (S.ptGrid ? `<div class="cgrid">${list.map(gcell).join('')}</div>` : list.map(crow).join(''))
-          : `${helpNote('cardgr', '카드 등급·얻는 곳', `카드 등급: <b style="color:#b8c0cc">일반</b>(★3까지) · <b style="color:#5aa8ff">희귀</b>(★4) · <b style="color:#b07bff">영웅</b>(★5) · <b style="color:#ffc23a">전설</b>(★5). 높은 등급일수록 드물게 나오고 기본 능력치가 높아요. 마물·성주·군단장·황금 고블린·오늘의 할 일·피트의 상점에서 카드를 얻어요. ♡ 희망을 눌러 두면 그 동료 카드가 절반 확률로 나와요. 은퇴해도 카드와 별은 남아요.${ucRow ? ' <b style="color:#3ee08f">유니크</b>(★5)는 카드 뽑기에 나오지 않고, 유니크 카드로만 별을 올려요.' : ''}`)}${(S.lcard || 0) > 0 ? `<div class="lcbar"><span class="lcic"><img src="assets/ui/card_back.png" alt=""><i>전설</i></span><span><b>전설 만능 카드 ${S.lcard}장</b><small>${lcardCan() ? '전설 동료 줄의 「만능 … 넣기」로 원하는 동료에게 넣어요' : '전설 동료 카드가 나오기 시작하면 넣을 수 있어요'}</small></span></div>` : ''}${ucRow}${ttRow}${recs}`;
+          : `${helpNote('cardgr', '카드 등급·얻는 곳', `카드 등급: <b style="color:#b8c0cc">일반</b>(★3까지) · <b style="color:#5aa8ff">희귀</b>(★4) · <b style="color:#b07bff">영웅</b>(★5) · <b style="color:#ffc23a">전설</b>(★5). 높은 등급일수록 드물게 나오고 기본 능력치가 높아요. 마물·성주·군단장·황금 고블린·오늘의 할 일·피트의 상점에서 카드를 얻어요. ♡ 희망을 눌러 두면 그 동료 카드가 절반 확률로 나와요. 은퇴해도 카드와 별은 남아요.${ucRow || cmax.includes(CHIEF) ? ' <b style="color:#3ee08f">유니크</b>(★5)는 카드 뽑기에 나오지 않고, 유니크 카드로만 별을 올려요.' : ''}`)}${(S.lcard || 0) > 0 ? `<div class="lcbar"><span class="lcic"><img src="assets/ui/card_back.png" alt=""><i>전설</i></span><span><b>전설 만능 카드 ${S.lcard}장</b><small>${lcardCan() ? '전설 동료 줄의 「만능 … 넣기」로 원하는 동료에게 넣어요' : '전설 동료 카드가 나오기 시작하면 넣을 수 있어요'}</small></span></div>` : ''}${cupBar}${recsReady}${ucRow}${ttRow}${recsRest}${maxSec}`;
     document.querySelectorAll('#ptTabs [data-pt]').forEach(b => b.classList.toggle('on', b.dataset.pt === ptTab));
     helpBind($('party'), () => {
       partySig = '';
@@ -12140,6 +12315,8 @@ function renderParty() {
       if (id) faceTo($('st-' + j), id);
     });
     {
+      const ca = $('cupAll');
+      if (ca) ca.onclick = cardUpAll;
       const u = $('ucUp');
       if (u) {
         u.onclick = () => {
@@ -21233,7 +21410,7 @@ function profileSheet(keep) {
     ri = rankIdx(),
     nb = '<small>&nbsp;</small>';
   $('sheet').innerHTML =
-    `<div class="hdban" style="--hb:url(assets/ui/hd_profile.png)"><span>프로필</span></div><div class="pfhead"><div class="pfbig"><canvas id="pfCv"></canvas><img class="pfr${pfTall(cur)}" src="${pfSrc(cur)}" alt=""></div><div class="pfinfo"><b>카엘${d.badge ? `<img class="pfbd" data-k="${d.badge}" src="${bdSrc(d.badge)}" alt="" onerror="bdErr(this)">` : ''}</b><small class="pfnick">닉네임 <b>${esc(S.nick || '준비 중')}</b>${S.nickTemp ? ' <i>임시</i>' : ''}${sbOn() ? '<button class="buy" id="pfNick">' + (S.nickTemp || !S.nick ? '정하기' : '바꾸기') + '</button>' : ''}</small><small>${RANKS[ri].n} · 전투력 ${fmt(power())}</small><small>최고 영지 ${Math.min(S.best, MAXLAND)} · 은퇴 ${S.retires || 0}번 · 은퇴의 추억 ${S.memory || 0}개</small>${S.chOpen ? `<small>시련의 탑 최고 ${S.tower.top || 0}층</small>` : ''}</div></div>
+    `<div class="hdban" style="--hb:url(assets/ui/hd_profile.png)"><span>프로필</span></div><div class="pfhead"><div class="pfbig"><canvas id="pfCv"></canvas><img class="pfr${pfTall(cur)}" src="${pfSrc(cur)}" alt=""></div><div class="pfinfo"><div class="pfnm"><b>카엘${d.badge ? `<img class="pfbd" data-k="${d.badge}" src="${bdSrc(d.badge)}" alt="" onerror="bdErr(this)">` : ''}</b><span class="pfq"><button class="buy ghost sm" id="pfSet">⚙ 설정</button><button class="buy ghost sm" id="pfRank">🏆 랭킹</button></span></div><small class="pfnick">닉네임 <b>${esc(S.nick || '준비 중')}</b>${S.nickTemp ? ' <i>임시</i>' : ''}${sbOn() ? '<button class="buy" id="pfNick">' + (S.nickTemp || !S.nick ? '정하기' : '바꾸기') + '</button>' : ''}</small><small>${RANKS[ri].n} · 전투력 ${fmt(power())}</small><small>최고 영지 ${Math.min(S.best, MAXLAND)} · 은퇴 ${S.retires || 0}번 · 은퇴의 추억 ${S.memory || 0}개</small>${S.chOpen ? `<small>시련의 탑 최고 ${S.tower.top || 0}층</small>` : ''}</div></div>
  <p class="note pfhint">${dirty ? '고른 대로 위에 미리 보여요. <b>저장</b>을 눌러야 바뀌어요.' : '칸을 눌러 고른 뒤 <b>저장</b>을 누르세요.'}</p>
  <div class="sec">얼굴 <small>합류한 동료 · 내 사진</small></div>
  <div class="pfgrid fcgrid">${(() => {
@@ -21256,7 +21433,7 @@ function profileSheet(keep) {
    const has = bdHas(b.k);
    return `<button class="pfc bd${d.badge === b.k ? ' on' : ''}${has ? '' : ' lock'}${b.rare || b.rk ? ' rare' : ''}" data-bd="${b.k}"><span class="pv"><img class="pfr" src="assets/profile/badge_${b.k}.png" alt="">${has ? '' : '<img class="lk" src="assets/ui/icon_lock.png" alt="잠김">'}${b.rk ? '<em class="rkt">랭킹</em>' : ''}</span><b>${b.n}</b>${nw['b_' + b.k] ? '<i class="nwb">NEW</i>' : ''}${has ? nb : '<small>🔒 ' + b.d + '</small>'}</button>`;
  }).join('')}</div>
- <div class="acts three pfacts"><button id="mX" hidden>닫기</button><button id="pfSet">⚙ 설정</button><button id="pfRank">🏆 랭킹</button>${dirty ? '<button class="pri" id="pfOk">저장</button>' : '<button class="pri" id="mGo">닫기</button>'}</div>`;
+ <div class="acts one pfacts"><button id="mX" hidden>닫기</button>${dirty ? '<button class="pri" id="pfOk">저장</button>' : '<button class="pri" id="mGo">닫기</button>'}</div>`;
   $('modal').hidden = false;
   drawMyFace();
   faceTo($('pfCv'), d.photo ? 'photo' : d.face);
@@ -21349,17 +21526,16 @@ function settingsSheet(step) {
  <p class="note">저장은 이 브라우저에만 돼요. 아래 코드를 복사해 두면 다른 곳에서 불러올 수 있어요.</p>
  <textarea class="setcode" id="setCode" spellcheck="false" placeholder="여기에 저장 코드를 붙여 넣고 불러오기를 누르세요"></textarea>
  <div class="btns"><button class="buy ghost" id="setExp">코드 만들기·복사</button><button class="buy ghost" id="setImp">불러오기</button></div>
- <div class="sec">진동 <small>보상·보스 처치 때 (안드로이드)</small></div><div class="btns"><button class="buy ghost" id="setVib">${S.vib === false ? '진동 켜기' : '진동 끄기'}</button></div>
+ <div class="sec">진동</div><button class="tglrow" id="setVib" role="switch" aria-checked="${S.vib !== false}"><span><b>진동</b><small>보상·보스 처치 때 (안드로이드)</small></span><em>${S.vib === false ? '꺼짐' : '켜짐'}</em><i class="tgl${S.vib === false ? '' : ' on'}"></i></button>
  <div class="sec">문의 <small>결제·버그·계정 · 답은 우편함으로</small></div><div class="btns"><button class="buy ghost" id="setInq">문의하기</button><button class="buy ghost" id="setInqMine">내 문의</button></div>
  <div class="sec">처음부터 다시 하기</div>
  ${
    step === 'reset'
      ? `<p class="note" style="color:#ffb3bd">정말 지울까요? 영지, 장비, 동료, 마을, 황금 이삭, 구매 기록이 모두 사라지고 되돌릴 수 없어요.</p><div class="btns"><button class="buy ghost" id="setNo">취소</button><button class="buy danger" id="setYes">모두 지우기</button></div>`
      : `<div class="btns"><button class="buy danger" id="setReset">게임 초기화</button></div>`
- }
- <div class="acts one"><button class="pri" id="mGo">닫기</button></div>`;
+ }`;
+  /* 아래 「닫기」 없이 오른쪽 위 ✕ 로 닫음 (대표님 요청 10-27) */
   $('modal').hidden = false;
-  $('mGo').onclick = closeModal;
   acctBox();
   $('setInq').onclick = () => inqSheet();
   $('setInqMine').onclick = () => inqMineSheet();
@@ -21367,7 +21543,6 @@ function settingsSheet(step) {
     S.vib = S.vib === false ? true : false;
     save();
     if (S.vib) haptic(30);
-    toast(S.vib ? '진동을 켰어요' : '진동을 껐어요');
     settingsSheet(step);
   };
   $('setExp').onclick = () => {

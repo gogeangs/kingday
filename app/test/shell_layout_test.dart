@@ -1,6 +1,5 @@
 // 화면 틀이 폰 크기 4종(320·360·390·430 폭)에서 넘치거나 깨지지 않는지 확인.
 // (웹 버전을 Playwright 로 확인하던 크기와 같음) Flutter 는 글자·상자가 넘치면 테스트를 실패시킨다.
-import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -382,7 +381,7 @@ void main() {
     }
   }
 
-  // 7단계: 방치 보상 창 → 설정(카엘의 수첩) → 저장 코드로 불러오기 → 게임 초기화
+  // 7단계: 방치 보상 창 → 설정(카엘의 수첩) 진동·효과음 → 게임 초기화
   for (final w in [320.0, 390.0]) {
     testWidgets('방치 보상·설정·저장 코드 · 폭 ${w.toInt()}', (tester) async {
       tester.view.devicePixelRatio = 3;
@@ -418,34 +417,26 @@ void main() {
       await press('받기');
       expect(find.text('영지에서 세금이 걷혔어요'), findsNothing);
 
-      // 설정 창
+      // 설정 창 (10-27: 저장 코드 칸 없음 · 진동·효과음 켬/끔 스위치 · 아래 「닫기」 없음)
       openSettings(g);
       await frames();
       expect(find.text('카엘의 수첩'), findsOneWidget);
-      await press('진동 끄기');
-      expect(g.state.raw['vib'], false);
-      await press('코드 만들기·복사');
-      final code = tester.widget<TextField>(find.byType(TextField)).controller!.text;
-      expect(importSaveCode(code)!['stage'], 12);
-
-      // 다른 기록(영지 30)을 코드로 불러오기 → 앱이 그 기록으로 다시 시작
-      final other = Map<String, dynamic>.from(importSaveCode(code)!)
-        ..['stage'] = 30
-        ..['best'] = 30
-        ..['last'] = DateTime.now().millisecondsSinceEpoch;
-      await tester.enterText(find.byType(TextField), base64Encode(utf8.encode(jsonEncode(other))));
-      await press('불러오기');
-      final g2 = tester.state<KingdayAppState>(find.byType(KingdayApp)).g;
-      expect(identical(g2, g), isFalse);
-      expect(g2.state.stage, 30);
-      await press('게임 시작');
-
-      // 엉터리 코드는 거절
-      openSettings(g2);
+      expect(find.text('코드 만들기·복사'), findsNothing);
+      expect(find.text('닫기'), findsNothing);
+      expect(find.text('켜짐'), findsNWidgets(2));
+      await tester.tap(find.byKey(const ValueKey('set-vib')));
       await frames();
-      await tester.enterText(find.byType(TextField), '엉터리 코드');
-      await press('불러오기');
-      expect(find.text('저장 코드가 올바르지 않아요'), findsOneWidget);
+      expect(g.state.raw['vib'], false);
+      expect(find.text('꺼짐'), findsOneWidget);
+      await tester.tap(find.byKey(const ValueKey('set-snd')));
+      await frames();
+      expect(g.state.raw['snd'], false);
+      expect(find.text('꺼짐'), findsNWidgets(2));
+      await tester.tap(find.byKey(const ValueKey('set-snd')));
+      await frames();
+      expect(g.state.raw['snd'], true);
+      // 저장 코드 자체(웹에서 옮겨 올 때 쓰는 형식)는 그대로
+      expect(importSaveCode(exportSaveCode(g.state))!['stage'], 12);
 
       // 게임 초기화 (두 번 확인)
       await press('게임 초기화');

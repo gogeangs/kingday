@@ -1088,7 +1088,10 @@ class _Farm extends StatelessWidget {
         KdBuy(
           kind: BuyKind.gem,
           minWidth: 0,
-          text: '${nGrow * gemPlot}로 자라는 작물 $nGrow칸 바로 키우기',
+          // 무엇으로 키우는지 보이게: 이삭 그림 + 개수 (대표님 제보 10-27)
+          label: '자라는 작물 $nGrow칸 바로 키우기',
+          cost: nGrow * gemPlot,
+          costIcon: gemIcon,
           onTap: () => g.act((a) => a.growNow()),
         ),
         if (c.adLeft('farm') > 0)
