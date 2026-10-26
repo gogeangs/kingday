@@ -6,6 +6,7 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 
 import '../core/attendance.dart';
+import '../core/bond.dart';
 import '../core/calc.dart';
 import '../core/data.dart';
 import '../core/fmt.dart';
@@ -16,6 +17,7 @@ import '../ui/fx.dart';
 import '../ui/game_widgets.dart';
 import '../ui/theme.dart';
 import '../ui/widgets.dart';
+import 'bond_ui.dart';
 import 'shop_page.dart' show won;
 
 class PtPage extends StatelessWidget {
@@ -79,6 +81,8 @@ class PtPage extends StatelessWidget {
     final bb = ptBenchBest(g);
     return [
       ..._form(),
+      const SizedBox(height: 8),
+      BondDiaryButton(g),
       const SizedBox(height: 6),
       // 좁은 화면(320)에서는 설명이 다음 줄로
       Wrap(alignment: WrapAlignment.spaceBetween, crossAxisAlignment: WrapCrossAlignment.center, spacing: 8, runSpacing: 2, children: [
@@ -156,6 +160,8 @@ class PtPage extends StatelessWidget {
                     TextSpan(text: id == null ? '합류 전' : id == 'kael' ? '용사' : comps[id]!.n),
                     if (id != null && id != 'kael' && c.recStar(id) > 0)
                       TextSpan(text: ' ★${c.recStar(id)}', style: const TextStyle(color: KdColors.gold, fontSize: 11)),
+                    // 원정대의 정: ♥5 단짝은 금빛 하트
+                    if (id != null && c.affOk(id) && c.affLv(id) >= 5) const TextSpan(text: ' ♥', style: TextStyle(color: Color(0xFFFFD34A), fontSize: 11)),
                   ]),
                   maxLines: 2,
                   textAlign: TextAlign.center,
@@ -282,6 +288,7 @@ class PtPage extends StatelessWidget {
               Center(child: CompFrame(id, w: pick ? 48 : 56, h: pick ? 56 : 66, hidden: !named, dim: chief && !has)),
               const SizedBox(height: 4),
               Text(named ? cd.n : '???', maxLines: 1, overflow: TextOverflow.ellipsis, style: KdText.display(pick ? 12.5 : 13.5)),
+              if (pick && has && c.affOk(id)) FittedBox(fit: BoxFit.scaleDown, child: AffHearts(c.affLv(id), size: 10)),
               Text(sub, maxLines: 1, overflow: TextOverflow.ellipsis, style: KdText.body(pick ? 11 : 12.5, color: KdColors.muted)),
             ]),
             // 원정대 격자: ★ 별 올리기 · ▲ 출전하면 더 셈 (웹 .gbd)
@@ -551,6 +558,7 @@ class PtPage extends StatelessWidget {
               Wrap(crossAxisAlignment: WrapCrossAlignment.center, spacing: 5, runSpacing: 2, children: [
                 Text(op ? cd.n : '???', style: KdText.display(15)),
                 GradeTag(id),
+                if (c.affOk(id) && c.owned(id)) AffHearts(c.affLv(id)),
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 6),
                   decoration: BoxDecoration(border: Border.all(color: KdColors.line), borderRadius: BorderRadius.circular(999)),
@@ -652,6 +660,7 @@ void compSheet(GameController g, String id) {
               Text(cd.desc, style: KdText.body(13, color: KdColors.muted, height: 1.5)),
               KdKv('공격 · 체력', '${fmt(t.atk)} · ${fmt(t.hp)}'),
               KdKv('전투력', fmt(c.cPow(id))),
+              if (c.affOk(id) && c.owned(id)) AffLine(c, id),
               SkillBox(id),
               VillageSkillBox(c, id),
               if (gradeOf[id] == 'unique' && c.recStar(id) < c.starMax(id))
@@ -1014,7 +1023,7 @@ class PtPanel extends StatelessWidget {
             child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
               Wrap(crossAxisAlignment: WrapCrossAlignment.center, spacing: 5, runSpacing: 2, children: [
                 Text(cd.n, style: KdText.display(16)),
-                if (!kael) ...[GradeTag(id), if (has) Stars(c, id)],
+                if (!kael) ...[GradeTag(id), if (has) Stars(c, id), if (has && c.affOk(id)) AffHearts(c.affLv(id))],
               ]),
               Text(sub, maxLines: 2, overflow: TextOverflow.ellipsis, style: KdText.body(11.5, color: KdColors.muted)),
             ]),

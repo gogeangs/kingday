@@ -12,6 +12,9 @@ extension GameReturnX on GameController {
 
   /// 꺼 둔 동안 쌓인 골드를 바로 더하고, 창으로 알려 줌 (1분 미만이면 없음)
   void offline() {
+    // 원정대의 정: 방치 시간도 (여관 최대 시간까지 · 웹 offline 처럼 골드 계산보다 먼저 — ♥가 오르면 전투력도 오름)
+    final sec = calc.offlineSec();
+    if (sec >= 60) act((a) => a.affTick(sec));
     final r = calc.offlineReward();
     if (r.gold <= 0) return;
     state.gold = state.gold + r.gold;

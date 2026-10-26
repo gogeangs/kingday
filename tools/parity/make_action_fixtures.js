@@ -120,6 +120,11 @@ function op(o) {
     case 'uqup': return F('uqUp')(a);
     // ── 유니크 루시안 ──
     case 'lbuy': return F('buyLucian')();
+    // ── 원정대의 정 (호감도·관계 이야기) ──
+    case 'aff': return w.run(`S.aff[${q(a)}]=${+b}`);
+    case 'afftick': return F('affTick')(+a);
+    case 'afftalk': return F('affTalk')(a);
+    case 'bondplay': return F('bondPlay')(+a);
     default: throw new Error('모르는 조작 ' + o);
   }
 }
@@ -214,6 +219,9 @@ const CASES = {
   // 카드 받을 동료가 없을 때: 유료 줄 카드 → 이삭 (1장당 3)
   passFresh: [base.fresh, ['started', 'ppt:300', 'pbuy', 'pclaim']],
   // 영주의 첫걸음: 영지 3까지는 안 보임 → 영지 35에서 사면 300+10·20·30 즉시 → 40·50 나중에 → 다 받으면 사라짐 · 두 번 못 삼
+  // 원정대의 정: 길 위 대화(하루 1번·카엘 제외·합류 전 제외) → 출전·일꾼 시간 → ♥1(처음 안내) → 브리다·브론 ♥3 → 관계 이야기(이삭 20 한 번) → ♥5 단짝 → 다음 날 대화
+  bond: [base.late, ['afftalk:haral', 'afftalk:haral', 'afftalk:kael', 'afftalk:toby', 'wkput:mine:0:bron', 'afftick:300', 'afftick:17700', 'aff:brida:895', 'aff:bron:899.5', 'afftick:1500',
+    'bondplay:4', 'bondplay:4', 'bondplay:9', 'aff:nella:3990', 'afftalk:nella', 'aff:riel:3999', 'afftick:600', 'time:' + 24 * H, 'afftalk:haral', 'afftalk:nella', 'afftick:0.5']],
   grow: [base.mid, ['started', 'best:3', 'grow', 'best:35', 'growchk', 'grow', 'grow', 'best:41', 'growchk', 'growchk', 'best:52', 'growchk', 'best:12', 'growchk', 'growgive']],
 };
 

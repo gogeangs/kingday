@@ -9,6 +9,7 @@ import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
 
 import '../battle/battle_data.dart';
+import '../core/bond.dart';
 import '../core/calc.dart';
 import '../core/data.dart';
 import '../core/fmt.dart';
@@ -225,8 +226,17 @@ class VillageMap extends StatelessWidget {
                   }
                 }
                 if (hit != null) {
-                  final lines = villageTalk(hit.id);
-                  g.vTalk = (id: hit.id, line: lines[math.Random().nextInt(lines.length)], x: hit.x, y: hit.y, end: DateTime.now().millisecondsSinceEpoch + 3200);
+                  // 원정대의 정: 동료마다 하루 1번 +10 · ♥5 단짝은 단짝 대사 (웹 affTalk·BOND5)
+                  final id = hit.id, up = g.act((a) => a.affTalk(id)), five = g.calc.affOk(id) && g.calc.affLv(id) >= 5;
+                  final lines = villageTalk(id);
+                  g.vTalk = (
+                    id: id,
+                    line: five ? g.calc.bond5Line(id) : lines[math.Random().nextInt(lines.length)],
+                    x: hit.x,
+                    y: hit.y,
+                    end: DateTime.now().millisecondsSinceEpoch + 3200,
+                    aff: up
+                  );
                   return;
                 }
                 final b = vHit(mx, my);
@@ -355,6 +365,24 @@ class _MapPainter extends CustomPainter {
               ..strokeWidth = 2
               ..color = p.ppl ? const Color(0xFFFFE08A) : const Color(0xFFCFE0FF));
       }
+      // 원정대의 정: 오늘 아직 말 안 건 동료 머리 위 작은 말풍선 점
+      if (!p.ppl && g.calc.affOk(p.id) && g.calc.owned(p.id) && !g.calc.affTalked(p.id)) {
+        final sc = math.max(.32, vw / 760) * (p.wk != null ? .82 : 1), hy = (py - (asNum(wHeight[p.id] ?? 60) + 18) * sc * 1.9).toDouble(), br = math.max(4.0, vw * .012);
+        final cc = Offset(px + br, hy);
+        c.drawCircle(cc, br, Paint()..color = const Color(0xF2FFFAEB));
+        c.drawCircle(
+            cc,
+            br,
+            Paint()
+              ..style = PaintingStyle.stroke
+              ..strokeWidth = 1
+              ..color = const Color(0xFF2A1A08));
+        final hp = TextPainter(
+            text: TextSpan(text: '♥', style: TextStyle(fontSize: br * 1.3, fontWeight: FontWeight.w700, color: const Color(0xFFFF7A9C), height: 1)),
+            textDirection: TextDirection.ltr)
+          ..layout();
+        hp.paint(c, cc - Offset(hp.width / 2, hp.height / 2 - .5));
+      }
       // 마르타·티모·피트 얼굴 밑에 이름표 · 일꾼 머리 위 🔨 표시는 없앰 (웹 마을 화면 정리)
       if (p.ppl) _pill(c, wVppl[p.id] ?? p.id, px, py + math.max(8, vw * .022), math.max(9, vw * .026), const Color(0xD91E160A), const Color(0xFFFFE08A));
     }
@@ -384,6 +412,7 @@ class _MapPainter extends CustomPainter {
         final tp = TextPainter(text: TextSpan(text: txt, style: TextStyle(fontFamily: 'PlexKR', fontSize: fs, fontWeight: FontWeight.w700)), textDirection: TextDirection.ltr)..layout();
         final hw = tp.width / 2 + fs, tx = math.min(vw - hw, math.max(hw, tk.x * k)), ty = tk.y * k - math.max(48, vw * .14);
         _pill(c, txt, tx, ty, fs, Color.fromRGBO(255, 250, 235, .96 * math.min(1, left * 2)), const Color(0xFF2A1A08));
+        if (tk.aff) _pill(c, '♥ +10', tx, ty - fs * 2.1, fs, Color.fromRGBO(255, 122, 156, .95 * math.min(1, left * 2)), Colors.white);
       }
     }
   }

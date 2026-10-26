@@ -20,6 +20,10 @@ extension GameDotsX on GameController {
       }
       parts.add('b$j$best');
     }
+    // 원정대의 정: 새로 열린 관계 이야기
+    for (final b in calc.bondNew()) {
+      parts.add('n${b.k}');
+    }
     return parts.join(',');
   }
 

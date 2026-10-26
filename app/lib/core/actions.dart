@@ -129,6 +129,23 @@ class ActPackGot extends ActResult {
 /// 원정대 교체로 전투 중 체력을 옮겨 줘야 할 때 (웹 P[cur] → P[id])
 typedef PartySwap = void Function(String cur, String id);
 
+// ── 원정대의 정 (core/bond.dart) ──
+/// ♥ 오름 (toast·처음 안내·단짝은 BondAct.affUp 에서)
+class ActAffIntro extends ActResult {}
+
+/// 관계 이야기가 새로 열림 → 다른 창이 없을 때 장면 (웹 bondCheck 의 queue(bondPlay))
+class ActBondOpen extends ActResult {
+  ActBondOpen(this.k);
+  final int k;
+}
+
+/// 관계 이야기 장면 보여 주기 (웹 bondPlay 의 scene)
+class ActBondScene extends ActResult {
+  ActBondScene(this.k, this.first);
+  final int k;
+  final bool first;
+}
+
 class GameActions {
   GameActions(this.c, {KdRandom? rng}) : rng = rng ?? SystemRandom();
   final GameCalc c;

@@ -60,6 +60,8 @@ const CASES = [
   ['new10b', withTut(base.late, { stage: 84, best: 86, wave: 3, rec: Object.assign({}, base.late.rec || {}, { gemgem: 3, vander: 5, flora: 3, bao: 5 }), lv: Object.assign({}, base.late.lv || {}, { gemgem: 50, vander: 50, flora: 50, bao: 50 }), party: { miner: 'gemgem', fisher: 'vander', keeper: 'flora', cook: 'bao' } }), 200, 240],
   // 폴리(따라 해!)·골디(황금 브레스, 유니크)·소피(게이지 충전 — 폴리는 따라 하지 않음)·하그린
   ['new10c', withTut(base.late, { stage: 84, best: 86, wave: 3, rec: Object.assign({}, base.late.rec || {}, { polly: 3, goldie: 3, sophie: 3, hagrin: 3 }), lv: Object.assign({}, base.late.lv || {}, { polly: 50, goldie: 50, sophie: 50, hagrin: 50 }), party: { miner: 'hagrin', fisher: 'polly', keeper: 'goldie', cook: 'sophie' } }), 200, 240],
+  // 원정대의 정 (2026-10-27): 함께 싸운 시간으로 호감 점수가 쌓이고, ♥가 오르는 순간 공격·체력 +2%씩 (♥1·♥5 문턱 바로 아래에서 시작)
+  ['bond', withTut(base.late, { stage: 84, best: 86, wave: 3, aff: { kael: 50, bron: 59.99, haral: 3999.995, riel: 299.999, margo: 899.998, nella: 1999.99, daisy: 59.9 } }), 200, 240],
 ];
 
 const out = { now: NOW, w: W, ht: HT, dt: DT, snap: SNAP, cases: {} };
@@ -80,7 +82,7 @@ for (const [name, save, gob, secs] of CASES) {
     if (f % SNAP === 0) {
       snaps.push(J(w.run(`({f:${f},gold:S.gold,stage:S.stage,wave:S.wave,best:S.best,gem:S.gem,seeds:S.seeds,cards:S.cards??null,
         gemLord:S.gemLord,kill:daily().kill,joined:S.joined,rankSeen:S.rankSeen,gemRank:S.gemRank??0,gobW:S.gobW??null,stat:S.stat??null,
-        bdUnl:S.bdUnl??null,
+        bdUnl:S.bdUnl??null,aff:S.aff??null,
         P:Object.fromEntries(Object.entries(P).map(([k,p])=>[k,[p.hp,p.down,p.sg||0,p.cd,p.swing,p.hit]])),
         mons:mons.map(m=>[m.x,m.hp,m.dead,!!m.boss,!!m.gob,!!m.alt,!!m.flee,m.cd,m.bind||0,m.psn||0,m.slow||0,m.vul||0,m.brn||0,m.kb||0]),
         engaged,bgX,spawnT,gobT,bossT,shakeT,flash,

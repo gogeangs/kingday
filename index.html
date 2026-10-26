@@ -6060,6 +6060,119 @@ canvas {
   padding: 4px 8px;
   font-size: 12px;
 }
+.hearts {
+  display: inline-block;
+  margin-left: 4px;
+  font-size: 11px;
+  letter-spacing: -1px;
+  color: #ff7a9c;
+  white-space: nowrap;
+  vertical-align: 1px;
+}
+.hearts i {
+  font-style: normal;
+  color: #6b7393;
+}
+.hearts.best {
+  color: #ffd34a;
+  text-shadow: 0 0 6px rgba(255, 211, 74, 0.6);
+}
+.gcell .hearts {
+  margin: 0;
+  font-size: 10px;
+}
+.seat .bf {
+  font-style: normal;
+  color: #ffd34a;
+  margin-left: 2px;
+}
+.affkv b {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12.5px;
+}
+.qb {
+  width: 20px;
+  height: 20px;
+  padding: 0;
+  border-radius: 50%;
+  border: 1px solid var(--line);
+  background: var(--panel2);
+  color: var(--muted);
+  font: inherit;
+  font-size: 11px;
+  cursor: pointer;
+}
+.bdbtn {
+  position: relative;
+  width: 100%;
+  margin-top: 6px;
+}
+.bdbtn .dot {
+  position: absolute;
+  top: 4px;
+  right: 6px;
+}
+.bdg {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+.bdc {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  min-width: 0;
+  padding: 8px 4px;
+  border-radius: 12px;
+  border: 1px solid var(--line);
+  background: var(--panel2);
+  color: var(--fg);
+  font: inherit;
+  cursor: pointer;
+}
+.bdc.seen {
+  border-color: #ff7a9c;
+}
+.bdc:disabled {
+  cursor: default;
+  opacity: 0.85;
+}
+.bdc b {
+  font-size: 13px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+.bdc small {
+  font-size: 11px;
+  color: var(--muted);
+  text-align: center;
+  line-height: 1.3;
+}
+.bdf {
+  display: flex;
+}
+.bdf img {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: #1a2440;
+  object-fit: cover;
+}
+.bdf img + img {
+  margin-left: -10px;
+}
+.bdf img.dim {
+  filter: grayscale(0.8) brightness(0.6);
+}
+.bdf img.sil {
+  filter: brightness(0);
+  opacity: 0.6;
+}
 .cupbar {
   display: flex;
   align-items: center;
@@ -9667,6 +9780,10 @@ function fresh() {
     workDot: '',
     pass: { s: 0, pt: 0, paid: 0, got: { f: [], p: [] }, day: { d: '', src: {}, kc: 0 }, intro: 0, mail: [] },
     grow: { buy: 0, got: {} },
+    /* 원정대의 정 (docs/content/BOND.md 7장): 동료별 호감 점수 · 오늘 길 위에서 말 건 동료 · 본 관계 이야기·처음 안내·단짝 토스트 */
+    aff: {},
+    affTalk: { d: '', ids: {} },
+    bond: { seen: {}, intro: 0, five: {} },
     v: 3
   };
 }
@@ -9744,8 +9861,13 @@ function hydrate(d) {
   if (!f.regSeen || typeof f.regSeen !== 'object' || Array.isArray(f.regSeen)) f.regSeen = {};
   {
     const f0 = fresh();
-    for (const k of ['ordDay', 'bless', 'walkers', 'work']) if (!f[k] || typeof f[k] !== 'object' || Array.isArray(f[k])) f[k] = f0[k];
+    for (const k of ['ordDay', 'bless', 'walkers', 'work', 'aff', 'affTalk', 'bond']) if (!f[k] || typeof f[k] !== 'object' || Array.isArray(f[k])) f[k] = f0[k];
   }
+  /* 원정대의 정: 점수는 0 이상 숫자만, 예전 세이브(필드 없음)는 위에서 기본값 */
+  for (const k in f.aff) if (!(typeof f.aff[k] === 'number' && isFinite(f.aff[k]) && f.aff[k] >= 0)) delete f.aff[k];
+  if (!f.affTalk.ids || typeof f.affTalk.ids !== 'object' || Array.isArray(f.affTalk.ids)) f.affTalk.ids = {};
+  if (typeof f.affTalk.d !== 'string') f.affTalk.d = '';
+  for (const k of ['seen', 'five']) if (!f.bond[k] || typeof f.bond[k] !== 'object' || Array.isArray(f.bond[k])) f.bond[k] = {};
   if (!Array.isArray(f.orders)) f.orders = [];
   for (const k in f.work) if (!Array.isArray(f.work[k])) delete f.work[k];
   if (!Array.isArray(f.bless.opts)) f.bless.opts = [];
@@ -10785,7 +10907,7 @@ const CW = { bron: '곡괭이', haral: '작살', riel: '벌통', margo: '국자'
 function cStats(id) {
   const c = COMP[id],
     l = S.lv[id] || 1,
-    m = allMul() * cwMul(id) * starMul(id),
+    m = allMul() * cwMul(id) * starMul(id) * affMul(id) /* 원정대의 정 ♥마다 +2% */,
     g = Math.pow(COMP_GROW, l - 1),
     gs = gearSum();
   return {
@@ -12161,6 +12283,197 @@ const benchBest = () =>
 /* 빨간 점: 지금 누르면 바로 이득일 때만, 확인하면 다음 변화 전까지 꺼짐 */
 const cardReady = () =>
   CARDIDS().filter(id => cardOpen(id) && recStar(id) < starMax(id) && ((S.cards && S.cards[id]) || 0) >= starNeed(id));
+/* ---------- 원정대의 정 (docs/content/BOND.md): 호감도 ♥0~5 · 관계 이야기 6장면 ----------
+   출전 동료·마을 일꾼 5분마다 1점(방치 포함) · 길 위에서 말 걸기 하루 1번 +10 · ♥마다 공격·체력 +2% · 은퇴해도 유지 */
+const AFF_NEED = [0, 60, 300, 900, 2000, 4000],
+  AFF_SEC = 300;
+const affOk = id => !!COMP[id] && !!COMP[id].base && id !== 'kael' && id !== CHIEF;
+const affPt = id => (S.aff && S.aff[id]) || 0;
+const affLv = id => {
+  const p = affPt(id);
+  let l = 0;
+  while (l < 5 && p >= AFF_NEED[l + 1]) l++;
+  return l;
+};
+function affMul(id) {
+  try {
+    return 1 + 0.02 * affLv(id);
+  } catch (e) {
+    return 1; /* 시작할 때 아직 만들어지기 전 */
+  }
+}
+/* 다음 ♥까지 몇 % (♥5면 100) */
+const affPct = id => {
+  const l = affLv(id);
+  return l >= 5 ? 100 : Math.floor(((affPt(id) - AFF_NEED[l]) / (AFF_NEED[l + 1] - AFF_NEED[l])) * 100);
+};
+const affHearts = id => {
+  const l = affLv(id);
+  return `<span class="hearts${l >= 5 ? ' best' : ''}" aria-label="호감도 ${l}">${'♥'.repeat(l)}<i>${'♡'.repeat(5 - l)}</i></span>`;
+};
+function affAdd(id, n) {
+  if (!(n > 0) || !affOk(id) || !owned(id)) return;
+  if (!S.aff) S.aff = {};
+  const l0 = affLv(id);
+  S.aff[id] = affPt(id) + n;
+  const l1 = affLv(id);
+  if (l1 > l0) affUp(id, l1);
+}
+/* 출전 동료(카엘·촌장 제외)와 마을 일꾼에게 sec초만큼 */
+function affTick(sec) {
+  const ids = members().filter(affOk);
+  for (const id in working()) if (affOk(id) && !ids.includes(id)) ids.push(id);
+  for (const id of ids) affAdd(id, sec / AFF_SEC);
+}
+function affUp(id, l) {
+  const n = COMP[id].n;
+  partySig = '';
+  if (!S.bond) S.bond = { seen: {}, intro: 0, five: {} };
+  if (l >= 5 && !S.bond.five[id]) {
+    S.bond.five[id] = 1;
+    toast(n + josa(n, '와', '과') + ' 단짝이 되었어요!');
+  } else toast(n + '의 호감도 ♥' + l + '!');
+  if (!S.bond.intro) {
+    S.bond.intro = 1;
+    queue(() => scene('원정대의 정', '정이 쌓이는 법', BOND_INTRO, '알겠어'));
+  }
+  bondCheck();
+}
+const BOND_INTRO = [
+  'q:주인, 동료들과 함께할수록 정이 쌓이는 법이다.',
+  'k:정이 쌓이면 뭐가 달라져?',
+  'q:더 힘을 내 싸우지. …주인 빼고.',
+  'sys:함께 싸우거나 마을에서 일하면 호감도가 올라요. 짝이 있는 동료는 둘 다 ♥3이 되면 이야기가 열려요'
+];
+/* 관계 이야기 짝 표 — 둘 다 ♥3이면 한 번 열림, 「원정대 일기」에서 다시 보기 */
+const BONDS = [
+  { k: 1, a: 'toby', b: 'nella', t: '남매의 바다', lines: [
+    'sys:해 질 녘 부두. 토비가 몰래 노를 들고 작은 배에 오른다.',
+    'm:넬라|토비! 또 혼자 바다에 나가려고?',
+    'm:토비|누나만 맨날 큰 고기 잡잖아! 나도 혼자 할 수 있어!',
+    'm:넬라|…알았어. 대신 그물은 내가 던질게. 노는 네가 저어.',
+    'm:토비|진짜? 누나가 나한테 노 맡기는 거 처음이다!',
+    'sys:그날 밤, 남매가 함께 끌어 올린 그물에는 은빛 생선이 가득했다.',
+    'k@smile:둘이 하니까 금방이네.',
+    'm:넬라|…동생이 많이 컸네요. 하랄 할아버지한테는 비밀이에요.'
+  ] },
+  { k: 2, a: 'deokbae', b: 'margo', t: '스승의 국물', lines: [
+    'sys:식당 부엌. 덕배가 마고의 국을 한 숟갈 뜬다.',
+    'm:마고|…스승님, 어떠세요?',
+    'm:덕배|흠. 간이 세다. 불이 급하다. 그리고…',
+    'm:마고|그리고요?',
+    'm:덕배|내가 끓인 것보다 따뜻하구나. 사람 먹으라고 끓인 국이야.',
+    'm:마고|스, 스승님…!',
+    'm:덕배|울지 마라. 국에 들어간다.',
+    'k:저도 한 그릇 주세요!'
+  ] },
+  { k: 3, a: 'malbong', b: 'daisy', t: '아빠와 딸의 벌통', lines: [
+    'sys:양봉장. 데이지가 혼자 벌통을 열다 벌에 둘러싸였다.',
+    'm:데이지|아빠! 괜찮아요, 제가 할 수 있…앗!',
+    'm:말봉|…가만히 있어. 숨 천천히.',
+    'sys:말봉이 맨손을 내밀자 벌들이 조용히 벌통으로 돌아간다.',
+    'm:데이지|어떻게 한 거예요?',
+    'm:말봉|무서워하면 벌도 안다. 너희 엄마한테 배운 거다.',
+    'm:데이지|엄마한테요? 아빠가 엄마 얘기 하는 거 처음이에요.',
+    'm:말봉|…다음에 더 해 주마. 꿀부터 뜨자.'
+  ] },
+  { k: 4, a: 'brida', b: 'bron', t: '할머니의 망치', lines: [
+    'sys:대장간. 브리다가 브론의 곡괭이를 이리저리 살핀다.',
+    'm:브리다|날이 이게 뭐냐, 손주야. 드워프 체면이 말이 아니구나.',
+    'm:브론|할머니! 이번 원정만 다녀오면 갈려고 했다니까요!',
+    'm:브리다|됐다. 이리 내라.',
+    'sys:쾅, 쾅. 오래된 망치 소리가 협곡까지 울린다.',
+    'm:브리다|네 할아버지 곡괭이를 내가 이렇게 갈아 줬지. 그 양반도 맨날 「다음에」 하더라.',
+    'm:브론|…할머니, 고마워요.',
+    'q:좋은 소리다. 칼도 저렇게 갈아 주면 좋겠군.'
+  ] },
+  { k: 5, a: 'haral', b: 'makrye', t: '바다 사나이와 해녀', lines: [
+    'sys:갯바위. 하랄이 마을 아이들 앞에서 팔을 크게 벌린다.',
+    'm:하랄|그래서 내가 이만한 크라켄이랑 사흘 밤낮을—',
+    'm:막례|말순이가 너랑 놀아 준 거라니까.',
+    'm:하랄|막례! 넌 왜 꼭 거기 있어!',
+    'sys:막례의 망사리에서 말순이가 촉수를 흔든다.',
+    'm:막례|그래도 그날 폭풍에 배 뒤집힌 나를 건진 건 이 영감이야. 그건 진짜다.',
+    'm:하랄|…그 얘기는 왜 해.',
+    'k@smile:둘이 사이 좋네요.',
+    'm:하랄|아니다!',
+    'm:막례|아니여!'
+  ] },
+  { k: 6, a: 'kara', b: 'margo', t: '불맛 대 손맛', lines: [
+    'sys:식당 앞. 웍에서 불기둥이 솟는다.',
+    'm:마고|카라! 또 내 부엌에서 불을 그렇게—',
+    'm:카라|불맛 없으면 요리가 아니라니까요!',
+    'm:마고|손맛 없으면 그건 그냥 불장난이고!',
+    'k:…그럼 둘이 같이 만들면 되잖아요.',
+    'sys:잠시 뒤, 마고의 국물에 카라의 불맛을 입힌 볶음국이 나왔다.',
+    'm:카라|…맛있네.',
+    'm:마고|…맛있구나.',
+    'm:카라|이번만이에요!',
+    'm:마고|이번만이다!',
+    'q:주인, 오늘은 배부르게 싸우겠군.'
+  ] }
+];
+const bondOpen = b => owned(b.a) && owned(b.b) && affLv(b.a) >= 3 && affLv(b.b) >= 3;
+const bondNew = () => BONDS.filter(b => bondOpen(b) && !(S.bond && S.bond.seen[b.k]));
+let bondQ = {};
+function bondCheck() {
+  for (const b of bondNew()) {
+    if (bondQ[b.k]) continue;
+    bondQ[b.k] = 1;
+    toast('원정대 일기: 「' + b.t + '」가 열렸어요');
+    queue(() => bondPlay(b.k));
+  }
+}
+/* 장면 보기: 처음이면 황금 이삭 20 (장면마다 1번) */
+function bondPlay(k) {
+  const b = BONDS.find(x => x.k === k);
+  if (!b) return;
+  const first = !S.bond.seen[k];
+  S.bond.seen[k] = 1;
+  bondQ[k] = 0;
+  if (first) S.gem = (S.gem || 0) + 20;
+  partySig = '';
+  save();
+  scene('원정대 일기', b.t, b.lines, first ? '황금 이삭 20 받기' : '닫기');
+  if (first) toast('황금 이삭 +20 · 원정대 일기');
+}
+/* 길 위 대화: 동료마다 하루 1번 +10 */
+const affTalked = id => !!(S.affTalk && S.affTalk.d === today() && S.affTalk.ids[id]);
+function affTalk(id) {
+  if (!affOk(id) || !owned(id) || affTalked(id)) return false;
+  if (!S.affTalk || S.affTalk.d !== today()) S.affTalk = { d: today(), ids: {} };
+  S.affTalk.ids[id] = 1;
+  affAdd(id, 10);
+  save();
+  return true;
+}
+/* ♥5 단짝 전용 한 줄 (5-3) */
+const BOND5 = { bron: '오늘은 내가 대장간 문 열어 두마.', haral: '자네 얘기는 허풍 없이 해 주지.', riel: '300년 만에 생긴 친구야.', margo: '네 몫은 늘 따로 덜어 둔다.' },
+  BOND5J = { miner: '네 등은 내가 지킨다.', fisher: '다음 큰 고기는 너랑 나눌게.', keeper: '제일 좋은 꿀은 네 거야.', cook: '오늘 메뉴는 네가 정해.' };
+function bondDiary() {
+  const cell = b => {
+    const ok = bondOpen(b),
+      seen = S.bond.seen[b.k],
+      face = id => `<img class="${owned(id) ? (seen ? '' : 'dim') : 'sil'}" src="assets/portraits/portrait_${id}_idle.png" alt="" onerror="this.remove()">`,
+      miss = [b.a, b.b].filter(id => !owned(id));
+    const sub = seen
+      ? '다시 보기'
+      : miss.length
+        ? miss.map(id => COMP[id].n + josa(COMP[id].n, '을', '를')).join(' · ') + ' 만나면 열려요'
+        : COMP[b.a].n + ' ♥' + affLv(b.a) + ' · ' + COMP[b.b].n + ' ♥' + affLv(b.b) + (ok ? '' : ' · 둘 다 ♥3');
+    return `<button class="bdc${seen ? ' seen' : ''}" ${seen || ok ? `data-bd="${b.k}"` : 'disabled'}><span class="bdf">${face(b.a)}${face(b.b)}</span><b>${seen || !miss.length ? b.t : '???'}</b><small>${sub}</small></button>`;
+  };
+  $('sheet').innerHTML = `<div class="eyebrow">원정대의 정</div><h2>원정대 일기</h2><p class="note" style="text-align:center">짝이 있는 동료가 둘 다 ♥3이 되면 이야기가 열려요</p><div class="bdg">${BONDS.map(cell).join('')}</div><div class="acts one"><button class="pri" id="mGo">닫기</button></div>`;
+  $('modal').hidden = false;
+  $('mGo').onclick = closeModal;
+  document.querySelectorAll('[data-bd]').forEach(
+    x =>
+      (x.onclick = () => {
+        closeModal();
+        bondPlay(+x.dataset.bd);
+      })
+  );
+}
 const ptAct = () =>
   [
     ...(chiefCan() ? ['u' + recStar(CHIEF)] : []),
@@ -12168,7 +12481,8 @@ const ptAct = () =>
     ...(uqCan(LUC) ? ['l' + recStar(LUC)] : []),
     ...(uqCan(GOLD) ? ['g' + recStar(GOLD)] : []),
     ...cardReady().map(id => 'c' + id + recStar(id)),
-    ...JSLOT.filter(j => j !== 'kael' && betterBench(j)).map(j => 'b' + j + jobMembers(j).reduce((a, x) => (cPow(x) > cPow(a) ? x : a)))
+    ...JSLOT.filter(j => j !== 'kael' && betterBench(j)).map(j => 'b' + j + jobMembers(j).reduce((a, x) => (cPow(x) > cPow(a) ? x : a))),
+    ...bondNew().map(b => 'n' + b.k) /* 새로 열린 관계 이야기 */
   ].join();
 function dotSeen() {
   S.dotSeen = ptAct();
@@ -12199,7 +12513,7 @@ function compSheet(id) {
     lv = S.lv[id] || 1;
   $('sheet').innerHTML =
     `<div class="eyebrow"><img class="jobi" src="assets/ui/job_${JOB[id]}.png" alt="" onerror="this.remove()">${JOBN[JOB[id]]} 동료</div><div class="cdh"><span class="cfr" style="--g:${gr(id).c}"><img src="assets/ui/frame_${gr(id).fr}.png" alt="" onerror="this.remove()"><canvas class="portrait" id="cdf-${id}"></canvas></span><div><h2>${c.n}</h2><div>${gradeTag(id)}${starTxt(id)}</div><small>${c.role} · Lv.${lv} · ${on ? '출전 중' : '대기'}</small></div></div>
- <p class="cdd">${c.desc}</p><div class="kv"><span>공격 · 체력</span><b>${fmt(t.atk)} · ${fmt(t.hp)}</b></div><div class="kv"><span>전투력</span><b>${fmt(cPow(id))}</b></div>
+ <p class="cdd">${c.desc}</p><div class="kv"><span>공격 · 체력</span><b>${fmt(t.atk)} · ${fmt(t.hp)}</b></div><div class="kv"><span>전투력</span><b>${fmt(cPow(id))}</b></div>${affLine(id)}
  <div class="skl"><img src="assets/skills/skill_${id}.png" alt="" onerror="this.remove()"><div><b>${SKILLS[id].n}</b><span>${SKILLS[id].d}</span></div></div>${vpBox(id)}${
       GRADE[id] === 'unique' && recStar(id) < starMax(id)
         ? `<button class="buy${uqCan(id) ? ' glow' : ''}" id="cdUp" style="width:100%;margin-top:8px" ${uqCan(id) ? '' : 'disabled'}>★ 올리기 · ${UCIMG} 유니크 카드 ${S.ucard || 0} / ${starNeed(id)}</button>`
@@ -12466,6 +12780,11 @@ function ngoalHtml() {
   return `<div class="sec">다음 목표</div><div class="ngoal"><span class="cfr" style="--g:${g.face ? gr(g.id).c : '#6b7690'}">${g.face ? `<img src="assets/ui/frame_${gr(g.id).fr}.png" alt="" onerror="this.remove()"><canvas class="portrait" id="ng-face"></canvas>` : `<img class="jobq" src="assets/ui/job_${g.job}.png" alt="" onerror="this.outerHTML='<span class=q>?</span>'">`}</span>
  <div class="info"><small>${g.title}</small><b>${g.name}</b>${g.face ? `<div class="xp"><div style="width:${Math.min(100, (g.n / g.need) * 100)}%"></div></div><small>카드 ${g.n} / ${g.need}</small>` : `<small>${g.desc}</small>`}</div>${g.face ? `<button class="buy${g.can ? ' glow' : ''}" id="ngGo">${g.can ? (recStar(g.id) ? '★ 올리기' : '맞이하기') : '카드 보기'}</button>` : ''}</div>`;
 }
+/* 동료 창 한 줄: 호감도 ♥3 · 다음 ♥까지 62% · 공격·체력 +6% + 「?」 */
+const affLine = id =>
+  affOk(id) && owned(id)
+    ? `<div class="kv affkv"><span>호감도 ${affHearts(id)}</span><b>${affLv(id) >= 5 ? '단짝' : '다음 ♥까지 ' + affPct(id) + '%'} · 공격·체력 +${affLv(id) * 2}% <button class="qb" onclick="this.closest('.affkv').nextElementSibling.hidden^=1" aria-label="호감도 오르는 방법">?</button></b></div><p class="note affq" hidden>함께 싸우거나 마을 일꾼으로 일하면 5분마다 1점, 마을 길 위에서 말을 걸면 하루 1번 +10점. ♥마다 공격·체력 +2%, ♥5는 단짝. 은퇴해도 남아요.</p>`
+    : '';
 /* 원정대 탭 아래 고른 동료 상세: 레벨업 · ★ 올리기 · 출전 + 모두 올리기 · 모두 레벨업 (나중에 이야기·호감도 자리) */
 function tpanelHtml(id, upN) {
   const c = COMP[id],
@@ -12504,7 +12823,7 @@ function tpanelHtml(id, upN) {
       `<button class="buy ghost" id="tpGo" ${on ? 'disabled' : ''}><span class="bl">${on ? '출전 중' : '출전'}</span><span class="bc">${on || !cur ? JOBN[j] + ' 자리' : COMP[cur].n + '와 바꾸기'}</span></button>`;
   }
   const rn = cardReady().length;
-  return `<div class="tpanel"><div class="tph"><span class="cfr" style="--g:${col}"><img src="assets/ui/frame_${fr}.png" alt="" onerror="this.remove()"><canvas class="portrait" id="tp-face"></canvas></span><div class="info"><b>${c.n}</b><span>${kael ? '' : gradeTag(id) + starTxt(id)}</span><small>${sub}</small>${SKILLS[id] ? `<small>스킬 · ${SKILLS[id].n}</small>` : ''}</div>${kael ? '' : '<button class="buy ghost sm" id="tpMore">자세히</button>'}</div><div class="tpacts">${acts}</div><div class="tpall"><button class="buy${rn ? ' glow' : ' ghost'}" id="tpStarAll" ${rn ? '' : 'disabled'}>★ 모두 올리기${rn ? ' (' + rn + ')' : ''}</button><button class="buy ghost" id="tpLvAll" ${lvAllIds().length ? '' : 'disabled'}><span class="bl">출전 동료 모두 레벨업</span><span class="bc"><img src="assets/ui/ui_gold.png" alt="" onerror="this.remove()">${fmt(lvAllCost())}</span></button></div></div>`;
+  return `<div class="tpanel"><div class="tph"><span class="cfr" style="--g:${col}"><img src="assets/ui/frame_${fr}.png" alt="" onerror="this.remove()"><canvas class="portrait" id="tp-face"></canvas></span><div class="info"><b>${c.n}</b><span>${kael ? '' : gradeTag(id) + starTxt(id)}${affOk(id) && owned(id) ? affHearts(id) : ''}</span><small>${sub}</small>${SKILLS[id] ? `<small>스킬 · ${SKILLS[id].n}</small>` : ''}</div>${kael ? '' : '<button class="buy ghost sm" id="tpMore">자세히</button>'}</div><div class="tpacts">${acts}</div><div class="tpall"><button class="buy${rn ? ' glow' : ' ghost'}" id="tpStarAll" ${rn ? '' : 'disabled'}>★ 모두 올리기${rn ? ' (' + rn + ')' : ''}</button><button class="buy ghost" id="tpLvAll" ${lvAllIds().length ? '' : 'disabled'}><span class="bl">출전 동료 모두 레벨업</span><span class="bc"><img src="assets/ui/ui_gold.png" alt="" onerror="this.remove()">${fmt(lvAllCost())}</span></button></div></div>`;
 }
 function tpanelBind(id) {
   const fc = $('tp-face');
@@ -12541,6 +12860,11 @@ function renderParty() {
   const sig =
     ptTab +
     ptSel +
+    JSON.stringify(S.bond.seen) +
+    members()
+      .concat(Object.keys(S.aff || {}))
+      .map(x => affLv(x))
+      .join('') +
     (S.wish || '') +
     JSON.stringify(S.cards || {}) +
     JSON.stringify(S.rec || {}) +
@@ -12610,7 +12934,7 @@ function renderParty() {
           n = (S.cards && S.cards[id]) || 0,
           need = starNeed(id),
           mx = stv >= starMax(id);
-        return `<div class="ccard${op ? '' : ' locked'}${stv ? ' own' : ''}" style="--g:${gr(id).c}"><span class="cfr"><img src="assets/ui/frame_${gr(id).fr}.png" alt="" onerror="this.remove()"><canvas class="portrait" id="pcd-${id}"></canvas></span><div class="info"><b>${op ? c.n : '???'}</b>${gradeTag(id)}<span class="role"><img class="jobi" src="assets/ui/job_${JOB[id]}.png" alt="" onerror="this.remove()">${JOBN[JOB[id]]}</span>${stv ? starTxt(id) : ''}
+        return `<div class="ccard${op ? '' : ' locked'}${stv ? ' own' : ''}" style="--g:${gr(id).c}"><span class="cfr"><img src="assets/ui/frame_${gr(id).fr}.png" alt="" onerror="this.remove()"><canvas class="portrait" id="pcd-${id}"></canvas></span><div class="info"><b>${op ? c.n : '???'}</b>${gradeTag(id)}${affOk(id) && owned(id) ? affHearts(id) : ''}<span class="role"><img class="jobi" src="assets/ui/job_${JOB[id]}.png" alt="" onerror="this.remove()">${JOBN[JOB[id]]}</span>${stv ? starTxt(id) : ''}
     ${VPAS[id] ? `<div class="vpline"><img src="assets/ui/village_skill.png" alt="" style="width:16px;height:16px;vertical-align:-3px;margin-right:3px">마을 스킬 · ${VPAS[id].n}</div>` : ''}${!op ? `<div>${isRec(id) ? COMP[STORY[RECRUITS[id].job]].n + '이(가) 합류하면 카드가 나오기 시작해요' : c.join}</div>` : mx ? '<div>별을 모두 모았어요</div>' : `<div class="xp"><div style="width:${Math.min(100, (n / need) * 100)}%"></div></div><div>카드 ${n} / ${need}</div>`}</div>
     ${op && !mx ? `<div class="cbtns"><button class="buy${n >= need ? ' glow' : ''}" id="rc-${id}" ${n >= need ? '' : 'disabled'}>${stv ? '★ 올리기' : '맞이하기'}</button>${GRADE[id] === 'legend' && (S.lcard || 0) > 0 && n < need ? `<button class="buy lcbtn" id="lc-${id}">만능 ${Math.min(S.lcard, need - n)}장 넣기</button>` : ''}<button class="wish${S.wish === id ? ' on' : ''}" id="ws-${id}">${S.wish === id ? '♥ 희망 중' : '♡ 희망'}</button></div>` : ''}</div>`;
         })();
@@ -12658,7 +12982,7 @@ function renderParty() {
     const board = `<div class="sec">편성 <small>자리를 눌러 동료를 바꿔요</small></div><div class="board">${JSLOT.map(j => {
       const id = slotMember(j),
         multi = j === 'kael' ? owned(CHIEF) : jobMembers(j).length > 1;
-      return `<button class="seat${id ? '' : ' empty'}" data-seat="${j}">${id ? `<span class="cfr" style="--g:${id === 'kael' ? '#ffd34a' : gr(id).c}"><img src="assets/ui/frame_${id === 'kael' ? 'legendary' : gr(id).fr}.png" alt="" onerror="this.remove()"><canvas class="portrait" id="st-${j}"></canvas></span>` : `<span class="cfr"><img class="jobq" src="assets/ui/job_${j}.png" alt="" onerror="this.outerHTML='<span class=q>?</span>'"></span>`}<b>${j === 'kael' ? '카엘' : `<img class="jobi" src="assets/ui/job_${j}.png" alt="" onerror="this.remove()">` + JOBN[j]}</b><small>${id ? (id === 'kael' ? '용사' : COMP[id].n + (recStar(id) ? ' <i class="st">★' + recStar(id) + '</i>' : '')) : '합류 전'}</small>${multi ? '<i class="sw">⇄</i>' : ''}${j !== 'kael' && betterBench(j) ? '<i class="rd"></i>' : ''}</button>`;
+      return `<button class="seat${id ? '' : ' empty'}" data-seat="${j}">${id ? `<span class="cfr" style="--g:${id === 'kael' ? '#ffd34a' : gr(id).c}"><img src="assets/ui/frame_${id === 'kael' ? 'legendary' : gr(id).fr}.png" alt="" onerror="this.remove()"><canvas class="portrait" id="st-${j}"></canvas></span>` : `<span class="cfr"><img class="jobq" src="assets/ui/job_${j}.png" alt="" onerror="this.outerHTML='<span class=q>?</span>'"></span>`}<b>${j === 'kael' ? '카엘' : `<img class="jobi" src="assets/ui/job_${j}.png" alt="" onerror="this.remove()">` + JOBN[j]}</b><small>${id ? (id === 'kael' ? '용사' : COMP[id].n + (recStar(id) ? ' <i class="st">★' + recStar(id) + '</i>' : '') + (affOk(id) && affLv(id) >= 5 ? '<i class="bf">♥</i>' : '')) : '합류 전'}</small>${multi ? '<i class="sw">⇄</i>' : ''}${j !== 'kael' && betterBench(j) ? '<i class="rd"></i>' : ''}</button>`;
     }).join(
       ''
     )}</div><button class="buy ghost autof" id="autoForm" ${JSLOT.some(j => j !== 'kael' && jobMembers(j).length > 1) ? '' : 'disabled'}>추천 편성 · 가장 강한 동료로</button>`;
@@ -12687,7 +13011,7 @@ function renderParty() {
         up = id === CHIEF ? chiefCan() : GRADE[id] === 'unique' ? uqCan(id) : ready.includes(id),
         fr = kael ? 'legendary' : gr(id).fr,
         col = kael ? '#ffd34a' : gr(id).c;
-      return `<button class="gcell${has ? '' : ' locked'}${on && has ? ' on' : ''}${pick && id === ptSel ? ' sel' : ''}" ${has || id === CHIEF ? `data-${pick ? 'sel' : 'det'}="${id}"` : 'disabled'} style="--g:${col}">${pick && up ? '<i class="gbd st">★</i>' : pick && bb.includes(id) ? '<i class="gbd bb">▲</i>' : ''}<span class="cfr"><img src="assets/ui/frame_${fr}.png" alt="" onerror="this.remove()"><canvas class="portrait" id="gc-${id}"></canvas></span>${up && !pick ? '<i class="gup"></i>' : ''}${wk ? '<i class="gwk">🔨</i>' : ''}${on && has && !kael ? '<i class="gon">출전</i>' : ''}<b>${has || id === CHIEF ? c.n : '???'}</b><small>${kael ? RANKS[rankIdx()].n : has ? (id === CHIEF ? '' : 'Lv.' + (S.lv[id] || 1) + ' ') + '<span class="gst">' + (pick ? (recStar(id) ? '★' + recStar(id) : '') : '★'.repeat(recStar(id))) + '</span>' : id === CHIEF ? '유니크' : '합류 전'}</small></button>`;
+      return `<button class="gcell${has ? '' : ' locked'}${on && has ? ' on' : ''}${pick && id === ptSel ? ' sel' : ''}" ${has || id === CHIEF ? `data-${pick ? 'sel' : 'det'}="${id}"` : 'disabled'} style="--g:${col}">${pick && up ? '<i class="gbd st">★</i>' : pick && bb.includes(id) ? '<i class="gbd bb">▲</i>' : ''}<span class="cfr"><img src="assets/ui/frame_${fr}.png" alt="" onerror="this.remove()"><canvas class="portrait" id="gc-${id}"></canvas></span>${up && !pick ? '<i class="gup"></i>' : ''}${wk ? '<i class="gwk">🔨</i>' : ''}${on && has && !kael ? '<i class="gon">출전</i>' : ''}<b>${has || id === CHIEF ? c.n : '???'}</b>${pick && has && affOk(id) ? affHearts(id) : ''}<small>${kael ? RANKS[rankIdx()].n : has ? (id === CHIEF ? '' : 'Lv.' + (S.lv[id] || 1) + ' ') + '<span class="gst">' + (pick ? (recStar(id) ? '★' + recStar(id) : '') : '★'.repeat(recStar(id))) + '</span>' : id === CHIEF ? '유니크' : '합류 전'}</small></button>`;
     };
     window._rowOf = rowOf;
     $('ptNote').hidden = true;
@@ -12696,6 +13020,7 @@ function renderParty() {
     $('party').innerHTML =
       ptTab === 'team'
         ? board +
+          `<button class="buy ghost bdbtn" id="bdDiary">📖 원정대 일기 <b>${BONDS.filter(b => S.bond.seen[b.k]).length}/${BONDS.length}</b>${bondNew().length ? '<i class="dot"></i>' : ''}</button>` +
           `<div class="sec">동료 ${list.filter(owned).length}명 <small><b style="color:#ffd34a">★</b> 별 올리기 · <b style="color:#7be08f">▲</b> 출전하면 더 셈</small></div><div class="cgrid tgrid">${list.map(id => gcell(id, true)).join('')}</div>` +
           ngoalHtml() +
           tpanelHtml(ptSel, upN)
@@ -12706,6 +13031,10 @@ function renderParty() {
       renderParty();
     });
     if (ptTab === 'team') tpanelBind(ptSel);
+    {
+      const bd = $('bdDiary');
+      if (bd) bd.onclick = bondDiary;
+    }
     {
       const g = nextGoal();
       if (ptTab === 'team' && g) {
@@ -15820,6 +16149,7 @@ function part1Sheet() {
   };
 }
 function step(dt) {
+  affTick(dt); /* 원정대의 정: 함께한 시간 */
   if (talk) {
     talk.t -= dt;
     if (talk.t <= 0) {
@@ -19069,7 +19399,9 @@ vc.addEventListener('click', e => {
     my = (e.clientY - r.top) / vK();
   const w = vWalkHit(mx, my);
   if (w) {
-    vTalk = { id: w.id, x: w.x, y: w.y, end: performance.now() + 3200, line: vLine(w.id) };
+    const up = affTalk(w.id),
+      five = affOk(w.id) && affLv(w.id) >= 5;
+    vTalk = { id: w.id, x: w.x, y: w.y, end: performance.now() + 3200, line: five ? BOND5[w.id] || BOND5J[JOB[w.id]] : vLine(w.id), aff: up };
     return;
   }
   const k = vHit(mx, my);
@@ -19308,6 +19640,26 @@ function drawVillage() {
       ctx.arc(px, py - r - 2, r, 0, Math.PI * 2);
       ctx.stroke();
     }
+    /* 원정대의 정: 오늘 아직 말 안 건 동료 머리 위 작은 말풍선 점 */
+    if (!p.ppl && affOk(p.id) && owned(p.id) && !affTalked(p.id)) {
+      const sc = Math.max(0.32, VW / 760) * (p.wk ? 0.82 : 1),
+        hy = py - ((HEIGHT[p.id] || 60) + 18) * sc * 1.9,
+        br = Math.max(4, VW * 0.012);
+      ctx.save();
+      ctx.fillStyle = 'rgba(255,250,235,.95)';
+      ctx.strokeStyle = '#2a1a08';
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.arc(px + br, hy, br, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.stroke();
+      ctx.fillStyle = '#ff7a9c';
+      ctx.font = `700 ${br * 1.3}px sans-serif`;
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText('♥', px + br, hy + 0.5);
+      ctx.restore();
+    }
     /* 마르타·티모·피트(마을 사람) 얼굴 밑에 이름표. 일꾼 머리 위 🔨 표시는 없앰 (얼룩처럼 보이고 복잡해서) */
     if (p.ppl) {
       vPill(whoN(p.id), px, py + Math.max(8, VW * 0.022), Math.max(9, VW * 0.026), 'rgba(30,22,10,.85)', '#ffe08a');
@@ -19360,6 +19712,7 @@ function drawVillage() {
         ty = vTalk.y * k - Math.max(48, VW * 0.14);
       ctx.globalAlpha = Math.min(1, tl_ * 2);
       const d = vPill(whoN(vTalk.id) + ': ' + vTalk.line, tx, ty, fs, 'rgba(255,250,235,.96)', '#2a1a08');
+      if (vTalk.aff) vPill('♥ +10', tx, ty - fs * 2.1 - (1 - Math.min(1, tl_)) * 0, fs, 'rgba(255,122,156,.95)', '#fff');
       ctx.globalAlpha = 1;
     }
   }
@@ -22482,6 +22835,7 @@ function offline() {
   const cap = offCapH() * 3600,
     sec = Math.min(cap, (Date.now() - S.last) / 1000);
   if (sec < 60) return;
+  affTick(sec); /* 원정대의 정: 방치 시간도 (여관 최대 시간까지) */
   const g = Math.floor(idleGold(sec));
   if (g <= 0) return;
   S.gold += g;
