@@ -116,6 +116,10 @@ void main() {
       expect(g.calc.affPt('bron'), p0 + 10);
       expect(g.act((a) => a.affTalk('kael')), isFalse, reason: '카엘은 호감도 없음');
       await closeAll();
+
+      await tester.pumpWidget(const SizedBox());
+      g.dispose();
+      await tester.pump(const Duration(seconds: 3));
     });
   }
 }
