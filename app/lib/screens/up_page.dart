@@ -209,6 +209,8 @@ class _UpRowState extends State<_UpRow> {
           ),
           const SizedBox(width: 8),
           GestureDetector(
+            // 안의 버튼이 IgnorePointer 라서, 이 줄이 없으면 손가락이 닿아도 아무도 받지 않음 (2026-10-26 「강화가 안 눌려요」)
+            behavior: HitTestBehavior.opaque,
             onTapDown: can ? (_) => _down() : null,
             onTapUp: can ? (_) => _up() : null,
             onTapCancel: _stop,
