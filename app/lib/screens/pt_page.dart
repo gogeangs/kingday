@@ -80,9 +80,9 @@ class PtPage extends StatelessWidget {
     return [
       ..._form(),
       const SizedBox(height: 6),
-      Row(children: [
+      // 좁은 화면(320)에서는 설명이 다음 줄로
+      Wrap(alignment: WrapAlignment.spaceBetween, crossAxisAlignment: WrapCrossAlignment.center, spacing: 8, runSpacing: 2, children: [
         Text('동료 ${ids.where(c.owned).length}명', style: KdText.body(14, weight: FontWeight.w700)),
-        const Spacer(),
         Text.rich(TextSpan(children: const [
           TextSpan(text: '★', style: TextStyle(color: Color(0xFFFFD34A), fontWeight: FontWeight.w700)),
           TextSpan(text: ' 별 올리기 · '),
