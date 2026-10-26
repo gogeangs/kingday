@@ -176,6 +176,9 @@ class GameController extends ChangeNotifier {
   /// 확대한 지역 (-1 = 전체 지도)
   int mapZoomR = -1;
 
+  /// 원정대 탭에서 고른 동료 (B안 상세, 웹 ptSel)
+  String ptSel = '';
+
   /// 카메라: 지도 좌표 가운데 + 배율 (지금 값 → 목표 값으로 부드럽게)
   double camX = mapW / 2, camY = mapH / 2, camZ = 1, camTx = mapW / 2, camTy = mapH / 2, camTz = 1;
 

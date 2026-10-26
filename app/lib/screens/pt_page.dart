@@ -22,7 +22,7 @@ class PtPage extends StatelessWidget {
   const PtPage(this.g, {super.key});
   final GameController g;
 
-  String get _sub => g.state.raw['ptTab'] is String ? g.state.raw['ptTab'] as String : 'form';
+  String get _sub => ptTeam(g) ? 'team' : 'card';
 
   @override
   Widget build(BuildContext context) {
@@ -30,8 +30,9 @@ class PtPage extends StatelessWidget {
     return Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
       // 하위 탭 (웹 .subtabs)
       Row(children: [
-        for (final (k, n) in const [('form', '편성'), ('list', '동료'), ('card', '카드')]) ...[
-          if (k != 'form') const SizedBox(width: 6),
+        // B안 (대표님 결정 10-27): 「원정대 / 카드 도감」 두 탭
+        for (final (k, n) in const [('team', '원정대'), ('card', '카드 도감')]) ...[
+          if (k != 'team') const SizedBox(width: 6),
           Expanded(
             child: GestureDetector(
               onTap: () {
@@ -66,14 +67,39 @@ class PtPage extends StatelessWidget {
       ]),
       const SizedBox(height: 12),
       ...switch (sub) {
-        'list' => _list(),
         'card' => _cards(),
-        _ => _form(),
+        _ => _team(),
       },
     ]);
   }
 
-  // ════════ 편성 ════════
+  // ════════ 원정대 (B안): 위 출전 자리 · 동료 얼굴 격자 (★ 별 올리기 · ▲ 출전하면 더 셈) · 아래 상세는 PtPanel ════════
+  List<Widget> _team() {
+    final c = g.calc, ids = ptOrder(g), sel = ptSelId(g);
+    final bb = ptBenchBest(g);
+    return [
+      ..._form(),
+      const SizedBox(height: 6),
+      // 좁은 화면(320)에서는 설명이 다음 줄로
+      Wrap(alignment: WrapAlignment.spaceBetween, crossAxisAlignment: WrapCrossAlignment.center, spacing: 8, runSpacing: 2, children: [
+        Text('동료 ${ids.where(c.owned).length}명', style: KdText.body(14, weight: FontWeight.w700)),
+        Text.rich(TextSpan(children: const [
+          TextSpan(text: '★', style: TextStyle(color: Color(0xFFFFD34A), fontWeight: FontWeight.w700)),
+          TextSpan(text: ' 별 올리기 · '),
+          TextSpan(text: '▲', style: TextStyle(color: Color(0xFF7BE08F), fontWeight: FontWeight.w700)),
+          TextSpan(text: ' 출전하면 더 셈'),
+        ]), style: KdText.body(11.5, color: KdColors.muted)),
+      ]),
+      const SizedBox(height: 8),
+      LayoutBuilder(builder: (_, cs) {
+        final w = (cs.maxWidth - 18) / 4;
+        return Wrap(spacing: 6, runSpacing: 10, children: [for (final id in ids) SizedBox(width: w, child: _gcell(id, pick: true, sel: id == sel, better: bb.contains(id)))]);
+      }),
+      const SizedBox(height: 4),
+      ..._nextGoal(),
+    ];
+  }
+
   List<Widget> _form() {
     final c = g.calc;
     final multi = jobSlots.any((j) => j != 'kael' && c.jobMembers(j).length > 1);
@@ -88,8 +114,6 @@ class PtPage extends StatelessWidget {
       ]),
       const SizedBox(height: 8),
       KdBuy(text: '추천 편성 · 가장 강한 동료로', kind: BuyKind.ghost, onTap: multi ? () => g.act((a) => a.autoForm()) : null),
-      const SizedBox(height: 6),
-      ..._nextGoal(),
     ];
   }
 
@@ -211,64 +235,8 @@ class PtPage extends StatelessWidget {
   }
 
   // ════════ 동료 목록 ════════
-  List<Widget> _list() {
-    final c = g.calc;
-    // 카엘(·촌장) → 출전 중(자리 순) → 대기·일꾼(등급 높은 순 → 별 → 전투력) → 아직 합류 전 (웹 partyOrder)
-    const grk = {'legend': 3, 'epic': 2, 'rare': 1, 'common': 0};
-    final on = [for (final j in jobSlots.where((j) => j != 'kael')) c.slotMember(j)].whereType<String>().toList();
-    final bench = stableSorted(
-      [for (final j in jobSlots.where((j) => j != 'kael')) ...c.jobMembers(j)].where((x) => !on.contains(x)),
-      (a, b) {
-        final g = (grk[gradeOf[b]] ?? 0) - (grk[gradeOf[a]] ?? 0);
-        if (g != 0) return g;
-        final st = c.recStar(b) - c.recStar(a);
-        if (st != 0) return st;
-        return c.cPow(b).compareTo(c.cPow(a));
-      },
-    );
-    final ids = <String>[
-      'kael',
-      if (c.owned(GameCalc.chiefId) || c.chiefShop()) GameCalc.chiefId,
-      ...on,
-      ...bench,
-      for (final j in jobSlots.where((j) => j != 'kael' && c.slotMember(j) == null)) storyOf[j]!,
-    ];
-    final grid = g.state.raw['ptGrid'] == true;
-    Widget seg(String k, String n) => GestureDetector(
-          onTap: () {
-            g.state.raw['ptGrid'] = k == 'grid';
-            g.refresh();
-          },
-          child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-            color: (k == 'grid') == grid ? KdColors.gold : null,
-            child: Text(n,
-                style: KdText.body(12.5, color: (k == 'grid') == grid ? KdColors.goldInk : KdColors.muted, weight: (k == 'grid') == grid ? FontWeight.w700 : FontWeight.w400)),
-          ),
-        );
-    return [
-      Row(children: [
-        const Expanded(child: KdNote('동료를 누르면 자세한 정보·스킬·출전을 볼 수 있어요.')),
-        const SizedBox(width: 8),
-        Container(
-          clipBehavior: Clip.antiAlias,
-          decoration: BoxDecoration(border: Border.all(color: KdColors.line), borderRadius: BorderRadius.circular(10)),
-          child: Row(mainAxisSize: MainAxisSize.min, children: [seg('list', '목록'), seg('grid', '격자')]),
-        ),
-      ]),
-      const SizedBox(height: 8),
-      if (grid)
-        LayoutBuilder(builder: (_, cs) {
-          final w = (cs.maxWidth - 16) / 3;
-          return Wrap(spacing: 8, runSpacing: 8, children: [for (final id in ids) SizedBox(width: w, child: _gcell(id))]);
-        })
-      else
-        for (final id in ids) _crow(id),
-    ];
-  }
-
   /// 격자 칸 (U-1, 웹 gcell): 얼굴 + 등급 테두리 + ★ + Lv. 출전 중 금테, 🔨 일꾼, ★ 올리기 가능 노란 점, 합류 전 어둡게 ???
-  Widget _gcell(String id) {
+  Widget _gcell(String id, {bool pick = false, bool sel = false, bool better = false}) {
     final c = g.calc, cd = comps[id]!, has = c.owned(id), kael = id == 'kael', chief = id == GameCalc.chiefId;
     final on = kael || (chief ? c.chiefOn() : c.slotMember(jobOf[id]!) == id);
     final wk = !kael && !chief && c.working()[id] != null;
@@ -277,36 +245,57 @@ class PtPage extends StatelessWidget {
     final sub = kael
         ? ranks[c.rankIdx()].n
         : has
-            ? '${chief ? '' : 'Lv.${orNum(g.state.lv[id], 1)} '}${'★' * c.recStar(id)}'
+            ? '${chief ? '' : 'Lv.${orNum(g.state.lv[id], 1)} '}${pick ? (c.recStar(id) > 0 ? '★${c.recStar(id)}' : '') : '★' * c.recStar(id)}'
             : chief
                 ? '유니크'
                 : '합류 전';
     return GestureDetector(
+      key: pick ? ValueKey('tsel-$id') : null,
       onTap: !named
           ? null
-          : () => kael
-              ? g.setTab(GameTab.eq)
-              : chief
-                  ? chiefSheet(g)
-                  : compSheet(g, id),
+          : pick
+              ? () {
+                  g.ptSel = id;
+                  g.refresh();
+                }
+              : () => kael
+                  ? g.setTab(GameTab.eq)
+                  : chief
+                      ? chiefSheet(g)
+                      : compSheet(g, id),
       child: Opacity(
         opacity: has || chief ? 1 : .5,
         child: Container(
-          padding: const EdgeInsets.fromLTRB(4, 10, 4, 7),
+          padding: pick ? const EdgeInsets.fromLTRB(2, 9, 2, 5) : const EdgeInsets.fromLTRB(4, 10, 4, 7),
           decoration: BoxDecoration(
             color: KdColors.panel2,
-            border: Border.all(color: on && has ? KdColors.gold : KdColors.line),
+            border: Border.all(color: sel ? Colors.white : on && has ? KdColors.gold : KdColors.line, width: sel ? 2 : 1),
             borderRadius: BorderRadius.circular(12),
-            boxShadow: on && has ? const [BoxShadow(color: Color(0x40FFC94A), blurRadius: 10)] : null,
+            boxShadow: sel
+                ? const [BoxShadow(color: Color(0x73FFC94A), blurRadius: 12, spreadRadius: 1)]
+                : on && has
+                    ? const [BoxShadow(color: Color(0x40FFC94A), blurRadius: 10)]
+                    : null,
           ),
           child: Stack(clipBehavior: Clip.none, children: [
             Column(mainAxisSize: MainAxisSize.min, children: [
-              Center(child: CompFrame(id, w: 56, h: 66, hidden: !named, dim: chief && !has)),
+              Center(child: CompFrame(id, w: pick ? 48 : 56, h: pick ? 56 : 66, hidden: !named, dim: chief && !has)),
               const SizedBox(height: 4),
-              Text(named ? cd.n : '???', maxLines: 1, overflow: TextOverflow.ellipsis, style: KdText.display(13.5)),
-              Text(sub, maxLines: 1, overflow: TextOverflow.ellipsis, style: KdText.body(12.5, color: KdColors.muted)),
+              Text(named ? cd.n : '???', maxLines: 1, overflow: TextOverflow.ellipsis, style: KdText.display(pick ? 12.5 : 13.5)),
+              Text(sub, maxLines: 1, overflow: TextOverflow.ellipsis, style: KdText.body(pick ? 11 : 12.5, color: KdColors.muted)),
             ]),
-            if (up)
+            // 원정대 격자: ★ 별 올리기 · ▲ 출전하면 더 셈 (웹 .gbd)
+            if (pick && (up || better))
+              Positioned(
+                top: -14,
+                right: -2,
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 5),
+                  decoration: BoxDecoration(color: up ? const Color(0xFFFFD34A) : const Color(0xFF7BE08F), borderRadius: BorderRadius.circular(999)),
+                  child: Text(up ? '★' : '▲', style: KdText.body(11, color: const Color(0xFF1A1406), weight: FontWeight.w700, height: 1.45)),
+                ),
+              ),
+            if (up && !pick)
               Positioned(
                 top: -4,
                 right: 2,
@@ -335,93 +324,6 @@ class PtPage extends StatelessWidget {
       ),
     );
   }
-
-  Widget _crow(String id) {
-    final c = g.calc, cd = comps[id]!;
-    if (id == GameCalc.chiefId) {
-      final has = c.owned(id), on = c.chiefOn();
-      return GestureDetector(
-        onTap: () => chiefSheet(g),
-        child: _crowBox(
-          face: FaceImg(id),
-          title: Wrap(crossAxisAlignment: WrapCrossAlignment.center, spacing: 5, children: [
-            Text(cd.n, style: KdText.display(15)),
-            GradeTag(id),
-            if (has) Stars(c, id),
-          ]),
-          sub: has ? '${on ? '출전' : '대기'} · 카엘 자리 · 카엘 능력치 +${pctTxt(GameCalc.chiefBonus[c.recStar(id)] * 100)}%' : cd.join ?? '',
-          right: has && c.chiefCan()
-              ? KdBuy(text: '★ 올리기', small: true, glow: true, minWidth: 74, onTap: () => g.act((a) => a.chiefUp()))
-              : Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-                  decoration: BoxDecoration(border: Border.all(color: KdColors.line), borderRadius: BorderRadius.circular(8)),
-                  child: Text(has ? (on ? '출전' : '대기') : '보기', style: KdText.body(12, color: KdColors.muted)),
-                ),
-        ),
-      );
-    }
-    if (!c.owned(id)) {
-      return _crowBox(
-        locked: true,
-        face: const ColoredBox(color: KdColors.panel),
-        title: Text('???', style: KdText.display(15)),
-        sub: '${cd.role} · ${cd.join ?? ''}',
-      );
-    }
-    final on = id == 'kael' || c.slotMember(jobOf[id]!) == id;
-    final lv = orNum(g.state.lv[id], 1);
-    return GestureDetector(
-      onTap: () => id == 'kael' ? g.setTab(GameTab.eq) : compSheet(g, id),
-      child: _crowBox(
-        face: FaceImg(id),
-        title: Wrap(crossAxisAlignment: WrapCrossAlignment.center, spacing: 5, children: [
-          Text(cd.n, style: KdText.display(15)),
-          if (id != 'kael') ...[GradeTag(id), Stars(c, id)],
-        ]),
-        sub: id == 'kael'
-            ? '${ranks[c.rankIdx()].n} · 원정대 전투력 ${fmt(c.power())}'
-            : '${on ? '출전' : c.working()[id] != null ? '🔨 ${buildingDef(c.working()[id]!).n}' : '대기'} · Lv.$lv · 전투력 ${fmt(c.cPow(id))}',
-        right: id == 'kael'
-            ? KdBuy(text: '장비', kind: BuyKind.ghost, small: true, minWidth: 0, onTap: () => g.setTab(GameTab.eq))
-            : on
-                ? KdBuy(
-                    label: 'Lv↑',
-                    cost: GameCalc.compCost(lv),
-                    costIcon: goldIcon,
-                    small: true,
-                    minWidth: 74,
-                    onTap: g.state.gold >= GameCalc.compCost(lv) ? () => g.act((a) => a.levelUp(id)) : null,
-                  )
-                : Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-                    decoration: BoxDecoration(border: Border.all(color: KdColors.line), borderRadius: BorderRadius.circular(8)),
-                    child: Text(c.working()[id] != null ? '🔨 일꾼' : '대기', style: KdText.body(12, color: KdColors.muted)),
-                  ),
-      ),
-    );
-  }
-
-  Widget _crowBox({required Widget face, required Widget title, required String sub, Widget? right, bool locked = false}) => Opacity(
-        opacity: locked ? .5 : 1,
-        child: Container(
-          margin: const EdgeInsets.only(bottom: 6),
-          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-          decoration: BoxDecoration(color: KdColors.panel2, border: Border.all(color: KdColors.line), borderRadius: BorderRadius.circular(12)),
-          child: Row(children: [
-            ClipRRect(borderRadius: BorderRadius.circular(10), child: SizedBox(width: 44, height: 44, child: face)),
-            const SizedBox(width: 10),
-            Expanded(
-              child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                title,
-                const SizedBox(height: 2),
-                // 웹 .crow small: 좁은 폭에서도 숫자가 잘리지 않게 두 줄까지
-                Text(sub, maxLines: 2, overflow: TextOverflow.ellipsis, style: KdText.body(12, color: KdColors.muted)),
-              ]),
-            ),
-            if (right != null) ...[const SizedBox(width: 8), right],
-          ]),
-        ),
-      );
 
   // ════════ 카드 ════════
   List<Widget> _cards() {
@@ -542,26 +444,9 @@ class PtPage extends StatelessWidget {
               if (!cards) Text('유니크 카드는 한 동료씩 골라 올려요', style: KdText.body(11, color: KdColors.muted)),
             ]),
           ),
-          if (cards) KdBuy(key: const ValueKey('cupAll'), text: '모두 올리기', glow: true, minWidth: 0, onTap: _upAll),
+          if (cards) KdBuy(key: const ValueKey('cupAll'), text: '모두 올리기', glow: true, minWidth: 0, onTap: () => ptUpAll(g)),
         ]),
       );
-
-  /// 카드가 충분한 동료를 모두 맞이하기·★ 올리기 (별을 여러 개 올릴 수 있으면 끝까지, 웹 cardUpAll)
-  void _upAll() {
-    final got = <String, int>{};
-    for (var k = 0; k < 200; k++) {
-      final r = g.calc.cardReady();
-      if (r.isEmpty) break;
-      for (final id in r) {
-        g.act((a) => a.recruitUp(id, quiet: true));
-        got[id] = g.calc.recStar(id);
-      }
-    }
-    if (got.isEmpty) return;
-    g.save();
-    final e = got.entries.toList();
-    g.toast(e.length == 1 ? '${comps[e.first.key]!.n} ★${e.first.value}!' : '동료 ${e.length}명 ★ 올리기 · ${e.map((x) => '${comps[x.key]!.n} ★${x.value}').join(', ')}');
-  }
 
   /// 유니크 카드 줄 (웹 ucRow·ttRow): 카엘 촌장·뚝딱이 별 올리기
   Widget _ucard(String id) {
@@ -966,4 +851,194 @@ void kaelSeatSheet(GameController g) {
           );
         },
       ));
+}
+
+
+// ════════ 원정대 B안 공통 (웹 partyOrder · benchBest · ptSel · tpanelHtml · lvAll) ════════
+/// 원정대 하위 탭이 「원정대」인지 (옛 저장의 'form'·'list' 도 원정대)
+bool ptTeam(GameController g) => g.state.raw['ptTab'] != 'card';
+
+/// 카엘(·촌장) → 출전 중(자리 순) → 대기·일꾼(등급 높은 순 → 별 → 전투력) → 아직 합류 전 (웹 partyOrder)
+List<String> ptOrder(GameController g) {
+  final c = g.calc;
+  const grk = {'legend': 3, 'epic': 2, 'rare': 1, 'common': 0};
+  final on = [for (final j in jobSlots.where((j) => j != 'kael')) c.slotMember(j)].whereType<String>().toList();
+  final bench = stableSorted(
+    [for (final j in jobSlots.where((j) => j != 'kael')) ...c.jobMembers(j)].where((x) => !on.contains(x)),
+    (a, b) {
+      final d = (grk[gradeOf[b]] ?? 0) - (grk[gradeOf[a]] ?? 0);
+      if (d != 0) return d;
+      final st = c.recStar(b) - c.recStar(a);
+      if (st != 0) return st;
+      return c.cPow(b).compareTo(c.cPow(a));
+    },
+  );
+  return <String>[
+    'kael',
+    if (c.owned(GameCalc.chiefId) || c.chiefShop()) GameCalc.chiefId,
+    ...on,
+    ...bench,
+    for (final j in jobSlots.where((j) => j != 'kael' && c.slotMember(j) == null)) storyOf[j]!,
+  ];
+}
+
+/// 자리마다 대기 중인 더 센 동료 (▲)
+List<String> ptBenchBest(GameController g) {
+  final c = g.calc;
+  return [
+    for (final j in jobSlots.where((j) => j != 'kael' && c.betterBench(j))) c.jobMembers(j).reduce((a, x) => c.cPow(x) > c.cPow(a) ? x : a),
+  ];
+}
+
+/// 출전 중 동료 (카엘 제외)
+List<String> ptOnIds(GameController g) => [for (final j in jobSlots.where((j) => j != 'kael')) g.calc.slotMember(j)].whereType<String>().toList();
+
+/// 고른 동료: 없으면 ★ 올릴 동료 → 더 센 대기 동료 → 첫 출전 동료 → 카엘
+String ptSelId(GameController g) {
+  final c = g.calc, ids = ptOrder(g), cur = g.ptSel;
+  if (ids.contains(cur) && (c.owned(cur) || cur == GameCalc.chiefId)) return cur;
+  final ready = c.cardReady();
+  final bb = ptBenchBest(g), on = ptOnIds(g);
+  return g.ptSel = ids.firstWhere(ready.contains, orElse: () => bb.isNotEmpty ? bb.first : on.isNotEmpty ? on.first : 'kael');
+}
+
+/// 카드가 충분한 동료를 모두 맞이하기·★ 올리기 (웹 cardUpAll)
+void ptUpAll(GameController g) {
+  final got = <String, int>{};
+  for (var k = 0; k < 200; k++) {
+    final r = g.calc.cardReady();
+    if (r.isEmpty) break;
+    for (final id in r) {
+      g.act((a) => a.recruitUp(id, quiet: true));
+      got[id] = g.calc.recStar(id);
+    }
+  }
+  if (got.isEmpty) return;
+  g.save();
+  final e = got.entries.toList();
+  g.toast(e.length == 1 ? '${comps[e.first.key]!.n} ★${e.first.value}!' : '동료 ${e.length}명 ★ 올리기 · ${e.map((x) => '${comps[x.key]!.n} ★${x.value}').join(', ')}');
+}
+
+/// 출전 동료 모두 한 단계씩 — 골드가 다 있을 때만 (웹 lvAll)
+void ptLvAll(GameController g) {
+  final ids = ptOnIds(g), cost = ids.fold<num>(0, (a, id) => a + GameCalc.compCost(orNum(g.state.lv[id], 1)));
+  if (ids.isEmpty) return;
+  if (g.state.gold < cost) return g.toast('골드가 모자라요 (${fmt(cost)} 필요)');
+  for (final id in ids) {
+    g.act((a) => a.levelUp(id));
+  }
+  g.haptic(const [20]);
+  g.toast('출전 동료 ${ids.length}명 레벨업');
+  g.save();
+}
+
+/// 원정대 탭 아래 고른 동료 상세 (웹 tpanelHtml): 레벨업 · ★ 올리기 · 출전 + 모두 올리기 · 모두 레벨업. 나중에 이야기·호감도 자리
+class PtPanel extends StatelessWidget {
+  const PtPanel(this.g, {super.key});
+  final GameController g;
+
+  Widget _btn(String k, String top, String bottom, {VoidCallback? onTap, BuyKind kind = BuyKind.gold, bool glow = false, String? icon}) => KdBuy(
+        key: ValueKey(k),
+        kind: kind,
+        glow: glow,
+        minWidth: 0,
+        small: true,
+        label: top,
+        text: bottom,
+        costIcon: icon,
+        onTap: onTap,
+      );
+
+  @override
+  Widget build(BuildContext context) {
+    final c = g.calc, id = ptSelId(g), cd = comps[id]!, kael = id == 'kael', chief = id == GameCalc.chiefId, has = c.owned(id);
+    final lv = orNum(g.state.lv[id], 1), j = jobOf[id];
+    final on = kael || (chief ? c.chiefOn() : c.slotMember(j!) == id);
+    final wk = !kael && !chief ? c.working()[id] : null;
+    String sub;
+    List<Widget> acts;
+    if (kael) {
+      sub = '${ranks[c.rankIdx()].n} · 원정대 전투력 ${fmt(c.power())}';
+      acts = [Expanded(child: _btn('tpEq', '카엘은 장비로 강해져요', '장비 탭 가기', onTap: () => g.setTab(GameTab.eq)))];
+    } else if (chief) {
+      final n = c.ucard, need = c.starNeed(id) ?? 1, mx = has && c.recStar(id) >= c.starMax(id);
+      sub = has ? '${on ? '출전 중' : '대기'} · 카엘 자리 · 카엘 능력치 +${pctTxt(GameCalc.chiefBonus[c.recStar(id)] * 100)}%' : cd.join ?? '';
+      acts = has
+          ? [
+              Expanded(child: _btn('tpStar', '★ 올리기', mx ? '별 모두 모음' : '유니크 $n/$need', glow: c.chiefCan(), onTap: c.chiefCan() ? () => g.act((a) => a.chiefUp()) : null)),
+              const SizedBox(width: 6),
+              Expanded(flex: 2, child: _btn('tpSeat', on ? '출전 중' : '대기', '카엘 자리 바꾸기', kind: BuyKind.ghost, onTap: () => kaelSeatSheet(g))),
+            ]
+          : [Expanded(child: _btn('tpMore2', '카엘 촌장', '맞이하는 법 보기', kind: BuyKind.ghost, onTap: () => chiefSheet(g)))];
+    } else {
+      final uq = gradeOf[id] == 'unique';
+      final n = uq ? c.ucard : orNum(g.state.cards?[id], 0), need = c.starNeed(id) ?? 1, mx = c.recStar(id) >= c.starMax(id);
+      final can = uq ? c.uqCan(id) : !mx && n >= need;
+      final jj = j!, cur = c.slotMember(jj), cost = GameCalc.compCost(lv);
+      sub = '${on ? '출전 중' : wk != null ? '🔨 ${buildingDef(wk).n} 일꾼' : '대기'} · ${jobName[jj]} 자리 · Lv.$lv · 전투력 ${fmt(c.cPow(id))}';
+      acts = [
+        Expanded(
+          child: _btn('tpLv', '레벨업 $lv→${lv + 1}', fmt(cost), icon: goldIcon, onTap: () {
+            if (g.state.gold < cost) return g.toast('골드가 모자라요');
+            g.act((a) => a.levelUp(id));
+          }),
+        ),
+        const SizedBox(width: 6),
+        Expanded(
+          child: _btn('tpStar', c.recStar(id) > 0 ? '★ 올리기' : '맞이하기', mx ? '별 모두 모음' : '${uq ? '유니크' : '카드'} $n/$need',
+              glow: can, onTap: can ? () => g.act((a) => uq ? a.uqUp(id) : a.recruitUp(id)) : null),
+        ),
+        const SizedBox(width: 6),
+        Expanded(
+          child: _btn('tpGo', on ? '출전 중' : '출전', on || cur == null ? '${jobName[jj]} 자리' : '${comps[cur]!.n}와 바꾸기',
+              kind: BuyKind.ghost, onTap: on ? null : () => g.act((a) => a.setMember(jj, id))),
+        ),
+      ];
+    }
+    final rn = c.cardReady().length, onIds = ptOnIds(g);
+    final lvCost = onIds.fold<num>(0, (a, x) => a + GameCalc.compCost(orNum(g.state.lv[x], 1)));
+    return Container(
+      key: const ValueKey('tpanel'),
+      padding: const EdgeInsets.fromLTRB(12, 10, 12, 10),
+      decoration: const BoxDecoration(
+        color: KdColors.panel,
+        border: Border(top: BorderSide(color: Color(0xFF8A6A2A), width: 1.5)),
+        boxShadow: [BoxShadow(color: Color(0x59000000), blurRadius: 16, offset: Offset(0, -4))],
+      ),
+      child: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+        Row(children: [
+          CompFrame(id, w: 48, h: 56, hidden: !(has || chief), dim: chief && !has),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+              Wrap(crossAxisAlignment: WrapCrossAlignment.center, spacing: 5, runSpacing: 2, children: [
+                Text(cd.n, style: KdText.display(16)),
+                if (!kael) ...[GradeTag(id), if (has) Stars(c, id)],
+              ]),
+              Text(sub, maxLines: 2, overflow: TextOverflow.ellipsis, style: KdText.body(11.5, color: KdColors.muted)),
+            ]),
+          ),
+          if (!kael) ...[
+            const SizedBox(width: 6),
+            KdBuy(key: const ValueKey('tpMore'), kind: BuyKind.ghost, small: true, minWidth: 0, text: '자세히', onTap: () => chief ? chiefSheet(g) : compSheet(g, id)),
+          ],
+        ]),
+        const SizedBox(height: 8),
+        IntrinsicHeight(child: Row(crossAxisAlignment: CrossAxisAlignment.stretch, children: acts)),
+        const SizedBox(height: 6),
+        IntrinsicHeight(
+          child: Row(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+            Expanded(
+              child: _btn('tpStarAll', '카드가 모인 동료', rn > 0 ? '★ 모두 올리기 ($rn)' : '★ 모두 올리기',
+                  kind: rn > 0 ? BuyKind.gold : BuyKind.ghost, glow: rn > 0, onTap: rn > 0 ? () => ptUpAll(g) : null),
+            ),
+            const SizedBox(width: 6),
+            Expanded(
+              child: _btn('tpLvAll', '출전 동료 모두 레벨업', fmt(lvCost), icon: goldIcon, kind: BuyKind.ghost, onTap: onIds.isEmpty ? null : () => ptLvAll(g)),
+            ),
+          ]),
+        ),
+      ]),
+    );
+  }
 }

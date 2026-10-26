@@ -947,6 +947,117 @@ table.codds th {
   color: var(--gold-ink);
   font-weight: 700;
 }
+.cgrid.tgrid {
+  /* 칸 위 표시(출전·★·▲)가 스크롤할 때 위 탭 줄 위로 올라오지 않게 */
+  isolation: isolate;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 6px;
+}
+.tgrid .gcell {
+  padding: 8px 2px 5px;
+}
+.tgrid .gcell .cfr {
+  width: 48px;
+  height: 56px;
+}
+.tgrid .gcell b {
+  font-size: 12.5px;
+}
+.tgrid .gcell small {
+  font-size: 11px;
+}
+.gcell.sel {
+  border-color: #fff;
+  box-shadow:
+    0 0 0 2px var(--gold),
+    0 0 12px rgba(255, 201, 74, 0.45);
+}
+.gcell .gbd {
+  position: absolute;
+  top: -6px;
+  right: -3px;
+  font-style: normal;
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 16px;
+  padding: 0 5px;
+  border-radius: 999px;
+  color: #1a1406;
+}
+.gcell .gbd.st {
+  background: #ffd34a;
+  box-shadow: 0 0 6px rgba(255, 211, 74, 0.7);
+}
+.gcell .gbd.bb {
+  background: #7be08f;
+}
+.tpanel {
+  /* 격자를 내려도 고른 동료 상세는 화면 아래에 붙어 있음 (B안) */
+  position: sticky;
+  bottom: -8px;
+  z-index: 4;
+  margin-top: 4px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 10px 12px 12px;
+  border-radius: 16px;
+  border: 1px solid #8a6a2a;
+  background: var(--panel);
+  box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.35);
+}
+.tph {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.tph .cfr {
+  width: 56px;
+  height: 66px;
+  flex-shrink: 0;
+}
+.tph .info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.tph .info b {
+  font-family: var(--f-display);
+  font-size: 17px;
+}
+.tph .info small {
+  font-size: 12px;
+  color: var(--muted);
+}
+.tph .buy.sm {
+  flex-shrink: 0;
+}
+.tpacts {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 6px;
+}
+.tpacts .buy,
+.tpall .buy {
+  min-width: 0;
+  min-height: 52px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1px;
+  padding: 4px;
+}
+.tpall {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 6px;
+}
+.tpall .buy {
+  min-height: 44px;
+}
 .cgrid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -7120,7 +7231,7 @@ input:focus-visible {
 
     <section class="page" id="p-pt" hidden>
       <div class="phead"><h2>원정대</h2><button class="pclose" data-close aria-label="전투로 돌아가기">✕</button></div>
-      <div class="subtabs" id="ptTabs"><button data-pt="form">편성</button><button data-pt="list">동료</button><button data-pt="card">카드<i class="dot opt" id="ptCardDot" hidden></i></button></div>
+      <div class="subtabs" id="ptTabs"><button data-pt="team">원정대</button><button data-pt="card">카드 도감<i class="dot opt" id="ptCardDot" hidden></i></button></div>
       <p class="note" id="ptNote"></p>
       <div id="party" style="display:flex;flex-direction:column;gap:8px"></div>
     </section>
@@ -11598,7 +11709,7 @@ const GUIDE = [
     ok: () => !S.joined.margo || Object.keys(S.lv).some(k => S.joined[k] && S.lv[k] > 1),
     t: '원정대에서 동료 레벨을 올려요',
     go: () => {
-      ptTab = 'list';
+      ptTab = 'team';
       setTab('pt');
     }
   },
@@ -11762,8 +11873,42 @@ function numFlash(id, v, big) {
   document.body.appendChild(f);
   setTimeout(() => f.remove(), 1100);
 }
+/* 원정대 화면 B안 (대표님 결정 10-27): 탭 「원정대 / 카드 도감」 · 위 출전 자리 · 동료 얼굴 격자 · 고른 동료 상세(레벨업·★·출전) */
 let partySig = '',
-  ptTab = 'form';
+  ptTab = 'team',
+  ptSel = '';
+/* 동료 레벨업 (상세 창·원정대 상세·모두 레벨업이 같이 씀) */
+function compLvUp(id, quiet) {
+  const cc = compCost(S.lv[id] || 1);
+  if (S.gold < cc) {
+    if (!quiet) toast('골드가 모자라요');
+    return false;
+  }
+  const h0 = stats(id).hp;
+  S.gold -= cc;
+  S.lv[id] = (S.lv[id] || 1) + 1;
+  if (P[id]) P[id].hp += stats(id).hp - h0;
+  partySig = '';
+  if (!quiet) renderAll();
+  return true;
+}
+/* 출전 중 동료(카엘 제외) 모두 한 단계씩 — 골드가 다 있을 때만 */
+const lvAllIds = () => JSLOT.filter(j => j !== 'kael').map(slotMember).filter(Boolean);
+const lvAllCost = () => lvAllIds().reduce((a, id) => a + compCost(S.lv[id] || 1), 0);
+function lvAll() {
+  const ids = lvAllIds(),
+    c = lvAllCost();
+  if (!ids.length) return;
+  if (S.gold < c) return toast('골드가 모자라요 (' + fmt(c) + ' 필요)');
+  ids.forEach(id => compLvUp(id, true));
+  haptic(20);
+  toast('출전 동료 ' + ids.length + '명 레벨업');
+  save();
+  renderAll();
+}
+/* 자리마다 대기 중인 더 센 동료 (▲ 표시) */
+const benchBest = () =>
+  JSLOT.filter(j => j !== 'kael' && betterBench(j)).map(j => jobMembers(j).reduce((a, x) => (cPow(x) > cPow(a) ? x : a)));
 /* 빨간 점: 지금 누르면 바로 이득일 때만, 확인하면 다음 변화 전까지 꺼짐 */
 const cardReady = () =>
   CARDIDS().filter(id => cardOpen(id) && recStar(id) < starMax(id) && ((S.cards && S.cards[id]) || 0) >= starNeed(id));
@@ -12061,10 +12206,81 @@ function ngoalHtml() {
   return `<div class="sec">다음 목표</div><div class="ngoal"><span class="cfr" style="--g:${g.face ? gr(g.id).c : '#6b7690'}">${g.face ? `<img src="assets/ui/frame_${gr(g.id).fr}.png" alt="" onerror="this.remove()"><canvas class="portrait" id="ng-face"></canvas>` : `<img class="jobq" src="assets/ui/job_${g.job}.png" alt="" onerror="this.outerHTML='<span class=q>?</span>'">`}</span>
  <div class="info"><small>${g.title}</small><b>${g.name}</b>${g.face ? `<div class="xp"><div style="width:${Math.min(100, (g.n / g.need) * 100)}%"></div></div><small>카드 ${g.n} / ${g.need}</small>` : `<small>${g.desc}</small>`}</div>${g.face ? `<button class="buy${g.can ? ' glow' : ''}" id="ngGo">${g.can ? (recStar(g.id) ? '★ 올리기' : '맞이하기') : '카드 보기'}</button>` : ''}</div>`;
 }
+/* 원정대 탭 아래 고른 동료 상세: 레벨업 · ★ 올리기 · 출전 + 모두 올리기 · 모두 레벨업 (나중에 이야기·호감도 자리) */
+function tpanelHtml(id, upN) {
+  const c = COMP[id],
+    kael = id === 'kael',
+    has = owned(id),
+    col = kael ? '#ffd34a' : gr(id).c,
+    fr = kael ? 'legendary' : gr(id).fr,
+    lv = S.lv[id] || 1,
+    j = JOB[id],
+    on = kael || (id === CHIEF ? chiefOn() : slotMember(j) === id),
+    wk = working()[id];
+  let sub = '',
+    acts = '';
+  if (kael) {
+    sub = RANKS[rankIdx()].n + ' · 원정대 전투력 ' + fmt(power());
+    acts = `<button class="buy" id="tpEq" style="grid-column:1/-1"><span class="bl">카엘은 장비로 강해져요</span><span class="bc">장비 탭 가기</span></button>`;
+  } else if (id === CHIEF) {
+    const n = S.ucard || 0,
+      need = starNeed(id),
+      mx = has && recStar(id) >= starMax(id);
+    sub = has ? (on ? '출전 중' : '대기') + ' · 카엘 자리 · 카엘 능력치 +' + CHIEF_B[recStar(id)] * 100 + '%' : c.join;
+    acts = has
+      ? `<button class="buy${chiefCan() ? ' glow' : ''}" id="tpStar" ${chiefCan() ? '' : 'disabled'}><span class="bl">★ 올리기</span><span class="bc">${mx ? '별 모두 모음' : '유니크 카드 ' + n + '/' + need}</span></button><button class="buy ghost" id="tpSeat" style="grid-column:span 2"><span class="bl">${on ? '출전 중' : '대기'}</span><span class="bc">카엘 자리 바꾸기</span></button>`
+      : `<button class="buy ghost" id="tpMore2" style="grid-column:1/-1">맞이하는 법 보기</button>`;
+  } else {
+    const uq = GRADE[id] === 'unique',
+      n = uq ? S.ucard || 0 : (S.cards && S.cards[id]) || 0,
+      need = starNeed(id),
+      mx = recStar(id) >= starMax(id),
+      can = uq ? uqCan(id) : !mx && n >= need,
+      cur = slotMember(j);
+    sub = (on ? '출전 중' : wk ? '🔨 ' + bldK(wk).n + ' 일꾼' : '대기') + ' · ' + JOBN[j] + ' 자리 · Lv.' + lv + ' · 전투력 ' + fmt(cPow(id));
+    acts =
+      `<button class="buy" id="tpLv"><span class="bl">레벨업 ${lv}→${lv + 1}</span><span class="bc"><img src="assets/ui/ui_gold.png" alt="" onerror="this.remove()">${fmt(compCost(lv))}</span></button>` +
+      `<button class="buy${can ? ' glow' : ''}" id="tpStar" ${can ? '' : 'disabled'}><span class="bl">${recStar(id) ? '★ 올리기' : '맞이하기'}</span><span class="bc">${mx ? '별 모두 모음' : (uq ? '유니크 ' : '카드 ') + n + '/' + need}</span></button>` +
+      `<button class="buy ghost" id="tpGo" ${on ? 'disabled' : ''}><span class="bl">${on ? '출전 중' : '출전'}</span><span class="bc">${on || !cur ? JOBN[j] + ' 자리' : COMP[cur].n + '와 바꾸기'}</span></button>`;
+  }
+  const rn = cardReady().length;
+  return `<div class="tpanel"><div class="tph"><span class="cfr" style="--g:${col}"><img src="assets/ui/frame_${fr}.png" alt="" onerror="this.remove()"><canvas class="portrait" id="tp-face"></canvas></span><div class="info"><b>${c.n}</b><span>${kael ? '' : gradeTag(id) + starTxt(id)}</span><small>${sub}</small>${SKILLS[id] ? `<small>스킬 · ${SKILLS[id].n}</small>` : ''}</div>${kael ? '' : '<button class="buy ghost sm" id="tpMore">자세히</button>'}</div><div class="tpacts">${acts}</div><div class="tpall"><button class="buy${rn ? ' glow' : ' ghost'}" id="tpStarAll" ${rn ? '' : 'disabled'}>★ 모두 올리기${rn ? ' (' + rn + ')' : ''}</button><button class="buy ghost" id="tpLvAll" ${lvAllIds().length ? '' : 'disabled'}><span class="bl">출전 동료 모두 레벨업</span><span class="bc"><img src="assets/ui/ui_gold.png" alt="" onerror="this.remove()">${fmt(lvAllCost())}</span></button></div></div>`;
+}
+function tpanelBind(id) {
+  const fc = $('tp-face');
+  if (fc && (owned(id) || id === CHIEF)) faceTo(fc, id);
+  document.querySelectorAll('[data-sel]').forEach(
+    b =>
+      (b.onclick = () => {
+        ptSel = b.dataset.sel;
+        partySig = '';
+        renderParty();
+      })
+  );
+  const on = (k, f) => {
+    const e = $(k);
+    if (e) e.onclick = f;
+  };
+  on('tpEq', () => setTab('eq'));
+  on('tpMore', () => (id === CHIEF ? chiefSheet() : compSheet(id)));
+  on('tpMore2', () => chiefSheet());
+  on('tpSeat', () => kaelSeatSheet());
+  on('tpLv', () => compLvUp(id));
+  on('tpStar', () => (id === CHIEF ? chiefUp() : GRADE[id] === 'unique' ? uqUp(id) : recruitUp(id)));
+  on('tpGo', () => {
+    if (setMember(JOB[id], id)) {
+      partySig = '';
+      renderAll();
+    }
+  });
+  on('tpStarAll', cardUpAll);
+  on('tpLvAll', lvAll);
+}
 function renderParty() {
+  if (ptTab !== 'card') ptTab = 'team';
   const sig =
     ptTab +
-    (S.ptGrid ? 'g' : 'l') +
+    ptSel +
     (S.wish || '') +
     JSON.stringify(S.cards || {}) +
     JSON.stringify(S.rec || {}) +
@@ -12201,7 +12417,8 @@ function renderParty() {
     const list = partyOrder();
     /* 격자 칸 (U-1): 얼굴 + 등급 테두리 + ★ + Lv. 출전 중 금테, 🔨 일꾼, ★ 올리기 가능 노란 점, 합류 전 어둡게 ??? */
     const ready = cardReady();
-    const gcell = id => {
+    const bb = benchBest();
+    const gcell = (id, pick) => {
       const c = COMP[id],
         has = owned(id),
         kael = id === 'kael',
@@ -12210,25 +12427,28 @@ function renderParty() {
         up = id === CHIEF ? chiefCan() : GRADE[id] === 'unique' ? uqCan(id) : ready.includes(id),
         fr = kael ? 'legendary' : gr(id).fr,
         col = kael ? '#ffd34a' : gr(id).c;
-      return `<button class="gcell${has ? '' : ' locked'}${on && has ? ' on' : ''}" ${has || id === CHIEF ? `data-det="${id}"` : 'disabled'} style="--g:${col}"><span class="cfr"><img src="assets/ui/frame_${fr}.png" alt="" onerror="this.remove()"><canvas class="portrait" id="gc-${id}"></canvas></span>${up ? '<i class="gup"></i>' : ''}${wk ? '<i class="gwk">🔨</i>' : ''}${on && has && !kael ? '<i class="gon">출전</i>' : ''}<b>${has || id === CHIEF ? c.n : '???'}</b><small>${kael ? RANKS[rankIdx()].n : has ? (id === CHIEF ? '' : 'Lv.' + (S.lv[id] || 1) + ' ') + '<span class="gst">' + '★'.repeat(recStar(id)) + '</span>' : id === CHIEF ? '유니크' : '합류 전'}</small></button>`;
+      return `<button class="gcell${has ? '' : ' locked'}${on && has ? ' on' : ''}${pick && id === ptSel ? ' sel' : ''}" ${has || id === CHIEF ? `data-${pick ? 'sel' : 'det'}="${id}"` : 'disabled'} style="--g:${col}">${pick && up ? '<i class="gbd st">★</i>' : pick && bb.includes(id) ? '<i class="gbd bb">▲</i>' : ''}<span class="cfr"><img src="assets/ui/frame_${fr}.png" alt="" onerror="this.remove()"><canvas class="portrait" id="gc-${id}"></canvas></span>${up && !pick ? '<i class="gup"></i>' : ''}${wk ? '<i class="gwk">🔨</i>' : ''}${on && has && !kael ? '<i class="gon">출전</i>' : ''}<b>${has || id === CHIEF ? c.n : '???'}</b><small>${kael ? RANKS[rankIdx()].n : has ? (id === CHIEF ? '' : 'Lv.' + (S.lv[id] || 1) + ' ') + '<span class="gst">' + (pick ? (recStar(id) ? '★' + recStar(id) : '') : '★'.repeat(recStar(id))) + '</span>' : id === CHIEF ? '유니크' : '합류 전'}</small></button>`;
     };
     window._rowOf = rowOf;
-    $('ptNote').hidden = ptTab !== 'form';
+    $('ptNote').hidden = true;
+    /* 고른 동료: 없으면 ★ 올릴 동료 → 더 센 대기 동료 → 첫 출전 동료 */
+    if (!list.includes(ptSel) || !(owned(ptSel) || ptSel === CHIEF)) ptSel = list.find(x => ready.includes(x)) || bb[0] || lvAllIds()[0] || 'kael';
     $('party').innerHTML =
-      ptTab === 'form'
-        ? board + ngoalHtml()
-        : ptTab === 'list'
-          ? `<div class="pvsw"><p class="note">동료를 누르면 자세한 정보·스킬·출전을 볼 수 있어요.</p><div class="seg"><button data-pv="list" class="${S.ptGrid ? '' : 'on'}">목록</button><button data-pv="grid" class="${S.ptGrid ? 'on' : ''}">격자</button></div></div>` +
-            (S.ptGrid ? `<div class="cgrid">${list.map(gcell).join('')}</div>` : list.map(crow).join(''))
-          : `${helpNote('cardgr', '카드 등급·얻는 곳', `카드 등급: <b style="color:#b8c0cc">일반</b>(★3까지) · <b style="color:#5aa8ff">희귀</b>(★4) · <b style="color:#b07bff">영웅</b>(★5) · <b style="color:#ffc23a">전설</b>(★5). 높은 등급일수록 드물게 나오고 기본 능력치가 높아요. 마물·성주·군단장·황금 고블린·오늘의 할 일·피트의 상점에서 카드를 얻어요. ♡ 희망을 눌러 두면 그 동료 카드가 절반 확률로 나와요. 은퇴해도 카드와 별은 남아요.${ucRow || cmax.includes(CHIEF) ? ' <b style="color:#3ee08f">유니크</b>(★5)는 카드 뽑기에 나오지 않고, 유니크 카드로만 별을 올려요.' : ''}`)}${(S.lcard || 0) > 0 ? `<div class="lcbar"><span class="lcic"><img src="assets/ui/card_back.png" alt=""><i>전설</i></span><span><b>전설 만능 카드 ${S.lcard}장</b><small>${lcardCan() ? '전설 동료 줄의 「만능 … 넣기」로 원하는 동료에게 넣어요' : '전설 동료 카드가 나오기 시작하면 넣을 수 있어요'}</small></span></div>` : ''}${cupBar}${recsReady}${ucRow}${ttRow}${recsRest}${maxSec}`;
+      ptTab === 'team'
+        ? board +
+          `<div class="sec">동료 ${list.filter(owned).length}명 <small><b style="color:#ffd34a">★</b> 별 올리기 · <b style="color:#7be08f">▲</b> 출전하면 더 셈</small></div><div class="cgrid tgrid">${list.map(id => gcell(id, true)).join('')}</div>` +
+          ngoalHtml() +
+          tpanelHtml(ptSel, upN)
+        : `${helpNote('cardgr', '카드 등급·얻는 곳', `카드 등급: <b style="color:#b8c0cc">일반</b>(★3까지) · <b style="color:#5aa8ff">희귀</b>(★4) · <b style="color:#b07bff">영웅</b>(★5) · <b style="color:#ffc23a">전설</b>(★5). 높은 등급일수록 드물게 나오고 기본 능력치가 높아요. 마물·성주·군단장·황금 고블린·오늘의 할 일·피트의 상점에서 카드를 얻어요. ♡ 희망을 눌러 두면 그 동료 카드가 절반 확률로 나와요. 은퇴해도 카드와 별은 남아요.${ucRow || cmax.includes(CHIEF) ? ' <b style="color:#3ee08f">유니크</b>(★5)는 카드 뽑기에 나오지 않고, 유니크 카드로만 별을 올려요.' : ''}`)}${(S.lcard || 0) > 0 ? `<div class="lcbar"><span class="lcic"><img src="assets/ui/card_back.png" alt=""><i>전설</i></span><span><b>전설 만능 카드 ${S.lcard}장</b><small>${lcardCan() ? '전설 동료 줄의 「만능 … 넣기」로 원하는 동료에게 넣어요' : '전설 동료 카드가 나오기 시작하면 넣을 수 있어요'}</small></span></div>` : ''}${cupBar}${recsReady}${ucRow}${ttRow}${recsRest}${maxSec}`;
     document.querySelectorAll('#ptTabs [data-pt]').forEach(b => b.classList.toggle('on', b.dataset.pt === ptTab));
     helpBind($('party'), () => {
       partySig = '';
       renderParty();
     });
+    if (ptTab === 'team') tpanelBind(ptSel);
     {
       const g = nextGoal();
-      if (ptTab === 'form' && g) {
+      if (ptTab === 'team' && g) {
         if (g.face) faceTo($('ng-face'), g.id);
         const b = $('ngGo');
         if (b)
@@ -12364,6 +12584,11 @@ function renderParty() {
     const b = $('lv-' + id);
     if (b) b.disabled = S.gold < compCost(S.lv[id] || 1);
   });
+  /* 원정대 상세: 골드가 모자라면 레벨업 버튼 끔 */
+  const tl = $('tpLv'),
+    ta = $('tpLvAll');
+  if (tl && ptSel) tl.disabled = S.gold < compCost(S.lv[ptSel] || 1);
+  if (ta) ta.disabled = !lvAllIds().length || S.gold < lvAllCost();
 }
 let retSig = '';
 function renderRetire() {
