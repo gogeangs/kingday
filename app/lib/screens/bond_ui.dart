@@ -54,9 +54,18 @@ class _AffLineState extends State<AffLine> {
     final pc = c.affPct(id);
     return Column(crossAxisAlignment: CrossAxisAlignment.stretch, mainAxisSize: MainAxisSize.min, children: [
       Row(children: [
-        Text('호감도 ', style: KdText.body(13, color: KdColors.muted)),
-        AffHearts(l, size: 12),
-        const Spacer(),
+        // 좁은 화면(320)에서는 왼쪽(호감도 하트)이 조금 작아짐
+        Expanded(
+          child: FittedBox(
+            fit: BoxFit.scaleDown,
+            alignment: Alignment.centerLeft,
+            child: Row(mainAxisSize: MainAxisSize.min, children: [
+              Text('호감도 ', style: KdText.body(13, color: KdColors.muted)),
+              AffHearts(l, size: 12),
+            ]),
+          ),
+        ),
+        const SizedBox(width: 6),
         Text('공격·체력 +${l * 2}%', key: const ValueKey('affLine'), maxLines: 1, style: KdText.figure(12.5, weight: FontWeight.w600)),
         const SizedBox(width: 6),
         GestureDetector(

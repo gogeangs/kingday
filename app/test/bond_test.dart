@@ -96,6 +96,8 @@ void main() {
       await frames();
       expect(find.byKey(const ValueKey('affLine')), findsOneWidget);
       expect(find.text('공격·체력 +6%'), findsOneWidget);
+      await tester.ensureVisible(find.byKey(const ValueKey('affQ')));
+      await frames(1);
       await tester.tap(find.byKey(const ValueKey('affQ')));
       await frames(2);
       expect(find.textContaining('하루 1번 +10점'), findsOneWidget);
