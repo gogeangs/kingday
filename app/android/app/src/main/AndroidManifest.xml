@@ -46,8 +46,10 @@
     <queries>
         <!-- 문의하기의 「자주 묻는 질문」·개인정보처리방침 웹 페이지 열기 (url_launcher) -->
         <intent>
-            <action android:name="android.intent.action.VIEW"/>
-            <data android:scheme="https"/>
+            <action
+                android:name="android.intent.action.VIEW"/>
+            <data
+                android:scheme="https"/>
         </intent>
         <intent>
             <action
