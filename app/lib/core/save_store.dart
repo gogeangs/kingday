@@ -43,6 +43,7 @@ class SaveStore {
 
   /// 웹 save(): 마지막 접속 시각을 적고 통째로 저장
   Future<void> save(GameState s, int now) async {
+    s.guard();
     s.last = now;
     await _prefs.setString(wSaveKey, s.toJson());
   }

@@ -66,7 +66,7 @@ const KEY = 'kd-adm';
 const PAGE = location.origin + location.pathname;
 const KN = { pay: '결제', bug: '버그', account: '계정', etc: '기타' };
 const SN = { new: '처리 전', answered: '답변함', closed: '처리 완료' };
-const PN = { kd_gem_60: '이삭 60', kd_gem_330: '이삭 330', kd_gem_680: '이삭 680', kd_gem_1280: '이삭 1280', kd_gem_3280: '이삭 3280', kd_gem_6480: '이삭 6480', kd_starter: '첫 구매 꾸러미', kd_chief: '카엘 촌장', kd_sub_monthly: '정기 배송', kd_pass: '원정 일지', kd_growth: '영주의 첫걸음', kd_ttukttak: '뚝딱이' };
+const PN = { kd_gem_60: '이삭 60', kd_gem_330: '이삭 330', kd_gem_680: '이삭 680', kd_gem_1280: '이삭 1280', kd_gem_3280: '이삭 3280', kd_gem_6480: '이삭 6480', kd_starter: '첫 구매 꾸러미', kd_chief: '카엘 촌장', kd_sub_monthly: '정기 배송', kd_pass: '원정 일지', kd_growth: '영주의 첫걸음', kd_ttukttak: '뚝딱이', kd_lucian: '루시안' };
 const TPL = [
   ['결제 확인', '영주님, 문의 주셔서 고마워요. 결제 내역을 확인했고 황금 이삭을 이 우편으로 함께 보내 드려요. 불편을 드려 죄송해요!'],
   ['버그 접수', '영주님, 알려 주셔서 고마워요. 말씀해 주신 문제를 확인해서 다음 업데이트에서 고칠게요. 불편을 드려 죄송해요!'],
@@ -121,6 +121,8 @@ $('logout').onclick = logout;
 
 /* ── 화면 ── */
 let rows = [], sel = null, tab = 'new', kind = '', busy = false;
+let hid = null; /* 숨긴 랭킹 기록 (stage11_admin_hidden.sql) — null 이면 서버에 함수가 없음 */
+const HK = { season: '시즌 영지', hall: '명예의 전당', goblin: '황금 고블린', tower: '시련의 탑', tower_week: '탑 주간' };
 const photoUrl = {};
 function loginView(msg) {
   $('app').innerHTML = `<div class="center card"><h2 style="margin:0 0 6px;color:var(--gold);font-size:19px">대표님 전용 페이지</h2><p class="muted">${msg || '관리자로 등록된 구글 계정으로 로그인해 주세요.'}</p><button class="btn pri" id="go" style="width:100%;margin-top:10px">구글로 로그인</button></div>`;
@@ -152,6 +154,7 @@ async function load() {
   if (busy) return;
   busy = true;
   try { rows = (await rpc('kd_adm_inq_list', {})) || []; } catch (e) { toast('목록을 불러오지 못했어요'); }
+  try { hid = (await rpc('kd_adm_hidden_list', {})) || []; } catch (e) { hid = null; }
   busy = false;
   if (sel && !rows.some(r => r.id === sel)) sel = null;
   render();
@@ -160,8 +163,9 @@ function render() {
   const cnt = s => rows.filter(r => (!s || r.status === s) && (!kind || r.kind === kind)).length;
   const list = rows.filter(r => (!tab || r.status === tab) && (!kind || r.kind === kind));
   const tabs = [['new', '처리 전'], ['answered', '답변함'], ['closed', '처리 완료'], ['', '전체']];
+  if (tab === 'hidden') return renderHidden();
   document.title = (rows.filter(r => r.status === 'new').length ? `(${rows.filter(r => r.status === 'new').length}) ` : '') + '문의 관리 · 왕이 되는 그날까지';
-  $('app').innerHTML = `<div class="tabs">${tabs.map(([k, n]) => `<button data-tab="${k}" class="${tab === k ? 'on' : ''}">${n}<span class="n">${cnt(k)}</span></button>`).join('')}</div>
+  $('app').innerHTML = `<div class="tabs">${tabs.map(([k, n]) => `<button data-tab="${k}" class="${tab === k ? 'on' : ''}">${n}<span class="n">${cnt(k)}</span></button>`).join('')}${hidTab()}</div>
   <div class="tabs">${[['', '모든 종류'], ...Object.entries(KN)].map(([k, n]) => `<button data-kind="${k}" class="${kind === k ? 'on' : ''}">${n}</button>`).join('')}</div>
   <div class="grid ${sel ? 'sel' : 'noSel'}"><div id="list">${list.length ? list.map(r => `<button class="it${r.id === sel ? ' on' : ''}" data-id="${r.id}"><div class="top"><span class="tag k-${esc(r.kind)}">${KN[r.kind] || esc(r.kind)}</span><span class="tag s-${esc(r.status)}">${SN[r.status] || esc(r.status)}</span><b style="font-size:14px">${esc(r.nick || '(닉네임 없음)')}</b>${r.photo ? '<span title="사진">📷</span>' : ''}<time title="${dt(r.created_at)}">${ago(r.created_at)}</time></div><p>${esc(r.body)}</p></button>`).join('') : '<div class="empty">문의가 없어요.</div>'}</div>
   <div id="detail">${detailHtml()}</div></div>`;
@@ -169,6 +173,31 @@ function render() {
   document.querySelectorAll('[data-kind]').forEach(b => (b.onclick = () => { kind = b.dataset.kind; render(); }));
   document.querySelectorAll('[data-id]').forEach(b => (b.onclick = () => { sel = +b.dataset.id; render(); scrollTo(0, 0); }));
   bindDetail();
+}
+/* ── 숨긴 랭킹 기록: 속도 검사에 걸려 랭킹에서 빠진 기록. 진짜 플레이로 보이면 「다시 보이기」 ── */
+function hidTab() { return `<button data-tab="hidden" class="${tab === 'hidden' ? 'on' : ''}" style="margin-left:auto">숨긴 랭킹 기록<span class="n">${hid ? hid.length : '-'}</span></button>`; }
+function renderHidden() {
+  const tabs = [['new', '처리 전'], ['answered', '답변함'], ['closed', '처리 완료'], ['', '전체']];
+  const body = hid == null
+    ? '<div class="empty">서버에 <b>stage11_admin_hidden.sql</b>을 실행하면 볼 수 있어요.</div>'
+    : hid.length
+      ? `<p class="muted">속도 검사(너무 빨리 오른 기록)에 걸려 랭킹에서 빠진 기록이에요. 시험 계정이나 조작이 아니고 진짜로 플레이한 기록이면 「다시 보이기」를 누르세요. 이미 끝난 시즌·주의 보상은 다시 주지 않으니 필요하면 문의 답변으로 이삭을 보내 주세요.</p>
+        <div id="list">${hid.map((r, i) => `<div class="it"><div class="top"><span class="tag">${HK[r.kind] || esc(r.kind)}${r.kind === 'season' ? ' ' + r.key : r.kind === 'goblin' || r.kind === 'tower_week' ? ' ' + r.key + '주' : ''}</span><b style="font-size:14px">${esc(r.nick || '(닉네임 없음)')}</b>${r.guest ? '<span class="tag">게스트</span>' : ''}<time title="${dt(r.at)}">${ago(r.at)}</time></div>
+          <p>${r.kind === 'goblin' ? '처치 ' + r.value + '마리' : r.kind === 'tower' || r.kind === 'tower_week' ? r.value + '층' : '영지 ' + r.value}${r.best ? ' · 최고 영지 ' + r.best : ''}${r.gem != null ? ' · 이삭 ' + r.gem : ''}${r.email ? ' · ' + esc(r.email) : ''}</p>
+          <div class="row"><code style="font-size:11px">${esc(r.user_id)}</code><button class="btn sm" data-unhide="${i}">다시 보이기</button></div></div>`).join('')}</div>`
+      : '<div class="empty">숨긴 기록이 없어요.</div>';
+  $('app').innerHTML = `<div class="tabs">${tabs.map(([k, n]) => `<button data-tab="${k}">${n}</button>`).join('')}${hidTab()}</div>${body}`;
+  document.querySelectorAll('[data-tab]').forEach(b => (b.onclick = () => { tab = b.dataset.tab; render(); }));
+  document.querySelectorAll('[data-unhide]').forEach(b => (b.onclick = async () => {
+    const r = hid[+b.dataset.unhide];
+    if (!confirm(`${r.nick || '이 영주'}의 ${HK[r.kind] || r.kind} 기록을 랭킹에 다시 보일까요?`)) return;
+    b.disabled = true;
+    try {
+      const res = await rpc('kd_adm_hidden_set', { p_kind: r.kind, p_key: r.key, p_user: r.user_id, p_hidden: false });
+      toast(res === 'ok' ? '랭킹에 다시 보여요' : '기록을 찾지 못했어요');
+      await load();
+    } catch (e) { toast('바꾸지 못했어요'); b.disabled = false; }
+  }));
 }
 function detailHtml() {
   const r = rows.find(x => x.id === sel);
