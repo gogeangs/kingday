@@ -1,6 +1,7 @@
 /// 공통 화면 부품 — 웹 index.html CSS 의 .box .row .sec .note .kv .xp .buy .acts .sheet .talk 를 옮긴 것.
 library;
 
+import 'dart:math' as math;
 import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
@@ -111,15 +112,29 @@ class XpBar extends StatelessWidget {
   final Color color, bg;
 
   @override
-  Widget build(BuildContext context) => ClipRRect(
-        borderRadius: BorderRadius.circular(height / 2),
-        child: Container(
-          height: height,
-          color: bg,
-          alignment: Alignment.centerLeft,
-          child: FractionallySizedBox(widthFactor: value.isNaN ? 0 : value.clamp(0, 1).toDouble(), child: Container(color: color)),
-        ),
-      );
+  Widget build(BuildContext context) {
+    final v = value.isNaN ? 0.0 : value.clamp(0, 1).toDouble();
+    // 조금이라도 모였으면 최소 8 너비로 (1/80 이 점처럼 보임, 대표님 제보 10-27 · 웹 .xp div min-width)
+    return SizedBox(height: height, width: double.infinity, child: CustomPaint(painter: _XpPainter(v, color, bg)));
+  }
+}
+
+class _XpPainter extends CustomPainter {
+  _XpPainter(this.v, this.color, this.bg);
+  final double v;
+  final Color color, bg;
+
+  @override
+  void paint(Canvas c, Size s) {
+    final r = Radius.circular(s.height / 2);
+    c.drawRRect(RRect.fromRectAndRadius(Offset.zero & s, r), Paint()..color = bg);
+    if (v <= 0) return;
+    final w = math.min(s.width, math.max(s.width * v, 8.0));
+    c.drawRRect(RRect.fromRectAndRadius(Rect.fromLTWH(0, 0, w, s.height), r), Paint()..color = color);
+  }
+
+  @override
+  bool shouldRepaint(_XpPainter o) => o.v != v || o.color != color || o.bg != bg;
 }
 
 /// 버튼 색 규칙 (U-2 ⑦): gold = 골드·이삭 쓰기 · ghost = 다른 화면으로 이동 · claim(초록) = 받기

@@ -300,7 +300,7 @@ class _AttendSheetState extends State<AttendSheet> {
     final adOk = done && a[tab == 'w' ? 'adw' : 'adm'] != t && g.calc.adLeft('att') > 0;
 
     return KdSheetBody(
-      titleWidget: const HdBanner('hd_attend', '피트의 출석부'),
+      titleWidget: const HdBanner('hd_attend', '피트의 출석부', padBottom: .06),
       children: [
         if (widget.intro) ...const [
           Para('m:피트|어서 와요, 영주님! 오늘부터 출석부를 만들었어요. 하루 한 번 얼굴만 보여 주시면 선물을 챙겨 드릴게요.'),

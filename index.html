@@ -2619,6 +2619,7 @@ table.codds th {
   align-items: center;
   justify-content: center;
   padding-top: var(--hp, 1%);
+  padding-bottom: var(--hpb, 0);
 }
 .hdban span {
   line-height: 1;
@@ -3718,6 +3719,8 @@ table.codds th {
 }
 .pscroll {
   flex-shrink: 0;
+  -webkit-mask-image: linear-gradient(to right, #000 calc(100% - 28px), transparent);
+  mask-image: linear-gradient(to right, #000 calc(100% - 28px), transparent);
   overflow-x: auto;
   overflow-y: hidden;
   -webkit-overflow-scrolling: touch;
@@ -3729,6 +3732,10 @@ table.codds th {
   display: flex;
   gap: 6px;
   width: max-content;
+}
+.pscroll.end {
+  -webkit-mask-image: none;
+  mask-image: none;
 }
 .plab {
   position: sticky;
@@ -3854,6 +3861,17 @@ table.codds th {
 .pcell .pck {
   background: #2f8f55;
   color: #fff;
+  /* 칸 안 오른쪽 위 — 아래 유료 칸 테두리에 걸치지 않게 (대표님 제보 10-27) */
+  bottom: auto;
+  left: auto;
+  top: 3px;
+  right: 3px;
+  transform: none;
+  width: 16px;
+  height: 16px;
+  padding: 0;
+  line-height: 16px;
+  text-align: center;
 }
 .pcell .pcl {
   background: transparent;
@@ -5241,6 +5259,11 @@ canvas {
 .xp div {
   height: 100%;
   background: var(--gold);
+  border-radius: 3px;
+}
+/* 조금이라도 모였으면 막대로 보이게 (1/80 이 점처럼 보임, 대표님 제보 10-27) */
+.xp div:not([style*="width:0%"]) {
+  min-width: 8px;
 }
 .odds {
   display: flex;
@@ -6055,6 +6078,21 @@ canvas {
 .vsel .rowic {
   width: 64px;
   height: 64px;
+}
+.mapall {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  z-index: 2;
+  padding: 5px 10px;
+  border-radius: 999px;
+  border: 1px solid var(--gold);
+  background: rgba(13, 18, 32, 0.8);
+  color: var(--gold);
+  font: inherit;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
 }
 .mapwrap {
   position: relative;
@@ -6994,7 +7032,7 @@ input:focus-visible {
       <div class="phead"><h2>지도</h2><button class="pclose" data-close aria-label="전투로 돌아가기">✕</button></div>
       <div class="mapbar" id="mapBar"></div>
       <button class="mapnext" id="mapNext"></button>
-      <div class="mapwrap"><canvas id="mc" aria-label="에르단 대륙 지도. 지역을 누르면 크게 보여요"></canvas></div>
+      <div class="mapwrap"><canvas id="mc" aria-label="에르단 대륙 지도. 지역을 누르면 크게 보여요"></canvas><button class="mapall" id="mapAll" hidden>⤢ 전체 보기</button></div>
       <div class="mprow"><button class="buy ghost rkbtn" id="mapRank">🏆 랭킹 보기</button><button class="buy rkbtn chbtn" id="mapCh"><img class="chimg" src="assets/ui/icon_challenge.png" alt="" onerror="this.remove()"><span class="chemo">⚔</span> <span id="mapChT">도전</span><i class="dot" id="chDot" hidden></i></button></div>
       <p class="vhint">지역을 누르면 크게 보여요 · 두 번 누르면 전체 지도</p>
     </section>
@@ -9768,10 +9806,16 @@ function passSheet() {
         } else if (w === 'p' && !p.paid) toast('유료 줄은 원정 일지를 열면 받을 수 있어요');
       })
   );
-  /* 지금 단계가 보이게 가로로 밀어 둠 */
+  /* 받을 칸(없으면 지금 단계)이 가운데 오게 가로로 밀어 둠 · 오른쪽 끝을 흐리게 해 「옆으로 더 있음」 표시 (대표님 제보 10-27) */
   const sc = $('passBody'),
-    c = sc && sc.querySelector('.pcol.cur, .pcol:last-child');
+    cc = sc && sc.querySelector('.pcell.can'),
+    c = (cc && cc.closest('.pcol')) || (sc && sc.querySelector('.pcol.cur, .pcol:last-child'));
   if (sc && c) sc.scrollLeft = Math.max(0, c.offsetLeft - sc.clientWidth / 2 + c.offsetWidth / 2);
+  if (sc) {
+    const edge = () => sc.classList.toggle('end', sc.scrollLeft + sc.clientWidth >= sc.scrollWidth - 4);
+    sc.onscroll = edge;
+    edge();
+  }
 }
 /* 시즌이 끝나 우편으로 넘어온 원정 일지 보상 (이 기기 저장에 있음) */
 const passMails = () => (S && S.pass && Array.isArray(S.pass.mail) ? S.pass.mail : []);
@@ -11947,7 +11991,7 @@ function renderParty() {
               mx = has && stv >= starMax(id),
               need = starNeed(id),
               n = S.ucard || 0;
-            return `<div class="ccard${stv ? ' own' : ''}" style="--g:${gr(id).c}"><span class="cfr"><img src="assets/ui/frame_unique.png" alt="" onerror="this.remove()"><canvas class="portrait" id="pcd-${id}"></canvas></span><div class="info"><b>${COMP[id].n}</b>${gradeTag(id)}<span class="role">카엘 자리</span>${stv ? starTxt(id) : ''}<div class="vpline"><img src="assets/ui/village_skill.png" alt="" style="width:16px;height:16px;vertical-align:-3px;margin-right:3px">마을 스킬 · ${VPAS[id].n}</div>${!has ? `<div>${UCIMG} ${n}장 모아 둠</div><div>${chiefShop() ? '상점 ' + won(CHIEF_PK.won) + ' 또는 ' : ''}은퇴 ${Math.min(S.retires || 0, CHIEF_RET)}/${CHIEF_RET}번</div>` : mx ? '<div>별을 모두 모았어요</div>' : `<div class="xp"><div style="width:${Math.min(100, (n / need) * 100)}%"></div></div><div>${UCIMG} 유니크 카드 ${n} / ${need}</div>`}</div><div class="cbtns"><button class="buy${chiefCan() ? ' glow' : ''}" id="ucUp">${has ? (mx ? '보기' : '★ 올리기') : '보기'}</button></div></div>`;
+            return `<div class="ccard${stv ? ' own' : ''}" style="--g:${gr(id).c}"><span class="cfr"><img src="assets/ui/frame_unique.png" alt="" onerror="this.remove()"><canvas class="portrait" id="pcd-${id}"></canvas></span><div class="info"><b>${COMP[id].n}</b>${gradeTag(id)}<span class="role">카엘 자리</span>${stv ? starTxt(id) : ''}<div class="vpline"><img src="assets/ui/village_skill.png" alt="" style="width:16px;height:16px;vertical-align:-3px;margin-right:3px">마을 스킬 · ${VPAS[id].n}</div>${!has ? `<div>${UCIMG} ${n}장 모아 둠</div><div>${chiefShop() ? '상점 ' + won(CHIEF_PK.won) + ' 또는 ' : ''}은퇴 ${Math.min(S.retires || 0, CHIEF_RET)}/${CHIEF_RET}번</div>` : mx ? '<div>별을 모두 모았어요</div>' : `<div class="xp"><div style="width:${Math.min(100, (n / need) * 100)}%"></div></div><div>${UCIMG} 유니크 카드 ${n} / ${need}</div>`}</div><div class="cbtns"><button class="buy${chiefCan() ? ' glow' : ''}" id="ucUp">${has && chiefCan() ? '★ 올리기' : '보기'}</button></div></div>`;
           })()
         : '';
     const uqRow = (id, pk, bid) => {
@@ -19451,6 +19495,9 @@ function wmGo(x, y, z) {
   WCAM.tx = x;
   WCAM.ty = y;
   WCAM.tz = z;
+  /* 확대·한쪽으로 밀린 지도를 한 번에 되돌리기 (두 번 누르기를 모르는 경우, 대표님 제보 10-27) */
+  const b = $('mapAll');
+  if (b) b.hidden = !(wmZoomR < 0 && z > 1.01);
 }
 const wmCur = () => Math.max(1, Math.min(MAXLAND, S.stage));
 function wmFocusCur(z) {
@@ -19895,6 +19942,11 @@ function mzClose(quiet) {
   }
 }
 $('mzX').onclick = () => mzClose(false);
+$('mapAll').onclick = () => {
+  wmZoomR = -1;
+  mzClose(true);
+  wmGo(MAPW / 2, MAPH / 2, 1);
+};
 /* 위쪽 탐험 막대 · 다음 목표 */
 let mapSig = '';
 function renderMapInfo() {
@@ -21927,7 +21979,7 @@ function attSheet(tab) {
             ? `<button class="pri" id="attOth">${tb === 'w' ? '한달 판도 받기 ›' : '7일 판도 받기 ›'}</button>`
             : `<button disabled>내일 또 만나요</button>`;
   $('sheet').innerHTML =
-    `<div class="hdban${ATTIMG.hd_attend ? '' : ' nohd'}" style="--hb:url(assets/ui/hd_attend.png)"><span>피트의 출석부</span></div>
+    `<div class="hdban${ATTIMG.hd_attend ? '' : ' nohd'}" style="--hb:url(assets/ui/hd_attend.png);--hpb:6%"><span>피트의 출석부</span></div>
  <div class="fgtabs"><button data-at="w" class="${tb === 'w' ? 'on' : ''}">7일${attStatus('w') === 'ok' ? '<i class="dot"></i>' : ''}</button><button data-at="m" class="${tb === 'm' ? 'on' : ''}">한달${attStatus('m') === 'ok' ? '<i class="dot"></i>' : ''}</button></div>
  ${attIntroNow ? ['m:피트|어서 와요, 영주님! 오늘부터 출석부를 만들었어요. 하루 한 번 얼굴만 보여 주시면 선물을 챙겨 드릴게요.', 'k@smile:얼굴만 보여 주면 된다고? 그건 은퇴하고도 할 수 있겠네.'].map(para).join('') : ''}${board}${st === 'back' ? '<p class="lore sys">날짜가 이상해요. 휴대폰 시간을 확인해 주세요.</p>' : ''}${line ? para(line) : ''}${gotHtml}
  <div class="acts">${done && st !== 'back' ? btn + `<button class="${btn.includes('attOth') ? '' : 'pri'}" id="mX">닫기</button>` : '<button id="mX">닫기</button>' + btn}</div>`;

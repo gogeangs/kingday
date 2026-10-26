@@ -55,16 +55,27 @@ class _PassSheet extends StatefulWidget {
 
 class _PassSheetState extends State<_PassSheet> {
   final _sc = ScrollController();
-  static const _cw = 66.0, _gap = 6.0;
+  static const _cw = 66.0, _gap = 6.0, _pad = 10.0, _rowGap = 10.0;
 
   @override
   void initState() {
     super.initState();
-    // 지금 단계가 보이게 가로로 밀어 둠
+    // 창은 맨 위(원정 일지 간판)부터, 가로 줄은 받을 칸(없으면 지금 단계)이 가운데 오게 (대표님 제보 10-27)
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      final v = Scrollable.maybeOf(context);
+      if (v != null && v.position.axis == Axis.vertical && v.position.pixels != 0) v.position.jumpTo(0);
       if (!_sc.hasClients) return;
-      final lv = widget.g.acts.passLv(), vw = _sc.position.viewportDimension;
-      _sc.jumpTo((lv * (_cw + _gap) - vw / 2 + _cw / 2 + 30).clamp(0.0, _sc.position.maxScrollExtent).toDouble());
+      final a = widget.g.acts, steps = GameActions.passSteps;
+      var at = a.passLv().clamp(0, steps - 1).toInt();
+      for (var i = 0; i < steps; i++) {
+        if (a.passCan('f', i) || a.passCan('p', i)) {
+          at = i;
+          break;
+        }
+      }
+      final vw = _sc.position.viewportDimension;
+      _sc.jumpTo((_pad + at * (_cw + _gap) - vw / 2 + _cw / 2).clamp(0.0, _sc.position.maxScrollExtent).toDouble());
     });
   }
 
@@ -120,12 +131,23 @@ class _PassSheetState extends State<_PassSheet> {
             child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [for (final k in ks) Flexible(child: ic(k))]),
           ),
         ),
+        // 받은 칸: ✓ 는 칸 안 오른쪽 위 (아래 유료 칸 테두리에 걸치지 않게)
         if (has)
-          const Positioned(bottom: -6, left: 0, right: 0, child: Center(child: _Pill('✓', Color(0xFF2F8F55), Colors.white)))
+          Positioned(
+            top: 3,
+            right: 3,
+            child: Container(
+              width: 16,
+              height: 16,
+              alignment: Alignment.center,
+              decoration: const BoxDecoration(color: Color(0xFF2F8F55), shape: BoxShape.circle),
+              child: const Text('✓', style: TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.w900, height: 1)),
+            ),
+          )
         else if (lock)
           const Positioned(top: 1, right: 3, child: Text('🔒', style: TextStyle(fontSize: 10)))
         else if (can)
-          const Positioned(bottom: -6, left: 0, right: 0, child: Center(child: _Pill('받기', Color(0xFFFFD34A), Color(0xFF2A1A06)))),
+          const Positioned(bottom: -5, left: 0, right: 0, child: Center(child: _Pill('받기', Color(0xFFFFD34A), Color(0xFF2A1A06)))),
       ]),
     );
   }
@@ -165,7 +187,7 @@ class _PassSheetState extends State<_PassSheet> {
                 ),
               // 20칸 두 줄 가로 밀기 (위 무료 · 아래 유료)
               SizedBox(
-                height: 18 + 6 + 68 + 6 + 68 + 12,
+                height: 18 + 6 + 68 + _rowGap + 68 + 12,
                 child: Row(children: [
                   Column(children: [
                     const SizedBox(height: 24),
@@ -175,13 +197,21 @@ class _PassSheetState extends State<_PassSheet> {
                         height: 68,
                         child: Center(child: Text(t.split('').join('\n'), textAlign: TextAlign.center, style: KdText.body(12, color: col, height: 1.2))),
                       ),
-                      const SizedBox(height: 6),
+                      const SizedBox(height: _rowGap),
                     ],
                   ]),
                   const SizedBox(width: 4),
+                  // 양끝을 흐리게 — 옆으로 더 있다는 표시 (대표님 제보 10-27)
                   Expanded(
-                    child: ListView.separated(
+                    child: ShaderMask(
+                      shaderCallback: (r) => const LinearGradient(
+                        colors: [Color(0x00FFFFFF), Color(0xFFFFFFFF), Color(0xFFFFFFFF), Color(0x00FFFFFF)],
+                        stops: [0, .06, .94, 1],
+                      ).createShader(r),
+                      blendMode: BlendMode.dstIn,
+                      child: ListView.separated(
                       controller: _sc,
+                      padding: const EdgeInsets.symmetric(horizontal: _pad),
                       scrollDirection: Axis.horizontal,
                       itemCount: steps,
                       separatorBuilder: (_, __) => const SizedBox(width: _gap),
@@ -199,9 +229,10 @@ class _PassSheetState extends State<_PassSheet> {
                         ),
                         const SizedBox(height: 6),
                         _cell(a, 'f', i, p),
-                        const SizedBox(height: 6),
+                        const SizedBox(height: _rowGap),
                         _cell(a, 'p', i, p),
                       ]),
+                    ),
                     ),
                   ),
                 ]),

@@ -61,6 +61,23 @@ const int baltasarCast = 4;
 
 double sealFxY(double cy, double sz) => cy + sz / 2 - sz * 372 / 384;
 
+/// 물들이기 색 필터 — 투명한 곳은 그대로 둠.
+/// ColorFilter.mode(…, color/multiply)는 투명 픽셀까지 칠해 시트 칸이 네모로 보임 (대표님 제보 10-27 유령 성주 보라 상자)
+/// color: 원래 밝기 × 물들일 색 / multiply: 원래 색 × 물들일 색. 알파 줄은 그대로.
+ui.ColorFilter tintFilter(ui.Color c, ui.BlendMode mode) {
+  final r = c.r, g = c.g, b = c.b; // 0..1
+  if (mode == ui.BlendMode.multiply) {
+    return ui.ColorFilter.matrix(<double>[r, 0, 0, 0, 0, 0, g, 0, 0, 0, 0, 0, b, 0, 0, 0, 0, 0, 1, 0]);
+  }
+  final l = (.3 * r + .59 * g + .11 * b).clamp(.05, 1.0), fr = r / l, fg = g / l, fb = b / l;
+  return ui.ColorFilter.matrix(<double>[
+    .3 * fr, .59 * fr, .11 * fr, 0, 0,
+    .3 * fg, .59 * fg, .11 * fg, 0, 0,
+    .3 * fb, .59 * fb, .11 * fb, 0, 0,
+    0, 0, 0, 1, 0,
+  ]);
+}
+
 /// 왕도 그림이 오기 전 대체: 기존 그림 + 색 (웹 MON_SPRITES[5].tint · MON_ALT[5].tint)
 class CapTint {
   const CapTint(this.src, this.color, this.mode);

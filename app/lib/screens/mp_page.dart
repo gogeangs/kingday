@@ -240,11 +240,32 @@ class WorldMap extends StatelessWidget {
           decoration: BoxDecoration(color: const Color(0xFF1A1028), border: Border.all(color: const Color(0xFF4A3A5A)), borderRadius: BorderRadius.circular(12)),
           child: ClipRRect(
             borderRadius: BorderRadius.circular(11),
-            child: GestureDetector(
-              onTapUp: (d) => _tap(d.localPosition, size),
-              onDoubleTap: () => mapZoomOut(g),
-              child: CustomPaint(size: size, painter: _WorldPainter(g)),
-            ),
+            child: Stack(children: [
+              GestureDetector(
+                onTapUp: (d) => _tap(d.localPosition, size),
+                onDoubleTap: () => mapZoomOut(g),
+                child: CustomPaint(size: size, painter: _WorldPainter(g)),
+              ),
+              // 확대·한쪽으로 밀린 지도를 한 번에 되돌리기 (두 번 누르기를 모르는 경우, 대표님 제보 10-27)
+              if (g.mapZoomR < 0 && g.camTz > 1.01)
+                Positioned(
+                  top: 8,
+                  right: 8,
+                  child: GestureDetector(
+                    key: const ValueKey('mapAll'),
+                    onTap: () => mapZoomOut(g),
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                      decoration: BoxDecoration(
+                        color: const Color(0xCC0D1220),
+                        border: Border.all(color: KdColors.gold),
+                        borderRadius: BorderRadius.circular(999),
+                      ),
+                      child: Text('⤢ 전체 보기', style: KdText.body(12, color: KdColors.gold, weight: FontWeight.w700)),
+                    ),
+                  ),
+                ),
+            ]),
           ),
         );
       });

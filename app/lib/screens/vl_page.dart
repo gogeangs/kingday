@@ -465,8 +465,14 @@ class _VbWindowState extends State<VbWindow> {
         child: Column(children: [
           head,
           if (tabs.length > 1)
-            Padding(
-              padding: const EdgeInsets.fromLTRB(16, 8, 16, 4),
+            // 탭 줄 아래 경계선·그림자 — 아래 목록이 스크롤되어 탭 줄 밑으로 들어가는 게 반쯤 가려진 것처럼 보이지 않게 (대표님 제보 10-27)
+            Container(
+              padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
+              decoration: const BoxDecoration(
+                color: KdColors.pageTop,
+                border: Border(bottom: BorderSide(color: Color(0xB337436A))),
+                boxShadow: [BoxShadow(color: Color(0x66000000), blurRadius: 8, offset: Offset(0, 4), spreadRadius: -4)],
+              ),
               child: Row(children: [
                 for (final t in tabs) ...[
                   if (t != tabs.first) const SizedBox(width: 6),
@@ -630,7 +636,8 @@ class _Bless extends StatelessWidget {
       if (left > 0) ...[
         LayoutBuilder(builder: (_, cs) {
           final n = opts.length, w = (cs.maxWidth - 6 * (n - 1)) / n;
-          return Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
+          // 축복 카드 높이를 맞춤 — 설명 줄 수가 달라도 같은 크기 (대표님 제보 10-27)
+          return IntrinsicHeight(child: Row(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
             for (final o in opts) ...[
               if (o != opts.first) const SizedBox(width: 6),
               GestureDetector(
@@ -651,7 +658,7 @@ class _Bless extends StatelessWidget {
                 ),
               ),
             ],
-          ]);
+          ]));
         }),
         KdNote('고른 축복은 ${fmtT(c.blessMs() / 1000)} 동안 이어져요${c.workBonus('chapel') > 0 ? ' (일꾼 포함)' : ''}. 다른 축복을 받으면 바뀌고, 같은 축복이면 시간만 새로 시작해요.'),
       ] else if (truthy(b['ad']) || c.adLeft('bless') <= 0)
