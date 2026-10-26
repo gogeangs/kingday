@@ -22,6 +22,11 @@ class EqPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+        // 반만 열면 「상자 열기」 줄을 맨 위로 (웹 #p-eq > .openrow · UI 점검 10-27 8번)
+        if (!g.pgFull) ...[
+          Row(children: [for (final (i, b) in _opens(compact: true).indexed) ...[if (i > 0) const SizedBox(width: 10), Expanded(child: b)]]),
+          const SizedBox(height: 10),
+        ],
         _stage(),
         const SizedBox(height: 12),
         _box(),
@@ -58,9 +63,7 @@ class EqPage extends StatelessWidget {
 
   // ── 성유물 상자 (웹 .box: 레벨·경험치·확률·자동·열기·10연속) ──
   Widget _box() {
-    final s = g.state, c = g.calc, odds = c.odds(), cost = c.boxCost();
-    final tb = g.acts.ticketN('box'), t10 = g.acts.ticketN('box10');
-    final can = (s.gold >= cost || tb > 0) && g.acts.pending == null;
+    final s = g.state, c = g.calc, odds = c.odds();
     return KdBox(children: [
       Row(crossAxisAlignment: CrossAxisAlignment.baseline, textBaseline: TextBaseline.alphabetic, children: [
         Expanded(child: Text('성유물 상자 Lv.${s.boxLv}', style: KdText.display(16))),
@@ -82,21 +85,7 @@ class EqPage extends StatelessWidget {
         _toggle('약한 장비 바로 판매', 'autoSell'),
         _toggle('자동 열기', 'autoOpen'),
       ]),
-      _openBtn(
-        '상자 열기',
-        tb > 0
-            ? Text('무료권 $tb장', style: KdText.body(14, weight: FontWeight.w700, color: KdColors.goldInk.withValues(alpha: .75)))
-            : iconNum(goldIcon, fmt(cost), size: 20, style: KdText.figure(14, color: can ? KdColors.goldInk.withValues(alpha: .75) : KdColors.muted)),
-        can ? () => g.openBox() : null,
-      ),
-      _openBtn(
-        '10연속 열기',
-        t10 > 0
-            ? Text('무료권 $t10장', style: KdText.body(14, weight: FontWeight.w700, color: const Color(0xBFFFE08A)))
-            : iconNum(gemIcon, '$gem10', size: 20, style: KdText.figure(14, color: const Color(0xBFFFE08A))),
-        g.acts.pending == null ? () => g.act((a) => a.open10()) : null,
-        gem: true,
-      ),
+      if (g.pgFull) ..._opens(),
       const KdNote('10연속은 영웅 등급 이상 1개 확정이에요. 등급별 확률은 위와 같아요. 더 좋은 장비는 바로 장착하고 나머지는 팔아요.'),
       const KdNote('행상인 피트의 성유물은 카엘만 착용해요.'),
     ]);
@@ -165,12 +154,39 @@ class EqPage extends StatelessWidget {
   }
 
   /// 웹 .open / .open.gemopen
-  Widget _openBtn(String label, Widget cost, VoidCallback? onTap, {bool gem = false}) {
+  /// 상자 열기 · 10연속 열기 버튼 두 개 (반 열림이면 맨 위에 작게 나란히)
+  List<Widget> _opens({bool compact = false}) {
+    final s = g.state, cost = g.calc.boxCost();
+    final tb = g.acts.ticketN('box'), t10 = g.acts.ticketN('box10');
+    final can = (s.gold >= cost || tb > 0) && g.acts.pending == null;
+    return [
+      _openBtn(
+        '상자 열기',
+        tb > 0
+            ? Text('무료권 $tb장', style: KdText.body(14, weight: FontWeight.w700, color: KdColors.goldInk.withValues(alpha: .75)))
+            : iconNum(goldIcon, fmt(cost), size: 20, style: KdText.figure(14, color: can ? KdColors.goldInk.withValues(alpha: .75) : KdColors.muted)),
+        can ? () => g.openBox() : null,
+        compact: compact,
+      ),
+      _openBtn(
+        compact ? '10연속' : '10연속 열기',
+        t10 > 0
+            ? Text('무료권 $t10장', style: KdText.body(14, weight: FontWeight.w700, color: const Color(0xBFFFE08A)))
+            : iconNum(gemIcon, '$gem10', size: 20, style: KdText.figure(14, color: const Color(0xBFFFE08A))),
+        g.acts.pending == null ? () => g.act((a) => a.open10()) : null,
+        gem: true,
+        compact: compact,
+      ),
+    ];
+  }
+
+  Widget _openBtn(String label, Widget cost, VoidCallback? onTap, {bool gem = false, bool compact = false}) {
     final off = onTap == null;
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        padding: const EdgeInsets.all(12),
+        padding: EdgeInsets.symmetric(horizontal: compact ? 6 : 12, vertical: compact ? 9 : 12),
+        alignment: Alignment.center,
         decoration: BoxDecoration(
           color: off ? KdColors.panel2 : gem ? null : KdColors.gold,
           gradient: !off && gem ? const LinearGradient(colors: [Color(0xFF2C4A8C), Color(0xFF1D3366)], begin: Alignment.topCenter, end: Alignment.bottomCenter) : null,
@@ -178,11 +194,14 @@ class EqPage extends StatelessWidget {
           borderRadius: BorderRadius.circular(12),
           boxShadow: off ? null : [BoxShadow(color: gem ? const Color(0xFF14234A) : const Color(0xFFB9850F), offset: const Offset(0, 4))],
         ),
-        child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-          Text(label, style: KdText.display(19, color: off ? KdColors.muted : gem ? const Color(0xFFFFE08A) : KdColors.goldInk)),
-          const SizedBox(width: 8),
-          cost,
-        ]),
+        child: FittedBox(
+          fit: BoxFit.scaleDown,
+          child: Row(mainAxisSize: MainAxisSize.min, children: [
+            Text(label, style: KdText.display(compact ? 16 : 19, color: off ? KdColors.muted : gem ? const Color(0xFFFFE08A) : KdColors.goldInk)),
+            const SizedBox(width: 8),
+            cost,
+          ]),
+        ),
       ),
     );
   }

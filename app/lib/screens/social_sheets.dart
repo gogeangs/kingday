@@ -14,6 +14,7 @@ import '../core/data.dart';
 import '../core/fmt.dart';
 import '../core/js.dart';
 import '../core/profile_data.dart';
+import '../core/server.dart' show ServerError;
 import '../game/controller.dart';
 import '../game/login.dart';
 import '../game/online.dart';
@@ -108,9 +109,12 @@ class SocialFabs extends StatelessWidget {
   const SocialFabs(this.g, {super.key});
   final GameController g;
 
-  Widget _btn(String icon, VoidCallback onTap, Widget? mark) => GestureDetector(
+  /// 아이콘 아래 이름 (웹 .mailbtn[data-l] · UI 점검 10-27 7번). D-day 표시가 있으면 이름은 숨김
+  Widget _btn(String icon, VoidCallback onTap, Widget? mark, [String? label]) => GestureDetector(
         onTap: onTap,
-        child: Stack(clipBehavior: Clip.none, children: [
+        behavior: HitTestBehavior.opaque,
+        child: Column(mainAxisSize: MainAxisSize.min, children: [
+        Stack(clipBehavior: Clip.none, children: [
           Container(
             width: 42,
             height: 42,
@@ -124,6 +128,18 @@ class SocialFabs extends StatelessWidget {
           ),
           if (mark != null) mark,
         ]),
+        SizedBox(
+          height: 15,
+          child: label == null
+              ? null
+              : Padding(
+                  padding: const EdgeInsets.only(top: 3),
+                  child: Text(label,
+                      style: KdText.body(11, color: const Color(0xFFF3E6C4), weight: FontWeight.w700, height: 1)
+                          .copyWith(shadows: const [Shadow(blurRadius: 2, color: Colors.black), Shadow(blurRadius: 3, color: Colors.black)])),
+                ),
+        ),
+        ]),
       );
 
   @override
@@ -131,7 +147,7 @@ class SocialFabs extends StatelessWidget {
     final o = g.online;
     // 상점 버튼 (U-2 ③): 늘 보임 · 할 일·무료 선물이 남았고 아직 안 봤으면 점
     final shop = _btn('icon_shop', () => g.setTab(GameTab.sh),
-        g.dotOn(GameTab.sh) ? Positioned(top: -3, right: -3, child: Container(width: 11, height: 11, decoration: BoxDecoration(color: KdColors.bad, shape: BoxShape.circle, border: Border.all(color: Colors.white)))) : null);
+        g.dotOn(GameTab.sh) ? Positioned(top: -3, right: -3, child: Container(width: 11, height: 11, decoration: BoxDecoration(color: KdColors.bad, shape: BoxShape.circle, border: Border.all(color: Colors.white)))) : null, '상점');
     // 출석부 (웹 #attBtn): 상점 바로 밑, 1-3 이후 · 오늘 안 받았으면 노란 점
     final att = attEligible(g)
         ? _btn(
@@ -152,15 +168,16 @@ class SocialFabs extends StatelessWidget {
                       ),
                     ),
                   )
-                : null)
+                : null,
+            '출석')
         : null;
     // 원정 일지 시즌이 끝나 넘어온 보상 (이 기기 저장 · 인터넷 없어도 받음)
     final lm = g.acts.passMails().length;
     if (!o.on) {
       return Column(mainAxisSize: MainAxisSize.min, children: [
-        if (lm > 0) ...[_btn('icon_mail', () => openMail(g), Positioned(top: -5, right: -5, child: CountDot(lm))), const SizedBox(height: 8)],
+        if (lm > 0) ...[_btn('icon_mail', () => openMail(g), Positioned(top: -5, right: -5, child: CountDot(lm)), '우편'), const SizedBox(height: 4)],
         shop,
-        if (att != null) ...[const SizedBox(height: 8), att],
+        if (att != null) ...[const SizedBox(height: 4), att],
       ]);
     }
     return ValueListenableBuilder<int>(
@@ -168,8 +185,8 @@ class SocialFabs extends StatelessWidget {
       builder: (_, __, ___) {
         final left = (seasonEndAt(DateTime.now().millisecondsSinceEpoch) - DateTime.now().millisecondsSinceEpoch) / 864e5;
         return Column(mainAxisSize: MainAxisSize.min, children: [
-          _btn('icon_mail', () => openMail(g), o.mails.length + lm == 0 ? null : Positioned(top: -5, right: -5, child: CountDot(o.mails.length + lm))),
-          const SizedBox(height: 8),
+          _btn('icon_mail', () => openMail(g), o.mails.length + lm == 0 ? null : Positioned(top: -5, right: -5, child: CountDot(o.mails.length + lm)), '우편'),
+          const SizedBox(height: 4),
           _btn(
             'icon_rank',
             () => openRanking(g),
@@ -187,10 +204,11 @@ class SocialFabs extends StatelessWidget {
                       ),
                     ),
                   ),
+            left > 3 ? '랭킹' : null,
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: 4),
           shop,
-          if (att != null) ...[const SizedBox(height: 8), att],
+          if (att != null) ...[const SizedBox(height: 4), att],
         ]);
       },
     );
@@ -659,16 +677,17 @@ class _RankState extends State<_Rank> {
     if (o.nick == null) await o.ensure();
     if (!mounted || my != _req) return;
     if (o.nick == null) {
-      setState(() => _err = '랭킹 서버가 잠시 쉬고 있어요. 조금 뒤에 다시 열어 주세요');
+      setState(() => _err = '서버에 연결하지 못했어요. 인터넷 연결을 확인하거나 조금 뒤에 다시 열어 주세요');
       return;
     }
     try {
       final rows = await o.ranking(_rkTab);
       if (!mounted || my != _req) return;
       setState(() => _rows = rows);
-    } catch (_) {
+    } catch (e) {
       if (!mounted || my != _req) return;
-      setState(() => _err = '랭킹 서버가 잠시 쉬고 있어요. 인터넷 연결을 확인해 주세요');
+      // 서버가 답했지만 실패(ServerError)면 서버 쉬는 중, 답이 없으면(연결 안 됨·시간 초과) 인터넷 문제 (웹 sbDownMsg · UI 점검 10-27 12번)
+      setState(() => _err = e is ServerError ? '랭킹 서버가 잠시 쉬고 있어요. 조금 뒤에 다시 열어 주세요' : '인터넷 연결을 확인해 주세요. 연결되면 랭킹을 볼 수 있어요');
     }
   }
 

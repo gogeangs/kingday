@@ -116,8 +116,9 @@ body {
   bottom: -6px;
   transform: translateX(-50%);
   z-index: 3;
-  background: #ff5a6e;
-  color: #fff;
+  /* 꾸미기는 「할 일」이라 금색 (빨강은 받을 보상 · UI 점검 10-27 9번). 프로필을 한 번 열면 사라짐 */
+  background: var(--gold);
+  color: #2a1a00;
   font-size: 9.5px;
   font-weight: 700;
   line-height: 14px;
@@ -1469,9 +1470,12 @@ table.codds th {
   flex: 0 0 auto;
 }
 .upr .upv {
-  white-space: nowrap;
   font-size: 12.5px;
   color: var(--muted);
+  line-height: 1.35;
+}
+.upr .info {
+  min-width: 0;
 }
 .upr .upv b {
   color: var(--fg);
@@ -1760,6 +1764,33 @@ table.codds th {
   color: #1a1206;
   border-color: var(--gold);
 }
+#upHelp {
+  margin-right: auto;
+}
+.upmul .upq {
+  min-width: 0;
+  padding: 3px 9px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--muted);
+}
+.upmul button.rec {
+  position: relative;
+  border-color: var(--gold);
+  color: var(--gold);
+}
+.upmul button.rec::after {
+  content: '추천';
+  position: absolute;
+  top: -9px;
+  right: -6px;
+  font-size: 10.5px;
+  line-height: 1;
+  padding: 2px 4px;
+  border-radius: 6px;
+  background: #e0563b;
+  color: #fff;
+}
 .ngoal {
   display: flex;
   align-items: center;
@@ -1797,6 +1828,22 @@ table.codds th {
 .toast.hi {
   top: calc(8px + env(safe-area-inset-top, 0px) + var(--topx));
 }
+.toast.inhd {
+  max-width: calc(100vw - 150px);
+  padding: 4px 10px;
+  font-size: 12px;
+  line-height: 1.3;
+}
+#stRegion.flash {
+  color: #ffe08a;
+  font-weight: 700;
+  animation: pillFlash 0.5s ease-in-out 3;
+}
+@keyframes pillFlash {
+  50% {
+    opacity: 0.35;
+  }
+}
 .dot.opt {
   background: #ffc94a;
   border-color: #6b4f12;
@@ -1832,6 +1879,29 @@ table.codds th {
   position: relative;
   top: auto;
   right: auto;
+}
+/* 아이콘 아래 이름 (UI 점검 10-27 7번: 우편·랭킹·상점·출석이 무엇인지 알기 어려움) */
+.fabcol {
+  gap: 19px;
+}
+.fabcol .mailbtn[data-l]::before {
+  content: attr(data-l);
+  position: absolute;
+  left: 50%;
+  bottom: -15px;
+  transform: translateX(-50%);
+  white-space: nowrap;
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 1;
+  color: #f3e6c4;
+  text-shadow:
+    0 1px 2px #000,
+    0 0 3px #000;
+  pointer-events: none;
+}
+.fabcol .rkfab:has(.dday:not([hidden]))::before {
+  display: none;
 }
 .attfab .dot {
   position: absolute;
@@ -3416,6 +3486,37 @@ table.codds th {
   box-shadow: 0 0 0 1px rgba(255, 201, 74, 0.35) inset;
 }
 /* ---- 원정 일지 (시즌 패스) · 영주의 첫걸음 ---- */
+.passmini {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  margin: 0 0 10px;
+  padding: 9px 12px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 201, 74, 0.4);
+  background: var(--panel2);
+  color: var(--fg);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+.passmini small {
+  flex: 1;
+  min-width: 0;
+  color: var(--muted);
+  font-size: 12.5px;
+}
+.passmini span {
+  color: var(--gold);
+  font-size: 18px;
+}
+.passmini .dot {
+  position: absolute;
+  top: -3px;
+  right: -3px;
+}
 .passbn {
   position: relative;
   width: 100%;
@@ -5141,6 +5242,21 @@ canvas {
   width: 16px;
   height: 16px;
 }
+.openrow {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+#p-eq > .openrow {
+  flex-direction: row;
+  margin: 2px 0 10px;
+}
+#p-eq > .openrow .open {
+  flex: 1;
+  min-width: 0;
+  font-size: 16px;
+  padding: 9px 6px;
+}
 .open {
   font-family: var(--f-display);
   font-weight: 700;
@@ -6713,10 +6829,10 @@ input:focus-visible {
     <canvas id="cv" aria-label="원정대 자동 전투 화면"></canvas>
     <!-- 오른쪽 세로 버튼 줄: 우편 · 랭킹 · 상점 · 출석부 (숨은 버튼은 빈자리 없이 당겨짐) -->
     <div class="fabcol">
-      <button class="mailbtn" id="mailBtn" aria-label="우편함" hidden><img src="assets/ui/icon_mail.png" alt="" onerror="this.outerHTML='<span>✉️</span>'"><i class="mdot" id="mailDot" hidden></i></button>
-      <button class="mailbtn rkfab" id="rankBtn" aria-label="랭킹" hidden><img src="assets/ui/icon_rank.png" alt="" onerror="this.outerHTML='<span>🏆</span>'"><i class="dday" id="rankDday" hidden></i></button>
-      <button class="mailbtn shfab" id="shopBtn" aria-label="피트의 상점"><img src="assets/ui/icon_shop.png" alt="" onerror="this.outerHTML='<span>🛒</span>'"><i class="mdot" id="shopDot" hidden></i></button>
-      <button class="mailbtn attfab" id="attBtn" aria-label="피트의 출석부" hidden><img src="assets/ui/ic_attend.png" alt="" onerror="this.outerHTML='<span>📅</span>'"><i class="dot" id="attDot" hidden></i></button>
+      <button class="mailbtn" id="mailBtn" aria-label="우편함" data-l="우편" hidden><img src="assets/ui/icon_mail.png" alt="" onerror="this.outerHTML='<span>✉️</span>'"><i class="mdot" id="mailDot" hidden></i></button>
+      <button class="mailbtn rkfab" id="rankBtn" aria-label="랭킹" data-l="랭킹" hidden><img src="assets/ui/icon_rank.png" alt="" onerror="this.outerHTML='<span>🏆</span>'"><i class="dday" id="rankDday" hidden></i></button>
+      <button class="mailbtn shfab" id="shopBtn" aria-label="피트의 상점" data-l="상점"><img src="assets/ui/icon_shop.png" alt="" onerror="this.outerHTML='<span>🛒</span>'"><i class="mdot" id="shopDot" hidden></i></button>
+      <button class="mailbtn attfab" id="attBtn" aria-label="피트의 출석부" data-l="출석" hidden><img src="assets/ui/ic_attend.png" alt="" onerror="this.outerHTML='<span>📅</span>'"><i class="dot" id="attDot" hidden></i></button>
     </div>
     <div class="pgshade" id="pgShade" hidden></div>
     <div class="ovtop"><div class="toprow"><div class="stagepill"><div class="sth"><b id="stLabel">1-1 에르단 평원</b><small id="stRegion">개울 마을</small></div><div class="pips" id="pips"></div></div><button class="chx" id="chExit" hidden>나가기</button><button class="chx nx" id="chNext" hidden>다음 층 ▶</button><button class="guide" id="guide" hidden></button></div>
@@ -6746,8 +6862,10 @@ input:focus-visible {
           <label class="tg"><input type="checkbox" id="autoSell"> 약한 장비 바로 판매</label>
           <label class="tg"><input type="checkbox" id="autoOpen"> 자동 열기</label>
         </div>
+        <div class="openrow" id="openRow">
         <button class="open" id="openBtn">상자 열기 <small><img src="assets/ui/ui_gold.png" alt="" style="width:20px;height:20px" onerror="this.remove()"><span id="openCost">20</span></small></button>
         <button class="open gemopen" id="open10">10연속 열기 <small id="open10c"><img src="assets/gem/ui_gem.png" alt="" style="width:20px;height:20px" onerror="this.remove()">100</small></button>
+        </div>
         <p class="note" style="margin-top:-4px">10연속은 영웅 등급 이상 1개 확정이에요. 등급별 확률은 위와 같아요. 더 좋은 장비는 바로 장착하고 나머지는 팔아요.</p>
         <p class="note">행상인 피트의 성유물은 카엘만 착용해요.</p>
       </div>
@@ -6764,7 +6882,7 @@ input:focus-visible {
 
     <section class="page" id="p-up" hidden>
       <div class="phead"><h2>단련</h2><button class="pclose" data-close aria-label="전투로 돌아가기">✕</button></div>
-      <div class="upmul" id="upMul"><span>한 번에</span><button data-mul="1">×1</button><button data-mul="10">×10</button><button data-mul="max">최대</button></div>
+      <div class="upmul" id="upMul"><span id="upHelp"></span><span>한 번에</span><button data-mul="1">×1</button><button data-mul="10">×10</button><button data-mul="max">최대</button></div>
       <div id="upgs" style="display:flex;flex-direction:column;gap:8px"></div>
       <div class="box" id="retireBox"></div>
     </section>
@@ -9473,6 +9591,13 @@ const passLeftTxt = () => {
   return l >= 1 ? Math.ceil(l) + '일 남음' : Math.max(1, Math.ceil(l * 24)) + '시간 남음';
 };
 /* 상점 맨 위 배너: 시즌 · 남은 날 · 단계 + 진행 막대 (누르면 패스 창) */
+/* 원정 일지 작은 줄 (처음 온 영주의 상점: 큰 배너 대신) */
+function passMini() {
+  if (!S.started) return '';
+  const p = passS(),
+    n = passCanN();
+  return `<button class="passmini" id="passBn" aria-label="원정 일지 열기"><b>📜 원정 일지</b><small>시즌 ${p.s} · ${passLv()}/${PASS.steps}단계${p.paid ? '' : ' · 유료 줄 ' + won(PASS.won)}</small><span>›</span>${n ? '<i class="dot"></i>' : ''}</button>`;
+}
 function passBanner() {
   if (!S.started) return '';
   const p = passS(),
@@ -9740,14 +9865,16 @@ function renderShop() {
     : `<button class="buy" id="subBuy">${won(SUB.won)}</button>`;
   /* 상점 정리 (2026-10-24 대표님 결정): 「매일 무료 / 황금 이삭으로 / 결제 상품」 세 묶음 + 위에 바로가기 */
   const freeDot = MISSIONS.some(m => misCan(m)) || misCan(null) || adKeys().some(k => adLeft(k)) || (subOn() && S.sub.last !== today());
+  /* 처음 온 영주(영지 10 전)는 「매일 무료」가 맨 위, 원정 일지는 충전·패키지 칸의 작은 줄로 (UI 점검 10-27 3번) */
+  const newbie = (S.best || 1) < 10;
   const subRow = `<div class="shoprow${subOn() ? ' hot' : ''}"><img class="pk" src="assets/gem/gem_pack_5.png" alt="" onerror="this.remove()"><div class="info"><b>${SUB.n}</b><div>${subTxt}</div></div>${subBtn}</div>`;
   $('shop').innerHTML =
     `${TEST_PAY && DEV ? '<div class="testbar">테스트 모드: 실제 결제 없이 누르면 바로 지급돼요. 결제 연동 전까지만 이렇게 동작해요.</div>' : ''}
- ${passBanner()}
+ ${newbie ? '' : passBanner()}
  <div class="shjump">${[
    ['shs-free', '🎁 매일 무료', freeDot],
-   ['shs-gem', '🌾 이삭으로', false],
-   ['shs-pay', '💰 상품', false]
+   ['shs-gem', '🌾 이삭 상점', false],
+   ['shs-pay', '💳 충전·패키지', false]
  ]
    .map(([k, n, dot]) => `<button data-jump="${k}">${n}${dot ? '<i class="dot"></i>' : ''}</button>`)
    .join('')}</div>
@@ -9772,7 +9899,7 @@ function renderShop() {
    .join('')}`
  }
  ${subOn() ? subRow : ''}</section>
- <section class="shgrp" id="shs-gem"><div class="shgh"><b>🌾 황금 이삭으로</b><small>가진 이삭 ${gemI}${fmt(S.gem || 0)}</small></div>${
+ <section class="shgrp" id="shs-gem"><div class="shgh"><b>🌾 이삭 상점</b><small>가진 이삭 ${gemI}${fmt(S.gem || 0)}</small></div>${
    CARDIDS().some(cardOpen)
      ? `<div class="sec">동료 카드 <small>여러 동료에게 무작위 · <button class="lnk" id="cardOdds">확률 보기</button></small></div>
  <div class="packs">${CARDPK.map((c, i) => `<button class="pack gx" data-cp="${i}">${i ? '<span class="tag">10% 이득</span>' : ''}<span class="cpk"><img src="assets/ui/card_pack${c.n >= 30 ? 30 : 3}.png" alt="" onerror="this.replaceWith('🂠')"><b>×${c.n}</b></span><b>카드 ${c.n}장</b><small>${c.n >= 30 ? '5장씩 6번 무작위' : '1장씩 3번 무작위'}</small><span class="price">${gemI}${c.gem}</span></button>`).join('')}</div>`
@@ -9781,7 +9908,7 @@ function renderShop() {
  <div class="sec">골드 바꾸기 <small>지금 영지 기준 · 영지가 오를수록 더 많이</small></div>
  <div class="packs">${GOLDX.map((x, i) => `<button class="pack gx" data-gx="${x.k}">${i ? `<span class="tag">${x.h}시간치</span>` : ''}<img src="assets/ui/gold_pack${i + 1}.png" alt="" style="width:72px;height:72px;object-fit:contain" onerror="this.remove()"><b>${fmt(goldX(x))}</b><small>${x.n}</small><span class="price">${gemI}${x.gem}</span></button>`).join('')}</div>
  ${helpNote('gemuse', '황금 이삭은 어디에 쓰나요?', `황금 이삭은 동료 카드, 골드 바꾸기, 성유물 상자 10연속(장비 탭), 작물 바로 키우기·건물 바로 짓기(마을 탭), 방치 보상 2배 받기에 써요.`)}</section>
- <section class="shgrp pay" id="shs-pay"><div class="shgh"><b>💰 상품</b><small>황금 이삭은 상품마다 첫 구매 2배</small></div>
+ <section class="shgrp pay" id="shs-pay"><div class="shgh"><b>💳 충전·패키지</b><small>황금 이삭은 상품마다 첫 구매 2배</small></div>${newbie ? passMini() : ''}
  ${S.buys.starter ? '' : `<div class="shoprow hot"><span class="tag">한 번만</span><img class="pk" src="assets/relic/relic_weapon_3.png" alt="" onerror="this.remove()"><div class="info"><b>${STARTER.n}</b><div>전설 등급 성유물 1개 확정<br>+ ${gemI}${STARTER.gem}</div></div><button class="buy" id="starterBuy">${won(STARTER.won)}</button></div>`}
  ${ttukShop() ? `<div class="shoprow hot"><span class="tag" style="background:#1f9e63">유니크</span><img class="pk" src="assets/portraits/portrait_ttukttak_laugh.png" alt="" onerror="this.remove()"><div class="info"><b>${TTUK_PK.n}</b><div>유니크 동료 ★1 · 광부 자리에서 출전<br>스킬 「금 나와라 뚝딱」 · 마을 스킬 방치 골드 +25%</div></div><button class="buy" id="ttukBuy">${won(TTUK_PK.won)}</button></div>` : ''}
  ${lucShop() ? `<div class="shoprow hot"><span class="tag" style="background:#1f9e63">유니크</span><img class="pk" src="assets/portraits/portrait_lucian_laugh.png" alt="" onerror="this.remove()"><div class="info"><b>${LUC_PK.n}</b><div>유니크 동료 ★1 · 요리사 자리에서 출전<br>스킬 「불사조의 만찬」 · 마을 스킬 주문 골드 +50%</div></div><button class="buy" id="lucBuy">${won(LUC_PK.won)}</button></div>` : ''}
@@ -10382,8 +10509,9 @@ function nwAdd(it) {
   if (!nwT) nwT = setTimeout(nwFlush, 400);
 }
 function nwFlush() {
-  if (titleOpen) {
-    nwT = setTimeout(nwFlush, 400);
+  /* 탭을 보고 있는 동안은 기다렸다가 전투 화면으로 돌아오면 (UI 점검 10-27 4번: 탭을 누르자마자 새 소식이 덮음) */
+  if (titleOpen || curTab) {
+    nwT = setTimeout(nwFlush, 500);
     return;
   }
   nwT = 0;
@@ -11931,6 +12059,10 @@ function renderRetire() {
     can = retCan(),
     mp = memPts(),
     dot = trCanAny();
+  /* 처음 온 영주(은퇴 전·영지 10 전)에게는 아직 안 보여 줌 (UI 점검 10-27 10번) */
+  const early = !(S.retires || 0) && !S.memory && (S.best || 1) < 10;
+  $('retireBox').hidden = early;
+  if (early) return;
   const sig = [fmt(S.gold), fmt(t), pts, can, S.memory, S.capClears, mp, dot, S.stage, S.runStart].join();
   if (sig === retSig) return;
   retSig = sig;
@@ -12213,12 +12345,43 @@ let toastT,
   toastQ = [],
   toastCur = null,
   toastAt = 0;
+/* 성주 처치처럼 자주 나오는 소식은 알림 대신 위쪽 진행 바(영지 이름 아래 줄)에서 잠깐 깜빡임 (UI 점검 10-27 1번: 알림이 버튼·글을 가림) */
+let pillMsg = null;
+const pillOn = () => !!pillMsg && Date.now() < pillMsg.until;
+function pillFlash(txt) {
+  pillMsg = { txt, until: Date.now() + 2600 };
+  const e = $('stRegion');
+  if (!e || CH) return;
+  e.textContent = txt;
+  e.classList.remove('flash');
+  void e.offsetWidth;
+  e.classList.add('flash');
+  setTimeout(() => {
+    if (pillOn()) return;
+    pillMsg = null;
+    e.classList.remove('flash');
+    renderAll();
+  }, 2700);
+}
 function toastPos(t) {
   let hi = false;
   try {
     hi = !$('modal').hidden || (!!curTab && (!HALF.includes(curTab) || !!S.pgFull));
   } catch (e) {}
   t.classList.toggle('hi', hi);
+  t.classList.remove('inhd');
+  /* 탭을 크게 열었을 때: 알림은 그 탭 머리 줄(「마을 ✕」) 가운데에 — 목록·버튼·맨 위 재화 줄을 가리지 않게 (UI 점검 10-27 1번) */
+  if (hi && $('modal').hidden && curTab) {
+    const ph = document.querySelector('#p-' + curTab + ' .phead'),
+      hr = ph ? ph.getBoundingClientRect() : null;
+    if (hr && hr.height > 0 && hr.top >= 0 && hr.bottom < innerHeight) {
+      t.classList.remove('hi');
+      t.classList.add('inhd');
+      t.style.top = Math.round(hr.top + hr.height / 2) + 'px';
+      t.style.transform = 'translate(-50%,-50%)';
+      return;
+    }
+  }
   const pg = !hi && curTab ? $('p-' + curTab) : null,
     pr = $('partyRow'),
     r = pg ? pg.getBoundingClientRect() : !hi && !curTab && pr ? pr.getBoundingClientRect() : null;
@@ -12463,10 +12626,10 @@ const UPI = {
   spd: ['upg_spd', '속도', t => t.aps.toFixed(2) + '회/초'],
   crit: ['upg_crit', '치명타', t => Math.round(t.crit * 100) + '%']
 };
-const upNext = k => {
-  S.up[k]++;
+const upNext = (k, n = 1) => {
+  S.up[k] += n;
   const t = kStats();
-  S.up[k]--;
+  S.up[k] -= n;
   return t;
 };
 /* 후반에 숫자가 커서 「454K → 454K」처럼 차이가 안 보이면 오르는 비율로 (UX 점검 13) */
@@ -12477,7 +12640,7 @@ const upGain = (k, t, n, f) => {
   const x = t[UPK[k]],
     y = n[UPK[k]],
     p = x > 0 ? (y / x - 1) * 100 : 0;
-  return p >= 0.01 ? '+' + p.toFixed(p >= 1 ? 1 : 2) + '%' : '+0.01% 미만';
+  return p >= 0.01 ? '+' + p.toFixed(p >= 1 ? 1 : 2) + '%' : '<0.01%';
 };
 const UPK = { atk: 'atk', hp: 'hp' };
 const BIGU =
@@ -12485,16 +12648,29 @@ const BIGU =
 function renderUpg() {
   const t = kStats(),
     big = S.gold >= 1e15 || UPG.some(u => S.up[u.k] < u.max && u.cost(S.up[u.k]) >= 1e15);
+  /* 숫자 단위 설명은 처음 한 번 펼쳐 보여 주고, 그 뒤엔 「한 번에」 줄 왼쪽 작은 「? aa·ab」로 접어 둠 (UI 점검 10-27 5번) */
+  const bigOpen = big && (!(S.helpSeen && S.helpSeen.bigu) || helpOpen.bigu);
+  $('upHelp').innerHTML = big && !bigOpen ? '<button class="helpq upq" data-help="bigu" aria-expanded="false"><b>?</b>aa·ab</button>' : '';
+  if (big && !bigOpen) $('upHelp').querySelector('button').onclick = () => {
+    helpOpen.bigu = true;
+    renderUpg();
+  };
   $('upgs').innerHTML =
-    (big ? helpNote('bigu', '숫자 단위 aa·ab는?', BIGU) : '') +
+    (bigOpen ? helpNote('bigu', '숫자 단위 aa·ab는?', BIGU) : '') +
     UPG.map(u => {
       const l = S.up[u.k],
         mx = l >= u.max,
         [ic, nm, f] = UPI[u.k];
-      return `<div class="row upr" id="upr-${u.k}">${uiImg(ic, 'upic')}<div class="info"><b>${u.n}</b><span class="lvtag">Lv.${l}</span><div class="upv">${nm} <b>${f(t)}</b>${mx ? ' · 최대' : ` → <b class="nx">${upGain(u.k, t, upNext(u.k), f)}</b>`}</div></div><button class="buy upb" id="up-${u.k}" data-upk="${u.k}" ${mx ? 'disabled' : ''}>${mx ? '최대' : (p => costBtn(p.n > 1 ? '강화 ×' + p.n : '강화', p.c))(upPlan(u))}</button></div>`;
+      /* 「한 번에」 ×10·최대를 고르면 그만큼 올린 뒤의 값을 보여 줌 (후반에 1단계 차이가 안 보이는 문제 · UI 점검 10-27 2번) */
+      const pn = mx ? 1 : Math.min(upPlan(u).n, u.max - l);
+      return `<div class="row upr" id="upr-${u.k}">${uiImg(ic, 'upic')}<div class="info"><b>${u.n}</b><span class="lvtag">Lv.${l}</span><div class="upv">${nm} <b>${f(t)}</b>${mx ? ' · 최대' : ` → <b class="nx">${upGain(u.k, t, upNext(u.k, pn), f)}</b>`}</div></div><button class="buy upb" id="up-${u.k}" data-upk="${u.k}" ${mx ? 'disabled' : ''}>${mx ? '최대' : (p => costBtn(p.n > 1 ? '강화 ×' + p.n : '강화', p.c))(upPlan(u))}</button></div>`;
     }).join('');
-  if (big) helpBind($('upgs'), renderUpg);
+  if (bigOpen) helpBind($('upgs'), renderUpg);
   document.querySelectorAll('#upMul [data-mul]').forEach(b => b.classList.toggle('on', String(S.upMul || 1) === b.dataset.mul));
+  /* 후반(공격·체력 Lv.100 이상)에 ×1이면 「최대」를 추천 표시 */
+  const rec = (S.upMul || 1) === 1 && Math.max(S.up.atk || 0, S.up.hp || 0) >= 100,
+    mb = document.querySelector('#upMul [data-mul="max"]');
+  if (mb) mb.classList.toggle('rec', rec);
 }
 /* 연속 강화: ×1/×10/최대 + 꾹 누르면 계속 */
 function upPlan(u) {
@@ -12634,7 +12810,7 @@ function renderAll() {
   if (!inCh)
     $('stLabel').textContent =
       S.stage > MAXLAND ? '왕궁 뜰' : Math.floor((S.stage - 1) / 10) + 1 + '-' + (((S.stage - 1) % 10) + 1) + ' ' + r.n;
-  if (!inCh) $('stRegion').textContent = S.stage > MAXLAND ? '보스 없이 사냥 중 · 1부 완결' : terrName(S.stage) + ' 탈환전';
+  if (!inCh && !pillOn()) $('stRegion').textContent = S.stage > MAXLAND ? '보스 없이 사냥 중 · 1부 완결' : terrName(S.stage) + ' 탈환전';
   pfCheck();
   chCheck();
   renderGuide();
@@ -12827,6 +13003,14 @@ function pgMode() {
     $('pgShade').hidden = !(curTab && HALF.includes(curTab) && !S.pgFull);
   } catch (e) {}
   HALF.forEach(x => $('p-' + x).classList.toggle('half', !S.pgFull));
+  /* 장비 탭을 반만 열면 「상자 열기」 줄을 머리 줄 바로 아래로 (UI 점검 10-27 8번: 반 열림에선 스크롤 아래라 안 보임) */
+  const orow = $('openRow'),
+    peq = $('p-eq');
+  if (orow && peq) {
+    if (!S.pgFull) {
+      if (orow.parentElement !== peq) peq.querySelector('.phead').after(orow);
+    } else if (orow.parentElement === peq) peq.querySelector('.box .toggles').after(orow);
+  }
   document.querySelectorAll('.pexp').forEach(b => {
     b.textContent = S.pgFull ? '⤡' : '⤢';
     b.setAttribute('aria-label', S.pgFull ? '반만 보기' : '크게 보기');
@@ -14920,7 +15104,7 @@ function step(dt) {
           $('bossbar').hidden = true;
           $('bossbar').classList.remove('gold', 'dem');
           seal = null;
-          toast(bn + ' 처치');
+          pillFlash('✔ ' + bn + ' 처치');
           banner = {
             t: 2,
             txt: tn + ' 탈환!',
@@ -19278,6 +19462,8 @@ function wmPill(t, x, y, fs, bg, fg) {
   ctx.font = `700 ${fs}px "IBM Plex Sans KR",sans-serif`;
   const w = ctx.measureText(t).width + fs * 0.9,
     h = fs * 1.5;
+  /* 지도 끝에서 이름표가 잘리지 않게 안쪽으로 밀어 넣음 (UI 점검 10-27 11번: 「? 무덤」·「블린 금고」) */
+  if (ctx === mctx && MW) x = Math.max(w / 2 + 3, Math.min(MW - w / 2 - 3, x));
   ctx.fillStyle = bg;
   rr(x - w / 2, y - h / 2, w, h, h / 2);
   ctx.fillStyle = fg;
@@ -19704,11 +19890,26 @@ const sbSave = () => {
   } catch (e) {}
 };
 /* 서버 요청은 10초 넘으면 끊음 (전파가 약하거나 막힌 곳에서 창이 멈춰 있지 않게) */
+/* 마지막 서버 요청이 인터넷 문제(연결 안 됨·10초 넘음)로 실패했는지 — 「서버가 쉬고 있어요」와 「인터넷 연결을 확인해 주세요」를 가르는 데 씀 (UI 점검 10-27 12번) */
+let sbNetFail = false;
 const sbFetch = (u, o) => {
   const c = typeof AbortController !== 'undefined' ? new AbortController() : null;
   const t = c ? setTimeout(() => c.abort(), 10000) : 0;
-  return fetch(u, c ? { ...o, signal: c.signal } : o).finally(() => clearTimeout(t));
+  return fetch(u, c ? { ...o, signal: c.signal } : o)
+    .then(
+      r => {
+        sbNetFail = false;
+        return r;
+      },
+      e => {
+        sbNetFail = true;
+        throw e;
+      }
+    )
+    .finally(() => clearTimeout(t));
 };
+const sbDownMsg = (what = '랭킹') =>
+  !navigator.onLine || sbNetFail ? '인터넷 연결을 확인해 주세요. 연결되면 ' + what + '을 볼 수 있어요' : what + ' 서버가 잠시 쉬고 있어요. 조금 뒤에 다시 열어 주세요';
 async function sbLogin() {
   if (sbAuth && sbAuth.access_token && sbAuth.expires_at * 1000 > Date.now() + 60000) return sbAuth;
   const h = { apikey: SB.key, 'Content-Type': 'application/json' };
@@ -19921,7 +20122,7 @@ async function rankSheet(tab) {
     await sbEnsure();
     if (!S.nick) {
       $('sheet').innerHTML =
-        `${rkBan()}<p class="note" style="text-align:center;padding:14px 0">${navigator.onLine ? '랭킹 서버가 잠시 쉬고 있어요. 조금 뒤에 다시 열어 주세요' : '인터넷에 연결되면 랭킹을 볼 수 있어요'}</p><div class="acts one"><button class="pri" id="mGo">닫기</button></div>`;
+        `${rkBan()}<p class="note" style="text-align:center;padding:14px 0">${sbDownMsg()}</p><div class="acts one"><button class="pri" id="mGo">닫기</button></div>`;
       $('modal').hidden = false;
       $('mGo').onclick = closeModal;
       return;
@@ -19949,9 +20150,7 @@ async function rankSheet(tab) {
     }
   } catch (e) {
     if ($('modal').hidden) return;
-    $('sheet').querySelector('.note').textContent = navigator.onLine
-      ? '랭킹 서버가 잠시 쉬고 있어요. 조금 뒤에 다시 열어 주세요'
-      : '인터넷 연결이 필요해요';
+    $('sheet').querySelector('.note').textContent = sbDownMsg();
     return;
   }
   if ($('modal').hidden) return;

@@ -8,7 +8,8 @@ extension GameStoryX on GameController {
   /// 1개면 원래 창 그대로, 2개 이상이면 칸마다 「보러 가기」. 고르지 않은 것은 나중에(later)
   void _nwFlush() {
     // 제목 화면에서는 모아 두기만 (처음 들어올 때 탑·새 빈터가 따로 뜨지 않게, 웹 nwFlush)
-    if (_nwBuf.isEmpty || titleOpen) return;
+    // 탭을 보고 있는 동안은 기다렸다가 전투 화면으로 돌아오면 (웹 nwFlush · UI 점검 10-27 4번)
+    if (_nwBuf.isEmpty || titleOpen || tab != null) return;
     final b = List.of(_nwBuf);
     _nwBuf.clear();
     if (b.length == 1) return b.first.one();

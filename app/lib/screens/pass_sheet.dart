@@ -277,6 +277,40 @@ class _PassHd extends StatelessWidget {
 }
 
 /// 상점 맨 위 배너: 시즌 · 남은 날 · 단계 + 진행 막대 (누르면 패스 창)
+/// 원정 일지 작은 줄 — 처음 온 영주의 상점(영지 10 전)에서 큰 배너 대신 (웹 passMini)
+class PassMini extends StatelessWidget {
+  const PassMini(this.g, {super.key});
+  final GameController g;
+
+  @override
+  Widget build(BuildContext context) {
+    final a = g.acts, p = a.passS(), n = a.passCanN();
+    return GestureDetector(
+      onTap: () => openPass(g),
+      child: Stack(clipBehavior: Clip.none, children: [
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 9),
+          decoration: BoxDecoration(
+            color: KdColors.panel2,
+            border: Border.all(color: const Color(0x66FFC94A)),
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: Row(children: [
+            Text('📜 원정 일지', style: KdText.body(14, weight: FontWeight.w700)),
+            const SizedBox(width: 8),
+            Expanded(
+              child: Text('시즌 ${p['s']} · ${a.passLv()}/${GameActions.passSteps}단계${truthy(p['paid']) ? '' : ' · 유료 줄'}',
+                  maxLines: 1, overflow: TextOverflow.ellipsis, style: KdText.body(12.5, color: KdColors.muted)),
+            ),
+            Text('›', style: KdText.body(18, color: KdColors.gold)),
+          ]),
+        ),
+        if (n > 0) const Positioned(top: -3, right: -3, child: KdRedDot()),
+      ]),
+    );
+  }
+}
+
 class PassBanner extends StatelessWidget {
   const PassBanner(this.g, {super.key});
   final GameController g;

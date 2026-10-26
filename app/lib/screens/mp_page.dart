@@ -335,12 +335,16 @@ class _WorldPainter extends CustomPainter {
   _WorldPainter(this.g) : super(repaint: g.frame);
   final GameController g;
 
+  double _w = 0;
+
   Size _pill(Canvas c, String t, double x, double y, double fs, Color bg, Color fg) {
     final tp = TextPainter(
       text: TextSpan(text: t, style: TextStyle(fontFamily: 'PlexKR', fontSize: fs, fontWeight: FontWeight.w700, color: fg)),
       textDirection: TextDirection.ltr,
     )..layout();
     final w = tp.width + fs * .9, h = fs * 1.5;
+    // 지도 끝에서 이름표가 잘리지 않게 안쪽으로 (웹 wmPill · UI 점검 10-27 11번)
+    if (_w > w + 6) x = x.clamp(w / 2 + 3, _w - w / 2 - 3).toDouble();
     c.drawRRect(RRect.fromRectAndRadius(Rect.fromCenter(center: Offset(x, y), width: w, height: h), Radius.circular(h / 2)), Paint()..color = bg);
     tp.paint(c, Offset(x - tp.width / 2, y - tp.height / 2 + .5));
     return Size(w, h);
@@ -373,6 +377,7 @@ class _WorldPainter extends CustomPainter {
 
   @override
   void paint(Canvas c, Size size) {
+    _w = size.width;
     final s = g.state, cc = g.calc, t = g.sim.time.toDouble(), now = DateTime.now().millisecondsSinceEpoch;
     // 카메라를 목표로 부드럽게
     g.camX += (g.camTx - g.camX) * .19;

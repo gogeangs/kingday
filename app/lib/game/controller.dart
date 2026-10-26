@@ -148,6 +148,11 @@ class GameController extends ChangeNotifier {
 
   /// 알림 한 줄 (웹 toast)
   final toastMsg = ValueNotifier<String?>(null);
+
+  /// 위쪽 진행 바 소식 (웹 pillFlash): [pillUntil] 까지 영지 이름 아래 줄에 금색으로
+  String? pillMsg;
+  int pillUntil = 0;
+  String? get pillNow => pillMsg != null && DateTime.now().millisecondsSinceEpoch < pillUntil ? pillMsg : null;
   Timer? _toastTimer, _saveTimer;
 
   /// 창을 띄울 곳 (MaterialApp.navigatorKey)

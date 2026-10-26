@@ -29,6 +29,9 @@ class StageTop extends StatelessWidget {
     final s = g.state, st = s.stage, r = GameCalc.region(st), boss = g.sim.boss, h = g.sim.ch;
     var label = st > maxLand ? '왕궁 뜰' : '${(st - 1) ~/ 10 + 1}-${(st - 1) % 10 + 1} ${r.n}';
     var sub = st > maxLand ? '보스 없이 사냥 중 · 1부 완결' : '${GameCalc.terrName(st)} 탈환전';
+    // 성주 처치 같은 소식은 알림 대신 이 줄에 잠깐 금색으로 (웹 pillFlash · UI 점검 10-27 1번)
+    final pill = h == null ? g.pillNow : null;
+    if (pill != null) sub = pill;
     // 도전 중: 탑 층·규칙 / 던전 남은 시간·처치 수·별 (웹 chHud)
     if (h != null && h.mode == 'tower') {
       final i = h.info!;
@@ -59,7 +62,8 @@ class StageTop extends StatelessWidget {
                   child: Column(crossAxisAlignment: CrossAxisAlignment.start, mainAxisSize: MainAxisSize.min, children: [
                     Text(label, maxLines: 1, overflow: TextOverflow.ellipsis, style: KdText.display(14).copyWith(letterSpacing: .3)),
                     if (sub.isNotEmpty)
-                      Text(sub, maxLines: 1, overflow: TextOverflow.ellipsis, style: KdText.body(11.5, color: KdColors.muted, height: 1.2)),
+                      Text(sub, maxLines: 1, overflow: TextOverflow.ellipsis,
+                          style: KdText.body(11.5, color: pill != null ? const Color(0xFFFFE08A) : KdColors.muted, height: 1.2, weight: pill != null ? FontWeight.w700 : FontWeight.w400)),
                   ]),
                 ),
                 if (h == null) ...[const SizedBox(width: 8), _pips(s.wave, boss != null, st <= maxLand)],
