@@ -59,7 +59,7 @@ async function googleToken(): Promise<string> {
   return j.access_token;
 }
 
-async function verifyAndroid(productId: string, token: string, sub: boolean): Promise<{ ok: boolean; order?: string }> {
+async function verifyAndroid(productId: string, token: string, sub: boolean): Promise<{ ok: boolean; order?: string; why?: string }> {
   const at = await googleToken();
   const base = `https://androidpublisher.googleapis.com/androidpublisher/v3/applications/${PKG}/purchases`;
   if (sub) {
@@ -67,11 +67,12 @@ async function verifyAndroid(productId: string, token: string, sub: boolean): Pr
     const j = await r.json();
     const ok = ['SUBSCRIPTION_STATE_ACTIVE', 'SUBSCRIPTION_STATE_IN_GRACE_PERIOD'].includes(j.subscriptionState) &&
       (j.lineItems ?? []).some((l: { productId: string }) => l.productId === productId);
-    return { ok, order: j.latestOrderId };
+    return { ok, order: j.latestOrderId, why: ok ? undefined : `sub:${r.status}:${j.subscriptionState ?? JSON.stringify(j.error ?? {}).slice(0, 200)}` };
   }
   const r = await fetch(`${base}/products/${productId}/tokens/${token}`, { headers: { authorization: `Bearer ${at}` } });
   const j = await r.json();
-  return { ok: r.ok && j.purchaseState === 0, order: j.orderId };
+  const ok = r.ok && j.purchaseState === 0;
+  return { ok, order: j.orderId, why: ok ? undefined : `prod:${r.status}:${j.purchaseState ?? JSON.stringify(j.error ?? {}).slice(0, 200)}` };
 }
 
 // ── 애플: App Store Server API (ES256 토큰) ──
@@ -84,18 +85,26 @@ async function appleJwt(): Promise<string> {
   return `${head}.${body}.${b64url(sig)}`;
 }
 
-async function verifyIos(productId: string, transactionId: string): Promise<{ ok: boolean; order?: string }> {
+async function verifyIos(productId: string, transactionId: string): Promise<{ ok: boolean; order?: string; why?: string }> {
   const jwt = await appleJwt();
+  const why: string[] = [];
   for (const host of ['https://api.storekit.itunes.apple.com', 'https://api.storekit-sandbox.itunes.apple.com']) {
-    const r = await fetch(`${host}/inApps/v1/transactions/${transactionId}`, { headers: { authorization: `Bearer ${jwt}` } });
-    if (r.status === 404) continue; // 시험 결제는 sandbox 에 있음
-    if (!r.ok) return { ok: false };
+    const r = await fetch(`${host}/inApps/v1/transactions/${encodeURIComponent(transactionId)}`, { headers: { authorization: `Bearer ${jwt}` } });
+    const env = host.includes('sandbox') ? 'sandbox' : 'prod';
+    if (!r.ok) {
+      // 진단용: 애플이 돌려준 상태·오류 코드만 남김 (비밀값 없음)
+      why.push(`${env}:${r.status}:${(await r.text()).slice(0, 200)}`);
+      continue; // 시험 결제는 sandbox 에 있음 (prod 는 404·401 등으로 거절)
+    }
     const j = await r.json();
     // 애플 서버에서 TLS 로 직접 받은 값이므로 내용만 읽음
-    const p = JSON.parse(atob(j.signedTransactionInfo.split('.')[1].replace(/-/g, '+').replace(/_/g, '/')));
-    return { ok: p.bundleId === PKG && p.productId === productId && !p.revocationDate, order: p.originalTransactionId };
+    const b = j.signedTransactionInfo.split('.')[1].replace(/-/g, '+').replace(/_/g, '/');
+    const p = JSON.parse(new TextDecoder().decode(Uint8Array.from(atob(b + '='.repeat((4 - (b.length % 4)) % 4)), (c) => c.charCodeAt(0))));
+    const ok = p.bundleId === PKG && p.productId === productId && !p.revocationDate;
+    if (!ok) why.push(`${env}:mismatch:${p.bundleId}:${p.productId}:${p.revocationDate ?? ''}`);
+    return { ok, order: p.originalTransactionId, why: why.join(' | ') };
   }
-  return { ok: false };
+  return { ok: false, why: why.join(' | ') };
 }
 
 Deno.serve(async (req) => {
@@ -113,7 +122,10 @@ Deno.serve(async (req) => {
     if (!p || !token || !['android', 'ios'].includes(platform)) return json({ error: 'bad' }, 400);
 
     const v = platform === 'android' ? await verifyAndroid(productId, token, !!p.sub) : await verifyIos(productId, token);
-    if (!v.ok) return json({ error: 'verify' }, 402);
+    if (!v.ok) {
+      console.log('verify fail', platform, productId, String(token).slice(0, 24), v.why ?? '');
+      return json({ error: 'verify', why: v.why ?? '' }, 402);
+    }
 
     const r = await fetch(`${url}/rest/v1/rpc/kd_iap_grant`, {
       method: 'POST',
