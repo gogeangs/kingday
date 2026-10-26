@@ -15,7 +15,7 @@ import 'settings_sheet.dart';
 /// 1-3 에 닿은 뒤부터 출석부가 열림
 bool attEligible(GameController g) => g.state.best >= 3;
 
-/// 오늘 아직 출석 안 했으면 상단 바 달력 아이콘에 노란 점
+/// 오늘 아직 안 받은 판이 있으면 상단 바 달력 아이콘에 노란 점 (판마다 따로 받기 · CONTENT_ATTENDANCE_2.md)
 bool attDot(GameController g) => attEligible(g) && g.acts.attStatusAt(g.calc.today()) == 'ok';
 
 /// 상단 바 아이콘·자동으로 열 때: 처음 한 번은 피트 소개 장면
@@ -27,6 +27,9 @@ void openAttend(GameController g, {bool queued = false}) {
     a['intro'] = 1;
     g.save();
   }
+  // 지금 탭을 이미 받았고 다른 판이 남았으면 그 판부터 (웹 attOpen)
+  final t = g.calc.today(), cur = a['tab'] == 'm' ? 'm' : 'w', oth = cur == 'w' ? 'm' : 'w';
+  if (g.acts.attStatusAt(t, cur) != 'ok' && g.acts.attStatusAt(t, oth) == 'ok') a['tab'] = oth;
   if (queued) {
     g.queue((ctx) => showKdSheet<void>(ctx, builder: (c) => AttendSheet(g, c, intro: intro)));
   } else {
@@ -71,7 +74,7 @@ class _AttendSheetState extends State<AttendSheet> {
       'seed' => 'assets/game/ui/seed_wheat.png',
       'tbox' => 'assets/game/ui/item_boxticket.png',
       'tbox10' => 'assets/game/ui/item_box10ticket.png',
-      'card' || 'ecard' => 'assets/game/ui/card_back.png',
+      'card' || 'ecard' || 'lcard' => 'assets/game/ui/card_back.png',
       _ => 'assets/game/profile/badge_att.png',
     };
     return kdImg(p, w: size, h: size);
@@ -134,29 +137,30 @@ class _AttendSheetState extends State<AttendSheet> {
         ]),
       );
 
-  void _claim() {
-    final r = g.act((a) => a.attDo(g.calc.today()));
+  /// 판(b)마다 따로 받기 (웹 attClaim)
+  void _claim(String b) {
+    final r = g.act((a) => a.attDo(g.calc.today(), b));
     if (r == 'done') return g.toast('오늘은 이미 받았어요. 내일 자정에 또 만나요');
     if (r == 'back') return g.toast('날짜가 이상해요. 휴대폰 시간을 확인해 주세요.');
     final res = r as AttResult;
-    g.act((a) => a.passAdd('att'));
+    if (res.first) g.act((a) => a.passAdd('att'));
     g.haptic(const [30, 40, 70]);
     g.calc.pfCheck();
     g.save();
     g.refresh();
-    g.toast('출석 완료! 7일 판 ${res.wd + 1}일째 · 이번 달 ${res.md}회째');
+    g.toast(b == 'w' ? '출석 완료! 7일 판 ${res.wd + 1}일째' : '출석 완료! 이번 달 ${res.md}회째');
     setState(() {
       just = res;
       adRows = null;
     });
   }
 
-  void _ad() {
+  void _ad(String b) {
     final t = g.calc.today();
     g.chainSheet(widget.sheet, () async {
       List<AttRow>? rows;
       await g.watchAd('att', () {
-        rows = g.act((a) => a.attAdDo(t));
+        rows = g.act((a) => a.attAdDo(t, b));
       });
       if (rows != null) {
         g.calc.pfCheck();
@@ -169,25 +173,38 @@ class _AttendSheetState extends State<AttendSheet> {
 
   @override
   Widget build(BuildContext context) {
-    final a = g.acts.attA(), t = g.calc.today(), st = g.acts.attStatusAt(t), done = st == 'done';
+    final a = g.acts.attA(), t = g.calc.today();
     final tab = a['tab'] == 'm' ? 'm' : 'w', mc = g.acts.attMonthN(t), dim = attDim(t), mo = int.parse(t.split('-')[1]);
+    final st = g.acts.attStatusAt(t, tab), done = st == 'done', oth = g.acts.attStatusAt(t, tab == 'w' ? 'm' : 'w') == 'ok';
+    // 다른 판에서 방금 받은 것은 이 탭에선 안 보여 줌
+    if (just != null && just!.b != 'both' && just!.b != tab) just = null;
     final jw = just?.wd ?? -1, jm = just?.md ?? -1;
     Widget tabBtn(String k, String label) => Expanded(
           child: GestureDetector(
             onTap: () => setState(() {
               a['tab'] = k;
+              adRows = null;
               g.save();
             }),
-            child: Container(
-              height: 38,
-              alignment: Alignment.center,
-              decoration: BoxDecoration(
-                color: tab == k ? KdColors.gold : KdColors.panel2,
-                border: Border.all(color: tab == k ? KdColors.gold : KdColors.line),
-                borderRadius: BorderRadius.circular(10),
+            child: Stack(clipBehavior: Clip.none, children: [
+              Container(
+                height: 38,
+                alignment: Alignment.center,
+                decoration: BoxDecoration(
+                  color: tab == k ? KdColors.gold : KdColors.panel2,
+                  border: Border.all(color: tab == k ? KdColors.gold : KdColors.line),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Text(label, style: KdText.body(14, weight: FontWeight.w700, color: tab == k ? KdColors.goldInk : KdColors.muted)),
               ),
-              child: Text(label, style: KdText.body(14, weight: FontWeight.w700, color: tab == k ? KdColors.goldInk : KdColors.muted)),
-            ),
+              // 아직 안 받은 판에 노란 점
+              if (g.acts.attStatusAt(t, k) == 'ok')
+                Positioned(
+                  top: 4,
+                  right: 6,
+                  child: Container(width: 9, height: 9, decoration: const BoxDecoration(color: Color(0xFFFFD23A), shape: BoxShape.circle)),
+                ),
+            ]),
           ),
         );
 
@@ -227,17 +244,37 @@ class _AttendSheetState extends State<AttendSheet> {
               SizedBox(
                 width: w,
                 height: w,
-                child: _cell(
-                  top: '$n',
-                  r: attMonth(n)[0],
-                  label: '',
-                  big: attBig.containsKey(n),
-                  now: !done && n == mc + 1,
-                  got: n <= mc,
-                  fresh: n == jm,
-                  icon: w * (attBig.containsKey(n) ? .5 : .42),
-                  small: true,
-                ),
+                child: Stack(clipBehavior: Clip.none, children: [
+                  Positioned.fill(
+                    child: _cell(
+                      top: '$n',
+                      r: attMonth(n)[0],
+                      label: '',
+                      big: attBig.containsKey(n),
+                      now: !done && n == mc + 1,
+                      got: n <= mc,
+                      fresh: n == jm,
+                      icon: w * (attBig.containsKey(n) ? .5 : .42),
+                      small: true,
+                    ),
+                  ),
+                  // 5·10·15·20·25·30회: 전설 만능 카드 (웹 .attc .lct)
+                  if (n % 5 == 0)
+                    Positioned(
+                      left: 0,
+                      right: 0,
+                      bottom: 1,
+                      child: IgnorePointer(
+                        child: Center(
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 4),
+                            decoration: BoxDecoration(color: const Color(0xFFFFC23A), borderRadius: BorderRadius.circular(6)),
+                            child: Text('전설', style: KdText.body(9.5, color: const Color(0xFF2A1A00), weight: FontWeight.w700, height: 1.3)),
+                          ),
+                        ),
+                      ),
+                    ),
+                ]),
               ),
           ]);
         }),
@@ -246,7 +283,9 @@ class _AttendSheetState extends State<AttendSheet> {
 
     final line = just == null
         ? null
-        : just!.md == 28
+        : just!.md > 0 && just!.md % 5 == 0 && g.acts.lcard > 0
+            ? 'm:피트|전설 만능 카드예요! 원정대 카드 탭에서 마음에 드는 전설 동료에게 넣어 주세요.'
+            : just!.md == 28
             ? 'm:피트|이번 달 출석부를 다 채우셨네요! 이 배지는 아무나 못 받아요.'
             : just!.wd == 6
                 ? 'm:피트|일주일 개근! 특별히 상자 10번 여는 표를 넣었어요.'
@@ -254,11 +293,11 @@ class _AttendSheetState extends State<AttendSheet> {
     final rows = adRows ?? just?.rows ??
         (done
             ? [
-                for (final r in (a['got'] as List).map((x) => asMap(x)!))
+                for (final r in (a[tab == 'w' ? 'gw' : 'gm'] as List).map((x) => asMap(x)!))
                   r['k'] == 'badge' ? AttRow('badge', '${attBadgeName(r['id'] as String)} 배지', '', false, r['id'] as String) : AttRow(r['k'] == 'ecard' ? 'card' : r['k'] as String, attName(r)),
               ]
             : null);
-    final adOk = done && a['ad'] != t && g.calc.adLeft('att') > 0;
+    final adOk = done && a[tab == 'w' ? 'adw' : 'adm'] != t && g.calc.adLeft('att') > 0;
 
     return KdSheetBody(
       titleWidget: const HdBanner('hd_attend', '피트의 출석부'),
@@ -271,7 +310,7 @@ class _AttendSheetState extends State<AttendSheet> {
         board,
         KdNote(tab == 'w'
             ? '7칸을 다 채우면 1일부터 다시 시작해요. 빠진 날이 있어도 다음 칸으로 이어서 찍혀요.'
-            : '큰 보상 · 7회 동료 카드 10장 · 14회 이삭 100 · 21회 영웅 이상 카드 10장 · 28회 이삭 100 + $mo월 출석 배지. 매달 1일에 새로 시작해요.'),
+            : '큰 보상 · 7회 동료 카드 10장 · 14회 이삭 100 · 21회 영웅 이상 카드 10장 · 28회 이삭 100 + $mo월 출석 배지. 5·10·15·20·25·30회엔 전설 만능 카드 10장을 더 줘요(원하는 전설 동료에게 넣어요). 매달 1일에 새로 시작해요.'),
         if (st == 'back') const KdNote('날짜가 이상해요. 휴대폰 시간을 확인해 주세요.'),
         if (line != null) Para(line),
         if (rows != null && rows.isNotEmpty)
@@ -279,7 +318,7 @@ class _AttendSheetState extends State<AttendSheet> {
             padding: const EdgeInsets.fromLTRB(10, 8, 10, 8),
             decoration: BoxDecoration(color: const Color(0xFF10162A), border: Border.all(color: KdColors.line), borderRadius: BorderRadius.circular(12)),
             child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-              Text(adRows != null ? '광고 보상 · 한 번 더' : '오늘 받은 선물', style: KdText.body(12, color: KdColors.muted, weight: FontWeight.w600)),
+              Text(adRows != null ? '광고 보상 · 한 번 더' : just != null ? '오늘 받은 선물' : '오늘 받은 선물 · ${tab == 'w' ? '7일 판' : '한달 판'}', style: KdText.body(12, color: KdColors.muted, weight: FontWeight.w600)),
               const SizedBox(height: 4),
               for (final r in rows) _row(r),
             ]),
@@ -288,12 +327,19 @@ class _AttendSheetState extends State<AttendSheet> {
       // 받은 뒤에는 노란 버튼이 「닫기」, 광고는 보조 버튼 (웹 attSheet, UX 점검 6)
       acts: KdActs(buttons: done && st != 'back'
           ? [
-              adOk ? KdAct('▶ 광고로 한 번 더', onTap: _ad) : const KdAct('내일 또 만나요'),
-              KdAct('닫기', primary: true, onTap: () => Navigator.of(widget.sheet).pop()),
+              adOk
+                  ? KdAct('▶ 광고로 한 번 더', onTap: () => _ad(tab))
+                  : oth
+                      ? KdAct(tab == 'w' ? '한달 판도 받기 ›' : '7일 판도 받기 ›', primary: true, onTap: () => setState(() {
+                            a['tab'] = tab == 'w' ? 'm' : 'w';
+                            g.save();
+                          }))
+                      : const KdAct('내일 또 만나요'),
+              KdAct('닫기', primary: !(oth && !adOk), onTap: () => Navigator.of(widget.sheet).pop()),
             ]
           : [
               KdAct('닫기', onTap: () => Navigator.of(widget.sheet).pop()),
-              st == 'back' ? const KdAct('날짜를 확인해 주세요', primary: true) : KdAct('출석하기', primary: true, onTap: _claim),
+              st == 'back' ? const KdAct('날짜를 확인해 주세요', primary: true) : KdAct(tab == 'w' ? '7일 판 받기' : '한달 판 받기', primary: true, onTap: () => _claim(tab)),
             ]),
     );
   }

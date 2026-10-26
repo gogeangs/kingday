@@ -33,8 +33,13 @@ const Map<int, List<Map<String, Object>>> attBig = {
 };
 const _attG = [1, 4, 10, 13, 17, 20, 24, 27], _attS = [2, 5, 9, 12, 16, 19, 23, 26];
 
+/// 한달 판 5·10·15·20·25·30회째: 원래 보상 + 전설 만능 카드 10장 (웹 ATT_LC · CONTENT_ATTENDANCE_2.md)
+const Map<String, Object> attLcard = {'k': 'lcard', 'n': 10, 'alt': 300};
+
 /// 한달 판 n회째 보상
-List<Map<String, Object>> attMonth(int n) =>
+List<Map<String, Object>> attMonth(int n) => n % 5 == 0 ? [..._attMonth0(n), attLcard] : _attMonth0(n);
+
+List<Map<String, Object>> _attMonth0(int n) =>
     attBig[n] ??
     (n >= 29
         ? const [{'k': 'gold', 'h': 1}]
@@ -77,16 +82,21 @@ String attBadgeName(String k) => '${k.substring(4, 8)}년 ${int.parse(k.substrin
 /// 받은 보상 한 줄 (창에 보여 줄 것)
 class AttRow {
   AttRow(this.kind, this.text, [this.sub = '', this.again = false, this.badge]);
-  final String kind; // gold · gem · ore · seed · tbox · tbox10 · card · badge
+  final String kind; // gold · gem · ore · seed · tbox · tbox10 · card · lcard · badge
   final String text, sub;
   final bool again;
   final String? badge;
 }
 
 class AttResult {
-  AttResult(this.wd, this.md, this.rows);
+  AttResult(this.wd, this.md, this.rows, {this.b = 'both', this.first = true});
+  /// 받은 판 칸 (받지 않은 판은 -1)
   final int wd, md;
   final List<AttRow> rows;
+  /// 'w' 7일 판 · 'm' 한달 판 · 'both'
+  final String b;
+  /// 그날 처음 받은 판인지 (원정 일지 출석 점수는 처음 한 번)
+  final bool first;
 }
 
 /// 판에 쓰는 짧은 이름
@@ -99,6 +109,7 @@ String attShort(Map r) => switch (r['k']) {
       'tbox10' => '10연권',
       'card' => '카드 ${r['n']}',
       'ecard' => '영웅 ${r['n']}',
+      'lcard' => '전설 ${r['n']}',
       'badge' => '배지',
       _ => '',
     };
@@ -113,6 +124,7 @@ String attName(Map r) => switch (r['k']) {
       'tbox10' => '10연속 무료권',
       'card' => '동료 카드 ${r['n']}장',
       'ecard' => '영웅↑ 카드 ${r['n']}장',
+      'lcard' => '전설 만능 카드 ${r['n']}장',
       'badge' => '출석 배지',
       _ => '',
     };
@@ -122,11 +134,19 @@ extension Attendance on GameActions {
   Map<String, dynamic> attA() {
     var a = asMap(s.raw['att']);
     if (a == null) s.raw['att'] = a = <String, dynamic>{};
-    const d = {'last': '', 'w': 0, 'ym': '', 'm': 0, 'ad': '', 'intro': 0, 'tab': 'w'};
+    // 옛 저장(두 판 함께 받던 때): 마지막 출석 날짜를 두 판에 나눠 넣음 (웹 attA)
+    final last0 = a['last'];
+    if (last0 is String && last0.isNotEmpty && !_has(a['lw']) && !_has(a['lm'])) {
+      a['lw'] = a['lm'] = last0;
+      if (a['ad'] == last0) a['adw'] = a['adm'] = last0;
+    }
+    const d = {'last': '', 'w': 0, 'ym': '', 'm': 0, 'ad': '', 'intro': 0, 'tab': 'w', 'lw': '', 'lm': '', 'adw': '', 'adm': ''};
     for (final e in d.entries) {
       a[e.key] ??= e.value;
     }
-    if (a['got'] is! List) a['got'] = <dynamic>[];
+    for (final k in const ['got', 'gw', 'gm']) {
+      if (a[k] is! List) a[k] = <dynamic>[];
+    }
     if (asMap(s.raw['tickets']) == null) s.raw['tickets'] = <String, dynamic>{'box': 0, 'box10': 0};
     return a;
   }
@@ -138,11 +158,18 @@ extension Attendance on GameActions {
 
   int tkN(String k) => orNum(tickets[k], 0).toInt();
 
-  /// 'done' 오늘 받음 · 'back' 날짜가 거꾸로 · 'ok' 받을 수 있음
-  String attStatusAt(String t) {
+  static bool _has(Object? v) => v is String && v.isNotEmpty;
+
+  /// 'done' 오늘 받음 · 'back' 날짜가 거꾸로 · 'ok' 받을 수 있음.
+  /// [b] 'w' 7일 판 · 'm' 한달 판 · 없으면 두 판 합쳐서(둘 다 받았으면 done) (웹 attStatusAt)
+  String attStatusAt(String t, [String? b]) {
+    if (b == null) {
+      final w = attStatusAt(t, 'w'), m = attStatusAt(t, 'm');
+      return w == 'back' || m == 'back' ? 'back' : w == 'done' && m == 'done' ? 'done' : 'ok';
+    }
     final a = attA();
-    if (a['last'] == t) return 'done';
-    final last = a['last'] as String? ?? '';
+    final last = (b == 'w' ? a['lw'] : a['lm']) as String? ?? '';
+    if (last == t) return 'done';
     if (last.isNotEmpty && attDnum(t) < attDnum(last)) return 'back';
     return 'ok';
   }
@@ -153,42 +180,93 @@ extension Attendance on GameActions {
     return a['ym'] == attYm(t) ? orNum(a['m'], 0).toInt() : 0;
   }
 
-  /// 웹 attDo(t): 그날 출석 → 두 판 보상 지급. 결과 또는 'done'/'back'
-  Object attDo(String t) {
-    final a = attA(), st = attStatusAt(t);
-    if (st != 'ok') return st;
-    final ym = attYm(t);
-    if (a['ym'] != ym) {
-      a['ym'] = ym;
-      a['m'] = 0;
+  /// 웹 attDo(t, b): 그 판(b)에서 그날 출석 → 보상 지급. 결과 또는 'done'/'back'.
+  /// [b] 없으면 받을 수 있는 두 판을 한꺼번에 (7일 판 먼저)
+  Object attDo(String t, [String? b]) {
+    if (b == null) {
+      final w = attDo(t, 'w'), m = attDo(t, 'm');
+      if (w is String && m is String) return w == 'back' || m == 'back' ? 'back' : 'done';
+      final ow = w is AttResult ? w : null, om = m is AttResult ? m : null;
+      return AttResult(ow?.wd ?? -1, om?.md ?? -1, [...?ow?.rows, ...?om?.rows], b: 'both', first: (ow?.first ?? false) || (om?.first ?? false));
     }
-    final wd = orNum(a['w'], 0).toInt() % 7, md = math.min(31, orNum(a['m'], 0).toInt() + 1);
+    final a = attA(), st = attStatusAt(t, b);
+    if (st != 'ok') return st;
+    final first = a['lw'] != t && a['lm'] != t;
+    var wd = -1, md = -1;
+    final List<Map<String, Object>> rs;
+    if (b == 'w') {
+      wd = orNum(a['w'], 0).toInt() % 7;
+      rs = attWeek[wd];
+    } else {
+      final ym = attYm(t);
+      if (a['ym'] != ym) {
+        a['ym'] = ym;
+        a['m'] = 0;
+      }
+      md = math.min(31, orNum(a['m'], 0).toInt() + 1);
+      rs = attMonth(md);
+    }
     final rows = <AttRow>[], got = <dynamic>[];
-    for (final r in [...attWeek[wd], ...attMonth(md)]) {
+    for (final r in rs) {
       final g = _attGive(r);
       got.add(g.$1);
       rows.add(g.$2);
     }
-    a['w'] = (wd + 1) % 7;
-    a['m'] = md;
-    a['last'] = t;
-    a['got'] = got;
-    c.stat('att', 1);
-    return AttResult(wd, md, rows);
+    if (b == 'w') {
+      a['w'] = (wd + 1) % 7;
+      a['lw'] = t;
+      a['gw'] = got;
+    } else {
+      a['m'] = md;
+      a['lm'] = t;
+      a['gm'] = got;
+    }
+    // 옛 버전과 함께 쓰는 저장: 두 판 다 받은 날만 last 를 그날로
+    if (a['lw'] == t && a['lm'] == t) a['last'] = t;
+    if (first) c.stat('att', 1);
+    return AttResult(wd, md, rows, b: b, first: first);
   }
 
-  /// 웹 attAdDo(t): 광고 2배 — 그날 받은 보상을 한 번 더 (배지 제외). 못 받으면 null
-  List<AttRow>? attAdDo(String t) {
-    final a = attA();
-    if (attStatusAt(t) != 'done' || a['ad'] == t) return null;
+  /// 웹 attAdDo(t, b): 광고 2배 — 그 판에서 그날 받은 보상을 한 번 더(판마다 하루 1번, 배지 제외, 전설 만능 카드는 2배).
+  /// [b] 없으면 두 판 모두. 못 받으면 null
+  List<AttRow>? attAdDo(String t, [String? b]) {
+    if (b == null) {
+      final w = attAdDo(t, 'w'), m = attAdDo(t, 'm');
+      return w == null && m == null ? null : [...?w, ...?m];
+    }
+    final a = attA(), k = b == 'w' ? 'adw' : 'adm';
+    if (attStatusAt(t, b) != 'done' || a[k] == t) return null;
     final rows = <AttRow>[];
-    for (final r in (a['got'] as List)) {
+    for (final r in (a[b == 'w' ? 'gw' : 'gm'] as List)) {
       final m = asMap(r)!;
       if (m['k'] == 'badge') continue;
       rows.add(_attGive(m, again: true).$2);
     }
+    a[k] = t;
     a['ad'] = t;
     return rows;
+  }
+
+  /// 전설 만능 카드: 받을 수 있는(이야기 동료 합류·별 5 전) 전설 동료가 있어야 쓸 수 있음 (웹 lcardCan)
+  bool lcardCan() => GameCalc.cardIds().any((x) => gradeOf[x] == 'legend' && c.cardCan(x));
+
+  int get lcard => orNum(s.raw['lcard'], 0).toInt();
+
+  /// 다음 합류·별 올리기까지 모자란 카드 (웹 lcardNeed)
+  int lcardNeed(String id) {
+    final need = c.starNeed(id);
+    return need == null ? 0 : math.max(0, need - orNum(s.cardsW[id], 0).toInt());
+  }
+
+  /// 웹 lcardUse(id): 만능 카드를 그 동료 카드로 (모자란 만큼만). 넣은 장수
+  int lcardUse(String id) {
+    if (gradeOf[id] != 'legend' || !c.cardCan(id)) return 0;
+    final n = math.min(lcard, lcardNeed(id));
+    if (n <= 0) return 0;
+    final cards = s.cardsW;
+    cards[id] = orNum(cards[id], 0) + n;
+    s.raw['lcard'] = lcard - n;
+    return n;
   }
 
   /// 카드: 받을 카드가 없으면 null. 영웅↑ 카드는 영웅·전설 중에서, 없으면 일반 규칙
@@ -260,6 +338,13 @@ extension Attendance on GameActions {
           if (res.gold > 0) '별 다 채운 몫 골드 +${fmt(res.gold)}',
         ].join(' · ');
         return (it, AttRow('card', '${k == 'ecard' ? '영웅 이상 동료 카드 ' : '동료 카드 '}$n장', sub, again));
+      case 'lcard':
+        if (!lcardCan()) {
+          s.gem = s.gem + asNum(r['alt']);
+          return (it, AttRow('gem', '황금 이삭 +${r['alt']}', '넣을 수 있는 전설 동료가 아직 없어서 이삭으로 대신 드려요', again));
+        }
+        s.raw['lcard'] = lcard + asNum(r['n']).toInt();
+        return (it, AttRow('lcard', '전설 만능 카드 +${r['n']}장', '원정대 → 카드 탭에서 원하는 전설 동료에게 넣어요', again));
       default: // badge
         final id = 'att_${(attA()['ym'] as String).replaceAll('-', '')}';
         final bd = asMap(s.raw['bdUnl']) ?? (s.raw['bdUnl'] = <String, dynamic>{});
