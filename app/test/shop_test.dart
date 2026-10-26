@@ -97,6 +97,14 @@ void main() {
       await press('장착');
       expect(find.text('한 번만'), findsNothing, reason: '첫 거래 특가는 한 번만');
 
+      // 유니크 뚝딱이(₩5,500, 정기 배송보다 위): 합류 장면 → 바로 출전 → 상점에서 사라짐
+      await press('₩5,500');
+      await frames(3);
+      expect(find.text('산에서 내려온 도깨비 뚝딱이'), findsOneWidget);
+      await press('바로 출전');
+      expect(g.calc.slotMember('miner'), 'ttukttak');
+      expect(find.text('뚝딱이 맞이하기'), findsNothing);
+
       // 정기 배송: 시작하면 오늘 배송까지 받음
       await press('₩5,500');
       expect(find.text('받음'), findsWidgets);
