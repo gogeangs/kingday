@@ -237,20 +237,55 @@ class KdActs extends StatelessWidget {
   const KdActs({super.key, required this.buttons});
   final List<KdAct> buttons;
 
+  /// 한 줄 버튼들의 글자 크기·높이를 맞춤 (2026-10-26 대표님 「버튼 크기 조정」):
+  /// 글자가 길면 먼저 16 → 14로 줄여 한 줄에 넣고, 그래도 길면 14로 두 줄. 줄의 버튼은 모두 같은 높이(가장 큰 것), 최소 48.
+  static const double minH = 48, _pad = 11, _border = 1;
+
+  static (double, int) fit(String t, double w, [TextScaler scaler = TextScaler.noScaling]) {
+    for (final size in const [16.0, 14.0]) {
+      final tp = TextPainter(text: TextSpan(text: t, style: KdText.display(size)), textDirection: TextDirection.ltr, maxLines: 1, textScaler: scaler)
+        ..layout();
+      final ok = tp.width <= w;
+      tp.dispose();
+      if (ok) return (size, 1);
+    }
+    return (14, 2);
+  }
+
   @override
-  Widget build(BuildContext context) => Row(
-        children: _gap([for (final b in buttons) Expanded(child: b)], 8, horizontal: true),
-      );
+  Widget build(BuildContext context) => LayoutBuilder(builder: (ctx, c) {
+        final n = buttons.length, sc = MediaQuery.textScalerOf(ctx);
+        final bw = c.maxWidth.isFinite ? (c.maxWidth - 8 * (n - 1)) / n : 160.0;
+        final inner = bw - 2 * (_pad + _border);
+        final fits = [for (final b in buttons) b.child != null ? (16.0, 1) : fit(b.text, inner, sc)];
+        // 줄의 버튼 높이는 가장 큰 것에 맞춤 (그림·두 줄 버튼이 섞여도 같은 높이)
+        return IntrinsicHeight(
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: _gap([
+              for (var i = 0; i < n; i++)
+                Expanded(child: ConstrainedBox(constraints: const BoxConstraints(minHeight: minH), child: buttons[i].sized(fits[i].$1, fits[i].$2))),
+            ], 8, horizontal: true),
+          ),
+        );
+      });
 }
 
 class KdAct extends StatelessWidget {
-  const KdAct(this.text, {super.key, this.onTap, this.primary = false, this.danger = false, this.claim = false, this.child});
+  const KdAct(this.text, {super.key, this.onTap, this.primary = false, this.danger = false, this.claim = false, this.child, this.fontSize = 16, this.maxLines});
   final String text;
   final VoidCallback? onTap;
 
   /// claim: 초록 「받기」 버튼 (U-2 ⑦)
   final bool primary, danger, claim;
   final Widget? child;
+
+  /// 글자 크기·줄 수 (KdActs 가 줄 전체를 보고 정함)
+  final double fontSize;
+  final int? maxLines;
+
+  KdAct sized(double size, int lines) =>
+      KdAct(text, key: key, onTap: onTap, primary: primary, danger: danger, claim: claim, fontSize: size, maxLines: lines, child: child);
 
   @override
   Widget build(BuildContext context) {
@@ -285,7 +320,9 @@ class KdAct extends StatelessWidget {
           child: child ??
               Text(text,
                   textAlign: TextAlign.center,
-                  style: KdText.display(16, color: danger ? Colors.white : green ? const Color(0xFFEFFFF2) : primary ? KdColors.goldInk : KdColors.fg)),
+                  maxLines: maxLines,
+                  overflow: maxLines != null ? TextOverflow.ellipsis : null,
+                  style: KdText.display(fontSize, color: danger ? Colors.white : green ? const Color(0xFFEFFFF2) : primary ? KdColors.goldInk : KdColors.fg)),
         ),
       ),
     );

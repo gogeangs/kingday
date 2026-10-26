@@ -7730,6 +7730,7 @@ function cardReveal(list, title, gold, keep, again) {
     return st < starMax(id) && n >= starNeed(id);
   };
   const ids = Object.keys(m).sort((a, b) => (canOf(b) ? 1 : 0) - (canOf(a) ? 1 : 0) || gr(a).w - gr(b).w);
+  if (ids.length && !keep) toastClear();
   if (!ids.length) {
     if (gold) toast('동료 카드 → 골드 +' + fmt(gold) + ' (별을 다 채운 동료)');
     return;
@@ -7774,7 +7775,11 @@ function cardReveal(list, title, gold, keep, again) {
     setTimeout(() => fa.isConnected && fa.remove(), (0.95 + ids.length * 0.35) * 1000);
   }
   const ag = $('crAgain');
-  if (ag) ag.onclick = () => again.go();
+  if (ag)
+    ag.onclick = () => {
+      toastClear();
+      again.go();
+    };
   $('sheet')
     .querySelectorAll('[data-rup]')
     .forEach(
@@ -11963,6 +11968,15 @@ function toast(m) {
   }
   toastShow(m);
 }
+/* 쌓인 알림 모두 지우기 — 카드 결과 창처럼 창 안에 같은 내용이 있을 때 (2026-10-25: 「또 뽑기」 때 앞 알림이 이삭 수를 가림) */
+function toastClear() {
+  toastHold = [];
+  toastQ.length = 0;
+  clearTimeout(toastT);
+  toastCur = null;
+  const t = $('toast');
+  if (t) t.style.opacity = 0;
+}
 let eqSig = '',
   upSig = '',
   boxSig = '';
@@ -14694,8 +14708,8 @@ function chCheck() {
             'm:브론|탑 말고 내 폐광도 좀 봐 줘. 요일마다 광석이 쏟아진다고.',
             'sys:지도 탭의 「⚔ 도전」에서 시련의 탑과 요일 던전에 들어갈 수 있어요.'
           ],
-          '나중에 (지도에서 보기)',
-          { label: '도전 보러 가기', go: mpDot, no: () => chSheet() }
+          '도전 보러 가기',
+          { label: '나중에', go: () => chSheet(), no: mpDot }
         )
       )
   });
