@@ -540,7 +540,7 @@ class PtPage extends StatelessWidget {
           width: 92,
           child: chief
               ? KdBuy(
-                  text: has && !mx ? '★ 올리기' : '보기',
+                  text: has && c.chiefCan() ? '★ 올리기' : '보기', // 카드가 모자라면 「보기」 (대표님 제보 10-27)
                   glow: c.chiefCan(),
                   minWidth: 0,
                   onTap: () => c.chiefCan() ? g.act((a) => a.chiefUp()) : chiefSheet(g),

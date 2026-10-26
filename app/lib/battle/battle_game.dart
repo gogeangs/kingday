@@ -501,14 +501,14 @@ class BattleGame extends FlameGame {
       if (!_has(src)) return null;
       return (
         sheet: src!,
-        tint: m.ph2 ? const ui.ColorFilter.mode(ui.Color(0xFFC8B6FF), ui.BlendMode.color) : const ui.ColorFilter.mode(ui.Color(0xFF3A2F4C), ui.BlendMode.multiply),
+        tint: m.ph2 ? tintFilter(const ui.Color(0xFFC8B6FF), ui.BlendMode.color) : tintFilter(const ui.Color(0xFF3A2F4C), ui.BlendMode.multiply),
         alpha: 1.0, scale: 1.3, lordArt: true,
       );
     }
     if (m.ghost != null) {
       final src = monSheets[m.ghost!]?.boss;
       if (!_has(src)) return null;
-      return (sheet: src!, tint: const ui.ColorFilter.mode(ui.Color(0xFFA88CFF), ui.BlendMode.color), alpha: .72, scale: 1.0, lordArt: true);
+      return (sheet: src!, tint: tintFilter(const ui.Color(0xFFA88CFF), ui.BlendMode.color), alpha: .72, scale: 1.0, lordArt: true);
     }
     final d = monSheets[ri];
     if (d == null) return null;
@@ -517,7 +517,7 @@ class BattleGame extends FlameGame {
     if (_has(pick)) return (sheet: pick, tint: null, alpha: 1.0, scale: 1.0, lordArt: m.lord && pick == d.boss);
     final t = capTint[pick.id];
     if (t == null || !_has(t.src)) return null;
-    return (sheet: t.src, tint: ui.ColorFilter.mode(t.color, t.mode), alpha: 1.0, scale: 1.0, lordArt: false);
+    return (sheet: t.src, tint: tintFilter(t.color, t.mode), alpha: 1.0, scale: 1.0, lordArt: false);
   }
 
   void _drawAura(double x, double y, double ss, bool cmd) {

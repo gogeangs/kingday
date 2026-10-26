@@ -45,18 +45,22 @@ class _DiaryState extends State<_Diary> {
     final c = g.calc, mp = c.memPts();
     if (_askReset) return _resetAsk();
     return KdSheetBody(
-      titleWidget: SizedBox(
-        height: 78,
-        child: Stack(alignment: Alignment.center, children: [
-          Positioned.fill(child: kdImg('assets/game/ui/hd_retire.png')),
-          FractionallySizedBox(
-            widthFactor: .62,
-            child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-              for (final w in const ['은퇴', '일기'])
-                Text(w, style: KdText.display(19, color: const Color(0xFF5A3412)).copyWith(shadows: const [Shadow(color: Color(0xCCFFF0C8), offset: Offset(0, 1))])),
+      // 웹 .hdban.dyban 과 같은 비율 — 책 왼쪽·오른쪽 쪽에 「은퇴」「일기」 (모자 그림과 겹치지 않게, 대표님 제보 10-27)
+      titleWidget: Center(
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 330),
+          child: AspectRatio(
+            aspectRatio: 720 / 225,
+            child: Stack(fit: StackFit.expand, children: [
+              kdImg('assets/game/ui/hd_retire.png', fit: BoxFit.contain),
+              for (final (w, x) in const [('은퇴', -.334), ('일기', .334)])
+                Align(
+                  alignment: Alignment(x, -.02),
+                  child: Text(w, style: KdText.display(19, color: const Color(0xFF5A3412)).copyWith(shadows: const [Shadow(color: Color(0xCCFFF0C8), offset: Offset(0, 1))])),
+                ),
             ]),
           ),
-        ]),
+        ),
       ),
       children: [
         Text.rich(
@@ -117,6 +121,7 @@ class _DiaryState extends State<_Diary> {
               onTap: () => _set(() => _br = x.k),
               child: Stack(clipBehavior: Clip.none, children: [
                 Container(
+                  width: double.infinity, // 세 칸 너비를 똑같이 (대표님 제보 10-27)
                   padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 2),
                   decoration: BoxDecoration(
                     gradient: x.k == _br ? const LinearGradient(colors: [Color(0x2EFFC94A), Color(0x0DFFC94A)], begin: Alignment.topCenter, end: Alignment.bottomCenter) : null,

@@ -38,7 +38,8 @@ class GameShell extends ConsumerWidget {
                 color: KdColors.bg,
                 child: Column(children: [
                   ValueListenableBuilder<int>(valueListenable: g.ui, builder: (_, __, ___) => _Hud(g, top: pad.top)),
-                  Expanded(child: _StageArea(g)),
+                  // 전투 화면·탭 창이 위 상단바(얼굴 테두리·⚙)를 덮지 않게 자름 (대표님 제보 10-27 상단바 잘림)
+                  Expanded(child: ClipRect(child: _StageArea(g))),
                   KeyedSubtree(key: g.tabsKey, child: ValueListenableBuilder<int>(valueListenable: g.ui, builder: (_, __, ___) => _Tabs(g, bottom: pad.bottom))),
                 ]),
               ),
@@ -71,7 +72,7 @@ class _Hud extends StatelessWidget {
     final badge = g.calc.curBadge();
     final frame = g.calc.curFrame();
     return Container(
-      padding: EdgeInsets.fromLTRB(12, math.max(8, top), 12, 8),
+      padding: EdgeInsets.fromLTRB(12, math.max(8, top), 12, 10),
       decoration: const BoxDecoration(
         gradient: LinearGradient(colors: [Color(0xFF0D1220), KdColors.bg], begin: Alignment.topCenter, end: Alignment.bottomCenter),
         border: Border(bottom: BorderSide(color: Color(0xFF2A3350))),
@@ -363,7 +364,8 @@ class _ToastView extends StatelessWidget {
           return Positioned(
           left: 16,
           right: 16,
-          top: hdTop ?? (bottom == null ? (g.toastHigh ? 8 : 76) + top : null),
+          // 창이 열려 있으면 상단바(얼굴·재화) 아래로 — 상단바 위에 겹치지 않게 (대표님 제보 10-27)
+          top: hdTop ?? (bottom == null ? (g.toastHigh && !g.modalOpen ? 8 : 76) + top : null),
           bottom: bottom,
           child: IgnorePointer(
             child: AnimatedOpacity(

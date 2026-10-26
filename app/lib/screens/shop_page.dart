@@ -79,7 +79,8 @@ class _ShopPageState extends State<ShopPage> {
       );
 
   /// 웹 .pack (3칸 격자 한 칸)
-  Widget _pack({required Widget img, required String big, String? small, String? uc, required Widget price, String? tag, required VoidCallback onTap, bool compact = false}) =>
+  /// [ucSlot] 이면 「+유니크 카드」 줄이 없어도 그 자리를 비워 둠 → 같은 줄 칸 높이·가격 버튼 위치가 같게 (대표님 제보 10-27)
+  Widget _pack({required Widget img, required String big, String? small, String? uc, required Widget price, String? tag, required VoidCallback onTap, bool compact = false, bool ucSlot = false}) =>
       GestureDetector(
         onTap: onTap,
         child: Stack(clipBehavior: Clip.none, children: [
@@ -97,8 +98,8 @@ class _ShopPageState extends State<ShopPage> {
                 height: 16,
                 child: FittedBox(fit: BoxFit.scaleDown, child: Text(small ?? '', style: KdText.body(compact ? 11.5 : 12, color: KdColors.good))),
               ),
-              if (uc != null)
-                SizedBox(height: 15, child: FittedBox(fit: BoxFit.scaleDown, child: Text(uc, style: KdText.body(11, color: const Color(0xFF3EE08F))))),
+              if (uc != null || ucSlot)
+                SizedBox(height: 15, child: FittedBox(fit: BoxFit.scaleDown, child: Text(uc ?? '', style: KdText.body(11, color: const Color(0xFF3EE08F))))),
               const SizedBox(height: 4),
               Container(
                 width: double.infinity,
@@ -349,7 +350,8 @@ class _ShopPageState extends State<ShopPage> {
           const SizedBox(height: 8),
         ],
       ],
-      if (subOn) subRow,
+      // 구독 중이면 무료 선물 아래 정기 배송 칸 — 위 칸과 붙지 않게 띄움 (대표님 제보 10-27)
+      if (subOn) ...[const SizedBox(height: 12), subRow],
       ]),
       _group(
           'gem',
@@ -449,6 +451,7 @@ class _ShopPageState extends State<ShopPage> {
               big: fmt(p.gem),
               small: first ? '+${fmt(p.gem)} 보너스' : null,
               uc: GameCalc.ucardPack[p.k] != null ? '+유니크 카드 ${GameCalc.ucardPack[p.k]}' : null,
+              ucSlot: true,
               price: Text(_price(p.k, p.won), style: KdText.figure(13, color: KdColors.goldInk)),
               onTap: () => _buy(p.k, () => g.act((x) => x.buyPack(p.k))),
             );

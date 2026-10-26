@@ -13,11 +13,11 @@ import 'social_sheets.dart';
 
 /// 웹 .hdban: 금테 머리 그림 위에 글자
 class HdBanner extends StatelessWidget {
-  const HdBanner(this.img, this.text, {super.key, this.size = 20, this.padTop = .01});
+  const HdBanner(this.img, this.text, {super.key, this.size = 20, this.padTop = .01, this.padBottom = 0});
   final String img, text;
 
-  /// 글자 크기 (웹 --hs), 글자 위 여백 비율 (웹 --hp)
-  final double size, padTop;
+  /// 글자 크기 (웹 --hs), 글자 위 여백 비율 (웹 --hp), 글자 아래 여백 비율 (웹 --hpb — 판이 위쪽에 있는 그림)
+  final double size, padTop, padBottom;
 
   @override
   Widget build(BuildContext context) => Center(
@@ -28,7 +28,7 @@ class HdBanner extends StatelessWidget {
             child: Stack(fit: StackFit.expand, children: [
               kdImg('assets/game/ui/$img.png', fit: BoxFit.contain),
               Padding(
-                padding: EdgeInsets.only(top: 330 * padTop),
+                padding: EdgeInsets.only(top: 330 * padTop, bottom: 330 * padBottom),
                 child: Center(
                   child: Text(text,
                     style: KdText.display(size, color: const Color(0xFFFFE7A6))
