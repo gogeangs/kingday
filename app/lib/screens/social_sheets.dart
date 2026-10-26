@@ -609,6 +609,7 @@ class _NickState extends State<_Nick> {
 }
 
 // ════════════════════ 랭킹 3탭 (웹 rankSheet) ════════════════════
+const _towerRew = [('1위', '이삭 100'), ('2~10위', '이삭 50'), ('상위 30%', '이삭 20')];
 const _gobRew = [('1위', '이삭 100 · 고블린 사냥꾼 배지'), ('2~10위', '이삭 50'), ('상위 30%', '이삭 20')];
 const _rkRew = [('1위', '이삭 500 · 시즌 왕관 테두리 · 전용 배지'), ('2~10위', '이삭 300 · 전용 배지'), ('상위 10%', '이삭 150 · 동료 카드 30장'), ('상위 50%', '이삭 50'), ('참여', '이삭 20')];
 
@@ -671,7 +672,11 @@ class _RankState extends State<_Rank> {
     }
   }
 
-  String _score(Map<String, dynamic> x) => _rkTab == 'goblin' ? '${fmt(asNum(x['kills']))}마리' : stgName(asNum(x['stage']));
+  String _score(Map<String, dynamic> x) => switch (_rkTab) {
+        'goblin' => '${fmt(asNum(x['kills']))}마리',
+        'tower' => '${fmt(asNum(x['top']))}층',
+        _ => stgName(asNum(x['stage'])),
+      };
 
   /// 랭킹 얼굴: 나는 내가 고른 얼굴(사진은 내 화면에서만), 다른 영주는 서버가 준 동료 id
   Widget _face(Map<String, dynamic> x, double size) {
@@ -714,12 +719,14 @@ class _RankState extends State<_Rank> {
           const SizedBox(width: 6),
           _rkTab == 'goblin'
               ? iconNum('assets/game/ui/icon_goblin.png', _score(x).replaceAll('마리', ''), size: 16, style: KdText.figure(14, color: KdColors.gold))
-              : Text(_score(x), style: KdText.figure(14, color: KdColors.gold)),
+              : _rkTab == 'tower'
+                  ? iconNum('assets/game/ui/icon_challenge.png', _score(x), size: 16, style: KdText.figure(14, color: KdColors.gold))
+                  : Text(_score(x), style: KdText.figure(14, color: KdColors.gold)),
         ]),
       );
 
   Widget _tabs() => Row(children: [
-        for (final (k, n) in const [('season', '시즌'), ('hall', '명예의 전당'), ('goblin', '고블린')])
+        for (final (k, n) in const [('season', '시즌'), ('hall', '명예의 전당'), ('goblin', '고블린'), ('tower', '탑')])
           Expanded(
             child: GestureDetector(
               onTap: () {
@@ -764,6 +771,14 @@ class _RankState extends State<_Rank> {
       rew = _rkRew;
     } else if (_rkTab == 'hall') {
       head = [TextSpan(text: '지금까지 도달한 최고 기록이에요 · ${fmt(tot)}명')];
+    } else if (_rkTab == 'tower') {
+      final w = rows.isNotEmpty ? asNum(rows[0]['week']).toInt() : g.sim.curWeek();
+      final end = (rows.isNotEmpty ? DateTime.tryParse('${rows[0]['week_end']}')?.millisecondsSinceEpoch : null) ?? seasonZero + w * 604800000;
+      head = [
+        const TextSpan(text: '시련의 탑 · 역대 최고 층', style: TextStyle(color: KdColors.gold, fontWeight: FontWeight.w600)),
+        TextSpan(text: ' · ${fmt(tot)}명\n$w주차 정산까지 ${_left(end)} · 이번 주에 게임한 영주끼리 순위대로 보상\n내 최고 ${fmt(g.online.towerTop)}층'),
+      ];
+      rew = _towerRew;
     } else {
       final w = rows.isNotEmpty ? asNum(rows[0]['week']).toInt() : g.sim.curWeek();
       final end = (rows.isNotEmpty ? DateTime.tryParse('${rows[0]['week_end']}')?.millisecondsSinceEpoch : null) ?? seasonZero + w * 604800000;
@@ -780,7 +795,7 @@ class _RankState extends State<_Rank> {
           onTap: () => setState(() => _rewOpen = !_rewOpen),
           child: Padding(
             padding: const EdgeInsets.only(top: 4),
-            child: Text('${_rewOpen ? '▾' : '▸'} ${_rkTab == 'goblin' ? '주간' : '시즌'} 보상 보기', style: KdText.body(13, color: KdColors.gold)),
+            child: Text('${_rewOpen ? '▾' : '▸'} ${_rkTab == 'season' ? '시즌' : '주간'} 보상 보기', style: KdText.body(13, color: KdColors.gold)),
           ),
         ),
         if (_rewOpen) for (final (a, b) in rew) KdKv(a, b),
@@ -841,7 +856,11 @@ class _RankState extends State<_Rank> {
     final tot = rows == null || rows.isEmpty ? 0 : asNum(rows[0]['total']);
     final top = rows?.where((x) => asNum(x['rank']) <= 100).toList() ?? const [];
     return KdSheetBody(
-      titleWidget: _rkTab == 'goblin' ? const HdBanner('hd_goblin', '고블린 랭킹', size: 18, padTop: .048) : const HdBanner('hd_rank', '랭킹'),
+      titleWidget: switch (_rkTab) {
+        'goblin' => const HdBanner('hd_goblin', '고블린 랭킹', size: 18, padTop: .048),
+        'tower' => const HdBanner('hd_challenge', '탑 랭킹'),
+        _ => const HdBanner('hd_rank', '랭킹'),
+      },
       children: [
         _tabs(),
         if (_err != null)
@@ -851,7 +870,12 @@ class _RankState extends State<_Rank> {
         else ...[
           _info(rows),
           if (rows.isEmpty)
-            Text(_rkTab == 'goblin' ? '이번 주에 황금 고블린을 잡은 영주가 아직 없어요. 1-3 영지부터 나타나요!' : '아직 기록이 없어요. 첫 1위가 되어 보세요!',
+            Text(
+                switch (_rkTab) {
+                  'goblin' => '이번 주에 황금 고블린을 잡은 영주가 아직 없어요. 1-3 영지부터 나타나요!',
+                  'tower' => '아직 탑 기록이 없어요. 영지 20을 되찾으면 지도의 「도전」에서 시련의 탑이 열려요!',
+                  _ => '아직 기록이 없어요. 첫 1위가 되어 보세요!',
+                },
                 textAlign: TextAlign.center, style: _muted())
           else ...[
             _podium(top.take(3).toList()),

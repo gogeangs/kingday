@@ -43,6 +43,10 @@ class FakeInqSb {
     }
     if (p == '/auth/v1/user') return _j({'is_anonymous': true});
     if (r.headers['authorization'] != 'Bearer $tok') throw StateError('토큰 없음');
+    if (p == '/functions/v1/kd-inq-notify') {
+      calls.add(('notify', <String, dynamic>{}));
+      return _j({'result': 'sent'});
+    }
     if (p.startsWith('/storage/v1/object/inquiry/')) {
       uploads.add((p.replaceFirst('/storage/v1/object/inquiry/', ''), r.headers['content-type'], r.bodyBytes.length));
       return _j({'Key': 'ok'});
@@ -162,6 +166,7 @@ void main() {
     expect(sent['p_ver'], appVersion);
     expect((sent['p_platform'] as String).isNotEmpty, isTrue);
     expect(find.text('문의를 보냈어요 ✉️'), findsOneWidget);
+    expect(fake.calls.where((c) => c.$1 == 'notify'), hasLength(1), reason: '보낸 뒤 대표님 메일 알림을 부름');
 
     // 내 문의: 답변 보임
     await press('내 문의 보기');
