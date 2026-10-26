@@ -6,7 +6,8 @@
 
 - 앱 이름: 왕이 되는 그날까지
 - 개발사: 주식회사 프로젝트서티즈 · 문의 biz@project30s.co.kr
-- 웹사이트(지원 URL): https://gogeangs.github.io/kingday/
+- 웹사이트: https://gogeangs.github.io/kingday/
+- 지원 URL(고객 지원·자주 묻는 질문): https://gogeangs.github.io/kingday/support.html
 - 개인정보처리방침: https://gogeangs.github.io/kingday/privacy.html
 - 계정·데이터 삭제: https://gogeangs.github.io/kingday/delete-account.html
 - 카테고리: 게임 › 롤플레잉

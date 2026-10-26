@@ -8,6 +8,7 @@ import '../core/save_code.dart';
 import '../game/controller.dart';
 import '../ui/theme.dart';
 import '../ui/widgets.dart';
+import 'inquiry_sheet.dart';
 import 'social_sheets.dart';
 
 /// 웹 .hdban: 금테 머리 그림 위에 글자
@@ -149,6 +150,12 @@ class _SettingsState extends State<_Settings> {
               },
             ),
           ),
+        ]),
+        const KdSec('문의', small: '결제·버그·계정 · 답은 우편함으로'),
+        Row(children: [
+          Expanded(child: KdBuy(kind: BuyKind.ghost, minWidth: 0, text: '문의하기', onTap: () => g.chainSheet(widget.sheetCtx, () => openInquiry(g)))),
+          const SizedBox(width: 8),
+          Expanded(child: KdBuy(kind: BuyKind.ghost, minWidth: 0, text: '내 문의', onTap: () => g.chainSheet(widget.sheetCtx, () => openInquiryMine(g)))),
         ]),
         const KdSec('처음부터 다시 하기'),
         if (_reset) ...[

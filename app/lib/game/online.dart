@@ -392,6 +392,50 @@ class Online {
     }
   }
 
+  // ── 문의하기 (supabase/stage8_inquiry.sql) ──
+  /// 문의 보내기 → (서버 답, 사진을 못 올렸는지). 서버 답: ok · short · long · limit · auth · bad · net(인터넷 없음)
+  Future<(String, bool)> inqSend({required String kind, required String body, List<int>? photo, required String ver, required String device, required String platform}) async {
+    if (!on) return ('net', false);
+    try {
+      if (nick == null) await ensure();
+      String? path;
+      var photoFail = false;
+      if (photo != null) {
+        try {
+          final png = photo.length > 3 && photo[0] == 0x89 && photo[1] == 0x50;
+          final name = '${DateTime.now().millisecondsSinceEpoch.toRadixString(36)}${math.Random().nextInt(1 << 30).toRadixString(36)}';
+          path = await sv!.upload('inquiry', '$name.${png ? 'png' : 'jpg'}', photo, png ? 'image/png' : 'image/jpeg');
+        } catch (_) {
+          photoFail = true;
+        }
+      }
+      final r = await rpc('kd_inq_send', {
+        'p_kind': kind,
+        'p_body': body,
+        'p_photo': path,
+        'p_ver': ver,
+        'p_device': device.length > 200 ? device.substring(0, 200) : device,
+        'p_platform': platform,
+      });
+      return (r is String ? r : 'bad', photoFail);
+    } catch (e) {
+      lastError = e;
+      return ('net', false);
+    }
+  }
+
+  /// 내 문의 목록 (최근 30개). 인터넷이 없으면 null
+  Future<List<Map<String, dynamic>>?> inqMine() async {
+    if (!on) return null;
+    try {
+      final r = await rpc('kd_inq_mine', {});
+      return r is List ? [for (final x in r) if (x is Map) x.cast<String, dynamic>()] : const [];
+    } catch (e) {
+      lastError = e;
+      return null;
+    }
+  }
+
   // ── 계정·클라우드 저장 ──
   ({bool anon, String email})? acct;
   bool _linkGiftAsked = false;
