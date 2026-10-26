@@ -483,6 +483,7 @@ class KdSheetFrame extends StatelessWidget {
               right: 14,
               top: 14,
               child: GestureDetector(
+                key: const ValueKey('sheetX'),
                 onTap: onClose,
                 child: Container(
                   width: 34,

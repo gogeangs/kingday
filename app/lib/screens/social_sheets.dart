@@ -471,11 +471,9 @@ class _ProfileState extends State<_Profile> {
                   Text('카엘', style: KdText.display(20)),
                   if (bd != null) ...[const SizedBox(width: 4), _badgeImg(bd, 22)],
                 ]),
-                Row(mainAxisSize: MainAxisSize.min, children: [
-                  KdBuy(key: const ValueKey('pfSet'), kind: BuyKind.ghost, small: true, minWidth: 0, text: '⚙ 설정', onTap: () => _leave(() => g.chainSheet(widget.sheet, () => openSettings(g)))),
-                  const SizedBox(width: 4),
-                  KdBuy(key: const ValueKey('pfRank'), kind: BuyKind.ghost, small: true, minWidth: 0, text: '🏆 랭킹', onTap: () => _leave(() => g.chainSheet(widget.sheet, () => openRanking(g)))),
-                ]),
+                // 좁은 화면(320)에서는 두 버튼도 줄바꿈
+                KdBuy(key: const ValueKey('pfSet'), kind: BuyKind.ghost, small: true, minWidth: 0, text: '⚙ 설정', onTap: () => _leave(() => g.chainSheet(widget.sheet, () => openSettings(g)))),
+                KdBuy(key: const ValueKey('pfRank'), kind: BuyKind.ghost, small: true, minWidth: 0, text: '🏆 랭킹', onTap: () => _leave(() => g.chainSheet(widget.sheet, () => openRanking(g)))),
               ]),
               const SizedBox(height: 3),
               Wrap(crossAxisAlignment: WrapCrossAlignment.center, spacing: 6, runSpacing: 2, children: [

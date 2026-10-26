@@ -177,7 +177,10 @@ void main() {
     await press('새 문의');
     expect(tester.widget<TextField>(find.byType(TextField)).controller!.text, '');
     await press('돌아가기');
-    await press('닫기');
+    // 설정 창은 아래 「닫기」 없이 ✕ 로 닫음 (10-27)
+    expect(find.text('카엘의 수첩'), findsOneWidget);
+    await tester.tap(find.byKey(const ValueKey('sheetX')));
+    await frames();
 
     // 우편함: 보상 없는 답변은 「확인」
     openMail(g);
