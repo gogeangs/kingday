@@ -245,7 +245,7 @@ class PtPage extends StatelessWidget {
     final sub = kael
         ? ranks[c.rankIdx()].n
         : has
-            ? '${chief ? '' : 'Lv.${orNum(g.state.lv[id], 1)} '}${'★' * c.recStar(id)}'
+            ? '${chief ? '' : 'Lv.${orNum(g.state.lv[id], 1)} '}${pick ? (c.recStar(id) > 0 ? '★${c.recStar(id)}' : '') : '★' * c.recStar(id)}'
             : chief
                 ? '유니크'
                 : '합류 전';
