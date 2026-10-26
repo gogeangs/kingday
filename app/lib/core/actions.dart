@@ -431,8 +431,8 @@ class GameActions {
     _toast(n > 0 ? '추천 편성: 자리 $n곳을 가장 강한 동료로 바꿨어요' : '이미 가장 강한 편성이에요');
   }
 
-  /// recruitUp(id): 카드를 모아 맞이하기 / ★ 올리기
-  bool recruitUp(String id) {
+  /// recruitUp(id): 카드를 모아 맞이하기 / ★ 올리기 ([quiet]: 「모두 올리기」 때 동료마다 알림을 띄우지 않음, 웹 recruitUp(id, quiet))
+  bool recruitUp(String id, {bool quiet = false}) {
     final stv = c.recStar(id), need = c.starNeed(id), n = orNum(s.cards?[id], 0);
     if (stv >= c.starMax(id) || need == null || n < need) return false;
     out.add(ActHaptic(const [25, 40, 25]));
@@ -441,7 +441,7 @@ class GameActions {
     if (!truthy(s.lv[id])) s.lv[id] = 1;
     if (stv == 0) {
       out.add(ActRecruitScene(id));
-    } else {
+    } else if (!quiet) {
       final skUp = GameCalc.isRec(id) && (stv + 1 == 3 || stv + 1 == 5);
       _toast('${comps[id]!.n} ★${stv + 1}! 능력치 +${((starMulTable[stv + 1] - 1) * 100).round()}%${skUp ? ' · 스킬 강화' : ''}');
     }

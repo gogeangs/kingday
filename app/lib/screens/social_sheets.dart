@@ -465,9 +465,17 @@ class _ProfileState extends State<_Profile> {
           const SizedBox(width: 12),
           Expanded(
             child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              Row(children: [
-                Text('카엘', style: KdText.display(20)),
-                if (bd != null) ...[const SizedBox(width: 4), _badgeImg(bd, 22)],
+              // 이름 줄 옆 ⚙ 설정 · 🏆 랭킹 (대표님 제보 10-27: 설정이 창 맨 아래라 찾기 어려움)
+              Wrap(crossAxisAlignment: WrapCrossAlignment.center, spacing: 6, runSpacing: 4, children: [
+                Row(mainAxisSize: MainAxisSize.min, children: [
+                  Text('카엘', style: KdText.display(20)),
+                  if (bd != null) ...[const SizedBox(width: 4), _badgeImg(bd, 22)],
+                ]),
+                Row(mainAxisSize: MainAxisSize.min, children: [
+                  KdBuy(key: const ValueKey('pfSet'), kind: BuyKind.ghost, small: true, minWidth: 0, text: '⚙ 설정', onTap: () => _leave(() => g.chainSheet(widget.sheet, () => openSettings(g)))),
+                  const SizedBox(width: 4),
+                  KdBuy(key: const ValueKey('pfRank'), kind: BuyKind.ghost, small: true, minWidth: 0, text: '🏆 랭킹', onTap: () => _leave(() => g.chainSheet(widget.sheet, () => openRanking(g)))),
+                ]),
               ]),
               const SizedBox(height: 3),
               Wrap(crossAxisAlignment: WrapCrossAlignment.center, spacing: 6, runSpacing: 2, children: [
@@ -524,8 +532,6 @@ class _ProfileState extends State<_Profile> {
         _grid([...c.attBadges(), ...badges], false),
       ],
       acts: KdActs(buttons: [
-        KdAct('⚙ 설정', onTap: () => _leave(() => g.chainSheet(widget.sheet, () => openSettings(g)))),
-        KdAct('🏆 랭킹', onTap: () => _leave(() => g.chainSheet(widget.sheet, () => openRanking(g)))),
         if (dirty)
           KdAct('저장', primary: true, onTap: () {
             _save();

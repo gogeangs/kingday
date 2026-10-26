@@ -426,13 +426,24 @@ class PtPage extends StatelessWidget {
   // ════════ 카드 ════════
   List<Widget> _cards() {
     final c = g.calc;
-    final ids = stableSorted(GameCalc.cardIds(), (a, b) {
+    // 별 올리기 찾기 (대표님 결정 10-27 ①②③, 웹 cupBar·cmax): 올릴 수 있는 동료 맨 위 · 별을 다 모은 동료는 맨 아래 작은 줄
+    final ready = c.cardReady();
+    final sorted = stableSorted(stableSorted(GameCalc.cardIds(), (a, b) {
       int key(String x) => (c.cardOpen(x) ? 2 : 0) + (c.owned(x) ? 1 : 0);
       final d = key(b) - key(a);
       return d != 0 ? d : (GameCalc.gr(a).w - GameCalc.gr(b).w).sign.toInt();
-    });
+    }), (a, b) => (ready.contains(b) ? 1 : 0) - (ready.contains(a) ? 1 : 0));
+    bool full(String x) => c.cardOpen(x) && c.recStar(x) >= c.starMax(x);
+    bool uqFull(String x) => c.owned(x) && c.recStar(x) >= c.starMax(x);
+    final ids = sorted.where((x) => !full(x)).toList();
+    final upN = ready.length + (c.chiefCan() ? 1 : 0) + (c.uqCan(GameCalc.ttukId) ? 1 : 0) + (c.uqCan(GameCalc.lucId) ? 1 : 0);
     TextSpan gt(String n, int col) => TextSpan(text: n, style: TextStyle(color: Color(col), fontWeight: FontWeight.w700));
     final uc = c.owned(GameCalc.chiefId) || c.chiefShop() || c.ucard > 0;
+    final maxed = [
+      for (final u in [GameCalc.chiefId, GameCalc.ttukId, GameCalc.lucId])
+        if (uqFull(u)) u,
+      ...sorted.where(full),
+    ];
     return [
       HelpNote(
         k: 'cardgr',
@@ -483,11 +494,73 @@ class PtPage extends StatelessWidget {
             ),
           ]),
         ),
-      if (uc) _ucard(GameCalc.chiefId),
-      _ucard(GameCalc.ttukId),
-      _ucard(GameCalc.lucId),
+      if (upN > 0) _upBar(upN, ready.isNotEmpty),
+      if (uc && !uqFull(GameCalc.chiefId)) _ucard(GameCalc.chiefId),
+      if (!uqFull(GameCalc.ttukId)) _ucard(GameCalc.ttukId),
+      if (!uqFull(GameCalc.lucId)) _ucard(GameCalc.lucId),
       for (final id in ids) _ccard(id),
+      if (maxed.isNotEmpty) ...[
+        const SizedBox(height: 4),
+        KdSec('별을 모두 모은 동료', small: '${maxed.length}명'),
+        Wrap(spacing: 6, runSpacing: 6, children: [
+          for (final id in maxed)
+            GestureDetector(
+              key: ValueKey('cmax-$id'),
+              onTap: () => id == GameCalc.chiefId ? chiefSheet(g) : compSheet(g, id),
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 4),
+                decoration: BoxDecoration(color: KdColors.panel2, border: Border.all(color: compColor(id)), borderRadius: BorderRadius.circular(999)),
+                child: Row(mainAxisSize: MainAxisSize.min, children: [
+                  Text(comps[id]!.n, style: KdText.body(12, weight: FontWeight.w700)),
+                  const SizedBox(width: 4),
+                  Text('★${c.recStar(id)}', style: KdText.body(11, color: const Color(0xFFFFD34A))),
+                ]),
+              ),
+            ),
+        ]),
+      ],
     ];
+  }
+
+  /// 「★ 올릴 수 있는 동료 N명 · 모두 올리기」 (웹 .cupbar). 유니크 카드는 여러 동료가 나눠 쓰므로 한 명씩 골라 올림
+  Widget _upBar(int n, bool cards) => Container(
+        key: const ValueKey('cupBar'),
+        margin: const EdgeInsets.only(top: 8),
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+        decoration: BoxDecoration(
+          gradient: const LinearGradient(colors: [Color(0x29FFD34A), Color(0x0AFFD34A)], begin: Alignment.topCenter, end: Alignment.bottomCenter),
+          border: Border.all(color: const Color(0xFFFFD34A)),
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: Row(children: [
+          Expanded(
+            child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+              Text.rich(TextSpan(children: [
+                const TextSpan(text: '★ 올릴 수 있는 동료 '),
+                TextSpan(text: '$n명', style: const TextStyle(color: Color(0xFFFFD34A), fontWeight: FontWeight.w700)),
+              ]), style: KdText.body(13)),
+              if (!cards) Text('유니크 카드는 한 동료씩 골라 올려요', style: KdText.body(11, color: KdColors.muted)),
+            ]),
+          ),
+          if (cards) KdBuy(key: const ValueKey('cupAll'), text: '모두 올리기', glow: true, minWidth: 0, onTap: _upAll),
+        ]),
+      );
+
+  /// 카드가 충분한 동료를 모두 맞이하기·★ 올리기 (별을 여러 개 올릴 수 있으면 끝까지, 웹 cardUpAll)
+  void _upAll() {
+    final got = <String, int>{};
+    for (var k = 0; k < 200; k++) {
+      final r = g.calc.cardReady();
+      if (r.isEmpty) break;
+      for (final id in r) {
+        g.act((a) => a.recruitUp(id, quiet: true));
+        got[id] = g.calc.recStar(id);
+      }
+    }
+    if (got.isEmpty) return;
+    g.save();
+    final e = got.entries.toList();
+    g.toast(e.length == 1 ? '${comps[e.first.key]!.n} ★${e.first.value}!' : '동료 ${e.length}명 ★ 올리기 · ${e.map((x) => '${comps[x.key]!.n} ★${x.value}').join(', ')}');
   }
 
   /// 유니크 카드 줄 (웹 ucRow·ttRow): 카엘 촌장·뚝딱이 별 올리기
