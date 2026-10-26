@@ -893,11 +893,6 @@ List<String> ptBenchBest(GameController g) {
 /// 출전 중 동료 (카엘 제외)
 List<String> ptOnIds(GameController g) => [for (final j in jobSlots.where((j) => j != 'kael')) g.calc.slotMember(j)].whereType<String>().toList();
 
-bool _ptUp(GameController g, String id) {
-  final c = g.calc;
-  return id == GameCalc.chiefId ? c.chiefCan() : gradeOf[id] == 'unique' ? c.uqCan(id) : c.cardReady().contains(id);
-}
-
 /// 고른 동료: 없으면 ★ 올릴 동료 → 더 센 대기 동료 → 첫 출전 동료 → 카엘
 String ptSelId(GameController g) {
   final c = g.calc, ids = ptOrder(g), cur = g.ptSel;
