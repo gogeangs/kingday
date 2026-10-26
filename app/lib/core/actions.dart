@@ -1123,7 +1123,7 @@ class GameActions {
   List<dynamic> _passGot(Map<String, dynamic> p, String row) {
     var g = p['got'];
     if (g is! Map) g = p['got'] = <String, dynamic>{'f': <dynamic>[], 'p': <dynamic>[]};
-    final l = (g as Map)[row];
+    final l = g[row];
     if (l is List) return l;
     return g[row] = <dynamic>[];
   }
@@ -1143,7 +1143,7 @@ class GameActions {
     final p = _passRaw;
     var d = p['day'];
     if (d is! Map || d['d'] != c.today()) d = p['day'] = <String, dynamic>{'d': c.today(), 'src': <String, dynamic>{}, 'kc': 0};
-    if ((d as Map)['src'] is! Map) d['src'] = <String, dynamic>{};
+    if (d['src'] is! Map) d['src'] = <String, dynamic>{};
     return d.cast<String, dynamic>();
   }
 
@@ -1406,7 +1406,7 @@ class GameActions {
   Map<String, dynamic> growG() {
     var g = s.raw['grow'];
     if (g is! Map) g = s.raw['grow'] = <String, dynamic>{'buy': 0, 'got': <String, dynamic>{}};
-    if (g is! Map<String, dynamic>) g = s.raw['grow'] = Map<String, dynamic>.from(g as Map);
+    if (g is! Map<String, dynamic>) g = s.raw['grow'] = Map<String, dynamic>.from(g);
     if (g['got'] is! Map) g['got'] = <String, dynamic>{};
     return g;
   }
