@@ -89,6 +89,11 @@ class GameController extends ChangeNotifier {
         final p = sim.party[id];
         if (p != null) p.hp += h;
       };
+    // 원정 일지 점수·성장 패키지 (docs/content/SHOP.md)
+    sim
+      ..onPass = ((k) => act((a) => a.passAdd(k)))
+      ..onKill = (() => act((a) => a.passKill()))
+      ..onGrow = (() => act((a) => a.growCheck()));
     // 웹 start(): 처음이면 프롤로그 (방치 보상은 7단계)
     final isNew = !truthy(state.raw['started']);
     state.raw['started'] = true;
@@ -104,6 +109,9 @@ class GameController extends ChangeNotifier {
       if (rw != null) queue((_) async => toast(retRwText(rw)));
       act((a) => a.chiefCheck());
     }
+    acts.passS();
+    act((a) => a.growCheck());
+    if (!isNew) queue((_) async => act((a) => a.passWarn()));
     calc.pfCheck();
     // 웹 start() 끝의 events(): 옛 기록·다른 곳에서 가져온 기록이면 밀린 이야기·칭호를 바로 보여 줌
     sim.runStoryEvents();
@@ -214,6 +222,11 @@ class GameController extends ChangeNotifier {
     _builtToast(calc.produce());
     offline();
     attAuto();
+    // 원정 일지: 시즌이 바뀌었으면 넘기고, 마감 3일 전이면 알림 (하루 한 번)
+    act((a) {
+      a.passS();
+      a.passWarn();
+    });
     refresh();
     // 웹 'online' 이벤트처럼: 돌아오면 계정·우편 다시 확인
     if (online.on) online.ensure();
@@ -504,9 +517,22 @@ class GameController extends ChangeNotifier {
       calc.pfCheck();
       chCheck();
       _nwFlush();
+      // 하루가 바뀌면 원정 일지 시즌·마감 알림 확인 (웹 attHud 의 날짜 바뀜)
+      final t = calc.today();
+      if (_passDayK != t) {
+        if (_passDayK.isNotEmpty) {
+          act((a) {
+            a.passS();
+            a.passWarn();
+          });
+        }
+        _passDayK = t;
+      }
       refresh();
     }
   }
+
+  String _passDayK = '';
 
   /// 전투가 쌓아 둔 일(알림·창)을 처리 — 매 프레임, 그리고 눌러서 전투 상태를 바꾼 직후
   void _drainEvents() {

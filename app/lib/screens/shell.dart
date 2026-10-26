@@ -102,7 +102,7 @@ class _Hud extends StatelessWidget {
                 right: 0,
                 top: isTallFrame(frame) ? -52 * .15625 : 0,
                 height: isTallFrame(frame) ? 52 * 1.15625 : 52,
-                child: kdImg('assets/game/profile/frame_$frame.png', fit: BoxFit.fill),
+                child: kdImg(frameAsset(frame), fit: BoxFit.fill),
               ),
               // 처음엔 「꾸미기」, 새 테두리·배지를 얻으면 빨간 점 (웹 .face.newpf / .pfdot)
               if (g.calc.pfNewbie())

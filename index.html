@@ -3313,6 +3313,386 @@ table.codds th {
   border-color: var(--gold);
   box-shadow: 0 0 0 1px rgba(255, 201, 74, 0.35) inset;
 }
+/* ---- 원정 일지 (시즌 패스) · 영주의 첫걸음 ---- */
+.passbn {
+  position: relative;
+  width: 100%;
+  border: 1px solid #6b5420;
+  border-radius: 14px;
+  padding: 2px 10px 10px;
+  background: linear-gradient(#2a2216, #1d1810);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  cursor: pointer;
+  font: inherit;
+  color: inherit;
+}
+.passbn .pbimg {
+  width: min(100%, 340px);
+  aspect-ratio: 720/208;
+  background: url(assets/ui/hd_pass.png) center/contain no-repeat;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.passbn .pbimg b {
+  font-family: var(--f-display);
+  font-size: clamp(15px, 5vw, 20px);
+  color: #4a2a0e;
+  margin-top: -1%;
+}
+.passbn .pbt {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  width: 100%;
+}
+.passbn .pbt small {
+  font-size: 12px;
+  color: #e8d8b0;
+}
+.passbn .pbt small b {
+  color: #ffd34a;
+}
+.passbn .pbt small em {
+  font-style: normal;
+  color: #ffd34a;
+  font-weight: 700;
+}
+.passbn .pbar {
+  display: block;
+  width: 90%;
+  height: 7px;
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.12);
+  overflow: hidden;
+}
+.passbn .pbar > i {
+  display: block;
+  height: 100%;
+  background: linear-gradient(90deg, #c98a1e, #ffd34a);
+}
+.passbn .pbtag {
+  position: absolute;
+  right: 8px;
+  top: -8px;
+  font-style: normal;
+  font-size: 11px;
+  font-weight: 700;
+  color: #fff;
+  background: #c94a3a;
+  border-radius: 999px;
+  padding: 1px 8px;
+}
+.passbn > .dot {
+  position: absolute;
+  top: -4px;
+  left: 8px;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #ffd34a;
+  box-shadow: 0 0 0 2px #171e36;
+}
+.hdban.passban {
+  aspect-ratio: 720/208;
+}
+.hdban.passban span {
+  color: #4a2a0e;
+  text-shadow: none;
+}
+.pinfo {
+  text-align: center;
+  font-size: 13px;
+  color: var(--muted);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.pinfo b {
+  color: var(--fg, #fff);
+}
+.pinfo .xp {
+  width: 70%;
+  margin: 0 auto;
+}
+.pinfo small {
+  font-size: 11.5px;
+}
+.pwarn {
+  margin: 0;
+  text-align: center;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: #ffd38a;
+  background: rgba(201, 74, 58, 0.18);
+  border: 1px solid rgba(201, 74, 58, 0.5);
+  border-radius: 10px;
+  padding: 6px 8px;
+}
+.pscroll {
+  flex-shrink: 0;
+  overflow-x: auto;
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: touch;
+  scroll-snap-type: x proximity;
+  margin: 0 -4px;
+  padding: 2px 4px 10px;
+}
+.pgrid {
+  display: flex;
+  gap: 6px;
+  width: max-content;
+}
+.plab {
+  position: sticky;
+  left: -4px;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  gap: 6px;
+  padding-bottom: 0;
+  background: var(--panel);
+  border-radius: 8px;
+}
+.plab b {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 68px;
+  width: 26px;
+  writing-mode: vertical-rl;
+  font-size: 12px;
+  color: var(--muted);
+  letter-spacing: 0.1em;
+}
+.plab b.pp {
+  color: #ffd34a;
+}
+.pcol {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  scroll-snap-align: center;
+}
+.pcol .pno {
+  font-style: normal;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--muted);
+  width: 26px;
+  height: 18px;
+  line-height: 18px;
+  text-align: center;
+  border-radius: 9px;
+  background: var(--panel2);
+}
+.pcol.on .pno {
+  background: #c98a1e;
+  color: #fff;
+}
+.pcol.cur .pno {
+  box-shadow: 0 0 0 2px #ffd34a;
+}
+.pcell {
+  position: relative;
+  width: 64px;
+  height: 68px;
+  border-radius: 10px;
+  border: 1px solid var(--line);
+  background: var(--panel2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1px;
+  padding: 2px;
+  font: inherit;
+  color: var(--fg, #fff);
+  cursor: pointer;
+}
+.pcell.p {
+  background: linear-gradient(#3a2f1a, #2a2216);
+  border-color: #6b5420;
+}
+.pcell.multi {
+  width: 92px;
+}
+.pcell .pci {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 0;
+}
+.pcell .pci img {
+  width: 30px;
+  height: 30px;
+  object-fit: contain;
+}
+.pcell .pci small {
+  font-size: 10.5px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+.pcell.lock .pci,
+.pcell.got .pci {
+  opacity: 0.45;
+}
+.pcell.can {
+  border-color: #ffd34a;
+  box-shadow: 0 0 8px rgba(255, 211, 74, 0.6);
+  animation: pglow 1.4s ease-in-out infinite;
+}
+@keyframes pglow {
+  50% {
+    box-shadow: 0 0 2px rgba(255, 211, 74, 0.2);
+  }
+}
+.pcell i {
+  position: absolute;
+  font-style: normal;
+  font-size: 10px;
+  font-weight: 700;
+  border-radius: 999px;
+  padding: 0 5px;
+  bottom: -6px;
+  left: 50%;
+  transform: translateX(-50%);
+  white-space: nowrap;
+}
+.pcell .pcb {
+  background: #ffd34a;
+  color: #2a1a06;
+}
+.pcell .pck {
+  background: #2f8f55;
+  color: #fff;
+}
+.pcell .pcl {
+  background: transparent;
+  bottom: auto;
+  top: 1px;
+  left: auto;
+  right: 2px;
+  transform: none;
+  padding: 0;
+}
+.ppay {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 10px;
+}
+.ppay small {
+  font-size: 11.5px;
+  opacity: 0.85;
+}
+.pday {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+.pdr {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  font-size: 12.5px;
+  padding: 3px 8px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.03);
+}
+.pdr small {
+  color: #ffd34a;
+}
+.pdr b {
+  font-variant-numeric: tabular-nums;
+}
+.pdr.full b {
+  color: #9be3a8;
+}
+.growrow {
+  flex-wrap: wrap;
+}
+.growrow .gsteps {
+  flex: 1 0 100%;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+.growrow .gst {
+  font-size: 11px;
+  border-radius: 8px;
+  padding: 2px 6px;
+  background: var(--panel2);
+  color: var(--muted);
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+}
+.growrow .gst b {
+  font-weight: 700;
+  margin-right: 2px;
+}
+.growrow .gst.can {
+  color: #ffd34a;
+}
+.growrow .gst.got {
+  color: #9be3a8;
+}
+@media (max-width: 400px) {
+  .mapbar {
+    gap: 7px;
+  }
+  .mapbar .mbx b {
+    white-space: nowrap;
+    font-size: 14px;
+  }
+  .mapbar .mbr {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    line-height: 1.15;
+    font-size: 11.5px;
+  }
+}
+.mapbar .mbp {
+  position: relative;
+  flex: 0 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  line-height: 1.1;
+  border: 1px solid #6b5420;
+  background: #2a2216;
+  color: #ffe08a;
+  border-radius: 10px;
+  padding: 3px 7px;
+  font: inherit;
+  cursor: pointer;
+}
+.mapbar .mbp small {
+  font-size: 9.5px;
+  color: #d8c89a;
+  white-space: nowrap;
+}
+.mapbar .mbp b {
+  font-size: 13px;
+}
+.mapbar .mbp .dot {
+  position: absolute;
+  top: -3px;
+  right: -3px;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: #ffd34a;
+}
 .shoprow img.pk {
   width: 72px;
   height: 72px;
@@ -8346,6 +8726,8 @@ function fresh() {
     work: {},
     workIntro: 0,
     workDot: '',
+    pass: { s: 0, pt: 0, paid: 0, got: { f: [], p: [] }, day: { d: '', src: {}, kc: 0 }, intro: 0, mail: [] },
+    grow: { buy: 0, got: {} },
     v: 3
   };
 }
@@ -8393,6 +8775,18 @@ function hydrate(d) {
   /* 마을 확장: 광산이 있던 세이브는 브론의 대장간을 Lv.1로 지어 줌(강화 기록 slotEn·cwEn은 그대로) */
   if (d && !(d.bld && d.bld.forge != null) && f.bld.mine > 0) f.bld.forge = 1;
   f.ucard = Math.max(0, Math.floor(+f.ucard || 0));
+  /* 원정 일지·성장 패키지: 안쪽 칸 모양이 깨졌으면 기본값 */
+  {
+    const P = f.pass,
+      F = fresh().pass;
+    if (!isObj(P.got)) P.got = F.got;
+    for (const w of ['f', 'p']) P.got[w] = Array.isArray(P.got[w]) ? P.got[w].filter(x => Number.isInteger(x) && x >= 0 && x < 20) : [];
+    if (!isObj(P.day) || !isObj(P.day.src)) P.day = F.day;
+    if (!Array.isArray(P.mail)) P.mail = [];
+    P.mail = P.mail.filter(m => isObj(m) && isObj(m.r));
+    for (const k of ['s', 'pt', 'paid', 'intro']) if (typeof P[k] !== 'number' || !isFinite(P[k])) P[k] = 0;
+    if (!isObj(f.grow.got)) f.grow.got = {};
+  }
   if (f.party && f.party.kael && f.party.kael !== CHIEF) delete f.party.kael;
   /* 대륙 지도: 기존 세이브는 지금 S.best까지 걷힘 연출을 본 것으로 (연출이 몰려 나오지 않게) */
   if (!(d && d.fogSeen != null)) {
@@ -8544,6 +8938,7 @@ function gemSheet() {
             m = MISSIONS.find(x => x.k === k);
           if (!misCan(m || null)) return;
           daily().claim[k] = true;
+        passAdd(k === 'all' ? 'misall' : 'mis');
           if (k === 'all') {
             const cid = gainCard(5, 'shop');
             setTimeout(() => cardToast(cid, 5), 1200);
@@ -8613,6 +9008,438 @@ function buyStarter() {
     );
   });
 }
+/* ---------- 원정 일지(시즌 패스) · 영주의 첫걸음(성장 패키지) — docs/content/SHOP.md ----------
+   원정 일지: 랭킹 시즌과 같은 2주·같은 시즌 번호, 20단계 × 100점. 무료 줄은 누구나, 유료 줄은 ₩3,300(시즌마다).
+   점수는 평소 플레이에 passAdd(src, n) 한 줄씩 (할 일별 하루 한도). 시즌이 바뀌면 받지 않은 보상은 우편함으로. */
+const seasonNo = (t = Date.now()) => Math.floor((t - SEAS0) / 12096e5) + 1,
+  seasonLeft = () => Math.max(0, (seasonEnd() - Date.now()) / 864e5);
+const PASS = { k: 'pass', n: '원정 일지', won: 3300, steps: 20, per: 100, warn: 3 };
+/* [한 번에 얻는 점수, 하루 최대, 이름] */
+const PASS_SRC = {
+  att: [20, 20, '출석'],
+  mis: [20, 60, '오늘의 할 일 1개 완료'],
+  misall: [40, 40, '오늘의 할 일 모두 완료'],
+  boss: [5, 50, '영지 탈환'],
+  kill: [10, 30, '마물 1,000마리 처치'],
+  tower: [10, 30, '시련의 탑 층 돌파'],
+  dun: [10, 30, '요일 던전 입장·소탕'],
+  ord: [10, 30, '마을 주문 납품']
+};
+/* 보상: idle 방치 골드(시간) · ore 광석 · seed 씨앗 묶음(밀 6·당근 3·호박 1) · gem 이삭 · card 동료 카드 · box10 상자 10연속 무료권 · frame 시즌 한정 테두리 */
+const PASS_REW = [
+  { f: { idle: 0.5 }, p: { card: 3 } },
+  { f: { ore: 20 }, p: { gem: 30 } },
+  { f: { seed: 1 }, p: { card: 3 } },
+  { f: { idle: 0.5 }, p: { gem: 30 } },
+  { f: { gem: 10 }, p: { card: 3 } },
+  { f: { ore: 20 }, p: { gem: 30 } },
+  { f: { seed: 1 }, p: { card: 3 } },
+  { f: { idle: 1 }, p: { gem: 30 } },
+  { f: { ore: 30 }, p: { card: 3 } },
+  { f: { gem: 10 }, p: { box10: 1 } },
+  { f: { idle: 1 }, p: { card: 3 } },
+  { f: { ore: 30 }, p: { gem: 30 } },
+  { f: { seed: 1 }, p: { card: 3 } },
+  { f: { idle: 1 }, p: { gem: 30 } },
+  { f: { gem: 10 }, p: { card: 3 } },
+  { f: { ore: 40 }, p: { gem: 30 } },
+  { f: { seed: 1 }, p: { card: 3 } },
+  { f: { idle: 2 }, p: { gem: 30 } },
+  { f: { ore: 40 }, p: { card: 3 } },
+  { f: { gem: 10 }, p: { gem: 50, box10: 1, frame: 1 } }
+];
+const passFrameK = s => 'pass_' + s,
+  pfSrc = k => {
+    const m = /^pass_(\d+)$/.exec(k || '');
+    return 'assets/profile/frame_' + (m ? 'pass_' + (+m[1] % 6) : k || 'wood') + '.png';
+  };
+/* 지금 시즌의 원정 일지 (시즌이 바뀌었으면 남은 보상을 우편으로 넘기고 새로) */
+function passS() {
+  if (!S.pass || !isObj(S.pass)) S.pass = fresh().pass;
+  const p = S.pass,
+    s = seasonNo();
+  if (!p.s) p.s = s;
+  else if (p.s !== s) passRoll(s);
+  return S.pass;
+}
+function passDay() {
+  const p = S.pass;
+  if (!isObj(p.day) || p.day.d !== today()) p.day = { d: today(), src: {}, kc: 0 };
+  if (!isObj(p.day.src)) p.day.src = {};
+  return p.day;
+}
+const passLv = () => Math.min(PASS.steps, Math.floor((passS().pt || 0) / PASS.per));
+const passHas = (row, i) => (passS().got[row] || []).includes(i);
+const passCan = (row, i) => i < passLv() && !passHas(row, i) && (row === 'f' || !!passS().paid);
+const passCanN = () => {
+  let n = 0;
+  for (let i = 0; i < PASS.steps; i++) n += (passCan('f', i) ? 1 : 0) + (passCan('p', i) ? 1 : 0);
+  return n;
+};
+/* 보상 묶음 더하기 (테두리는 시즌 번호를 붙여 따로 저장할 키로) */
+function passMerge(a, r, s) {
+  for (const k in r) {
+    if (k === 'frame') (a.frame = a.frame || []).push(passFrameK(s));
+    else a[k] = (a[k] || 0) + r[k];
+  }
+  return a;
+}
+function passRoll(s) {
+  const p = S.pass,
+    old = p.s,
+    lv = Math.min(PASS.steps, Math.floor((p.pt || 0) / PASS.per)),
+    r = {};
+  let n = 0;
+  for (let i = 0; i < lv; i++) {
+    if (!(p.got.f || []).includes(i)) {
+      passMerge(r, PASS_REW[i].f, old);
+      n++;
+    }
+    if (p.paid && !(p.got.p || []).includes(i)) {
+      passMerge(r, PASS_REW[i].p, old);
+      n++;
+    }
+  }
+  const mail = Array.isArray(p.mail) ? p.mail : [];
+  if (n) mail.push({ id: 'pass' + old, s: old, title: '원정 일지 시즌 ' + old + ' — 받지 못한 보상이에요', r });
+  S.pass = { s, pt: 0, paid: 0, got: { f: [], p: [] }, day: { d: '', src: {}, kc: 0 }, intro: p.intro || 0, mail };
+  shopSig = '';
+  mapSig = '';
+  mailDot();
+}
+/* 점수 얻기: 하루 한도 안에서만 */
+function passAdd(src, n) {
+  if (!S || !S.started || noSave) return 0;
+  const c = PASS_SRC[src];
+  if (!c) return 0;
+  const p = passS(),
+    d = passDay(),
+    used = d.src[src] || 0,
+    add = Math.min(n == null ? c[0] : n, c[1] - used);
+  if (add <= 0) return 0;
+  const lv0 = passLv();
+  d.src[src] = used + add;
+  p.pt = Math.min(PASS.steps * PASS.per, (p.pt || 0) + add);
+  if (passLv() > lv0) {
+    shopSig = '';
+    mapSig = '';
+    toast('📖 원정 일지 ' + passLv() + '단계! 상점에서 보상을 받아요');
+  }
+  return add;
+}
+/* 마물 1,000마리마다 10점 */
+function passKill() {
+  if (!S || !S.started) return;
+  passS();
+  const d = passDay();
+  d.kc = (+d.kc || 0) + 1;
+  if (d.kc % 1000 === 0) passAdd('kill');
+}
+/* 보상 주기 → 받은 것 글 목록 */
+function passGive(r, why) {
+  const out = [];
+  let got = [],
+    cg = 0;
+  if (r.idle) {
+    const g = Math.floor(idleGold(r.idle * 3600));
+    S.gold += g;
+    out.push('골드 +' + fmt(g));
+  }
+  if (r.ore) {
+    S.items.ore = (S.items.ore || 0) + r.ore;
+    out.push('광석 +' + fmt(r.ore));
+  }
+  if (r.seed) {
+    S.seeds.wheat = (S.seeds.wheat || 0) + 6 * r.seed;
+    S.seeds.carrot = (S.seeds.carrot || 0) + 3 * r.seed;
+    S.seeds.pumpkin = (S.seeds.pumpkin || 0) + r.seed;
+    out.push('씨앗 묶음 ×' + r.seed);
+  }
+  if (r.gem) {
+    S.gem = (S.gem || 0) + r.gem;
+    out.push('황금 이삭 +' + fmt(r.gem));
+  }
+  if (r.box10) {
+    S.tickets.box10 = (S.tickets.box10 || 0) + r.box10;
+    out.push('상자 10연속 무료권 +' + r.box10);
+  }
+  if (r.card) {
+    const res = gainCards(r.card, 'shop', 3);
+    if (res) {
+      got = res.got;
+      cg = res.gold;
+      out.push('동료 카드 ' + r.card + '장');
+    } else {
+      S.gem = (S.gem || 0) + r.card * 3;
+      out.push('동료 카드 대신 황금 이삭 +' + r.card * 3);
+    }
+  }
+  for (const k of r.frame || []) {
+    S.pfUnl = S.pfUnl || {};
+    if (!S.pfUnl[k]) {
+      S.pfUnl[k] = 1;
+      S.pfNew = S.pfNew || {};
+      S.pfNew['f_' + k] = 1;
+    }
+    out.push(PFN(k) + ' 테두리');
+  }
+  haptic(25);
+  shopSig = '';
+  partySig = '';
+  save();
+  renderAll();
+  if (got.length || cg) setTimeout(() => cardReveal(got, why || PASS.n, cg), 60);
+  return out;
+}
+/* 칸 하나 받기 (row 'f' 무료 · 'p' 유료, i 0~19) · 모두 받기 */
+function passClaim(row, i) {
+  const p = passS(),
+    rows = row ? [[row, i]] : [];
+  if (!row)
+    for (let j = 0; j < PASS.steps; j++) for (const w of ['f', 'p']) if (passCan(w, j)) rows.push([w, j]);
+  const r = {};
+  let n = 0;
+  for (const [w, j] of rows) {
+    if (!passCan(w, j)) continue;
+    p.got[w].push(j);
+    passMerge(r, PASS_REW[j][w], p.s);
+    n++;
+  }
+  if (!n) return;
+  const out = passGive(r, PASS.n);
+  toast((n > 1 ? '보상 ' + n + '개 · ' : '') + out.join(' · '));
+}
+/* 유료 줄 열기 (웹 바로 지급 · 앱은 결제 확인 우편 {pass: 시즌}) */
+function passOpen(s) {
+  const p = passS();
+  if (s && +s !== p.s) {
+    /* 결제한 사이 시즌이 바뀜: 그 시즌 값만큼 이삭으로 */
+    S.gem = (S.gem || 0) + 200;
+    save();
+    return toast('지난 시즌 원정 일지 결제예요. 황금 이삭 +200으로 돌려 드려요');
+  }
+  if (p.paid) return toast('이번 시즌 원정 일지는 이미 열려 있어요');
+  p.paid = 1;
+  const r = {};
+  let n = 0;
+  for (let i = 0; i < passLv(); i++)
+    if (!p.got.p.includes(i)) {
+      p.got.p.push(i);
+      passMerge(r, PASS_REW[i].p, p.s);
+      n++;
+    }
+  if (n) passGive(r, PASS.n);
+  else {
+    shopSig = '';
+    save();
+    renderAll();
+  }
+  toast('원정 일지를 열었어요! 지난 단계 보상 ' + n + '개를 받았어요');
+  if (!$('modal').hidden && $('passBody')) passSheet();
+}
+function buyPass() {
+  const p = passS();
+  if (p.paid) return toast('이번 시즌 원정 일지는 이미 열려 있어요');
+  pay(PASS.k, PASS.won, () => passOpen(p.s));
+}
+/* 마감 3일 전 알림 (하루 한 번) */
+function passWarn() {
+  if (!S || !S.started) return;
+  const p = passS(),
+    left = seasonLeft();
+  if (left > PASS.warn || p.warn === today() || (!passCanN() && !p.paid && !p.pt)) return;
+  p.warn = today();
+  toast('이번 시즌이 ' + Math.max(1, Math.ceil(left)) + '일 남았어요. 받을 보상을 챙기세요!');
+}
+const passLeftTxt = () => {
+  const l = seasonLeft();
+  return l >= 1 ? Math.ceil(l) + '일 남음' : Math.max(1, Math.ceil(l * 24)) + '시간 남음';
+};
+/* 상점 맨 위 배너: 시즌 · 남은 날 · 단계 + 진행 막대 (누르면 패스 창) */
+function passBanner() {
+  if (!S.started) return '';
+  const p = passS(),
+    lv = passLv(),
+    n = passCanN();
+  return `<button class="passbn" id="passBn" aria-label="원정 일지 열기"><span class="pbimg"><b>원정 일지</b></span><span class="pbt"><small>시즌 ${p.s} · ${passLeftTxt()} · <b>${lv}/${PASS.steps}</b>단계${n ? ' · <em>받을 보상 ' + n + '</em>' : ''}</small><i class="pbar"><i style="width:${Math.min(100, ((p.pt || 0) / (PASS.steps * PASS.per)) * 100)}%"></i></i></span>${p.paid ? '' : '<em class="pbtag">유료 줄 ' + won(PASS.won) + '</em>'}${n ? '<i class="dot"></i>' : ''}</button>`;
+}
+const PASS_IC = {
+  idle: ['assets/ui/ui_gold.png', r => (r.idle < 1 ? Math.round(r.idle * 60) + '분' : r.idle + '시간')],
+  ore: ['assets/ui/item_ore.png', r => r.ore],
+  seed: ['assets/ui/seed_wheat.png', () => '씨앗'],
+  gem: ['assets/gem/ui_gem.png', r => r.gem],
+  card: ['assets/ui/card_pack3.png', r => '×' + r.card],
+  box10: ['assets/ui/item_box10ticket.png', () => '10연속'],
+  frame: [null, () => '테두리']
+};
+function passCell(row, i) {
+  const p = passS(),
+    r = PASS_REW[i][row],
+    can = passCan(row, i),
+    has = passHas(row, i),
+    lock = row === 'p' && !p.paid,
+    ks = Object.keys(r);
+  const ic = ks
+    .map(k => {
+      const [src, t] = PASS_IC[k];
+      const img = k === 'frame' ? `<img src="${pfSrc(passFrameK(p.s))}" alt="">` : `<img src="${src}" alt="" onerror="this.remove()">`;
+      return `<span class="pci">${img}<small>${t(r)}</small></span>`;
+    })
+    .join('');
+  return `<button class="pcell ${row}${can ? ' can' : ''}${has ? ' got' : ''}${lock ? ' lock' : ''}${ks.length > 1 ? ' multi' : ''}" data-pc="${row}${i}" ${can ? '' : 'tabindex="-1"'}>${ic}${has ? '<i class="pck">✓</i>' : lock ? '<i class="pcl">🔒</i>' : can ? '<i class="pcb">받기</i>' : ''}</button>`;
+}
+function passSheet() {
+  const p = passS(),
+    lv = passLv(),
+    left = seasonLeft(),
+    d = passDay(),
+    n = passCanN(),
+    cur = Math.min(PASS.steps, lv + 1),
+    inLv = lv >= PASS.steps ? PASS.per : (p.pt || 0) % PASS.per;
+  if (!p.intro) {
+    p.intro = 1;
+    save();
+    return queue(() =>
+      scene(
+        '피트의 상점',
+        '원정 일지 · 시즌 ' + p.s,
+        [
+          'm:피트|영주님! 이번 시즌 「원정 일지」예요. 평소처럼 싸우고 일하시면 칸이 채워져요.',
+          'k:일기 쓰라는 거야?',
+          'm:피트|아뇨, 쓰는 건 제가 해요. 영주님은 받기만!'
+        ],
+        '원정 일지 보기',
+        { go: passSheet }
+      )
+    );
+  }
+  const warn = left <= PASS.warn;
+  $('sheet').innerHTML =
+    `<div class="hdban passban" style="--hb:url(assets/ui/hd_pass.png);--hs:18px"><span>원정 일지</span></div>
+ <div class="pinfo"><div><b>시즌 ${p.s}</b> · ${passLeftTxt()} · <b>${lv}/${PASS.steps}</b>단계</div><div class="xp"><div style="width:${(inLv / PASS.per) * 100}%"></div></div><small>${lv >= PASS.steps ? '20단계를 모두 채웠어요!' : cur + '단계까지 ' + (PASS.per - inLv) + '점'}</small></div>
+ ${warn ? `<p class="pwarn">⏳ 이번 시즌이 ${passLeftTxt().replace(' 남음', '')} 남았어요. 받을 보상을 챙기세요!</p>` : ''}
+ <div class="pscroll" id="passBody"><div class="pgrid"><div class="plab"><b>무료</b><b class="pp">유료</b></div>${PASS_REW.map((_, i) => `<div class="pcol${i < lv ? ' on' : ''}${i === lv ? ' cur' : ''}" data-i="${i}"><i class="pno">${i + 1}</i>${passCell('f', i)}${passCell('p', i)}</div>`).join('')}</div></div>
+ ${p.paid ? '<p class="note" style="text-align:center">유료 줄이 열려 있어요. 20단계에서 시즌 ' + p.s + ' 한정 테두리!</p>' : `<button class="buy ppay" id="passBuy"><b>${won(PASS.won)} 원정 일지 열기</b><small>${warn ? '시즌 끝까지 ' + passLeftTxt().replace(' 남음', '') + ' 남았어요 · ' : ''}지난 단계 보상도 한꺼번에</small></button>`}
+ <div class="sec">오늘 얻은 점수 <small>할 일마다 하루 한도</small></div>
+ <div class="pday">${Object.entries(PASS_SRC)
+   .map(([k, c]) => `<div class="pdr${(d.src[k] || 0) >= c[1] ? ' full' : ''}"><span>${c[2]} <small>+${c[0]}</small></span><b>${d.src[k] || 0} / ${c[1]}</b></div>`)
+   .join('')}</div>
+ <div class="acts">${n ? `<button class="pri claim" id="passAll">모두 받기 (${n})</button>` : ''}<button${n ? '' : ' class="pri"'} id="mGo">닫기</button></div>`;
+  $('modal').hidden = false;
+  $('mGo').onclick = closeModal;
+  if ($('passAll'))
+    $('passAll').onclick = () => {
+      passClaim();
+      passSheet();
+    };
+  if ($('passBuy')) $('passBuy').onclick = buyPass;
+  document.querySelectorAll('[data-pc]').forEach(
+    b =>
+      (b.onclick = () => {
+        const w = b.dataset.pc[0],
+          i = +b.dataset.pc.slice(1);
+        if (passCan(w, i)) {
+          passClaim(w, i);
+          passSheet();
+        } else if (w === 'p' && !p.paid) toast('유료 줄은 원정 일지를 열면 받을 수 있어요');
+      })
+  );
+  /* 지금 단계가 보이게 가로로 밀어 둠 */
+  const sc = $('passBody'),
+    c = sc && sc.querySelector('.pcol.cur, .pcol:last-child');
+  if (sc && c) sc.scrollLeft = Math.max(0, c.offsetLeft - sc.clientWidth / 2 + c.offsetWidth / 2);
+}
+/* 시즌이 끝나 우편으로 넘어온 원정 일지 보상 (이 기기 저장에 있음) */
+const passMails = () => (S && S.pass && Array.isArray(S.pass.mail) ? S.pass.mail : []);
+function passMailClaim(id) {
+  const ms = passMails(),
+    i = ms.findIndex(m => id == null || m.id === id);
+  if (i < 0) return;
+  const all = id == null ? ms.splice(0) : ms.splice(i, 1),
+    r = {};
+  for (const m of all)
+    for (const k in m.r) {
+      if (k === 'frame') (r.frame = r.frame || []).push(...m.r.frame);
+      else r[k] = (r[k] || 0) + m.r[k];
+    }
+  const out = passGive(r, '우편 보상');
+  toast(out.join(' · '));
+  mailDot();
+}
+const passMailChips = r =>
+  Object.keys(r)
+    .map(k => {
+      if (k === 'frame') return r.frame.map(f => `<span class="mrw"><img src="${pfSrc(f)}" alt="">${PFN(f)} 테두리</span>`).join('');
+      const [src, t] = PASS_IC[k];
+      return `<span class="mrw"><img src="${src}" alt="">${{ idle: '골드 ', ore: '광석 ', seed: '', gem: '', card: '동료 카드 ', box10: '상자 ' }[k]}${t(r)}</span>`;
+    })
+    .join('');
+
+/* ---- 영주의 첫걸음 (성장 패키지): 계정당 1번, 영지 3 이후 상점에 보임 ---- */
+const GROW = {
+  k: 'growth',
+  n: '영주의 첫걸음',
+  won: 11000,
+  now: 300,
+  at: [
+    [10, 300],
+    [20, 400],
+    [30, 500],
+    [40, 600],
+    [50, 700]
+  ]
+};
+const growG = () => (S.grow && isObj(S.grow) ? S.grow : (S.grow = { buy: 0, got: {} })),
+  growShop = () => (!growG().buy ? S.best > 3 : GROW.at.some(([l]) => !growG().got[l])),
+  growNext = () => GROW.at.find(([l]) => !growG().got[l]);
+/* 영지 l 「처음 탈환」 = S.best 가 l 을 넘음 (은퇴해도 다시 받지 않음) */
+function growCheck() {
+  const g = growG();
+  if (!g.buy) return 0;
+  if (!isObj(g.got)) g.got = {};
+  let n = 0;
+  const ls = [];
+  for (const [l, v] of GROW.at)
+    if (S.best > l && !g.got[l]) {
+      g.got[l] = 1;
+      n += v;
+      ls.push(l);
+    }
+  if (!n) return 0;
+  S.gem = (S.gem || 0) + n;
+  shopSig = '';
+  save();
+  toast('영주의 첫걸음 · 영지 ' + ls.join('·') + ' 탈환 보상 황금 이삭 +' + fmt(n));
+  return n;
+}
+function growGive() {
+  const g = growG();
+  if (g.buy) return;
+  g.buy = 1;
+  if (!isObj(g.got)) g.got = {};
+  g.got[0] = 1;
+  S.gem = (S.gem || 0) + GROW.now;
+  toast('영주의 첫걸음을 샀어요! 황금 이삭 +' + GROW.now);
+  growCheck();
+  shopSig = '';
+  save();
+  renderAll();
+}
+function buyGrow() {
+  if (growG().buy) return;
+  pay(GROW.k, GROW.won, growGive);
+}
+function growRow() {
+  if (!growShop()) return '';
+  const g = growG(),
+    nx = growNext(),
+    land = Math.min(S.best - 1, MAXLAND),
+    gemI = '<img src="assets/gem/ui_gem.png" alt="" style="width:14px;height:14px;vertical-align:-2px" onerror="this.remove()">';
+  const steps = GROW.at
+    .map(([l, v]) => `<span class="gst${g.got[l] ? ' got' : S.best > l ? ' can' : ''}"><b>영지 ${l}</b>${gemI}${v}${g.got[l] ? ' ✓' : ''}</span>`)
+    .join('');
+  return `${g.buy ? '' : para('m:피트|이제 막 시작하신 영주님께 딱이에요. 영지를 되찾을수록 이삭이 따라와요.')}<div class="shoprow hot growrow"><span class="tag">계정당 1번</span><img class="pk" src="assets/ui/pack_growth.png" alt="" onerror="this.remove()"><div class="info"><b>${GROW.n}</b><div>${g.buy ? '영지를 되찾으면 이삭이 자동으로 들어와요' : `사는 즉시 ${gemI}${GROW.now} · 영지 10~50마다 ${gemI}300~700 (합계 2,800)`}</div><div>영지 ${land}/50${g.buy ? (nx ? ' · 다음: 영지 ' + nx[0] + '에서 ' + gemI + nx[1] : '') : ' · 지금 사면 바로 ' + gemI + fmt(GROW.now + GROW.at.reduce((a, [l, v]) => a + (S.best > l ? v : 0), 0))}</div></div>${g.buy ? '' : `<button class="buy" id="growBuy">${won(GROW.won)}</button>`}<div class="gsteps">${steps}</div></div>`;
+}
 /* 정기 배송 유니크 카드: 3일마다 1장 (배송 받은 횟수 1·4·7…번째, 30일에 10장) */
 function subCard() {
   S.sub.cn = (+S.sub.cn || 0) + 1;
@@ -8671,7 +9498,11 @@ function renderShop() {
     JSON.stringify(d),
     S.ucard,
     S.retires,
-    owned(CHIEF)
+    owned(CHIEF),
+    S.best,
+    JSON.stringify(S.pass),
+    JSON.stringify(S.grow),
+    passLeftTxt()
   ].join('|');
   if (sig === shopSig) return;
   shopSig = sig;
@@ -8695,6 +9526,7 @@ function renderShop() {
   const subRow = `<div class="shoprow${subOn() ? ' hot' : ''}"><img class="pk" src="assets/gem/gem_pack_5.png" alt="" onerror="this.remove()"><div class="info"><b>${SUB.n}</b><div>${subTxt}</div></div>${subBtn}</div>`;
   $('shop').innerHTML =
     `${TEST_PAY && DEV ? '<div class="testbar">테스트 모드: 실제 결제 없이 누르면 바로 지급돼요. 결제 연동 전까지만 이렇게 동작해요.</div>' : ''}
+ ${passBanner()}
  <div class="shjump">${[
    ['shs-free', '🎁 매일 무료', freeDot],
    ['shs-gem', '🌾 이삭으로', false],
@@ -8736,12 +9568,15 @@ function renderShop() {
  ${S.buys.starter ? '' : `<div class="shoprow hot"><span class="tag">한 번만</span><img class="pk" src="assets/relic/relic_weapon_3.png" alt="" onerror="this.remove()"><div class="info"><b>${STARTER.n}</b><div>전설 등급 성유물 1개 확정<br>+ ${gemI}${STARTER.gem}</div></div><button class="buy" id="starterBuy">${won(STARTER.won)}</button></div>`}
  ${chiefShop() ? `<div class="shoprow hot"><span class="tag" style="background:#1f9e63">유니크</span><img class="pk" src="assets/portraits/portrait_kael_chief_laugh.png" alt="" onerror="this.remove()"><div class="info"><b>${CHIEF_PK.n}</b><div>유니크 동료 ★1 · 카엘 자리에서 출전<br>은퇴 ${CHIEF_RET}번이면 무료로 찾아와요 (${S.retires || 0}/${CHIEF_RET})</div></div><button class="buy" id="chiefBuy">${won(CHIEF_PK.won)}</button></div>` : ''}
  ${subOn() ? '' : subRow}
+ ${growRow()}
  <div class="sec">황금 이삭</div>
  <div class="packs gemp">${PACKS.map((p, i) => {
    const first = !S.buys[p.k];
    return `<button class="pack" data-p="${p.k}">${first ? '<span class="tag">2배</span>' : ''}<img src="assets/gem/gem_pack_${i + 1}.png" alt="" onerror="this.remove()"><b>${fmt(p.gem)}</b><small>${first ? '+' + fmt(p.gem) + ' 보너스' : ''}</small>${UCARD_PK[p.k] ? `<small class="ucb">+유니크 카드 ${UCARD_PK[p.k]}</small>` : ''}<span class="price">${won(p.won)}</span></button>`;
  }).join('')}</div></section>`;
   const sh = $('shop');
+  if ($('passBn')) $('passBn').onclick = passSheet;
+  if ($('growBuy')) $('growBuy').onclick = buyGrow;
   sh.querySelectorAll('[data-m]').forEach(
     b =>
       (b.onclick = () => {
@@ -8749,6 +9584,7 @@ function renderShop() {
           m = MISSIONS.find(x => x.k === k);
         if (!misCan(m || null)) return;
         daily().claim[k] = true;
+        passAdd(k === 'all' ? 'misall' : 'mis');
         if (k === 'all') {
           const cid = gainCard(5, 'shop');
           setTimeout(() => cardToast(cid, 5), 1200);
@@ -13593,6 +14429,7 @@ function step(dt) {
         const g = reward(fightSt(), m.boss) * (buff('gold') ? 1.5 : 1) * (blOn('gold') ? 1.3 : 1) * memMul() * (m.boss ? vpFeast() : 1);
         S.gold += g;
         dailyAdd('kill', 1);
+        passKill();
         addFloat(m.x, m.y - 30 * s, '+' + fmt(g), '#ffc94a', 14);
         {
           const nc = m.boss ? (isLord(fightSt()) ? 5 : 2) : Math.random() < 0.003 ? 1 : 0;
@@ -13630,6 +14467,8 @@ function step(dt) {
           }
           S.stage = Math.min(MAXLAND + 1, st0 + 1);
           S.best = Math.max(S.best, S.stage);
+          passAdd('boss');
+          growCheck();
           S.wave = 0;
           $('bossbar').hidden = true;
           $('bossbar').classList.remove('gold', 'dem');
@@ -14022,6 +14861,7 @@ function towerWin() {
     rwGive(r);
     S.tower.top = f;
   }
+  passAdd('tower');
   const run = CH.run || (CH.run = { from: f, r: {}, nb: [], n: 0 });
   run.n++;
   towerRunAdd(run, r);
@@ -14105,6 +14945,7 @@ function dunEnter(k) {
   if (dunLeft() <= 0) return toast('오늘 입장권을 다 썼어요');
   const go = () => {
     dunDay().used++;
+    passAdd('dun');
     const L = dunL();
     chBegin({
       mode: 'dun',
@@ -14141,6 +14982,7 @@ function dunSweep(k) {
   if (dunLeft() <= 0) return toast('오늘 입장권을 다 썼어요');
   const L = dunL();
   dunDay().used++;
+  passAdd('dun');
   const r = dunReward(k, L, 1, false);
   rwGive(r);
   save();
@@ -16766,8 +17608,9 @@ function dotSig(t) {
   if (t === 'sh') {
     const d = daily(),
       n = MISSIONS.filter(misCan).length + (misCan(null) ? 1 : 0) + (subOn() && S.sub.last !== today() ? 1 : 0),
-      a = adKeys().some(k => adLeft(k));
-    return n || a ? 's' + n + (a ? 'a' : '') + today() : '';
+      a = adKeys().some(k => adLeft(k)),
+      pn = S.started ? passCanN() : 0;
+    return n || a || pn ? 's' + n + (a ? 'a' : '') + (pn ? 'p' + passLv() + '.' + pn : '') + today() : '';
   }
   if (t === 'mp') return chDot() ? 'c' + (supplyCan() ? 1 : 0) + '.' + dunLeft() + '.' + today() : '';
   return '';
@@ -17019,6 +17862,7 @@ function ordDeliver(i) {
   const o = S.orders[i];
   if (!ordCan(o)) return;
   for (const [k, n] of Object.entries(o.need)) S.items[k] -= n;
+  passAdd('ord');
   const g = ordGold(o);
   S.gold += g;
   let ex = '';
@@ -18294,11 +19138,18 @@ function renderMapInfo() {
     r = region(st),
     i = Math.floor((st - 1) / 10) + 1,
     j = ((st - 1) % 10) + 1;
-  const sig = [ex, c, S.stage, S.best].join();
+  const pl = S.started ? passLv() : 0,
+    pn = S.started ? passCanN() : 0;
+  const sig = [ex, c, S.stage, S.best, pl, pn].join();
   if (sig === mapSig) return;
   mapSig = sig;
   $('mapBar').innerHTML =
-    `<span class="mbx"><b>대륙 탐험 ${Math.round((ex / MAXLAND) * 100)}%</b><i><i style="width:${(ex / MAXLAND) * 100}%"></i></i></span><span class="mbr">이번 회차 <b>${c}/${MAXLAND}</b></span><button class="mbk" id="mapRank2" aria-label="랭킹">🏆</button>`;
+    `<span class="mbx"><b>대륙 탐험 ${Math.round((ex / MAXLAND) * 100)}%</b><i><i style="width:${(ex / MAXLAND) * 100}%"></i></i></span><span class="mbr"><span>이번 회차</span> <b>${c}/${MAXLAND}</b></span>${S.started ? `<button class="mbp" id="mapPass" aria-label="원정 일지"><small>원정 일지</small><b>${pl}/${PASS.steps}</b>${pn ? '<i class="dot"></i>' : ''}</button>` : ''}<button class="mbk" id="mapRank2" aria-label="랭킹">🏆</button>`;
+  if ($('mapPass'))
+    $('mapPass').onclick = e => {
+      e.stopPropagation();
+      passSheet();
+    };
   $('mapRank2').onclick = e => {
     e.stopPropagation();
     rankSheet();
@@ -18583,7 +19434,7 @@ async function rankSheet(tab) {
     top = rows.filter(x => x.rank <= 100);
   const sc = x => (rkTab === 'goblin' ? GOBI + fmt(x.kills) + '마리' : stgName(x.stage));
   const face = x =>
-    `<span class="rkf"><img class="pt" src="${x.me && myFace() === 'photo' ? photoData() : 'assets/portraits/portrait_' + (x.me ? pubFace() : /^[a-z_]{2,16}$/.test(x.face || '') && COMP[x.face] ? x.face : 'kael') + '_idle.png'}" alt="" onerror="this.src='assets/portraits/portrait_kael_idle.png'"><img class="fr" src="assets/profile/frame_${x.frame || 'wood'}.png" alt="" onerror="this.remove()"></span>`;
+    `<span class="rkf"><img class="pt" src="${x.me && myFace() === 'photo' ? photoData() : 'assets/portraits/portrait_' + (x.me ? pubFace() : /^[a-z_]{2,16}$/.test(x.face || '') && COMP[x.face] ? x.face : 'kael') + '_idle.png'}" alt="" onerror="this.src='assets/portraits/portrait_kael_idle.png'"><img class="fr" src="${pfSrc(x.frame || 'wood')}" alt="" onerror="this.remove()"></span>`;
   const bd = x =>
     x.badge ? `<img class="rkb" data-k="${esc(x.badge)}" src="${esc(bdSrc(String(x.badge)))}" alt="" onerror="bdErr(this)">` : '';
   const line = x =>
@@ -18713,11 +19564,13 @@ function mailDot() {
   rankFab();
   const b = $('mailBtn');
   if (!b) return;
-  b.hidden = !mailOn();
+  const ln = passMails().length,
+    tn = mails.length + ln;
+  b.hidden = !mailOn() && !ln;
   const d = $('mailDot');
   if (d) {
-    d.hidden = !mails.length;
-    d.textContent = mails.length > 9 ? '9+' : mails.length;
+    d.hidden = !tn;
+    d.textContent = tn > 9 ? '9+' : tn;
   }
 }
 async function mailFetch() {
@@ -18734,14 +19587,14 @@ async function mailFetch() {
 setInterval(() => {
   if (!document.hidden) mailFetch();
 }, 300000);
-const PFN = k => (PFRAMES.find(f => f.k === k) || {}).n || k,
+const PFN = k => (pfList().find(f => f.k === k) || {}).n || k,
   BDN = k => (/^att_\d{6}$/.test(k) ? k.slice(4, 8) + '년 ' + +k.slice(8) + '월 출석' : (BADGES.find(b => b.k === k) || {}).n || k);
 function rewChips(r) {
   const c = [];
   if (r.gem) c.push(`<span class="mrw"><img src="assets/gem/ui_gem.png" alt="">${fmt(r.gem)}</span>`);
   if (r.cards) c.push(`<span class="mrw"><img src="assets/ui/card_pack30.png" alt="">동료 카드 ${r.cards}장</span>`);
   if (r.ucard) c.push(`<span class="mrw"><img src="assets/ui/card_unique.png" alt="">유니크 카드 ${r.ucard}장</span>`);
-  if (r.frame) c.push(`<span class="mrw"><img src="assets/profile/frame_${esc(r.frame)}.png" alt="">${esc(PFN(r.frame))} 테두리</span>`);
+  if (r.frame) c.push(`<span class="mrw"><img src="${pfSrc(esc(r.frame))}" alt="">${esc(PFN(r.frame))} 테두리</span>`);
   if (r.badge) c.push(`<span class="mrw"><img src="assets/profile/badge_${esc(r.badge)}.png" alt="">${esc(BDN(r.badge))} 배지</span>`);
   return c.join('');
 }
@@ -18754,6 +19607,8 @@ function mailApply(list) {
     const r = m.reward || {};
     if (r.gem > 0) gem += Math.min(+r.gem, 100000);
     if (r.chief) chiefJoin('pay');
+    if (r.pass) passOpen(+r.pass);
+    if (r.grow) growGive();
     if (r.ucard > 0) {
       const u = Math.min(Math.floor(+r.ucard), 1000);
       S.ucard = (S.ucard || 0) + u;
@@ -18812,7 +19667,7 @@ async function mailClaim(id) {
 }
 async function mailSheet(cached) {
   const head = `<div class="hdban" style="--hb:url(assets/ui/hd_mail.png);--hs:16px"><span>우편함</span></div>`;
-  if (!mailOn()) {
+  if (!mailOn() && !passMails().length) {
     $('sheet').innerHTML =
       head +
       `<p class="note" style="text-align:center">우편함을 준비하고 있어요.</p><div class="acts one"><button class="pri" id="mGo">닫기</button></div>`;
@@ -18820,7 +19675,7 @@ async function mailSheet(cached) {
     $('mGo').onclick = closeModal;
     return;
   }
-  if (!cached) {
+  if (!cached && mailOn()) {
     $('sheet').innerHTML =
       head +
       `<p class="note" style="text-align:center">우편을 확인하는 중…</p><div class="acts one"><button class="pri" id="mGo">닫기</button></div>`;
@@ -18828,7 +19683,7 @@ async function mailSheet(cached) {
     $('mGo').onclick = closeModal;
     if (!S.nick) await sbEnsure();
     else await mailFetch();
-    if (!S.nick) {
+    if (!S.nick && !passMails().length) {
       $('sheet').querySelector('.note').textContent = '인터넷에 연결되면 우편을 받을 수 있어요.';
       return;
     }
@@ -18837,14 +19692,28 @@ async function mailSheet(cached) {
     const d = (new Date(t) - Date.now()) / 864e5;
     return d >= 1 ? Math.floor(d) + '일 남음' : Math.max(1, Math.ceil(d * 24)) + '시간 남음';
   };
-  const ico = { season: '🏆', hall: '👑', notice: '📜' };
+  const ico = { season: '🏆', hall: '👑', notice: '📜' },
+    lm = passMails(),
+    tot = mails.length + lm.length;
   $('sheet').innerHTML =
     head +
-    `<p class="note" style="text-align:center">받은 우편은 30일 동안 보관돼요.</p><div class="mlist" id="mailList">${mails.length ? mails.map(m => `<div class="mitem"><div class="mico">${ico[m.kind] || '✉️'}</div><div class="mtx"><b>${esc(m.title)}</b>${m.body ? `<small>${esc(m.body)}</small>` : ''}<div class="mrws">${rewChips(m.reward || {})}</div><small class="mexp">${day(m.expires_at)}</small></div><button class="buy claim" data-mail="${m.id}">받기</button></div>`).join('') : '<p class="note" style="text-align:center;padding:18px 0">도착한 우편이 없어요.</p>'}</div>
- <div class="acts">${mails.length > 1 ? '<button class="pri claim" id="mAll">모두 받기</button>' : ''}<button${mails.length > 1 ? '' : ' class="pri"'} id="mGo">닫기</button></div>`;
+    `<p class="note" style="text-align:center">받은 우편은 30일 동안 보관돼요.</p><div class="mlist" id="mailList">${lm.map(m => `<div class="mitem"><div class="mico">📖</div><div class="mtx"><b>${esc(m.title)}</b><small>시즌이 끝나 받지 않은 보상을 모아 보냈어요.</small><div class="mrws">${passMailChips(m.r)}</div></div><button class="buy claim" data-lmail="${esc(m.id)}">받기</button></div>`).join('')}${mails.length ? mails.map(m => `<div class="mitem"><div class="mico">${ico[m.kind] || '✉️'}</div><div class="mtx"><b>${esc(m.title)}</b>${m.body ? `<small>${esc(m.body)}</small>` : ''}<div class="mrws">${rewChips(m.reward || {})}</div><small class="mexp">${day(m.expires_at)}</small></div><button class="buy claim" data-mail="${m.id}">받기</button></div>`).join('') : lm.length ? '' : '<p class="note" style="text-align:center;padding:18px 0">도착한 우편이 없어요.</p>'}</div>
+ <div class="acts">${tot > 1 ? '<button class="pri claim" id="mAll">모두 받기</button>' : ''}<button${tot > 1 ? '' : ' class="pri"'} id="mGo">닫기</button></div>`;
   $('modal').hidden = false;
   $('mGo').onclick = closeModal;
-  if ($('mAll')) $('mAll').onclick = () => mailClaim(null);
+  if ($('mAll'))
+    $('mAll').onclick = () => {
+      if (lm.length) passMailClaim(null);
+      if (mails.length) mailClaim(null);
+      else mailSheet(true);
+    };
+  document.querySelectorAll('[data-lmail]').forEach(
+    b =>
+      (b.onclick = () => {
+        passMailClaim(b.dataset.lmail);
+        mailSheet(true);
+      })
+  );
   document.querySelectorAll('[data-mail]').forEach(
     b =>
       (b.onclick = () => {
@@ -19116,7 +19985,19 @@ const PFRAMES = [
   { k: 'retire', n: '은퇴의 정원', d: '은퇴 10번', ok: () => (S.retires || 0) >= 10, tall: 1 },
   { k: 'village', n: '에르단 마을', d: '마을 Lv.10', ok: () => (S.vlv || 1) >= 10, tall: 1 }
 ];
-const pfTall = k => ((PFRAMES.find(f => f.k === k) || {}).tall ? ' tall' : '');
+/* 원정 일지 시즌 테두리: 시즌마다 따로(pass_시즌번호) 저장, 그림은 시즌 번호 % 6 색 */
+const pfPass = () => {
+  const ks = Object.keys((S && S.pfUnl) || {})
+    .filter(k => /^pass_\d+$/.test(k))
+    .map(k => +k.slice(5));
+  const cur = S && S.started ? passS().s : 0;
+  if (cur && !ks.includes(cur)) ks.push(cur);
+  return ks
+    .sort((a, b) => a - b)
+    .map(n => ({ k: passFrameK(n), n: '원정 일지 · 시즌 ' + n, d: '원정 일지 시즌 ' + n + ' 20단계(유료 줄)', ok: () => false, tall: 1, pass: 1 }));
+};
+const pfList = () => [...PFRAMES, ...pfPass()];
+const pfTall = k => ((pfList().find(f => f.k === k) || {}).tall ? ' tall' : '');
 const stat = (k, n) => {
     if (!S.stat) S.stat = {};
     S.stat[k] = (S.stat[k] || 0) + n;
@@ -19189,7 +20070,7 @@ function pfCheck() {
     }
   }
   const im = $('hFrame'),
-    src = 'assets/profile/frame_' + (S.pf || 'wood') + '.png';
+    src = pfSrc(S.pf || 'wood');
   if (im && !im.src.endsWith(src)) {
     im.src = src;
     im.className = 'pfr' + pfTall(S.pf || 'wood');
@@ -19251,7 +20132,7 @@ function profileSheet(keep) {
     ri = rankIdx(),
     nb = '<small>&nbsp;</small>';
   $('sheet').innerHTML =
-    `<div class="hdban" style="--hb:url(assets/ui/hd_profile.png)"><span>프로필</span></div><div class="pfhead"><div class="pfbig"><canvas id="pfCv"></canvas><img class="pfr${pfTall(cur)}" src="assets/profile/frame_${cur}.png" alt=""></div><div class="pfinfo"><b>카엘${d.badge ? `<img class="pfbd" data-k="${d.badge}" src="${bdSrc(d.badge)}" alt="" onerror="bdErr(this)">` : ''}</b><small class="pfnick">닉네임 <b>${esc(S.nick || '준비 중')}</b>${S.nickTemp ? ' <i>임시</i>' : ''}${sbOn() ? '<button class="buy" id="pfNick">' + (S.nickTemp || !S.nick ? '정하기' : '바꾸기') + '</button>' : ''}</small><small>${RANKS[ri].n} · 전투력 ${fmt(power())}</small><small>최고 영지 ${Math.min(S.best, MAXLAND)} · 은퇴 ${S.retires || 0}번 · 은퇴의 추억 ${S.memory || 0}개</small>${S.chOpen ? `<small>시련의 탑 최고 ${S.tower.top || 0}층</small>` : ''}</div></div>
+    `<div class="hdban" style="--hb:url(assets/ui/hd_profile.png)"><span>프로필</span></div><div class="pfhead"><div class="pfbig"><canvas id="pfCv"></canvas><img class="pfr${pfTall(cur)}" src="${pfSrc(cur)}" alt=""></div><div class="pfinfo"><b>카엘${d.badge ? `<img class="pfbd" data-k="${d.badge}" src="${bdSrc(d.badge)}" alt="" onerror="bdErr(this)">` : ''}</b><small class="pfnick">닉네임 <b>${esc(S.nick || '준비 중')}</b>${S.nickTemp ? ' <i>임시</i>' : ''}${sbOn() ? '<button class="buy" id="pfNick">' + (S.nickTemp || !S.nick ? '정하기' : '바꾸기') + '</button>' : ''}</small><small>${RANKS[ri].n} · 전투력 ${fmt(power())}</small><small>최고 영지 ${Math.min(S.best, MAXLAND)} · 은퇴 ${S.retires || 0}번 · 은퇴의 추억 ${S.memory || 0}개</small>${S.chOpen ? `<small>시련의 탑 최고 ${S.tower.top || 0}층</small>` : ''}</div></div>
  <p class="note pfhint">${dirty ? '고른 대로 위에 미리 보여요. <b>저장</b>을 눌러야 바뀌어요.' : '칸을 눌러 고른 뒤 <b>저장</b>을 누르세요.'}</p>
  <div class="sec">얼굴 <small>합류한 동료 · 내 사진</small></div>
  <div class="pfgrid fcgrid">${(() => {
@@ -19262,10 +20143,10 @@ function profileSheet(keep) {
    );
  })()}</div>
  ${photoData() ? `<p class="note fcnote">내 사진은 이 기기에서만 보여요. 다른 영주에게는 <b>${d.face === 'kael' ? '카엘' : COMP[d.face].n}</b> 얼굴이 보여요. <button class="lnk" id="fcNew">다른 사진</button> · <button class="lnk" id="fcDel">사진 지우기</button></p>` : ''}
- <div class="sec">테두리 <small>${PFRAMES.filter(f => pfHas(f.k)).length} / ${PFRAMES.length}</small></div>
- <div class="pfgrid">${PFRAMES.map(f => {
+ <div class="sec">테두리 <small>${pfList().filter(f => pfHas(f.k)).length} / ${pfList().length}</small></div>
+ <div class="pfgrid">${pfList().map(f => {
    const has = pfHas(f.k);
-   return `<button class="pfc${f.k === cur ? ' on' : ''}${has ? '' : ' lock'}${f.rare || f.rk ? ' rare' : ''}" data-pf="${f.k}"><span class="pv"><i></i><img class="pfr${pfTall(f.k)}" src="assets/profile/frame_${f.k}.png" alt="">${has ? '' : '<img class="lk" src="assets/ui/icon_lock.png" alt="잠김">'}${f.rk ? '<em class="rkt">랭킹</em>' : ''}</span><b>${f.n}</b>${nw['f_' + f.k] ? '<i class="nwb">NEW</i>' : ''}${has ? nb : '<small>🔒 ' + f.d + '</small>'}</button>`;
+   return `<button class="pfc${f.k === cur ? ' on' : ''}${has ? '' : ' lock'}${f.rare || f.rk ? ' rare' : ''}" data-pf="${f.k}"><span class="pv"><i></i><img class="pfr${pfTall(f.k)}" src="${pfSrc(f.k)}" alt="">${has ? '' : '<img class="lk" src="assets/ui/icon_lock.png" alt="잠김">'}${f.rk ? '<em class="rkt">랭킹</em>' : ''}</span><b>${f.n}</b>${nw['f_' + f.k] ? '<i class="nwb">NEW</i>' : ''}${has ? nb : '<small>🔒 ' + f.d + '</small>'}</button>`;
  }).join('')}</div>
  <div class="sec">대표 배지 <small>${BADGES.filter(b => bdHas(b.k)).length + attBds().length} / ${BADGES.length + attBds().length} · 한 번 더 누르면 떼기</small></div>
  <div class="pfgrid">${attBds()
@@ -19352,9 +20233,9 @@ function profileSheet(keep) {
     b =>
       (b.onclick = () => {
         const k = b.dataset.pf,
-          f = PFRAMES.find(x => x.k === k);
+          f = pfList().find(x => x.k === k);
         if (!pfHas(k))
-          return toast(f.rk ? f.d + '로 우편함에 도착해요' : f.rare ? '황금 고블린을 잡으면 아주 드물게 얻어요' : f.d + ' 달성 시 얻어요');
+          return toast(f.pass ? f.d + ' 보상이에요' : f.rk ? f.d + '로 우편함에 도착해요' : f.rare ? '황금 고블린을 잡으면 아주 드물게 얻어요' : f.d + ' 달성 시 얻어요');
         d.pf = k;
         re();
       })
@@ -19632,6 +20513,8 @@ function attHud() {
   if (on && attAutoDay && attAutoDay !== today()) {
     attAutoDay = today();
     if (attStatus() === 'ok') queue(attOpen);
+    passS();
+    queue(passWarn);
   }
 }
 /* 보상 아이콘·이름 */
@@ -19812,6 +20695,7 @@ function attClaim() {
   if (r === 'done') return toast('오늘은 이미 받았어요. 내일 자정에 또 만나요');
   if (r === 'back') return toast('날짜가 이상해요. 휴대폰 시간을 확인해 주세요.');
   attJust = r;
+  passAdd('att');
   haptic([30, 40, 70]);
   shopSig = '';
   eqSig = '';
@@ -20020,6 +20904,9 @@ function start(data) {
     if (rw) queue(() => toast(retRwText(rw)));
     chiefCheck();
   }
+  passS();
+  growCheck();
+  if (!isNew) queue(passWarn);
   attAutoDay = today();
   attPreload();
   if (!isNew && attEligible() && attStatus() === 'ok') queue(attOpen);

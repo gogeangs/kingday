@@ -293,6 +293,11 @@ class BattleSim {
   final GameCalc c;
   final KdRandom rng;
 
+  /// 원정 일지 점수·성장 패키지 연결 (웹 passAdd·passKill·growCheck). 화면 쪽이 GameActions 로 이어 줌
+  void Function(String src)? onPass;
+  void Function()? onKill;
+  void Function()? onGrow;
+
   /// 그림을 불러온 효과 (웹 fxOk). 앱은 모두 있음.
   final Set<String> fxLoaded;
 
@@ -421,6 +426,7 @@ class BattleSim {
       c.rwGive(r);
       c.towerS['top'] = f;
     }
+    onPass?.call('tower');
     c.pfCheck();
     final un = <String>[
       if (!had['tower25']! && c.bdHas('tower25')) '배지 「탑 25층」',
@@ -1570,6 +1576,7 @@ class BattleSim {
     s.gold = s.gold + g;
     final d = c.daily();
     d['kill'] = orNum(d['kill'], 0) + 1;
+    onKill?.call();
     addFloat(m.x, m.y - 30 * sc, '+${fmt(g)}', 0xFFFFC94A, 14);
     final nc = m.boss ? (GameCalc.isLord(c.fightSt()) ? 5 : 2) : (rng.next() < .003 ? 1 : 0);
     if (nc != 0) {
@@ -1610,6 +1617,8 @@ class BattleSim {
       }
       s.stage = math.min(maxLand + 1, cleared + 1);
       s.best = math.max(s.best, s.stage);
+      onPass?.call('boss');
+      onGrow?.call();
       s.wave = 0;
       seal = null;
       toast('$bn 처치');

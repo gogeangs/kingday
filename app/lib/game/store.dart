@@ -30,13 +30,22 @@ class IapStore {
     'starter': 'kd_starter',
     'chief': 'kd_chief',
     'sub': 'kd_sub_monthly',
+    // 상점·패스 (docs/content/SHOP.md): 원정 일지(소모성, 시즌마다) · 영주의 첫걸음(비소모성, 계정당 1번)
+    'pass': 'kd_pass',
+    'growth': 'kd_growth',
   };
+
+  /// 비소모성(한 번 사면 끝) 상품 — 스토어에 「소비됨」으로 알리지 않음
+  static const nonConsumable = {'sub', 'growth'};
 
   IapStore(this.g);
   final GameController g;
   final Map<String, ProductDetails> products = {};
   StreamSubscription<List<PurchaseDetails>>? _sub;
   bool available = false;
+
+  /// 아이폰인지 (App Store 「구매 복원」 버튼)
+  bool get isIos => Platform.isIOS;
 
   /// 스토어 가격 표시 (예: ₩1,200). 없으면 null → 화면은 웹 가격표를 씀
   String? price(String key) => products[ids[key]]?.price;
@@ -75,13 +84,28 @@ class IapStore {
     }
     final param = PurchaseParam(productDetails: p);
     try {
-      if (key == 'sub') {
+      if (nonConsumable.contains(key)) {
         await InAppPurchase.instance.buyNonConsumable(purchaseParam: param);
       } else {
         await InAppPurchase.instance.buyConsumable(purchaseParam: param);
       }
     } catch (_) {
       g.toast('결제를 시작하지 못했어요');
+    }
+  }
+
+  /// 구매 복원 (App Store 규칙: 비소모성 상품 「영주의 첫걸음」이 있으면 복원 버튼 필요).
+  /// 복원된 영수증도 서버(kd-iap)가 확인 — 이미 받은 계정이면 다시 주지 않음
+  Future<void> restore() async {
+    if (!available) {
+      g.toast('지금은 스토어에 연결할 수 없어요');
+      return;
+    }
+    try {
+      await InAppPurchase.instance.restorePurchases();
+      g.toast('구매 기록을 확인하고 있어요');
+    } catch (_) {
+      g.toast('구매 기록을 불러오지 못했어요');
     }
   }
 

@@ -97,6 +97,7 @@ extension GameChallengeX on GameController {
       if (calc.dunLeft() <= 0) return;
       final d = calc.dunDay();
       d['used'] = orNum(d['used'], 0) + 1;
+      act((a) => a.passAdd('dun'));
       sim.dunStart(k);
       save();
       _chShow();
@@ -118,6 +119,7 @@ extension GameChallengeX on GameController {
     if (calc.dunLeft() <= 0) return toast('오늘 입장권을 다 썼어요');
     final d = calc.dunDay();
     d['used'] = orNum(d['used'], 0) + 1;
+    act((a) => a.passAdd('dun'));
     final r = calc.dunReward(k, calc.dunL(), 1, false);
     calc.rwGive(r);
     save();

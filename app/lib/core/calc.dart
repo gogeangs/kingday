@@ -505,6 +505,15 @@ class GameCalc {
     return '${t.year}-${t.month}-${t.day}';
   }
 
+  /// 랭킹·원정 일지 시즌 번호 (웹 seasonNo: 2026-10-19 월 0시 KST부터 2주씩, 1시즌부터)
+  int seasonNo([num? t]) => (((t ?? now) - wSeas0) / 12096e5).floor() + 1;
+
+  /// 이번 시즌이 끝나는 때 (웹 seasonEnd)
+  num seasonEnd() => wSeas0 + seasonNo() * 12096e5;
+
+  /// 시즌 끝까지 남은 날 (소수)
+  num seasonLeft() => math.max(0, (seasonEnd() - now) / 864e5);
+
   /// daily(): 오늘의 기록 (날짜가 바뀌면 새로 시작)
   Map<String, dynamic> daily() {
     final d = asMap(s.raw['daily']);

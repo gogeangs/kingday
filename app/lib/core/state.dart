@@ -51,6 +51,12 @@ class GameState {
         'bless': {'d': '', 'used': 0, 'ad': 0, 'k': '', 'until': 0, 'opts': <dynamic>[]},
         'vlv': 1, 'ep': <String, dynamic>{}, 'walkers': {'d': '', 'ids': <dynamic>[]}, 'keepOrder': 1,
         'work': <String, dynamic>{}, 'workIntro': 0, 'workDot': '',
+        // 상점·패스 (docs/content/SHOP.md 7장): 원정 일지(시즌 패스) · 영주의 첫걸음(성장 패키지) — 웹과 같은 필드
+        'pass': {
+          's': 0, 'pt': 0, 'paid': 0, 'got': {'f': <dynamic>[], 'p': <dynamic>[]},
+          'day': {'d': '', 'src': <String, dynamic>{}, 'kc': 0}, 'intro': 0, 'mail': <dynamic>[],
+        },
+        'grow': {'buy': 0, 'got': <String, dynamic>{}},
         'v': 3,
       };
 
@@ -106,6 +112,24 @@ class GameState {
     if (!(sb != null && sb['forge'] != null) && f['bld'] is Map && asNum((f['bld'] as Map)['mine']) > 0) (f['bld'] as Map)['forge'] = 1;
     // 유니크 카드: 0 이상 정수 · 카엘 자리는 카엘 촌장만 저장 (웹 hydrate)
     f['ucard'] = math.max(0, asNum(f['ucard']).isFinite ? asNum(f['ucard']).floor() : 0);
+    // 원정 일지·성장 패키지: 안쪽 칸 모양이 깨졌으면 기본값 (웹 hydrate)
+    {
+      final p = f['pass'] as Map, p0 = freshMap(now)['pass'] as Map;
+      if (p['got'] is! Map) p['got'] = p0['got'];
+      final got = p['got'] as Map;
+      for (final w in const ['f', 'p']) {
+        final v = got[w];
+        got[w] = v is List ? [for (final x in v) if (x is num && x.isFinite && x == x.truncate() && x >= 0 && x < 20) x] : <dynamic>[];
+      }
+      if (p['day'] is! Map || (p['day'] as Map)['src'] is! Map) p['day'] = p0['day'];
+      p['mail'] = p['mail'] is List ? [for (final m in p['mail'] as List) if (m is Map && m['r'] is Map) m] : <dynamic>[];
+      for (final k in const ['s', 'pt', 'paid', 'intro']) {
+        final v = p[k];
+        if (v is! num || !v.isFinite) p[k] = 0;
+      }
+      final gr = f['grow'] as Map;
+      if (gr['got'] is! Map) gr['got'] = <String, dynamic>{};
+    }
     final pty = asMap(f['party']);
     if (pty != null && pty['kael'] != null && pty['kael'] != 'kael_chief') pty.remove('kael');
     final f0 = freshMap(now);

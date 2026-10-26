@@ -73,7 +73,9 @@ extension GameDotsX on GameController {
             (missions.every((m) => truthy(claim[m.k])) && !truthy(claim['all']) ? 1 : 0) +
             (c.subOn() && asMap(state.raw['sub'])?['last'] != c.today() ? 1 : 0);
         final a = acts.adKeys().any((k) => c.adLeft(k) > 0);
-        return n > 0 || a ? 's$n${a ? 'a' : ''}${c.today()}' : '';
+        // 원정 일지에 받을 보상 (웹 dotSig 'sh' 의 p)
+        final pn = truthy(state.raw['started']) ? acts.passCanN() : 0;
+        return n > 0 || a || pn > 0 ? 's$n${a ? 'a' : ''}${pn > 0 ? 'p${acts.passLv()}.$pn' : ''}${c.today()}' : '';
       default:
         return '';
     }

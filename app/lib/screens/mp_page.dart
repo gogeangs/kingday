@@ -9,9 +9,11 @@ import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
 
+import '../core/actions.dart';
 import '../core/calc.dart';
 import '../core/challenge.dart';
 import '../core/data.dart';
+import '../core/js.dart';
 import '../core/worldmap.dart';
 import '../game/controller.dart';
 import '../ui/fx.dart';
@@ -19,6 +21,7 @@ import '../ui/image_store.dart';
 import '../ui/theme.dart';
 import '../ui/widgets.dart';
 import 'challenge_sheet.dart';
+import 'pass_sheet.dart';
 import 'social_sheets.dart';
 
 const _rNode = ['erdan', 'dusk', 'canyon', 'frost', 'ash', 'capital'];
@@ -53,13 +56,32 @@ class MpPage extends StatelessWidget {
             ]),
           ),
           const SizedBox(width: 10),
-          Text.rich(
-            TextSpan(children: [
-              const TextSpan(text: '이번 회차 '),
-              TextSpan(text: '${c.landCount()}/$maxLand', style: const TextStyle(color: Color(0xFF9BE3A8), fontWeight: FontWeight.w700)),
-            ]),
-            style: KdText.body(12.5, color: const Color(0xFFD8D0EE)),
-          ),
+          Column(mainAxisSize: MainAxisSize.min, children: [
+            Text('이번 회차', style: KdText.body(11.5, color: const Color(0xFFD8D0EE), height: 1.15)),
+            Text('${c.landCount()}/$maxLand', style: KdText.body(12, color: const Color(0xFF9BE3A8), weight: FontWeight.w700, height: 1.15)),
+          ]),
+          const SizedBox(width: 8),
+          // 원정 일지 ○/20 (누르면 패스 창, docs/content/SHOP.md 4장)
+          if (truthy(s.raw['started']))
+            GestureDetector(
+              onTap: () => openPass(g),
+              child: Stack(clipBehavior: Clip.none, children: [
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
+                  decoration: BoxDecoration(color: const Color(0xFF2A2216), border: Border.all(color: const Color(0xFF6B5420)), borderRadius: BorderRadius.circular(10)),
+                  child: Column(mainAxisSize: MainAxisSize.min, children: [
+                    Text('원정 일지', style: KdText.body(9.5, color: const Color(0xFFD8C89A), height: 1.15)),
+                    Text('${g.acts.passLv()}/${GameActions.passSteps}', style: KdText.body(13, color: const Color(0xFFFFE08A), weight: FontWeight.w700, height: 1.15)),
+                  ]),
+                ),
+                if (g.acts.passCanN() > 0)
+                  Positioned(
+                    top: -3,
+                    right: -3,
+                    child: Container(width: 9, height: 9, decoration: const BoxDecoration(color: Color(0xFFFFD34A), shape: BoxShape.circle)),
+                  ),
+              ]),
+            ),
           const SizedBox(width: 8),
           GestureDetector(
             onTap: () => openRanking(g),

@@ -74,7 +74,7 @@ function op(o) {
     case 'harvre': return F('harvestAll')();
     // ── 피트의 상점 ──
     case 'daily': return w.run(`daily()[${q(a)}]=${b}`);
-    case 'mis': return w.run(`(()=>{const k=${q(a)},m=MISSIONS.find(x=>x.k===k);if(!misCan(m||null))return;daily().claim[k]=true;if(k==='all'){gainCard(5,'shop')}gainGem(m?m.r:MIS_ALL,m?m.n:'오늘의 할 일 완료')})()`);
+    case 'mis': return w.run(`(()=>{const k=${q(a)},m=MISSIONS.find(x=>x.k===k);if(!misCan(m||null))return;daily().claim[k]=true;passAdd(k==='all'?'misall':'mis');if(k==='all'){gainCard(5,'shop')}gainGem(m?m.r:MIS_ALL,m?m.n:'오늘의 할 일 완료')})()`);
     case 'gx': return F('buyGoldX')(a);
     case 'cp': return w.run(`(()=>{const c=CARDPK[${+a}];if(!CARDIDS().some(x=>cardOpen(x)&&recStar(x)<starMax(x)))return;if(!spendGem(c.gem))return;gainCards(c.n,'shop',c.n>=30?5:1)})()`);
     case 'pack': return F('buyPack')(F('PACKS').find((p) => p.k === a));
@@ -95,6 +95,20 @@ function op(o) {
     case 'attad': return F('attAdDo')(a);
     case 'attm': return w.run(`(()=>{const x=attA();x.ym=${q(a)};x.m=${+b}})()`);
     case 'tk': return w.run(`S.tickets[${q(a)}]=${+b}`);
+    // ── 상점·패스 (docs/content/SHOP.md): 원정 일지 · 영주의 첫걸음 ──
+    case 'started': return w.run('S.started=true');
+    case 'padd': return F('passAdd')(a);
+    case 'pkill': return w.run(`for(let i=0;i<${+a};i++)passKill()`);
+    case 'ppt': return w.run(`passS().pt=${+a}`);
+    case 'pclaim': return a ? F('passClaim')(a, +b) : F('passClaim')();
+    case 'pbuy': return F('buyPass')();
+    case 'popen': return F('passOpen')(+a);
+    case 'pmail': return F('passMailClaim')(a || null);
+    case 'pwarn': return F('passWarn')();
+    case 'best': return w.run(`S.best=${+a}`);
+    case 'grow': return F('buyGrow')();
+    case 'growgive': return F('growGive')();
+    case 'growchk': return F('growCheck')();
     default: throw new Error('모르는 조작 ' + o);
   }
 }
@@ -159,6 +173,16 @@ const CASES = {
   attendFresh: [base.fresh, ['att:2026-10-21', 'att:2026-10-22', 'att:2026-10-23', 'att:2026-10-24', 'att:2026-10-25', 'att:2026-10-26', 'att:2026-10-27', 'attad:2026-10-27']],
   // 카드 동료가 아직 없을 때 카드 묶음
   shopEarly: [base.fresh, ['gem:999', 'cp:0', 'cp:1', 'adcard', 'mis:all']],
+  // 원정 일지: 하루 한도(출석·할 일·영지·마물 1,000·탑·던전·주문) → 다음 날 → 무료 칸 받기 → 중간 구매(지난 유료 한꺼번에)·중복 구매 막기
+  //   → 20단계·시즌 테두리 → 시즌 바뀜(남은 보상 우편)·우편 받기 → 마감 3일 전 알림 → 지난 시즌 결제(이삭 200)
+  pass: [base.mid, ['padd:att', 'started', 'padd:att', 'padd:att', ...rep('padd:boss', 12), 'pkill:2500', ...rep('padd:mis', 4), 'padd:misall', 'padd:misall',
+    ...rep('padd:tower', 4), ...rep('padd:dun', 4), ...rep('padd:ord', 4), 'time:' + 24 * H, 'padd:att', 'padd:boss', 'ppt:750', 'pclaim:f:0', 'pclaim:p:1', 'pclaim:f:9',
+    'pbuy', 'pbuy', 'popen:1', 'pclaim', 'ppt:2000', 'pclaim', 'pclaim', 'time:' + 9 * 24 * H, 'pwarn', 'pwarn', 'time:' + 24 * H, 'padd:att',
+    'time:' + 14 * 24 * H, 'padd:boss', 'popen:2', 'ppt:640', 'pclaim:f:0', 'pclaim:p:3', 'time:' + 14 * 24 * H, 'padd:att', 'pmail', 'pmail', 'popen:2', 'pbuy', 'pbuy']],
+  // 카드 받을 동료가 없을 때: 유료 줄 카드 → 이삭 (1장당 3)
+  passFresh: [base.fresh, ['started', 'ppt:300', 'pbuy', 'pclaim']],
+  // 영주의 첫걸음: 영지 3까지는 안 보임 → 영지 35에서 사면 300+10·20·30 즉시 → 40·50 나중에 → 다 받으면 사라짐 · 두 번 못 삼
+  grow: [base.mid, ['started', 'best:3', 'grow', 'best:35', 'growchk', 'grow', 'grow', 'best:41', 'growchk', 'growchk', 'best:52', 'growchk', 'best:12', 'growchk', 'growgive']],
 };
 
 const out = { now: NOW, cases: {} };

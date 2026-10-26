@@ -3,6 +3,7 @@
 
     python3 tools/balance_sim.py 3 '{"hpG":1.2}'   # 3시간, BAL 값 덮어쓰기
     python3 tools/balance_sim.py village            # 마을 확장 밸런스 ①~④ (docs/content/VILLAGE.md 8장)
+    python3 tools/balance_sim.py pass               # 원정 일지 점수: 하루 2~3번 접속 유저 · 출석만 하는 유저 (docs/content/SHOP.md 8장)
 """
 import asyncio,sys,json
 from playwright.async_api import async_playwright
@@ -15,6 +16,12 @@ async def main():
     if H=='village':
       r=await pg.evaluate(open(SP+'/village_sim.js').read())
       print(json.dumps(r,ensure_ascii=False,indent=1));await b.close();return
+    if H=='pass':
+      r=await pg.evaluate(open(SP+'/pass_sim.js').read())
+      for who,v in r.items():
+        print(who,'| 20단계 끝낸 날',v['done20'],'| 14일째',v['lv14'],'단계',v['pt14'],'점')
+        for d in v['days']: print('  ',d)
+      await b.close();return
     js=open(SP+'/balance_sim.js').read().replace('HOURS',H).replace('TUNE',TUNE)
     r=await pg.evaluate(js)
     rec=r.pop('rec');tot=0;line=[]
