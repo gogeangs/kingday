@@ -56,6 +56,10 @@ class GameCalc {
   /// 카엘 촌장 스킬 「다 함께 울력」 공격·공속 배수 (웹 ULB). 전투 시뮬레이션이 [ulProbe] 로 알려 준다.
   ({num a, num s})? Function()? ulProbe;
   num get _ulA => ulProbe?.call()?.a ?? 1;
+
+  /// 그룩 「오크 고기 스튜」 최대 체력 배수 (웹 stewM). 전투 시뮬레이션이 [stewProbe] 로 알려 준다.
+  num Function()? stewProbe;
+  num get _stew => stewProbe?.call() ?? 1;
   num get _ulS => ulProbe?.call()?.s ?? 1;
 
   // ───────────── 영지 ─────────────
@@ -247,6 +251,9 @@ class GameCalc {
   /// 루시안 「왕실 납품」: 시장 주문 골드 +50~100% (웹 vpRoyal)
   num vpRoyal() => vpSt(lucId) != 0 ? 1 + vpPct(vpSt(lucId)) / 100 : 1;
 
+  /// 골디 「용의 보물 욕심」: 마물 처치 골드 +25~50% (웹 vpHoard)
+  num vpHoard() => vpSt(goldId) != 0 ? 1 + vpPct(vpSt(goldId)) / 200 : 1;
+
   // ───────────── 편성 ─────────────
   /// slotMember(j): 그 직업 자리에 출전 중인 동료
   String? slotMember(String j) {
@@ -290,7 +297,7 @@ class GameCalc {
     final fm = 1 + .06 * s.bldLv('mine'), m = allMul();
     return Stats(
       (10 + s.upLv('atk') * 3 + ga * fm) * (buff('atk') ? 1.2 : 1) * m * trAtk() * this.vBrave() * _ulA,
-      (100 + s.upLv('hp') * 20 + gh * fm) * (1 + .05 * s.bldLv('diner')) * m * trHp() * this.vHp(),
+      (100 + s.upLv('hp') * 20 + gh * fm) * (1 + .05 * s.bldLv('diner')) * m * trHp() * this.vHp() * _stew,
       (1 + s.upLv('spd') * .05) * (buff('spd') ? 1.2 : 1) * _ulS,
       (5 + s.upLv('crit')) / 100 + (buff('crit') ? .1 : 0),
     );
@@ -327,7 +334,7 @@ class GameCalc {
     final m = allMul() * cwMul(id) * starMul(id), g = math.pow(compGrow, l - 1), gs = gearSum();
     return Stats(
       (base.atk * g + gs.a * bless) * (1 + .08 * s.bldLv('apiary')) * (buff('atk') ? 1.2 : 1) * m * trAtk() * this.vBrave() * _ulA,
-      (base.hp * g + gs.h * bless) * (1 + .05 * s.bldLv('diner')) * m * trHp() * this.vHp(),
+      (base.hp * g + gs.h * bless) * (1 + .05 * s.bldLv('diner')) * m * trHp() * this.vHp() * _stew,
       base.aps! * (buff('spd') ? 1.2 : 1) * (_bake ? 1.3 : 1) * _ulS,
       .05 + (buff('crit') ? .1 : 0),
     );
@@ -361,6 +368,10 @@ class GameCalc {
   /// 유니크 루시안 (docs/companions/LUCIAN.md): 결제로만 합류, 요리사 자리
   static const lucId = 'lucian', lucWon = 5500;
   bool lucShop() => !owned(lucId);
+
+  /// 유니크 골디 (docs/companions/GOLDIE.md): 결제로만 합류, 양봉가 자리
+  static const goldId = 'goldie', goldWon = 5500;
+  bool goldShop() => !owned(goldId);
 
   /// 유니크 카드로 ★ 올릴 수 있는지 (웹 uqCan)
   bool uqCan(String id) => id == chiefId ? chiefCan() : owned(id) && recStar(id) < starMax(id) && ucard >= (starNeed(id) ?? 1 << 30);

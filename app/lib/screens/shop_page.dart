@@ -426,6 +426,18 @@ class _ShopPageState extends State<ShopPage> {
         ),
         const SizedBox(height: 10),
       ],
+      // 골디: 휴대폰에서는 스토어에 상품(kd_goldie)이 등록된 뒤에만 보임
+      if (g.calc.goldShop() && (!IapStore.enabled || g.iap.price('goldie') != null)) ...[
+        _shopRow(
+          img: 'assets/game/portraits/portrait_goldie_laugh.png',
+          title: '골디 맞이하기',
+          tag: '유니크',
+          hot: true,
+          info: const Text('유니크 동료 ★1 · 양봉가 자리에서 출전\n스킬 「황금 브레스」 · 마을 스킬 마물 처치 골드 +25%'),
+          btn: KdBuy(minWidth: 0, text: _price('goldie', GameCalc.goldWon), onTap: () => _buy('goldie', () => g.act((x) => x.buyGoldie()))),
+        ),
+        const SizedBox(height: 10),
+      ],
       if (g.calc.chiefShop()) ...[
         _shopRow(
           img: 'assets/game/portraits/portrait_kael_chief_laugh.png',
