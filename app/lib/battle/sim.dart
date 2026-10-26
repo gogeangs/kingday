@@ -35,6 +35,9 @@ class Member {
 
   /// 오스카 「밀랍 방패」: 남은 보호막 양 (웹 P[id].ward)
   num ward = 0;
+
+  /// 루시안 「불사조의 만찬」: 쓰러지면 한 번 체력 50%로 부활 (웹 P[id].phx)
+  bool phx = false;
 }
 
 /// 마물 한 마리 (웹 mons[] 원소)
@@ -177,6 +180,9 @@ class SkillTimers {
 
   /// 뚝딱이 「금 나와라 뚝딱」 처치 골드↑ 남은 시간·강화 (웹 SKX.dok·dokK)
   num dok = 0, dokK = 1;
+
+  /// 루시안 「불사조의 만찬」 부활 남은 시간 (웹 SKX.phx)
+  num phx = 0;
 
   /// 카엘 촌장 「다 함께 울력」 남은 시간·공격 배수·공속 배수 (웹 ULB)
   num ul = 0, ulA = 1, ulS = 1;
@@ -351,7 +357,7 @@ class BattleSim {
   int chRi() => ch == null ? 0 : ch!.mode == 'tower' ? 3 : dunDef(ch!.k).ri;
 
   void _chPartyReset() {
-    skx.shield = skx.honey = skx.feast = skx.guts = skx.sym = skx.lamp = skx.sap = skx.ward = skx.dok = 0;
+    skx.shield = skx.honey = skx.feast = skx.guts = skx.sym = skx.lamp = skx.sap = skx.ward = skx.dok = skx.phx = 0;
     skx.ul = 0;
     for (final id in c.members()) {
       final p = party[id];
@@ -1020,6 +1026,20 @@ class BattleSim {
         shakeT = .45;
         addFloat(pos[id]!, py[id]! - (heightOf(id) + 8) * sc, '골드↑', 0xFFFFD34A, 13);
         if (fxOk('skill_ttukttak')) spawnFx('skill_ttukttak', cx, cy - 20 * sc, 190 * sc, .9);
+      case 'lucian':
+        // 불사조의 만찬: 원정대 체력 모두 회복 + 8초(★3·★5에서 늘어남) 동안 쓰러지면 한 번 체력 50%로 부활
+        final k = c.skPow(id);
+        if (healOk()) {
+          skx.phx = 8 * k;
+          for (final j in c.members()) {
+            final q = party[j];
+            if (q == null || q.down) continue;
+            q.hp = c.stats(j).hp;
+            q.phx = true;
+            spawnFx('heal', pos[j]!, py[j]! - 24 * sc, 70 * sc, .6);
+          }
+        }
+        if (fxOk('skill_lucian')) _teamFx('skill_lucian', sc, pos, py, size: 200, dy: 70);
       case 'oscar':
         // 밀랍 방패: 8초 동안 최대 체력 25% 보호막
         final k = c.skPow(id);
@@ -1087,6 +1107,7 @@ class BattleSim {
     skx.sap = math.max(0, skx.sap - dt);
     skx.ward = math.max(0, skx.ward - dt);
     skx.dok = math.max(0, skx.dok - dt);
+    skx.phx = math.max(0, skx.phx - dt);
     skx.ul = math.max(0, skx.ul - dt);
     if (skx.sym > 0) {
       // 안단테 「꿀벌 교향곡」: 0.5초마다 벌떼가 모든 적을 쏨
@@ -1276,7 +1297,7 @@ class BattleSim {
   void resetFight(String msg) {
     if (ch != null) return _chLose();
     final dem = mons.any((m) => m.dem);
-    skx.shield = skx.honey = skx.feast = skx.guts = skx.sym = skx.lamp = skx.sap = skx.ward = skx.dok = 0;
+    skx.shield = skx.honey = skx.feast = skx.guts = skx.sym = skx.lamp = skx.sap = skx.ward = skx.dok = skx.phx = 0;
     skx.ul = 0;
     for (final id in c.members()) {
       party[id]!.hp = c.stats(id).hp;
@@ -1614,6 +1635,12 @@ class BattleSim {
           q.guts = false;
           q.hp = 1;
           addFloat(pos[tid]!, py[tid]! - (heightOf(tid) + 24) * sc, '불굴!', 0xFFFFD27A, 14);
+        } else if (skx.phx > 0 && q.phx) {
+          // 루시안 부활: 체력 50%로 한 번 되살아남
+          q.phx = false;
+          q.hp = c.stats(tid).hp * .5;
+          addFloat(pos[tid]!, py[tid]! - (heightOf(tid) + 24) * sc, '부활!', 0xFFFF9A3C, 14);
+          spawnFx('heal', pos[tid]!, py[tid]! - 24 * sc, 70 * sc, .6);
         } else {
           q.hp = 0;
           q.down = true;
@@ -1745,6 +1772,11 @@ class BattleSim {
           q.guts = false;
           q.hp = 1;
           addFloat(l.pos[id]!, l.py[id]! - (heightOf(id) + 24) * l.s, '불굴!', 0xFFFFD27A, 14);
+        } else if (skx.phx > 0 && q.phx) {
+          q.phx = false;
+          q.hp = c.stats(id).hp * .5;
+          addFloat(l.pos[id]!, l.py[id]! - (heightOf(id) + 24) * l.s, '부활!', 0xFFFF9A3C, 14);
+          spawnFx('heal', l.pos[id]!, l.py[id]! - 24 * l.s, 70 * l.s, .6);
         } else {
           q.hp = 0;
           q.down = true;

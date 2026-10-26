@@ -660,10 +660,9 @@ class GameController extends ChangeNotifier {
         case ActRecruitScene(:final id):
           final rc = recruits[id]!;
           scene('동료 합류', rc.title, rc.lines, rc.ok, illust: 'join', illustFace: id);
-        case ActTtukScene():
-          final rc = recruits[GameCalc.ttukId]!;
-          scene('유니크 동료', rc.title, rc.lines, rc.ok,
-              altLabel: '나중에', illust: 'join', illustFace: GameCalc.ttukId, onGo: () => act((a) => a.setMember('miner', GameCalc.ttukId)));
+        case ActUqScene(:final id):
+          final rc = recruits[id]!;
+          scene('유니크 동료', rc.title, rc.lines, rc.ok, altLabel: '나중에', illust: 'join', illustFace: id, onGo: () => act((a) => a.setMember(rc.job, id)));
         case ActChiefScene(:final src):
           scene(
               '유니크 동료',

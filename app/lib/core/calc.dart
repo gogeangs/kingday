@@ -244,6 +244,9 @@ class GameCalc {
   /// 뚝딱이 「도깨비 살림」: 방치 보상 골드 +25~50% (웹 vpDok)
   num vpDok() => vpSt(ttukId) != 0 ? 1 + vpPct(vpSt(ttukId)) / 200 : 1;
 
+  /// 루시안 「왕실 납품」: 시장 주문 골드 +50~100% (웹 vpRoyal)
+  num vpRoyal() => vpSt(lucId) != 0 ? 1 + vpPct(vpSt(lucId)) / 100 : 1;
+
   // ───────────── 편성 ─────────────
   /// slotMember(j): 그 직업 자리에 출전 중인 동료
   String? slotMember(String j) {
@@ -354,6 +357,10 @@ class GameCalc {
   // ───────────── 유니크 동료 뚝딱이 (docs/companions/TTUKTTAK.md): 결제로만 합류, 광부 자리, 별은 유니크 카드 ─────────────
   static const ttukId = 'ttukttak', ttukWon = 5500;
   bool ttukShop() => !owned(ttukId);
+
+  /// 유니크 루시안 (docs/companions/LUCIAN.md): 결제로만 합류, 요리사 자리
+  static const lucId = 'lucian', lucWon = 5500;
+  bool lucShop() => !owned(lucId);
 
   /// 유니크 카드로 ★ 올릴 수 있는지 (웹 uqCan)
   bool uqCan(String id) => id == chiefId ? chiefCan() : owned(id) && recStar(id) < starMax(id) && ucard >= (starNeed(id) ?? 1 << 30);

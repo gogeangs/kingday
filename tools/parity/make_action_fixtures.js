@@ -112,6 +112,8 @@ function op(o) {
     // ── 유니크 뚝딱이 ──
     case 'tbuy': return F('buyTtuk')();
     case 'uqup': return F('uqUp')(a);
+    // ── 유니크 루시안 ──
+    case 'lbuy': return F('buyLucian')();
     default: throw new Error('모르는 조작 ' + o);
   }
 }
@@ -172,6 +174,12 @@ const CASES = {
   // 유니크 뚝딱이: 상점 구매(합류 ★1) → 두 번 사기 막힘 → 바로 출전 → 유니크 카드로 ★ 올리기(카엘 촌장과 같은 카드) → 방치 골드 마을 스킬
   ttuk: [base.mid, ['ensure', 'gold:1e12', 'tbuy', 'tbuy', 'set:miner:ttukttak', 'ucard:150', 'uqup:ttukttak', 'uqup:ttukttak', 'uqup:ttukttak', 'uqup:ttukttak',
     'lv:ttukttak', 'lv:ttukttak', 'auto', 'time:' + 3 * H]],
+  // 유니크 루시안: 상점 구매(합류 ★1) → 두 번 사기 막힘 → 바로 출전(요리사) → 유니크 카드로 ★ 올리기
+  lucian: [base.mid, ['ensure', 'gold:1e12', 'lbuy', 'lbuy', 'set:cook:lucian', 'ucard:60', 'uqup:lucian', 'uqup:lucian',
+    'lv:lucian', 'lv:lucian', 'auto', 'time:' + 3 * H]],
+  // 루시안 마을 스킬 「왕실 납품」: 시장 주문 골드 +50%
+  lucord: [base.vill, ['lbuy', 'items:ore:999', 'items:honey:999', 'items:wheat:999', 'items:pumpkin:999', 'items:fish:500', 'items:egg:50', 'items:milk:60',
+    'otick', 'odeliver:0', 'odeliver:1', 'odeliver:2', 'ucard:20', 'uqup:lucian', 'odeliver:3', 'odeliver:4']],
   // 출석체크: 7일 판 반복·한달 판 초기화·건너뛰기·같은 날·날짜 되돌리기·광고 2배·큰 보상(7·14·21·28)·배지·무료권 사용
   attend: [base.mid, ['att:2026-10-21', 'att:2026-10-22', 'att:2026-10-23', 'att:2026-10-24', 'att:2026-10-25', 'att:2026-10-26', 'att:2026-10-27',
     'attad:2026-10-27', 'attad:2026-10-27', 'att:2026-10-27', 'att:2026-10-29', 'att:2026-10-28', 'att:2026-11-1', 'att:2026-11-2',

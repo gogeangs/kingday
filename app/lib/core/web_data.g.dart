@@ -431,6 +431,14 @@ const wComp = {
     'base': {'atk': 12, 'hp': 240, 'aps': 0.8},
     'per': {'atk': 3.4, 'hp': 47},
   },
+  'lucian': {
+    'n': '루시안',
+    'role': '요리사 · 불사조 만찬',
+    'desc': '불사조의 불로만 요리한다는 전설의 궁정 요리장. 어깨에는 늘 아기 불사조 피피가 앉아 있다. 자신만만하고 장난기 많아, 덕배·베르나르와 「왕국 최고 요리사」 자리를 두고 늘 다툰다.',
+    'join': '피트의 상점에서 맞이할 수 있어요 (유니크)',
+    'base': {'atk': 6, 'hp': 115, 'aps': 0.85},
+    'per': {'atk': 1.95, 'hp': 23},
+  },
   'oscar': {
     'n': '오스카',
     'role': '양봉가 · 보호막',
@@ -489,6 +497,7 @@ const wJob = {
   'sophie': 'cook',
   'oscar': 'keeper',
   'ttukttak': 'miner',
+  'lucian': 'cook',
 };
 
 const wJobn = {'miner': '광부', 'fisher': '어부', 'keeper': '양봉가', 'cook': '요리사'};
@@ -535,6 +544,7 @@ const wHeight = {
   'sophie': 64,
   'oscar': 58,
   'ttukttak': 74,
+  'lucian': 64,
 };
 
 const wRecruits = {
@@ -884,6 +894,20 @@ const wRecruits = {
     ],
     'ok': '바로 출전',
   },
+  'lucian': {
+    'job': 'cook',
+    'title': '불사조와 함께 온 궁정 요리장 루시안',
+    'lines': [
+      '마을 부엌 아궁이에서 불길이 확 치솟더니, 불꽃 머리의 요리사가 국자를 빙글 돌리며 걸어 나왔다. 어깨 위 작은 불사조가 「삐요!」 하고 울었다.',
+      'm:루시안@laugh|왕국 최고 요리사가 도착했다! 이 녀석은 피피. 불사조의 불로 끓인 요리는 한 숟갈이면 기운이 펄펄 나지.',
+      'm:덕배|최고 요리사? 허허, 수라간 손맛을 보고도 그 말이 나올까.',
+      'm:베르나르|궁정 요리라면 나도 한마디 하지. 칼질부터 보여 주시오.',
+      'k@surprised:…부엌에서 싸우지만 말아 주세요.',
+      'sys:유니크 동료 · 요리사 자리에서 출전해요. 별은 유니크 카드로 올려요.',
+      'sys:마을 스킬 「왕실 납품」 시장 주문 골드 +50% (출전 안 해도 적용)',
+    ],
+    'ok': '바로 출전',
+  },
 };
 
 const wStarNeed = [30, 20, 40, 80, 150];
@@ -924,6 +948,7 @@ const wGrade = {
   'sophie': 'epic',
   'oscar': 'epic',
   'ttukttak': 'unique',
+  'lucian': 'unique',
   'kael_chief': 'unique',
 };
 
@@ -985,6 +1010,7 @@ const wVpas = {
   'elm': {'n': '천 년 나무의 숨결'},
   'hagrin': {'n': '거인의 손힘'},
   'ttukttak': {'n': '도깨비 살림'},
+  'lucian': {'n': '왕실 납품'},
   'kael_chief': {'n': '새벽 종소리'},
 };
 
@@ -1183,6 +1209,13 @@ const wSkills = {
     'd': '방망이로 땅을 내리쳐 모든 적에게 공격력 3.5배 피해 + 10초 동안 마물 처치 골드 +50% (★3·★5에서 강화)',
     'line': '금 나와라, 뚝딱!',
     'need': 26,
+    'face': 'laugh',
+  },
+  'lucian': {
+    'n': '불사조의 만찬',
+    'd': '원정대 체력을 모두 채우고, 8초 동안 쓰러지면 한 번 체력 50%로 되살아남 (★3·★5에서 시간 증가)',
+    'line': '피피, 불 올려! 오늘의 특별 요리다!',
+    'need': 30,
     'face': 'laugh',
   },
   'oscar': {
@@ -1593,6 +1626,7 @@ const wSprites = {
   'sophie': {'idle': 4, 'walk': 6, 'attack': 4, 'hit': 2, 'h': 64},
   'oscar': {'idle': 4, 'walk': 6, 'attack': 4, 'hit': 2, 'h': 58},
   'ttukttak': {'idle': 4, 'walk': 6, 'attack': 4, 'hit': 2, 'h': 74},
+  'lucian': {'idle': 4, 'walk': 6, 'attack': 4, 'hit': 2, 'h': 64},
 };
 
 const wSprConst = {'frame': 256, 'foot': 250, 'fig': 171};
@@ -1812,6 +1846,7 @@ const wFxdef = {
   'skill_sophie': 4,
   'skill_oscar': 4,
   'skill_ttukttak': 4,
+  'skill_lucian': 4,
   'net': 2,
   'boss_seal': 4,
 };
@@ -1852,6 +1887,7 @@ const wForm = {
   'sophie': [0.1, 0.58],
   'oscar': [0.17, 0.16],
   'ttukttak': [0.58, 0.72],
+  'lucian': [0.1, 0.58],
 };
 
 const wGobRare = {'badge': 0.005, 'frame': 0.002};
@@ -1974,6 +2010,7 @@ const wWline = {
   'sophie': '반죽은 마법처럼 부풀려 줄게요!',
   'oscar': '벌통 경비는 기사의 의무!',
   'ttukttak': '김 서방, 쇠는 내가 두드리지!',
+  'lucian': '피피, 불 세기 좀 줄여! …아니, 더 올려!',
 };
 
 const wVep = {

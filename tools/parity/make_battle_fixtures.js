@@ -50,6 +50,8 @@ const CASES = [
   ['epics2', withTut(base.late, { stage: 84, best: 86, wave: 3, rec: Object.assign({}, base.late.rec || {}, { sophie: 3, oscar: 5, naia: 3, hagrin: 3 }), lv: Object.assign({}, base.late.lv || {}, { sophie: 50, oscar: 50, naia: 50, hagrin: 50 }), party: { fisher: 'naia', keeper: 'oscar', cook: 'sophie', miner: 'hagrin' } }), 200, 240],
   // 유니크 뚝딱이(금 나와라 뚝딱: 모든 적 3.5배 + 처치 골드↑) ★3
   ['ttuk', withTut(base.late, { stage: 70, best: 72, wave: 2, rec: Object.assign({}, base.late.rec || {}, { ttukttak: 3 }), lv: Object.assign({}, base.late.lv || {}, { ttukttak: 60 }), party: Object.assign({}, base.late.party || {}, { miner: 'ttukttak' }) }), 200, 120],
+  // 유니크 루시안(불사조의 만찬: 체력 모두 회복 + 쓰러지면 한 번 부활) ★3 — 피해를 받게 어려운 영지
+  ['lucian', withTut(base.late, { stage: 86, best: 88, wave: 3, rec: Object.assign({}, base.late.rec || {}, { lucian: 3, naia: 3, hagrin: 3, oscar: 3 }), lv: Object.assign({}, base.late.lv || {}, { lucian: 50, naia: 50, hagrin: 50, oscar: 50 }), party: { fisher: 'naia', keeper: 'oscar', cook: 'lucian', miner: 'hagrin' } }), 200, 240],
   // 유니크 카엘 촌장 ★3 (다 함께 울력)
   ['chief', withTut(base.chief, { stage: 66, best: 68, wave: 2 }), 200, 120],
 ];

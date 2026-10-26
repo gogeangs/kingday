@@ -333,6 +333,7 @@ class Online {
       if (asNum(r['sub_days']) > 0) g.act((a) => a.grantSub(count: true, days: asNum(r['sub_days'])));
       if (truthy(r['chief'])) g.act((a) => a.grantChief());
       if (truthy(r['ttuk'])) g.act((a) => a.grantTtuk());
+      if (truthy(r['lucian'])) g.act((a) => a.grantLucian());
       // 상점·패스 (docs/content/SHOP.md): 원정 일지 {pass: 시즌} · 영주의 첫걸음 {grow: 1}
       if (truthy(r['pass'])) g.act((a) => a.passOpen(asNum(r['pass']).toInt()));
       if (truthy(r['grow'])) g.act((a) => a.growGive());

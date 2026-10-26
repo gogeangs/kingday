@@ -105,6 +105,14 @@ void main() {
       expect(g.calc.slotMember('miner'), 'ttukttak');
       expect(find.text('뚝딱이 맞이하기'), findsNothing);
 
+      // 유니크 루시안(₩5,500, 뚝딱이 다음 줄): 합류 장면 → 바로 출전(요리사) → 상점에서 사라짐
+      await press('₩5,500');
+      await frames(3);
+      expect(find.text('불사조와 함께 온 궁정 요리장 루시안'), findsOneWidget);
+      await press('바로 출전');
+      expect(g.calc.slotMember('cook'), 'lucian');
+      expect(find.text('루시안 맞이하기'), findsNothing);
+
       // 정기 배송: 시작하면 오늘 배송까지 받음
       await press('₩5,500');
       expect(find.text('받음'), findsWidgets);

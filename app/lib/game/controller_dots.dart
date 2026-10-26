@@ -7,6 +7,7 @@ extension GameDotsX on GameController {
     final parts = <String>[
       if (calc.chiefCan()) 'u${calc.recStar(GameCalc.chiefId)}',
       if (calc.uqCan(GameCalc.ttukId)) 't${calc.recStar(GameCalc.ttukId)}',
+      if (calc.uqCan(GameCalc.lucId)) 'l${calc.recStar(GameCalc.lucId)}',
       for (final id in calc.cardReady()) 'c$id${calc.recStar(id)}',
     ];
     for (final j in jobSlots) {

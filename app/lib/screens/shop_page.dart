@@ -410,6 +410,17 @@ class _ShopPageState extends State<ShopPage> {
         ),
         const SizedBox(height: 10),
       ],
+      if (g.calc.lucShop()) ...[
+        _shopRow(
+          img: 'assets/game/portraits/portrait_lucian_laugh.png',
+          title: '루시안 맞이하기',
+          tag: '유니크',
+          hot: true,
+          info: const Text('유니크 동료 ★1 · 요리사 자리에서 출전\n스킬 「불사조의 만찬」 · 마을 스킬 주문 골드 +50%'),
+          btn: KdBuy(minWidth: 0, text: _price('lucian', GameCalc.lucWon), onTap: () => _buy('lucian', () => g.act((x) => x.buyLucian()))),
+        ),
+        const SizedBox(height: 10),
+      ],
       if (g.calc.chiefShop()) ...[
         _shopRow(
           img: 'assets/game/portraits/portrait_kael_chief_laugh.png',
