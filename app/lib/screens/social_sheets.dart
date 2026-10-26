@@ -1083,6 +1083,7 @@ Future<void> showCardReveal(BuildContext ctx, GameController g, List<(String, in
     if (gold > 0) g.toast('동료 카드 → 골드 +${fmt(gold)} (별을 다 채운 동료)');
     return Future.value();
   }
+  g.toastClear();
   return showKdSheet<void>(ctx, builder: (sc) => _CardReveal(g, m, title, gold, again));
 }
 
@@ -1278,6 +1279,7 @@ class _CardRevealState extends State<_CardReveal> with SingleTickerProviderState
               primary: true,
               onTap: () {
                 final i = widget.again!;
+                g.toastClear();
                 Navigator.of(context).pop();
                 g.act((x) => x.buyCardPack(i));
               },

@@ -6986,7 +6986,7 @@ const COMP = {
     desc: '갈대 강변의 씩씩한 그물 어부 소녀. 하랄을 "할배"라 부르며 따라다닌다. 그물을 던져 마물을 느리게 만든다.',
     join: '동료 카드 30장을 모으면 합류',
     base: { atk: 9, hp: 96, aps: 1 },
-    per: { atk: 3, hp: 19 }
+    per: { atk: 3.15, hp: 20 }
   },
   makrye: {
     n: '막례',
@@ -7033,8 +7033,8 @@ const COMP = {
     role: '어부 · 밀치기',
     desc: '넬라의 남동생. 누나를 따라 원정대에 몰래 따라온 덤벙대는 뱃사공 소년. 자기 키보다 긴 노로 파도를 가른다.',
     join: '동료 카드 30장을 모으면 합류',
-    base: { atk: 10, hp: 92, aps: 0.9 },
-    per: { atk: 3.1, hp: 18 }
+    base: { atk: 10, hp: 95, aps: 0.9 },
+    per: { atk: 3.2, hp: 19 }
   },
   kara: {
     n: '카라',
@@ -7129,8 +7129,8 @@ const COMP = {
     role: '어부 · 부활',
     desc: '마족에게 바다를 빼앗기고 뭍으로 올라온 인어 공주. 걸을 수 없어 물통 수레를 타고 다니는데, 수레는 늘 하랄이 투덜대며 민다. 뭍의 모든 것이 신기하다.',
     join: '동료 카드 30장을 모으면 합류',
-    base: { atk: 11, hp: 125, aps: 0.8 },
-    per: { atk: 3.4, hp: 25 }
+    base: { atk: 12, hp: 130, aps: 0.8 },
+    per: { atk: 3.6, hp: 26 }
   },
   bernard: {
     n: '베르나르',
@@ -7802,6 +7802,7 @@ function cardReveal(list, title, gold, keep, again) {
     return st < starMax(id) && n >= starNeed(id);
   };
   const ids = Object.keys(m).sort((a, b) => (canOf(b) ? 1 : 0) - (canOf(a) ? 1 : 0) || gr(a).w - gr(b).w);
+  if (ids.length && !keep) toastClear();
   if (!ids.length) {
     if (gold) toast('동료 카드 → 골드 +' + fmt(gold) + ' (별을 다 채운 동료)');
     return;
@@ -7846,7 +7847,11 @@ function cardReveal(list, title, gold, keep, again) {
     setTimeout(() => fa.isConnected && fa.remove(), (0.95 + ids.length * 0.35) * 1000);
   }
   const ag = $('crAgain');
-  if (ag) ag.onclick = () => again.go();
+  if (ag)
+    ag.onclick = () => {
+      toastClear();
+      again.go();
+    };
   $('sheet')
     .querySelectorAll('[data-rup]')
     .forEach(
@@ -12109,6 +12114,15 @@ function toast(m) {
   }
   toastShow(m);
 }
+/* 쌓인 알림 모두 지우기 — 카드 결과 창처럼 창 안에 같은 내용이 있을 때 (2026-10-25: 「또 뽑기」 때 앞 알림이 이삭 수를 가림) */
+function toastClear() {
+  toastHold = [];
+  toastQ.length = 0;
+  clearTimeout(toastT);
+  toastCur = null;
+  const t = $('toast');
+  if (t) t.style.opacity = 0;
+}
 let eqSig = '',
   upSig = '',
   boxSig = '';
@@ -14913,8 +14927,8 @@ function chCheck() {
             'm:브론|탑 말고 내 폐광도 좀 봐 줘. 요일마다 광석이 쏟아진다고.',
             'sys:지도 탭의 「⚔ 도전」에서 시련의 탑과 요일 던전에 들어갈 수 있어요.'
           ],
-          '나중에 (지도에서 보기)',
-          { label: '도전 보러 가기', go: mpDot, no: () => chSheet() }
+          '도전 보러 가기',
+          { label: '나중에', go: () => chSheet(), no: mpDot }
         )
       )
   });

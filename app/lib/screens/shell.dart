@@ -288,10 +288,14 @@ class _Tabs extends StatelessWidget {
     final on = g.tab == t;
     Widget icon = kdImg('assets/game/ui/${t.icon}.png', w: 38, h: 38);
     icon = on ? Transform.scale(scale: 1.08, child: icon) : filtered(icon, sat: .75, bright: .9);
+    // 칸 전체를 누를 수 있고, 아이콘·글자는 칸 가운데 (2026-10-26 「하단 메뉴가 왼쪽으로 치우침」)
     return GestureDetector(
+      behavior: HitTestBehavior.opaque,
       onTap: () => g.setTab(t),
-      child: Stack(clipBehavior: Clip.none, children: [
+      child: Stack(clipBehavior: Clip.none, alignment: Alignment.topCenter, children: [
         Container(
+          width: double.infinity,
+          alignment: Alignment.center,
           padding: const EdgeInsets.symmetric(vertical: 3),
           decoration: BoxDecoration(
             gradient: on ? const LinearGradient(colors: [Color(0xFF5A4515), Color(0xFF2A2010)], begin: Alignment.topCenter, end: Alignment.bottomCenter) : null,
@@ -305,7 +309,19 @@ class _Tabs extends StatelessWidget {
           ]),
         ),
         // 점 규칙(UX 점검 10): 원정대·단련·지도(할 수 있는 일)는 금색, 마을(받을 보상)은 빨강
-        if (dot) Positioned(top: n > 1 ? 0 : 3, right: n > 1 ? 4 : 10, child: _Dot(opt: t == GameTab.pt || t == GameTab.up || t == GameTab.mp, n: n)),
+        // 칸이 넓어져도 점은 아이콘 오른쪽 위 (가운데 기준으로 오른쪽으로 밀기)
+        if (dot)
+          Positioned.fill(
+            child: IgnorePointer(
+              child: Align(
+                alignment: Alignment.topCenter,
+                child: Padding(
+                  padding: EdgeInsets.only(left: n > 1 ? 40 : 30, top: n > 1 ? 0 : 3),
+                  child: _Dot(opt: t == GameTab.pt || t == GameTab.up || t == GameTab.mp, n: n),
+                ),
+              ),
+            ),
+          ),
       ]),
     );
   }

@@ -337,6 +337,15 @@ class GameController extends ChangeNotifier {
     Timer(const Duration(milliseconds: 200), () => h.forEach(toast));
   }
 
+  /// 쌓인 알림을 모두 지움 — 카드 결과 창처럼 창 안에 같은 내용이 있을 때
+  /// (2026-10-25 제보: 「또 뽑기」 때 앞 뽑기 알림이 이삭 수를 가림)
+  void toastClear() {
+    _toastHold.clear();
+    _toastQ.clear();
+    _toastTimer?.cancel();
+    toastMsg.value = null;
+  }
+
   void toast(String m) {
     if (sceneOn && modalOpen) {
       if (!_toastHold.contains(m)) _toastHold.add(m);
@@ -624,6 +633,14 @@ class GameController extends ChangeNotifier {
         case ActCardReveal(:final got, :final title, :final gold, :final again):
           sound('gem');
           queue((ctx) => showCardReveal(ctx, this, got, title, gold: gold, again: again));
+        case ActPackGot(:final gem, :final first, :final ucard):
+          // 결제 직후: 알림은 「구입 완료」 창 뒤에서 사라져 버려서 창으로 (2026-10-26)
+          sound('gem');
+          haptic(const [20, 30, 40]);
+          scene('결제 완료', '황금 이삭 +${fmt(gem)}', [
+            'sys:황금 이삭 ${fmt(gem)}개를 받았어요.${first ? ' 첫 구매라서 2배로 드렸어요.' : ''}${ucard > 0 ? ' 유니크 카드 $ucard장도 함께 받았어요.' : ''}',
+            'm:피트|고마워, 형씨! 이삭은 상단 바에서 바로 확인해 봐.',
+          ], '확인');
         case ActLaterToast(:final msg, :final ms):
           Timer(Duration(milliseconds: ms), () => toast(msg));
         case ActStarter(:final it, :final cur):
