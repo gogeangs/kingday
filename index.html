@@ -7164,6 +7164,14 @@ const COMP = {
     base: { atk: 5, hp: 82, aps: 0.9 },
     per: { atk: 1.7, hp: 16.5 }
   },
+  ttukttak: {
+    n: '뚝딱이',
+    role: '광부 · 금 나와라',
+    desc: '마족이 산을 파헤치자 화가 나서 산에서 내려온 도깨비 대장장이. 장난 좋아하는 허당이지만 의리는 산만큼 크다. 브리다와는 대장장이 맞수, 브론에게는 씨름을 걸었다가 늘 진다. 메밀묵 앞에서는 꼼짝 못 한다.',
+    join: '피트의 상점에서 맞이할 수 있어요 (유니크)',
+    base: { atk: 12, hp: 240, aps: 0.8 },
+    per: { atk: 3.4, hp: 47 }
+  },
   oscar: {
     n: '오스카',
     role: '양봉가 · 보호막',
@@ -7220,7 +7228,8 @@ const JOB = {
     elm: 'keeper',
     hagrin: 'miner',
     sophie: 'cook',
-    oscar: 'keeper'
+    oscar: 'keeper',
+    ttukttak: 'miner'
   },
   JOBN = { miner: '광부', fisher: '어부', keeper: '양봉가', cook: '요리사' };
 const JSLOT = ['miner', 'kael', 'fisher', 'keeper', 'cook'],
@@ -7557,6 +7566,20 @@ const RECRUITS = {
         'sys:양봉가 자리에서 리엘 대신 출전할 수 있어요.'
       ],
       ok: '잘 부탁드려요, 오스카 경'
+    },
+    ttukttak: {
+      job: 'miner',
+      title: '산에서 내려온 도깨비 뚝딱이',
+      lines: [
+        '푸른 도깨비불이 둥실둥실 떠오르더니, 삿갓을 쓴 커다란 도깨비가 방망이를 어깨에 메고 나타났다.',
+        'm:뚝딱이@laugh|흐하하! 김 서방, 반갑네! 마족 놈들이 우리 산을 파헤쳐서 혼쭐내러 내려왔지!',
+        'k@surprised:…저 김 서방 아닌데요. 카엘인데요.',
+        'm:브리다|흥, 도깨비 방망이로 쇠를 두드린다고? 대장장이 솜씨라면 내가 한 수 위야.',
+        'm:브론|또 씨름하자는 거면 사양이다. …아니, 이번엔 내가 이긴다!',
+        'sys:유니크 동료 · 광부 자리에서 출전해요. 별은 유니크 카드로 올려요.',
+        'sys:마을 스킬 「도깨비 살림」 방치 보상 골드 +25% (출전 안 해도 적용)'
+      ],
+      ok: '바로 출전'
     }
   },
   STAR_NEED = [30, 20, 40, 80, 150],
@@ -7595,6 +7618,7 @@ const GRADE = {
   hagrin: 'legend',
   sophie: 'epic',
   oscar: 'epic',
+  ttukttak: 'unique',
   kael_chief: 'unique'
 };
 const GR = {
@@ -7602,7 +7626,7 @@ const GR = {
   rare: { n: '희귀', c: '#5aa8ff', max: 4, mul: 1.1, w: 30, need: [30, 20, 40, 80], fr: 'rare' },
   epic: { n: '영웅', c: '#b07bff', max: 5, mul: 1.2, w: 12, need: [30, 30, 60, 120, 200], fr: 'epic' },
   legend: { n: '전설', c: '#ffc23a', max: 5, mul: 1.35, w: 3, need: [30, 40, 80, 160, 300], fr: 'legendary' },
-  unique: { n: '유니크', c: '#3ee08f', max: 5, mul: 1, w: 0, need: [0, 20, 40, 80, 150], fr: 'unique' }
+  unique: { n: '유니크', c: '#3ee08f', max: 5, mul: 1.4, w: 0, need: [0, 20, 40, 80, 150], fr: 'unique' }
 }; /* 유니크: 결제·은퇴로만 얻고, 별은 유니크 카드로만(카드 뽑기에 안 나옴) */
 /* 전설 동료의 마을 스킬: 합류만 하면(출전하지 않아도) 늘 적용, 별이 오를수록 강해짐 */
 const VPAS = {
@@ -7614,6 +7638,7 @@ const VPAS = {
   bernard: { n: '궁정 연회', d: st => '성주·군단장 처치 골드 +' + vpPct(st) + '%' },
   elm: { n: '천 년 나무의 숨결', d: st => '작물이 자라는 속도 +' + vpPct(st) + '%' },
   hagrin: { n: '거인의 손힘', d: st => '장비 강화 광석 −' + Math.round(vpPct(st) / 2) + '%' },
+  ttukttak: { n: '도깨비 살림', d: st => '방치 보상 골드 +' + Math.round(vpPct(st) / 2) + '%' },
   kael_chief: { n: '새벽 종소리', d: st => '마을 건물 생산 +' + chPct(st) + '%' }
 };
 const vpPct = st => Math.round(50 + (st - 1) * 12.5);
@@ -7631,7 +7656,8 @@ const vpMine = () => (vpSt('brida') ? 1 + vpPct(vpSt('brida')) / 100 : 1),
   vpCook = () => (vpSt('deokbae') ? 1 + vpPct(vpSt('deokbae')) / 100 : 1),
   vpFeast = () => (vpSt('bernard') ? 1 + vpPct(vpSt('bernard')) / 100 : 1) /* 베르나르: 성주·군단장 처치 골드 */,
   vpGrow = () => (vpSt('elm') ? 1 + vpPct(vpSt('elm')) / 100 : 1) /* 엘름: 작물 자라는 속도 */,
-  vpOffH = () => (vpSt('naia') ? vpNaiaH(vpSt('naia')) : 0); /* 나이아: 방치 보상 최대 시간(시간) */
+  vpOffH = () => (vpSt('naia') ? vpNaiaH(vpSt('naia')) : 0),
+  vpDok = () => (vpSt('ttukttak') ? 1 + vpPct(vpSt('ttukttak')) / 200 : 1); /* 뚝딱이: 방치 보상 골드 +25~50% */ /* 나이아: 방치 보상 최대 시간(시간) */
 /* ---------- 유니크 동료 카엘 촌장 (docs/companions/KAEL_CHIEF.md) ----------
    카엘 자리 교체형: 편성에서 카엘 대신 출전. 장비·칭호·강화는 카엘 것 그대로 + 별 보너스. 별은 유니크 카드(S.ucard)로만 */
 const CHIEF = 'kael_chief',
@@ -7647,7 +7673,8 @@ const chiefOn = () => owned(CHIEF) && !!S.party && S.party.kael === CHIEF,
 const ulA = () => (ULB.t > 0 ? ULB.a : 1),
   ulS = () => (ULB.t > 0 ? ULB.s : 1);
 const gr = id => GR[GRADE[id] || 'common'],
-  CARDIDS = () => [...Object.values(STORY), ...Object.keys(RECRUITS)];
+  CARDIDS = () => [...Object.values(STORY), ...Object.keys(RECRUITS).filter(id => GRADE[id] !== 'unique')] /* 카드 뽑기 대상 (유니크 제외) */,
+  COMPIDS = () => [...Object.values(STORY), ...Object.keys(RECRUITS)] /* 동료 전체 (일꾼·마을 이야기·초상화) */;
 const isRec = id => id in RECRUITS,
   recStar = id => (isRec(id) ? (S.rec && S.rec[id]) || 0 : S.joined[id] ? Math.max(1, (S.rec && S.rec[id]) || 0) : 0);
 const starNeed = id => (isRec(id) && recStar(id) === 0 ? 30 : gr(id).need[recStar(id)]),
@@ -8033,7 +8060,8 @@ const HEIGHT = {
   elm: 64,
   hagrin: 76,
   sophie: 64,
-  oscar: 58
+  oscar: 58,
+  ttukttak: 74
 };
 const compCost = l => Math.floor(25 * Math.pow(1.16, l - 1));
 const UPG = [
@@ -8397,7 +8425,7 @@ function working() {
 }
 const restIds = () => {
   const mem = members();
-  return CARDIDS().filter(id => owned(id) && !mem.includes(id));
+  return COMPIDS().filter(id => owned(id) && !mem.includes(id));
 }; /* 쉬는 동료(일꾼 포함) */
 const idleIds = () => {
   const w = working();
@@ -8501,7 +8529,7 @@ function ordNew(i) {
   });
   const okM = mats.filter(k => (used[k] || 0) < 2),
     pool = okM.length ? okM : mats;
-  const whos = [...CARDIDS().filter(owned), 'marta', 'timo', 'pete'],
+  const whos = [...COMPIDS().filter(owned), 'marta', 'timo', 'pete'],
     who = whos[Math.floor(Math.random() * whos.length)];
   const lk = (LIKE[who] || (who === 'pete' ? pool : LIKE[JOB[who]]) || []).filter(k => pool.includes(k));
   const a = (lk.length ? lk : pool)[Math.floor(Math.random() * (lk.length || pool.length))],
@@ -9613,6 +9641,7 @@ function renderShop() {
  ${helpNote('gemuse', '황금 이삭은 어디에 쓰나요?', `황금 이삭은 동료 카드, 골드 바꾸기, 성유물 상자 10연속(장비 탭), 작물 바로 키우기·건물 바로 짓기(마을 탭), 방치 보상 2배 받기에 써요.`)}</section>
  <section class="shgrp pay" id="shs-pay"><div class="shgh"><b>💰 상품</b><small>황금 이삭은 상품마다 첫 구매 2배</small></div>
  ${S.buys.starter ? '' : `<div class="shoprow hot"><span class="tag">한 번만</span><img class="pk" src="assets/relic/relic_weapon_3.png" alt="" onerror="this.remove()"><div class="info"><b>${STARTER.n}</b><div>전설 등급 성유물 1개 확정<br>+ ${gemI}${STARTER.gem}</div></div><button class="buy" id="starterBuy">${won(STARTER.won)}</button></div>`}
+ ${ttukShop() ? `<div class="shoprow hot"><span class="tag" style="background:#1f9e63">유니크</span><img class="pk" src="assets/portraits/portrait_ttukttak_laugh.png" alt="" onerror="this.remove()"><div class="info"><b>${TTUK_PK.n}</b><div>유니크 동료 ★1 · 광부 자리에서 출전<br>스킬 「금 나와라 뚝딱」 · 마을 스킬 방치 골드 +25%</div></div><button class="buy" id="ttukBuy">${won(TTUK_PK.won)}</button></div>` : ''}
  ${chiefShop() ? `<div class="shoprow hot"><span class="tag" style="background:#1f9e63">유니크</span><img class="pk" src="assets/portraits/portrait_kael_chief_laugh.png" alt="" onerror="this.remove()"><div class="info"><b>${CHIEF_PK.n}</b><div>유니크 동료 ★1 · 카엘 자리에서 출전<br>은퇴 ${CHIEF_RET}번이면 무료로 찾아와요 (${S.retires || 0}/${CHIEF_RET})</div></div><button class="buy" id="chiefBuy">${won(CHIEF_PK.won)}</button></div>` : ''}
  ${subOn() ? '' : subRow}
  ${growRow()}
@@ -9689,6 +9718,8 @@ function renderShop() {
   if (sb) sb.onclick = buyStarter;
   const cb = $('chiefBuy');
   if (cb) cb.onclick = buyChief;
+  const tb = $('ttukBuy');
+  if (tb) tb.onclick = buyTtuk;
   const ub = $('subBuy');
   if (ub) ub.onclick = buySub;
   const uc = $('subClaim');
@@ -10077,6 +10108,7 @@ const NPCID = {
   엘름: 'elm',
   하그린: 'hagrin',
   소피: 'sophie',
+  뚝딱이: 'ttukttak',
   오스카: 'oscar',
   고든: 'gordon',
   데이지: 'daisy',
@@ -11192,6 +11224,7 @@ const cardReady = () =>
 const ptAct = () =>
   [
     ...(chiefCan() ? ['u' + recStar(CHIEF)] : []),
+    ...(uqCan(TTUK) ? ['t' + recStar(TTUK)] : []),
     ...cardReady().map(id => 'c' + id + recStar(id)),
     ...JSLOT.filter(j => j !== 'kael' && betterBench(j)).map(j => 'b' + j + jobMembers(j).reduce((a, x) => (cPow(x) > cPow(a) ? x : a)))
   ].join();
@@ -11225,7 +11258,11 @@ function compSheet(id) {
   $('sheet').innerHTML =
     `<div class="eyebrow"><img class="jobi" src="assets/ui/job_${JOB[id]}.png" alt="" onerror="this.remove()">${JOBN[JOB[id]]} 동료</div><div class="cdh"><span class="cfr" style="--g:${gr(id).c}"><img src="assets/ui/frame_${gr(id).fr}.png" alt="" onerror="this.remove()"><canvas class="portrait" id="cdf-${id}"></canvas></span><div><h2>${c.n}</h2><div>${gradeTag(id)}${starTxt(id)}</div><small>${c.role} · Lv.${lv} · ${on ? '출전 중' : '대기'}</small></div></div>
  <p class="cdd">${c.desc}</p><div class="kv"><span>공격 · 체력</span><b>${fmt(t.atk)} · ${fmt(t.hp)}</b></div><div class="kv"><span>전투력</span><b>${fmt(cPow(id))}</b></div>
- <div class="skl"><img src="assets/skills/skill_${id}.png" alt="" onerror="this.remove()"><div><b>${SKILLS[id].n}</b><span>${SKILLS[id].d}</span></div></div>${vpBox(id)}
+ <div class="skl"><img src="assets/skills/skill_${id}.png" alt="" onerror="this.remove()"><div><b>${SKILLS[id].n}</b><span>${SKILLS[id].d}</span></div></div>${vpBox(id)}${
+      GRADE[id] === 'unique' && recStar(id) < starMax(id)
+        ? `<button class="buy${uqCan(id) ? ' glow' : ''}" id="cdUp" style="width:100%;margin-top:8px" ${uqCan(id) ? '' : 'disabled'}>★ 올리기 · ${UCIMG} 유니크 카드 ${S.ucard || 0} / ${starNeed(id)}</button>`
+        : ''
+    }
  <div class="acts">${on ? '<button id="mX">닫기</button>' : `<button id="cdGo">출전시키기</button>`}<button class="pri cdlv" id="cdLv" ${S.gold < compCost(lv) ? 'disabled' : ''}>${costBtn('레벨업', compCost(lv))}</button></div>` +
     (on ? '' : '<button id="mX" hidden></button>');
   $('modal').hidden = false;
@@ -11247,6 +11284,12 @@ function compSheet(id) {
   if (go)
     go.onclick = () => {
       if (setMember(JOB[id], id)) compSheet(id);
+    };
+  const up = $('cdUp');
+  if (up)
+    up.onclick = () => {
+      uqUp(id);
+      compSheet(id);
     };
 }
 /* ---------- 카엘 촌장: 합류 · 별 올리기 · 상세 창 · 카엘 자리 고르기 ---------- */
@@ -11314,6 +11357,41 @@ function chiefUp() {
   partySig = '';
   save();
   renderAll();
+}
+/* ---------- 유니크 동료 뚝딱이 (docs/companions/TTUKTTAK.md): 결제로만 합류, 광부 자리, 별은 유니크 카드 ---------- */
+const TTUK = 'ttukttak',
+  TTUK_PK = { k: 'ttuk', n: '뚝딱이 맞이하기', won: 5500 };
+const ttukShop = () => !owned(TTUK),
+  uqCan = id => (id === CHIEF ? chiefCan() : owned(id) && recStar(id) < starMax(id) && (S.ucard || 0) >= starNeed(id));
+function ttukJoin() {
+  if (owned(TTUK)) return;
+  if (!S.rec) S.rec = {};
+  S.rec[TTUK] = 1;
+  if (!S.lv[TTUK]) S.lv[TTUK] = 1;
+  partySig = '';
+  shopSig = '';
+  save();
+  haptic([30, 40, 30]);
+  const R = RECRUITS[TTUK];
+  queue(() => scene('유니크 동료', R.title, R.lines, R.ok, { label: '나중에', go: () => setMember('miner', TTUK) }, 'join'));
+}
+function uqUp(id) {
+  if (id === CHIEF) return chiefUp();
+  if (!uqCan(id)) return;
+  const need = starNeed(id),
+    h0 = stats(id).hp;
+  S.ucard -= need;
+  S.rec[id] = recStar(id) + 1;
+  if (P[id]) P[id].hp += stats(id).hp - h0;
+  haptic([25, 40, 25]);
+  toast(COMP[id].n + ' ★' + recStar(id) + '! 능력치 +' + Math.round((STAR_MUL[recStar(id)] - 1) * 100) + '%' + (VPAS[id] ? ' · ' + VPAS[id].d(recStar(id)) : ''));
+  partySig = '';
+  save();
+  renderAll();
+}
+function buyTtuk() {
+  if (!ttukShop()) return;
+  pay(TTUK_PK.k, TTUK_PK.won, ttukJoin);
 }
 function buyChief() {
   if (!chiefShop()) return;
@@ -11399,7 +11477,7 @@ function nextGoal() {
     return { id, job: js[0], face: false, title: '다음 동료 · ' + JOBN[js[0]], name: '???', desc: COMP[id].join };
   }
   const cand = Object.keys(RECRUITS)
-    .filter(id => cardOpen(id) && recStar(id) < starMax(id))
+    .filter(id => GRADE[id] !== 'unique' && cardOpen(id) && recStar(id) < starMax(id))
     .map(id => ({ id, n: (S.cards && S.cards[id]) || 0, need: starNeed(id) }))
     .sort((a, b) => b.n / b.need - a.n / a.need || gr(a.id).w - gr(b.id).w);
   if (!cand.length) return null;
@@ -11498,6 +11576,15 @@ function renderParty() {
             return `<div class="ccard${stv ? ' own' : ''}" style="--g:${gr(id).c}"><span class="cfr"><img src="assets/ui/frame_unique.png" alt="" onerror="this.remove()"><canvas class="portrait" id="pcd-${id}"></canvas></span><div class="info"><b>${COMP[id].n}</b>${gradeTag(id)}<span class="role">카엘 자리</span>${stv ? starTxt(id) : ''}<div class="vpline"><img src="assets/ui/village_skill.png" alt="" style="width:16px;height:16px;vertical-align:-3px;margin-right:3px">마을 스킬 · ${VPAS[id].n}</div>${!has ? `<div>${UCIMG} ${n}장 모아 둠</div><div>${chiefShop() ? '상점 ' + won(CHIEF_PK.won) + ' 또는 ' : ''}은퇴 ${Math.min(S.retires || 0, CHIEF_RET)}/${CHIEF_RET}번</div>` : mx ? '<div>별을 모두 모았어요</div>' : `<div class="xp"><div style="width:${Math.min(100, (n / need) * 100)}%"></div></div><div>${UCIMG} 유니크 카드 ${n} / ${need}</div>`}</div><div class="cbtns"><button class="buy${chiefCan() ? ' glow' : ''}" id="ucUp">${has ? (mx ? '보기' : '★ 올리기') : '보기'}</button></div></div>`;
           })()
         : '';
+    const ttRow = (() => {
+      const id = TTUK,
+        has = owned(id),
+        stv = recStar(id),
+        mx = has && stv >= starMax(id),
+        need = starNeed(id),
+        n = S.ucard || 0;
+      return `<div class="ccard${stv ? ' own' : ''}" style="--g:${gr(id).c}"><span class="cfr"><img src="assets/ui/frame_unique.png" alt="" onerror="this.remove()"><canvas class="portrait" id="pcd-${id}"></canvas></span><div class="info"><b>${COMP[id].n}</b>${gradeTag(id)}<span class="role">광부 자리</span>${stv ? starTxt(id) : ''}<div class="vpline"><img src="assets/ui/village_skill.png" alt="" style="width:16px;height:16px;vertical-align:-3px;margin-right:3px">마을 스킬 · ${VPAS[id].n}</div>${!has ? `<div>피트의 상점 ${won(TTUK_PK.won)}</div>` : mx ? '<div>별을 모두 모았어요</div>' : `<div class="xp"><div style="width:${Math.min(100, (n / need) * 100)}%"></div></div><div>${UCIMG} 유니크 카드 ${n} / ${need}</div>`}</div><div class="cbtns"><button class="buy${uqCan(id) ? ' glow' : ''}" id="ttUp">${has ? (mx || !uqCan(id) ? '보기' : '★ 올리기') : '상점 보기'}</button></div></div>`;
+    })();
     const board = `<div class="sec">편성 <small>자리를 눌러 동료를 바꿔요</small></div><div class="board">${JSLOT.map(j => {
       const id = slotMember(j),
         multi = j === 'kael' ? owned(CHIEF) : jobMembers(j).length > 1;
@@ -11526,7 +11613,7 @@ function renderParty() {
         kael = id === 'kael',
         on = kael || (id === CHIEF ? chiefOn() : slotMember(JOB[id]) === id),
         wk = working()[id],
-        up = id === CHIEF ? chiefCan() : ready.includes(id),
+        up = id === CHIEF ? chiefCan() : GRADE[id] === 'unique' ? uqCan(id) : ready.includes(id),
         fr = kael ? 'legendary' : gr(id).fr,
         col = kael ? '#ffd34a' : gr(id).c;
       return `<button class="gcell${has ? '' : ' locked'}${on && has ? ' on' : ''}" ${has || id === CHIEF ? `data-det="${id}"` : 'disabled'} style="--g:${col}"><span class="cfr"><img src="assets/ui/frame_${fr}.png" alt="" onerror="this.remove()"><canvas class="portrait" id="gc-${id}"></canvas></span>${up ? '<i class="gup"></i>' : ''}${wk ? '<i class="gwk">🔨</i>' : ''}${on && has && !kael ? '<i class="gon">출전</i>' : ''}<b>${has || id === CHIEF ? c.n : '???'}</b><small>${kael ? RANKS[rankIdx()].n : has ? (id === CHIEF ? '' : 'Lv.' + (S.lv[id] || 1) + ' ') + '<span class="gst">' + '★'.repeat(recStar(id)) + '</span>' : id === CHIEF ? '유니크' : '합류 전'}</small></button>`;
@@ -11539,7 +11626,7 @@ function renderParty() {
         : ptTab === 'list'
           ? `<div class="pvsw"><p class="note">동료를 누르면 자세한 정보·스킬·출전을 볼 수 있어요.</p><div class="seg"><button data-pv="list" class="${S.ptGrid ? '' : 'on'}">목록</button><button data-pv="grid" class="${S.ptGrid ? 'on' : ''}">격자</button></div></div>` +
             (S.ptGrid ? `<div class="cgrid">${list.map(gcell).join('')}</div>` : list.map(crow).join(''))
-          : `${helpNote('cardgr', '카드 등급·얻는 곳', `카드 등급: <b style="color:#b8c0cc">일반</b>(★3까지) · <b style="color:#5aa8ff">희귀</b>(★4) · <b style="color:#b07bff">영웅</b>(★5) · <b style="color:#ffc23a">전설</b>(★5). 높은 등급일수록 드물게 나오고 기본 능력치가 높아요. 마물·성주·군단장·황금 고블린·오늘의 할 일·피트의 상점에서 카드를 얻어요. ♡ 희망을 눌러 두면 그 동료 카드가 절반 확률로 나와요. 은퇴해도 카드와 별은 남아요.${ucRow ? ' <b style="color:#3ee08f">유니크</b>(★5)는 카드 뽑기에 나오지 않고, 유니크 카드로만 별을 올려요.' : ''}`)}${ucRow}${recs}`;
+          : `${helpNote('cardgr', '카드 등급·얻는 곳', `카드 등급: <b style="color:#b8c0cc">일반</b>(★3까지) · <b style="color:#5aa8ff">희귀</b>(★4) · <b style="color:#b07bff">영웅</b>(★5) · <b style="color:#ffc23a">전설</b>(★5). 높은 등급일수록 드물게 나오고 기본 능력치가 높아요. 마물·성주·군단장·황금 고블린·오늘의 할 일·피트의 상점에서 카드를 얻어요. ♡ 희망을 눌러 두면 그 동료 카드가 절반 확률로 나와요. 은퇴해도 카드와 별은 남아요.${ucRow ? ' <b style="color:#3ee08f">유니크</b>(★5)는 카드 뽑기에 나오지 않고, 유니크 카드로만 별을 올려요.' : ''}`)}${ucRow}${ttRow}${recs}`;
     document.querySelectorAll('#ptTabs [data-pt]').forEach(b => b.classList.toggle('on', b.dataset.pt === ptTab));
     helpBind($('party'), () => {
       partySig = '';
@@ -11633,6 +11720,16 @@ function renderParty() {
         };
         const cd = $('pcd-' + CHIEF);
         if (cd) faceTo(cd, CHIEF);
+      }
+      const tu = $('ttUp');
+      if (tu) {
+        tu.onclick = () => {
+          if (!owned(TTUK)) return setTab('sh');
+          if (uqCan(TTUK)) uqUp(TTUK);
+          else compSheet(TTUK);
+        };
+        const cd = $('pcd-' + TTUK);
+        if (cd) faceTo(cd, TTUK);
       }
     }
     document.querySelectorAll('[data-seat]').forEach(
@@ -13094,6 +13191,13 @@ const SKILLS = {
     need: 24,
     face: 'laugh'
   },
+  ttukttak: {
+    n: '금 나와라 뚝딱',
+    d: '방망이로 땅을 내리쳐 모든 적에게 공격력 3.5배 피해 + 10초 동안 마물 처치 골드 +50% (★3·★5에서 강화)',
+    line: '금 나와라, 뚝딱!',
+    need: 26,
+    face: 'laugh'
+  },
   oscar: {
     n: '밀랍 방패',
     d: '8초 동안 원정대 모두에게 최대 체력 25%만큼 피해를 먼저 받아 주는 보호막 (★3·★5에서 강화)',
@@ -13157,7 +13261,7 @@ for (const id in SKILLS) {
   b.onload = () => (CUTIMG[id] = b);
   b.src = 'assets/portraits/portrait_' + id + '_' + SKILLS[id].face + '.png';
 }
-const SKX = { shield: 0, honey: 0, feast: 0, honeyTick: 0, bake: 0, mount: 0, mountK: 1, wall: 0, guts: 0, sym: 0, symK: 1, symTick: 0, lamp: 0, lampK: 1, sap: 0, sapK: 1, ward: 0 };
+const SKX = { shield: 0, honey: 0, feast: 0, honeyTick: 0, bake: 0, mount: 0, mountK: 1, wall: 0, guts: 0, sym: 0, symK: 1, symTick: 0, lamp: 0, lampK: 1, sap: 0, sapK: 1, ward: 0, dok: 0, dokK: 1 };
 let cut = null;
 /* 오스카 「밀랍 방패」: 보호막(q.ward)이 남아 있으면 피해를 먼저 받음 → 남은 피해 */
 const wardEat = (q, dm) => {
@@ -13595,6 +13699,15 @@ function castSkill(id) {
         my = ids.reduce((a, j) => a + py[j], 0) / ids.length;
       if (fxOk('skill_sophie')) spawnFx('skill_sophie', mx, my - 60 * s, 150 * s, 0.8);
     }
+  } else if (id === 'ttukttak') {
+    /* 금 나와라 뚝딱: 모든 적 3.5배 + 10초 동안 처치 골드 +50% */
+    const k = skPow(id);
+    for (const m of alive) hitMon(m, t.atk * 3.5 * k * (SKX.feast > 0 ? 1.2 : 1), true, s, 0);
+    SKX.dok = 10;
+    SKX.dokK = k;
+    shakeT = 0.45;
+    addFloat(pos[id], py[id] - (HEIGHT[id] + 8) * s, '골드↑', '#ffd34a', 13);
+    if (fxOk('skill_ttukttak')) spawnFx('skill_ttukttak', cx, cy - 20 * s, 190 * s, 0.9);
   } else if (id === 'oscar') {
     /* 밀랍 방패: 8초 동안 최대 체력 25% 보호막 (피해를 먼저 받음) */
     const k = skPow(id);
@@ -13638,7 +13751,7 @@ function castSkill(id) {
 }
 function stepSkills(dt, L, alive) {
   const { ids, s } = L;
-  for (const k of ['shield', 'feast', 'bake', 'mount', 'wall', 'guts', 'lamp', 'sap', 'ward']) SKX[k] = Math.max(0, SKX[k] - dt);
+  for (const k of ['shield', 'feast', 'bake', 'mount', 'wall', 'guts', 'lamp', 'sap', 'ward', 'dok']) SKX[k] = Math.max(0, SKX[k] - dt);
   ULB.t = Math.max(0, ULB.t - dt);
   if (SKX.sym > 0) {
     SKX.sym -= dt;
@@ -13803,7 +13916,8 @@ const FORM = {
   elm: [0.17, 0.16],
   hagrin: [0.58, 0.72],
   sophie: [0.1, 0.58],
-  oscar: [0.17, 0.16]
+  oscar: [0.17, 0.16],
+  ttukttak: [0.58, 0.72]
 };
 function layout() {
   const ids = members(),
@@ -14051,7 +14165,7 @@ function hitMon(m, d, cr, s, gy) {
 function resetFight(msg) {
   if (CH) return chLose();
   const dem = mons.some(m => m.dem);
-  SKX.shield = SKX.honey = SKX.feast = SKX.guts = SKX.sym = SKX.lamp = SKX.sap = SKX.ward = 0;
+  SKX.shield = SKX.honey = SKX.feast = SKX.guts = SKX.sym = SKX.lamp = SKX.sap = SKX.ward = SKX.dok = 0;
   ULB.t = 0;
   for (const id of members()) {
     P[id].hp = stats(id).hp;
@@ -14531,7 +14645,7 @@ function step(dt) {
       if (m.hp <= 0 && !m.dead && !m.gob) {
         m.dead = 0.35;
         spawnFx('coin', m.x, m.y - 26 * s, 34 * s, 0.6, -60 * s);
-        const g = reward(fightSt(), m.boss) * (buff('gold') ? 1.5 : 1) * (blOn('gold') ? 1.3 : 1) * memMul() * (m.boss ? vpFeast() : 1);
+        const g = reward(fightSt(), m.boss) * (buff('gold') ? 1.5 : 1) * (blOn('gold') ? 1.3 : 1) * memMul() * (m.boss ? vpFeast() : 1) * (SKX.dok > 0 ? 1 + 0.5 * SKX.dokK : 1);
         S.gold += g;
         dailyAdd('kill', 1);
         passKill();
@@ -14807,7 +14921,7 @@ function chCheck() {
 }
 const chDot = () => !!S.chOpen && (supplyCan() || dunLeft() > 0);
 function chPartyReset() {
-  SKX.shield = SKX.honey = SKX.feast = SKX.guts = SKX.sym = SKX.lamp = SKX.sap = SKX.ward = 0;
+  SKX.shield = SKX.honey = SKX.feast = SKX.guts = SKX.sym = SKX.lamp = SKX.sap = SKX.ward = SKX.dok = 0;
   ULB.t = 0;
   for (const id of members()) {
     if (!P[id]) continue;
@@ -16042,6 +16156,12 @@ const DRAW = {
     drawMargo(x, y, s, o);
     ctx.restore();
   },
+  ttukttak: (x, y, s, o) => {
+    ctx.save();
+    ctx.filter = 'hue-rotate(180deg) saturate(1.2)';
+    drawBron(x, y, s, o);
+    ctx.restore();
+  },
   oscar: (x, y, s, o) => {
     ctx.save();
     ctx.filter = 'hue-rotate(20deg) saturate(1.4)';
@@ -16105,7 +16225,8 @@ const SPRITES = {
   elm: { idle: 4, walk: 6, attack: 4, hit: 2, h: 64 },
   hagrin: { idle: 4, walk: 6, attack: 4, hit: 2, h: 76 },
   sophie: { idle: 4, walk: 6, attack: 4, hit: 2, h: 64 },
-  oscar: { idle: 4, walk: 6, attack: 4, hit: 2, h: 58 }
+  oscar: { idle: 4, walk: 6, attack: 4, hit: 2, h: 58 },
+  ttukttak: { idle: 4, walk: 6, attack: 4, hit: 2, h: 74 }
 };
 const SPR_FRAME = 256,
   SPR_FOOT = 250,
@@ -16158,6 +16279,7 @@ const FXDEF = {
     skill_hagrin: 4,
     skill_sophie: 4,
     skill_oscar: 4,
+    skill_ttukttak: 4,
     net: 2,
     boss_seal: 4
   },
@@ -16503,7 +16625,8 @@ const SPRITE_ALT = {
   elm: 'riel',
   hagrin: 'bron',
   sophie: 'margo',
-  oscar: 'riel'
+  oscar: 'riel',
+  ttukttak: 'bron'
 };
 const hasSprite = id => !!SPR[id] && ['idle', 'walk', 'attack', 'hit'].every(a => SPR[id][a].ok);
 function spriteFrame(id, p, walk) {
@@ -17514,7 +17637,8 @@ const WLINE = {
   elm: '천천히… 그래도… 확실히…',
   hagrin: '…살살 할게…',
   sophie: '반죽은 마법처럼 부풀려 줄게요!',
-  oscar: '벌통 경비는 기사의 의무!'
+  oscar: '벌통 경비는 기사의 의무!',
+  ttukttak: '김 서방, 쇠는 내가 두드리지!'
 };
 function drawVillage() {
   if (!VW || !VIMG.map) return;
@@ -17667,7 +17791,7 @@ function portraitImg(id) {
 }
 const PIMG = {};
 function vPreload() {
-  for (const id of CARDIDS())
+  for (const id of COMPIDS())
     if (!PIMG[id]) {
       const im = new Image();
       im.src = 'assets/portraits/portrait_' + id + '_idle.png';
@@ -19732,6 +19856,7 @@ function mailApply(list) {
     const r = m.reward || {};
     if (r.gem > 0) gem += Math.min(+r.gem, 100000);
     if (r.chief) chiefJoin('pay');
+    if (r.ttuk) ttukJoin();
     if (r.pass) passOpen(+r.pass);
     if (r.grow) growGive();
     if (r.ucard > 0) {
@@ -20477,7 +20602,7 @@ function idleGold(sec) {
       return a + t.atk * t.aps * critE(t);
     }, 0),
     tpk = monHp(fightSt(), false) / dps + 1.2;
-  return (sec / tpk) * reward(fightSt(), false) * 0.5 * memMul() * (subOn() ? 1.5 : 1) * vIdle();
+  return (sec / tpk) * reward(fightSt(), false) * 0.5 * memMul() * (subOn() ? 1.5 : 1) * vIdle() * vpDok();
 }
 function offline() {
   const cap = offCapH() * 3600,

@@ -229,6 +229,7 @@ class VillageSkillBox extends StatelessWidget {
       'bernard' => '성주·군단장 처치 골드 +${GameCalc.vpPct(st)}%',
       'elm' => '작물이 자라는 속도 +${GameCalc.vpPct(st)}%',
       'hagrin' => '장비 강화 광석 −${(GameCalc.vpPct(st) / 2).round()}%',
+      'ttukttak' => '방치 보상 골드 +${(GameCalc.vpPct(st) / 2).round()}%',
       'kael_chief' => '마을 건물 생산 +${pctTxt(GameCalc.chPct(st))}%',
       _ => '',
     };

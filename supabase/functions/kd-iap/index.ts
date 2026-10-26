@@ -21,6 +21,7 @@ const PRODUCTS: Record<string, { title: string; reward: Record<string, unknown>;
   kd_gem_6480: { title: '황금 이삭 6,480', reward: { gem: 6480, pack: 'p6' } },
   kd_starter: { title: '첫 거래 특가', reward: { starter: 1 } },
   kd_chief: { title: '카엘 촌장 맞이하기', reward: { chief: 1 } },
+  kd_ttukttak: { title: '뚝딱이 맞이하기', reward: { ttuk: 1 } },
   kd_sub_monthly: { title: '피트의 정기 배송', reward: { sub_days: 30 }, sub: true },
   // 상점·패스 (docs/content/SHOP.md): 원정 일지 보상 {pass: 시즌 번호}·같은 시즌 중복은 SQL kd_iap_grant 가 처리 (supabase/stage7_pass.sql)
   kd_pass: { title: '원정 일지', reward: { pass: 1 } },

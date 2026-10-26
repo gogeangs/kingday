@@ -181,8 +181,11 @@ class GameCalc {
   static bool isRec(String id) => recruits.containsKey(id);
   static CompGrade gr(String id) => compGrades[gradeOf[id] ?? 'common']!;
 
-  /// 웹 CARDIDS(): 이야기 동료 4 + 모집 동료
-  static List<String> cardIds() => [...storyOf.values, ...recruits.keys];
+  /// 웹 CARDIDS(): 이야기 동료 4 + 모집 동료 (카드 뽑기 대상 — 유니크 제외)
+  static List<String> cardIds() => [...storyOf.values, ...recruits.keys.where((id) => gradeOf[id] != 'unique')];
+
+  /// 웹 COMPIDS(): 동료 전체 (일꾼·마을 이야기)
+  static List<String> compIds() => [...storyOf.values, ...recruits.keys];
 
   int recStar(String id) {
     final r = s.rec;
@@ -237,6 +240,9 @@ class GameCalc {
   /// 나이아 「인어의 보물 상자」: 방치 보상 최대 시간 +2~4시간 (웹 vpNaiaH·vpOffH)
   static num vpNaiaH(int st) => 2 + (st - 1) * .5;
   num vpOffH() => vpSt('naia') != 0 ? vpNaiaH(vpSt('naia')) : 0;
+
+  /// 뚝딱이 「도깨비 살림」: 방치 보상 골드 +25~50% (웹 vpDok)
+  num vpDok() => vpSt(ttukId) != 0 ? 1 + vpPct(vpSt(ttukId)) / 200 : 1;
 
   // ───────────── 편성 ─────────────
   /// slotMember(j): 그 직업 자리에 출전 중인 동료
@@ -344,6 +350,13 @@ class GameCalc {
   bool chiefShop() => orNum(s.raw['retires'], 0) >= 1 && !owned(chiefId);
   int get ucard => orNum(s.raw['ucard'], 0).toInt();
   bool chiefCan() => owned(chiefId) && recStar(chiefId) < starMax(chiefId) && ucard >= (starNeed(chiefId) ?? 1 << 30);
+
+  // ───────────── 유니크 동료 뚝딱이 (docs/companions/TTUKTTAK.md): 결제로만 합류, 광부 자리, 별은 유니크 카드 ─────────────
+  static const ttukId = 'ttukttak', ttukWon = 5500;
+  bool ttukShop() => !owned(ttukId);
+
+  /// 유니크 카드로 ★ 올릴 수 있는지 (웹 uqCan)
+  bool uqCan(String id) => id == chiefId ? chiefCan() : owned(id) && recStar(id) < starMax(id) && ucard >= (starNeed(id) ?? 1 << 30);
 
   /// cPow(id): 동료 한 명 전투력 (편성 추천에 씀)
   num cPow(String id) {
@@ -485,7 +498,7 @@ class GameCalc {
   /// 방치 보상: sec초 동안의 골드 (방치 보상·탑 보급·고블린 금고가 같이 씀, 웹 idleGold)
   num idleGold(num sec) {
     final tpk = monHp(fightSt(), false) / _dps() + 1.2;
-    return sec / tpk * reward(fightSt(), false) * .5 * memMul() * (subOn() ? 1.5 : 1) * this.vIdle();
+    return sec / tpk * reward(fightSt(), false) * .5 * memMul() * (subOn() ? 1.5 : 1) * this.vIdle() * vpDok();
   }
 
 
@@ -543,7 +556,7 @@ class GameCalc {
       return {'id': id, 'job': js[0], 'face': false, 'title': '다음 동료 · ${jobName[js[0]]}', 'name': '???', 'desc': comps[id]!.join};
     }
     final cand = stableSorted(
-      recruits.keys.where((id) => cardOpen(id) && recStar(id) < starMax(id)).map((id) =>
+      recruits.keys.where((id) => gradeOf[id] != 'unique' && cardOpen(id) && recStar(id) < starMax(id)).map((id) =>
           (id: id, n: orNum(s.cards?[id], 0), need: starNeed(id)!)),
       (a, b) {
         final d = b.n / b.need - a.n / a.need;

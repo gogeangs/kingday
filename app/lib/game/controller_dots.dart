@@ -4,7 +4,11 @@ part of 'controller.dart';
 
 extension GameDotsX on GameController {
   String ptAct() {
-    final parts = <String>[for (final id in calc.cardReady()) 'c$id${calc.recStar(id)}'];
+    final parts = <String>[
+      if (calc.chiefCan()) 'u${calc.recStar(GameCalc.chiefId)}',
+      if (calc.uqCan(GameCalc.ttukId)) 't${calc.recStar(GameCalc.ttukId)}',
+      for (final id in calc.cardReady()) 'c$id${calc.recStar(id)}',
+    ];
     for (final j in jobSlots) {
       if (j == 'kael' || !calc.betterBench(j)) continue;
       final ms = calc.jobMembers(j);

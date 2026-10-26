@@ -423,6 +423,14 @@ const wComp = {
     'base': {'atk': 5, 'hp': 82, 'aps': 0.9},
     'per': {'atk': 1.7, 'hp': 16.5},
   },
+  'ttukttak': {
+    'n': '뚝딱이',
+    'role': '광부 · 금 나와라',
+    'desc': '마족이 산을 파헤치자 화가 나서 산에서 내려온 도깨비 대장장이. 장난 좋아하는 허당이지만 의리는 산만큼 크다. 브리다와는 대장장이 맞수, 브론에게는 씨름을 걸었다가 늘 진다. 메밀묵 앞에서는 꼼짝 못 한다.',
+    'join': '피트의 상점에서 맞이할 수 있어요 (유니크)',
+    'base': {'atk': 12, 'hp': 240, 'aps': 0.8},
+    'per': {'atk': 3.4, 'hp': 47},
+  },
   'oscar': {
     'n': '오스카',
     'role': '양봉가 · 보호막',
@@ -480,6 +488,7 @@ const wJob = {
   'hagrin': 'miner',
   'sophie': 'cook',
   'oscar': 'keeper',
+  'ttukttak': 'miner',
 };
 
 const wJobn = {'miner': '광부', 'fisher': '어부', 'keeper': '양봉가', 'cook': '요리사'};
@@ -525,6 +534,7 @@ const wHeight = {
   'hagrin': 76,
   'sophie': 64,
   'oscar': 58,
+  'ttukttak': 74,
 };
 
 const wRecruits = {
@@ -860,6 +870,20 @@ const wRecruits = {
     ],
     'ok': '잘 부탁드려요, 오스카 경',
   },
+  'ttukttak': {
+    'job': 'miner',
+    'title': '산에서 내려온 도깨비 뚝딱이',
+    'lines': [
+      '푸른 도깨비불이 둥실둥실 떠오르더니, 삿갓을 쓴 커다란 도깨비가 방망이를 어깨에 메고 나타났다.',
+      'm:뚝딱이@laugh|흐하하! 김 서방, 반갑네! 마족 놈들이 우리 산을 파헤쳐서 혼쭐내러 내려왔지!',
+      'k@surprised:…저 김 서방 아닌데요. 카엘인데요.',
+      'm:브리다|흥, 도깨비 방망이로 쇠를 두드린다고? 대장장이 솜씨라면 내가 한 수 위야.',
+      'm:브론|또 씨름하자는 거면 사양이다. …아니, 이번엔 내가 이긴다!',
+      'sys:유니크 동료 · 광부 자리에서 출전해요. 별은 유니크 카드로 올려요.',
+      'sys:마을 스킬 「도깨비 살림」 방치 보상 골드 +25% (출전 안 해도 적용)',
+    ],
+    'ok': '바로 출전',
+  },
 };
 
 const wStarNeed = [30, 20, 40, 80, 150];
@@ -899,6 +923,7 @@ const wGrade = {
   'hagrin': 'legend',
   'sophie': 'epic',
   'oscar': 'epic',
+  'ttukttak': 'unique',
   'kael_chief': 'unique',
 };
 
@@ -943,7 +968,7 @@ const wGr = {
     'n': '유니크',
     'c': '#3ee08f',
     'max': 5,
-    'mul': 1,
+    'mul': 1.4,
     'w': 0,
     'need': [0, 20, 40, 80, 150],
     'fr': 'unique',
@@ -959,6 +984,7 @@ const wVpas = {
   'bernard': {'n': '궁정 연회'},
   'elm': {'n': '천 년 나무의 숨결'},
   'hagrin': {'n': '거인의 손힘'},
+  'ttukttak': {'n': '도깨비 살림'},
   'kael_chief': {'n': '새벽 종소리'},
 };
 
@@ -1150,6 +1176,13 @@ const wSkills = {
     'd': '마카롱을 나눠 다른 동료들의 스킬 게이지를 40% 채움 (자기는 빼고, ★3·★5에서 강화)',
     'line': '한 입 먹으면 기운이 반짝!',
     'need': 24,
+    'face': 'laugh',
+  },
+  'ttukttak': {
+    'n': '금 나와라 뚝딱',
+    'd': '방망이로 땅을 내리쳐 모든 적에게 공격력 3.5배 피해 + 10초 동안 마물 처치 골드 +50% (★3·★5에서 강화)',
+    'line': '금 나와라, 뚝딱!',
+    'need': 26,
     'face': 'laugh',
   },
   'oscar': {
@@ -1559,6 +1592,7 @@ const wSprites = {
   'hagrin': {'idle': 4, 'walk': 6, 'attack': 4, 'hit': 2, 'h': 76},
   'sophie': {'idle': 4, 'walk': 6, 'attack': 4, 'hit': 2, 'h': 64},
   'oscar': {'idle': 4, 'walk': 6, 'attack': 4, 'hit': 2, 'h': 58},
+  'ttukttak': {'idle': 4, 'walk': 6, 'attack': 4, 'hit': 2, 'h': 74},
 };
 
 const wSprConst = {'frame': 256, 'foot': 250, 'fig': 171};
@@ -1777,6 +1811,7 @@ const wFxdef = {
   'skill_hagrin': 4,
   'skill_sophie': 4,
   'skill_oscar': 4,
+  'skill_ttukttak': 4,
   'net': 2,
   'boss_seal': 4,
 };
@@ -1816,6 +1851,7 @@ const wForm = {
   'hagrin': [0.58, 0.72],
   'sophie': [0.1, 0.58],
   'oscar': [0.17, 0.16],
+  'ttukttak': [0.58, 0.72],
 };
 
 const wGobRare = {'badge': 0.005, 'frame': 0.002};
@@ -1937,6 +1973,7 @@ const wWline = {
   'hagrin': '…살살 할게…',
   'sophie': '반죽은 마법처럼 부풀려 줄게요!',
   'oscar': '벌통 경비는 기사의 의무!',
+  'ttukttak': '김 서방, 쇠는 내가 두드리지!',
 };
 
 const wVep = {

@@ -61,6 +61,9 @@ class ActChiefScene extends ActResult {
   final String src;
 }
 
+/// 뚝딱이 합류 장면 (「바로 출전」 → 광부 자리)
+class ActTtukScene extends ActResult {}
+
 class ActRecruitScene extends ActResult {
   ActRecruitScene(this.id);
   final String id;
@@ -1101,6 +1104,45 @@ class GameActions {
     out.add(ActHaptic(const [25, 40, 25]));
     final st = c.recStar(id);
     _toast('카엘 촌장 ★$st! 카엘 능력치 +${pctTxt(GameCalc.chiefBonus[st] * 100)}% · 새벽 종소리 +${pctTxt(GameCalc.chPct(st))}%');
+    return true;
+  }
+
+  // ───────────── 뚝딱이 (웹 ttukJoin · uqUp · buyTtuk) ─────────────
+  bool ttukJoin() {
+    const id = GameCalc.ttukId;
+    if (c.owned(id)) return false;
+    s.recW[id] = 1;
+    if (!truthy(s.lv[id])) s.lv[id] = 1;
+    s.last = c.now;
+    out.add(ActHaptic(const [30, 40, 30]));
+    out.add(ActTtukScene());
+    return true;
+  }
+
+  /// 5,500원 상품 (처음부터 상점)
+  void buyTtuk() {
+    if (!c.ttukShop()) return;
+    _pay('ttuk', ttukJoin);
+  }
+
+  /// 스토어 결제 확인 우편으로 받은 뚝딱이
+  void grantTtuk() {
+    buys['ttuk'] = orNum(buys['ttuk'], 0) + 1;
+    ttukJoin();
+  }
+
+  /// 유니크 카드로 ★ 올리기 (카엘 촌장 외 유니크)
+  bool uqUp(String id) {
+    if (id == GameCalc.chiefId) return chiefUp();
+    if (!c.uqCan(id)) return false;
+    final need = c.starNeed(id)!, h0 = c.stats(id).hp;
+    s.raw['ucard'] = c.ucard - need;
+    s.recW[id] = c.recStar(id) + 1;
+    onHpAdd?.call(id, c.stats(id).hp - h0);
+    s.last = c.now;
+    out.add(ActHaptic(const [25, 40, 25]));
+    final st = c.recStar(id);
+    _toast('${comps[id]!.n} ★$st! 능력치 +${((starMulTable[st] - 1) * 100).round()}%${id == GameCalc.ttukId ? ' · 방치 보상 골드 +${(GameCalc.vpPct(st) / 2).round()}%' : ''}');
     return true;
   }
 

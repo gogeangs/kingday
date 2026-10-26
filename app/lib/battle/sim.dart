@@ -175,6 +175,9 @@ class SkillTimers {
   /// 오스카 「밀랍 방패」 남은 시간 (웹 SKX.ward)
   num ward = 0;
 
+  /// 뚝딱이 「금 나와라 뚝딱」 처치 골드↑ 남은 시간·강화 (웹 SKX.dok·dokK)
+  num dok = 0, dokK = 1;
+
   /// 카엘 촌장 「다 함께 울력」 남은 시간·공격 배수·공속 배수 (웹 ULB)
   num ul = 0, ulA = 1, ulS = 1;
 }
@@ -348,7 +351,7 @@ class BattleSim {
   int chRi() => ch == null ? 0 : ch!.mode == 'tower' ? 3 : dunDef(ch!.k).ri;
 
   void _chPartyReset() {
-    skx.shield = skx.honey = skx.feast = skx.guts = skx.sym = skx.lamp = skx.sap = skx.ward = 0;
+    skx.shield = skx.honey = skx.feast = skx.guts = skx.sym = skx.lamp = skx.sap = skx.ward = skx.dok = 0;
     skx.ul = 0;
     for (final id in c.members()) {
       final p = party[id];
@@ -1006,6 +1009,17 @@ class BattleSim {
           addFloat(pos[j]!, py[j]! - (heightOf(j) + 8) * sc, '반짝!', 0xFFFF9AD5, 12);
         }
         if (fxOk('skill_sophie')) _teamFx('skill_sophie', sc, pos, py, size: 150, dy: 60, life: .8);
+      case 'ttukttak':
+        // 금 나와라 뚝딱: 모든 적 3.5배 + 10초 동안 처치 골드 +50%
+        final k = c.skPow(id);
+        for (final m in alive) {
+          hitMon(m, t.atk * 3.5 * k * feast, true, sc);
+        }
+        skx.dok = 10;
+        skx.dokK = k;
+        shakeT = .45;
+        addFloat(pos[id]!, py[id]! - (heightOf(id) + 8) * sc, '골드↑', 0xFFFFD34A, 13);
+        if (fxOk('skill_ttukttak')) spawnFx('skill_ttukttak', cx, cy - 20 * sc, 190 * sc, .9);
       case 'oscar':
         // 밀랍 방패: 8초 동안 최대 체력 25% 보호막
         final k = c.skPow(id);
@@ -1072,6 +1086,7 @@ class BattleSim {
     skx.lamp = math.max(0, skx.lamp - dt);
     skx.sap = math.max(0, skx.sap - dt);
     skx.ward = math.max(0, skx.ward - dt);
+    skx.dok = math.max(0, skx.dok - dt);
     skx.ul = math.max(0, skx.ul - dt);
     if (skx.sym > 0) {
       // 안단테 「꿀벌 교향곡」: 0.5초마다 벌떼가 모든 적을 쏨
@@ -1261,7 +1276,7 @@ class BattleSim {
   void resetFight(String msg) {
     if (ch != null) return _chLose();
     final dem = mons.any((m) => m.dem);
-    skx.shield = skx.honey = skx.feast = skx.guts = skx.sym = skx.lamp = skx.sap = skx.ward = 0;
+    skx.shield = skx.honey = skx.feast = skx.guts = skx.sym = skx.lamp = skx.sap = skx.ward = skx.dok = 0;
     skx.ul = 0;
     for (final id in c.members()) {
       party[id]!.hp = c.stats(id).hp;
@@ -1609,7 +1624,7 @@ class BattleSim {
 
   void _kill(Mon m, num sc) {
     spawnFx('coin', m.x, m.y - 26 * sc, 34 * sc, .6, -60 * sc);
-    final g = GameCalc.reward(c.fightSt(), m.boss) * (c.buff('gold') ? 1.5 : 1) * (c.blOn('gold') ? 1.3 : 1) * c.memMul() * (m.boss ? c.vpFeast() : 1);
+    final g = GameCalc.reward(c.fightSt(), m.boss) * (c.buff('gold') ? 1.5 : 1) * (c.blOn('gold') ? 1.3 : 1) * c.memMul() * (m.boss ? c.vpFeast() : 1) * (skx.dok > 0 ? 1 + .5 * skx.dokK : 1);
     s.gold = s.gold + g;
     final d = c.daily();
     d['kill'] = orNum(d['kill'], 0) + 1;

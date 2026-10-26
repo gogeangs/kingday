@@ -109,6 +109,10 @@ function op(o) {
     case 'grow': return F('buyGrow')();
     case 'growgive': return F('growGive')();
     case 'growchk': return F('growCheck')();
+    // ── 유니크 뚝딱이 ──
+    case 'tbuy': return F('buyTtuk')();
+    case 'ucard': return w.run(`S.ucard=${+a}`);
+    case 'uqup': return F('uqUp')(a);
     default: throw new Error('모르는 조작 ' + o);
   }
 }
@@ -166,6 +170,9 @@ const CASES = {
   // 영웅 소피·오스카: 맞이하기·별(★5까지)·편성
   epic2: [base.mid, ['ensure', 'gold:1e12', 'card:sophie:30', 'rec:sophie', 'card:oscar:30', 'rec:oscar', 'set:cook:sophie', 'set:keeper:oscar',
     'card:sophie:9999', 'rec:sophie', 'rec:sophie', 'rec:sophie', 'rec:sophie', 'lv:sophie', 'lv:oscar', 'auto', 'time:' + 2 * H]],
+  // 유니크 뚝딱이: 상점 구매(합류 ★1) → 두 번 사기 막힘 → 바로 출전 → 유니크 카드로 ★ 올리기(카엘 촌장과 같은 카드) → 방치 골드 마을 스킬
+  ttuk: [base.mid, ['ensure', 'gold:1e12', 'tbuy', 'tbuy', 'set:miner:ttukttak', 'ucard:150', 'uqup:ttukttak', 'uqup:ttukttak', 'uqup:ttukttak', 'uqup:ttukttak',
+    'lv:ttukttak', 'lv:ttukttak', 'auto', 'time:' + 3 * H]],
   // 출석체크: 7일 판 반복·한달 판 초기화·건너뛰기·같은 날·날짜 되돌리기·광고 2배·큰 보상(7·14·21·28)·배지·무료권 사용
   attend: [base.mid, ['att:2026-10-21', 'att:2026-10-22', 'att:2026-10-23', 'att:2026-10-24', 'att:2026-10-25', 'att:2026-10-26', 'att:2026-10-27',
     'attad:2026-10-27', 'attad:2026-10-27', 'att:2026-10-27', 'att:2026-10-29', 'att:2026-10-28', 'att:2026-11-1', 'att:2026-11-2',
