@@ -111,7 +111,6 @@ function op(o) {
     case 'growchk': return F('growCheck')();
     // ── 유니크 뚝딱이 ──
     case 'tbuy': return F('buyTtuk')();
-    case 'ucard': return w.run(`S.ucard=${+a}`);
     case 'uqup': return F('uqUp')(a);
     default: throw new Error('모르는 조작 ' + o);
   }

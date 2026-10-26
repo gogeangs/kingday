@@ -142,8 +142,6 @@ void main() {
           // ── 유니크 뚝딱이 ──
           case 'tbuy':
             a.buyTtuk();
-          case 'ucard':
-            s.raw['ucard'] = int.parse(o[1]);
           case 'uqup':
             a.uqUp(o[1]);
           case 'open10':
