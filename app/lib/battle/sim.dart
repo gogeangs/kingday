@@ -32,6 +32,9 @@ class Member {
 
   /// 버치 「벌통 방패」: 남은 시간·세기 (웹 P[id].bsh·bshK)
   num bsh = 0, bshK = 1;
+
+  /// 오스카 「밀랍 방패」: 남은 보호막 양 (웹 P[id].ward)
+  num ward = 0;
 }
 
 /// 마물 한 마리 (웹 mons[] 원소)
@@ -168,6 +171,9 @@ class SkillTimers {
 
   /// 베티 「등불 밝히기」 치명타 확률↑, 엘름 「생명의 수액」 흡혈 (남은 시간·강화)
   num lamp = 0, lampK = 1, sap = 0, sapK = 1;
+
+  /// 오스카 「밀랍 방패」 남은 시간 (웹 SKX.ward)
+  num ward = 0;
 
   /// 카엘 촌장 「다 함께 울력」 남은 시간·공격 배수·공속 배수 (웹 ULB)
   num ul = 0, ulA = 1, ulS = 1;
@@ -342,7 +348,7 @@ class BattleSim {
   int chRi() => ch == null ? 0 : ch!.mode == 'tower' ? 3 : dunDef(ch!.k).ri;
 
   void _chPartyReset() {
-    skx.shield = skx.honey = skx.feast = skx.guts = skx.sym = skx.lamp = skx.sap = 0;
+    skx.shield = skx.honey = skx.feast = skx.guts = skx.sym = skx.lamp = skx.sap = skx.ward = 0;
     skx.ul = 0;
     for (final id in c.members()) {
       final p = party[id];
@@ -990,6 +996,27 @@ class BattleSim {
         }
         shakeT = .4;
         if (fxOk('skill_hagrin')) spawnFx('skill_hagrin', cx, cy - 20 * sc, 190 * sc, .9);
+      case 'sophie':
+        // 반짝 마카롱: 다른 동료 스킬 게이지 40% 충전 (자기 제외)
+        final k = c.skPow(id);
+        for (final j in c.members()) {
+          final q = party[j], sk = skills[j];
+          if (j == id || q == null || q.down || sk == null) continue;
+          q.sg = math.min(sk.need, q.sg + sk.need * .4 * k);
+          addFloat(pos[j]!, py[j]! - (heightOf(j) + 8) * sc, '반짝!', 0xFFFF9AD5, 12);
+        }
+        if (fxOk('skill_sophie')) _teamFx('skill_sophie', sc, pos, py, size: 150, dy: 60, life: .8);
+      case 'oscar':
+        // 밀랍 방패: 8초 동안 최대 체력 25% 보호막
+        final k = c.skPow(id);
+        skx.ward = 8;
+        for (final j in c.members()) {
+          final q = party[j];
+          if (q == null || q.down) continue;
+          q.ward = c.stats(j).hp * .25 * k;
+          addFloat(pos[j]!, py[j]! - (heightOf(j) + 8) * sc, '보호막!', 0xFFFFD34A, 12);
+        }
+        if (fxOk('skill_oscar')) _teamFx('skill_oscar', sc, pos, py, size: 170, dy: 30);
       case 'luka':
         final k = c.skPow(id);
         _healAll(.2 * k, 64 * sc, sc, pos, py);
@@ -1015,7 +1042,7 @@ class BattleSim {
     }
   }
 
-  void _teamFx(String k, num sc, Map<String, num> pos, Map<String, num> py) {
+  void _teamFx(String k, num sc, Map<String, num> pos, Map<String, num> py, {num size = 190, num dy = 60, num life = .9}) {
     final ids = c.members();
     num mx = 0, my = 0;
     for (final j in ids) {
@@ -1024,7 +1051,15 @@ class BattleSim {
     for (final j in ids) {
       my = my + py[j]!;
     }
-    spawnFx(k, mx / ids.length, my / ids.length - 60 * sc, 190 * sc, .9);
+    spawnFx(k, mx / ids.length, my / ids.length - dy * sc, size * sc, life);
+  }
+
+  /// 오스카 「밀랍 방패」: 보호막이 피해를 먼저 받음 → 남은 피해 (웹 wardEat)
+  num _wardEat(Member q, num dm) {
+    if (!(skx.ward > 0) || !(q.ward > 0)) return dm;
+    final a = math.min(q.ward, dm);
+    q.ward -= a;
+    return dm - a;
   }
 
   void _stepSkills(num dt, BattleLayout l, List<Mon> alive) {
@@ -1036,6 +1071,7 @@ class BattleSim {
     skx.guts = math.max(0, skx.guts - dt);
     skx.lamp = math.max(0, skx.lamp - dt);
     skx.sap = math.max(0, skx.sap - dt);
+    skx.ward = math.max(0, skx.ward - dt);
     skx.ul = math.max(0, skx.ul - dt);
     if (skx.sym > 0) {
       // 안단테 「꿀벌 교향곡」: 0.5초마다 벌떼가 모든 적을 쏨
@@ -1225,7 +1261,7 @@ class BattleSim {
   void resetFight(String msg) {
     if (ch != null) return _chLose();
     final dem = mons.any((m) => m.dem);
-    skx.shield = skx.honey = skx.feast = skx.guts = skx.sym = skx.lamp = skx.sap = 0;
+    skx.shield = skx.honey = skx.feast = skx.guts = skx.sym = skx.lamp = skx.sap = skx.ward = 0;
     skx.ul = 0;
     for (final id in c.members()) {
       party[id]!.hp = c.stats(id).hp;
@@ -1553,9 +1589,10 @@ class BattleSim {
         hitMon(m, c.stats('gordon').atk * .6 * c.skPow('gordon'), false, sc);
         party['gordon']!.swing = .22;
       }
-      q.hp -= dm;
+      final dd = _wardEat(q, dm);
+      q.hp -= dd;
       q.hit = .15;
-      addFloat(pos[tid]!, py[tid]! - (heightOf(tid) + 8) * sc, '-${fmt(dm)}', 0xFFFF6B7D, 13);
+      addFloat(pos[tid]!, py[tid]! - (heightOf(tid) + 8) * sc, dd > 0 ? '-${fmt(dd)}' : '막음!', 0xFFFF6B7D, 13);
       if (q.hp <= 0) {
         if (skx.guts > 0 && q.guts) {
           // 덕배 불굴: 체력 1로 한 번 버팀
@@ -1684,9 +1721,10 @@ class BattleSim {
       final q = party[id];
       if (q == null || q.down) continue;
       final dm = bm.atk * Balance.seal * (skx.shield > 0 ? .5 : 1) * (skx.mount > 0 ? .3 : 1) * (q.bsh > 0 ? 1 - .4 * q.bshK : 1) / _pmNow;
-      q.hp -= dm;
+      final dd = _wardEat(q, dm);
+      q.hp -= dd;
       q.hit = .2;
-      addFloat(l.pos[id]!, l.py[id]! - (heightOf(id) + 8) * l.s, '-${fmt(dm)}', 0xFFFFD34A, 14);
+      addFloat(l.pos[id]!, l.py[id]! - (heightOf(id) + 8) * l.s, dd > 0 ? '-${fmt(dd)}' : '막음!', 0xFFFFD34A, 14);
       if (q.hp <= 0) {
         if (skx.guts > 0 && q.guts) {
           q.guts = false;

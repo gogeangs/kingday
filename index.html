@@ -7156,6 +7156,22 @@ const COMP = {
     base: { atk: 11, hp: 290, aps: 0.7 },
     per: { atk: 3.2, hp: 58 }
   },
+  sophie: {
+    n: '소피',
+    role: '요리사 · 스킬 충전',
+    desc: '빗자루 대신 커다란 거품기를 타고 다니는 떠돌이 마녀 제과사. 과자를 구우면 늘 마법이 조금씩 새어 나온다. 빵집 소년 루카와는 「빵이 낫냐, 과자가 낫냐」로 늘 티격태격.',
+    join: '동료 카드 30장을 모으면 합류',
+    base: { atk: 5, hp: 82, aps: 0.9 },
+    per: { atk: 1.7, hp: 16.5 }
+  },
+  oscar: {
+    n: '오스카',
+    role: '양봉가 · 보호막',
+    desc: '사라진 「꿀벌 기사단」의 마지막 단원인 노기사. 낡은 줄무늬 갑옷을 지금도 반짝반짝 닦아 입는다. 벌에 쏘여도 「기사는 아프지 않다!」 리엘의 벌통을 지키겠다며 허락도 없이 따라다닌다.',
+    join: '동료 카드 30장을 모으면 합류',
+    base: { atk: 8, hp: 92, aps: 0.75 },
+    per: { atk: 2.8, hp: 18.5 }
+  },
   kael_chief: {
     n: '카엘 촌장',
     role: '촌장 · 원정대 전원 강화',
@@ -7202,7 +7218,9 @@ const JOB = {
     naia: 'fisher',
     bernard: 'cook',
     elm: 'keeper',
-    hagrin: 'miner'
+    hagrin: 'miner',
+    sophie: 'cook',
+    oscar: 'keeper'
   },
   JOBN = { miner: '광부', fisher: '어부', keeper: '양봉가', cook: '요리사' };
 const JSLOT = ['miner', 'kael', 'fisher', 'keeper', 'cook'],
@@ -7514,6 +7532,31 @@ const RECRUITS = {
         'sys:전설 동료 · 마을 스킬 「거인의 손힘」 장비 강화 광석 −25% (출전 안 해도 적용)'
       ],
       ok: '잘 부탁해요, 하그린'
+    },
+    sophie: {
+      job: 'cook',
+      title: '떠돌이 마녀 제과사 소피',
+      lines: [
+        '달콤한 냄새와 함께, 커다란 거품기를 탄 마녀가 마을 광장에 쿵 내려앉았다.',
+        'm:소피@laugh|짠! 한 입 먹으면 기운이 반짝! 소피표 마카롱 왔어요~',
+        'm:루카|흥, 배를 채우는 건 빵이지. 과자는 간식일 뿐이야.',
+        'm:소피|어머, 빵은 마법이 안 나오잖아? 내 과자는 먹으면 힘이 번쩍 난다고!',
+        'k@smile:…둘 다 맛있으면 안 될까?',
+        'sys:요리사 자리에서 마고 대신 출전할 수 있어요.'
+      ],
+      ok: '잘 부탁해, 소피'
+    },
+    oscar: {
+      job: 'keeper',
+      title: '꿀벌 기사 오스카',
+      lines: [
+        '철컥철컥, 줄무늬 갑옷을 입은 작은 노기사가 창을 세우고 경례했다.',
+        'm:오스카|꿀벌 기사단의 마지막 기사, 오스카! 이 벌통은 내가 지키겠소!',
+        'm:리엘|할아버지, 그거 내 벌통인데… 허락한 적 없거든?',
+        'm:오스카@laugh|허허, 기사는 허락을 기다리지 않는 법! 아야, 쏘였다… 기사는 아프지 않다!',
+        'sys:양봉가 자리에서 리엘 대신 출전할 수 있어요.'
+      ],
+      ok: '잘 부탁드려요, 오스카 경'
     }
   },
   STAR_NEED = [30, 20, 40, 80, 150],
@@ -7550,6 +7593,8 @@ const GRADE = {
   bernard: 'legend',
   elm: 'legend',
   hagrin: 'legend',
+  sophie: 'epic',
+  oscar: 'epic',
   kael_chief: 'unique'
 };
 const GR = {
@@ -7986,7 +8031,9 @@ const HEIGHT = {
   naia: 66,
   bernard: 68,
   elm: 64,
-  hagrin: 76
+  hagrin: 76,
+  sophie: 64,
+  oscar: 58
 };
 const compCost = l => Math.floor(25 * Math.pow(1.16, l - 1));
 const UPG = [
@@ -10029,6 +10076,8 @@ const NPCID = {
   베르나르: 'bernard',
   엘름: 'elm',
   하그린: 'hagrin',
+  소피: 'sophie',
+  오스카: 'oscar',
   고든: 'gordon',
   데이지: 'daisy',
   브리다: 'brida',
@@ -13038,6 +13087,20 @@ const SKILLS = {
     need: 26,
     face: 'laugh'
   },
+  sophie: {
+    n: '반짝 마카롱',
+    d: '마카롱을 나눠 다른 동료들의 스킬 게이지를 40% 채움 (자기는 빼고, ★3·★5에서 강화)',
+    line: '한 입 먹으면 기운이 반짝!',
+    need: 24,
+    face: 'laugh'
+  },
+  oscar: {
+    n: '밀랍 방패',
+    d: '8초 동안 원정대 모두에게 최대 체력 25%만큼 피해를 먼저 받아 주는 보호막 (★3·★5에서 강화)',
+    line: '기사는 물러서지 않는다!',
+    need: 24,
+    face: 'laugh'
+  },
   pori: {
     n: '따끈한 수프 배달',
     d: '체력이 가장 낮은 동료 하나의 체력을 35% 회복 (쓰러졌으면 일으킴, ★3에서 강화)',
@@ -13094,8 +13157,15 @@ for (const id in SKILLS) {
   b.onload = () => (CUTIMG[id] = b);
   b.src = 'assets/portraits/portrait_' + id + '_' + SKILLS[id].face + '.png';
 }
-const SKX = { shield: 0, honey: 0, feast: 0, honeyTick: 0, bake: 0, mount: 0, mountK: 1, wall: 0, guts: 0, sym: 0, symK: 1, symTick: 0, lamp: 0, lampK: 1, sap: 0, sapK: 1 };
+const SKX = { shield: 0, honey: 0, feast: 0, honeyTick: 0, bake: 0, mount: 0, mountK: 1, wall: 0, guts: 0, sym: 0, symK: 1, symTick: 0, lamp: 0, lampK: 1, sap: 0, sapK: 1, ward: 0 };
 let cut = null;
+/* 오스카 「밀랍 방패」: 보호막(q.ward)이 남아 있으면 피해를 먼저 받음 → 남은 피해 */
+const wardEat = (q, dm) => {
+  if (!(SKX.ward > 0) || !(q.ward > 0)) return dm;
+  const a = Math.min(q.ward, dm);
+  q.ward -= a;
+  return dm - a;
+};
 const skFull = id => P[id] && !P[id].down && (P[id].sg || 0) >= SKILLS[id].need;
 /* 아침 체조: 보스 등장·도전 시작 때 스킬 게이지를 단계마다 10% 채워 둠 */
 function stretchSk() {
@@ -13510,6 +13580,37 @@ function castSkill(id) {
     }
     shakeT = 0.4;
     if (fxOk('skill_hagrin')) spawnFx('skill_hagrin', cx, cy - 20 * s, 190 * s, 0.9);
+  } else if (id === 'sophie') {
+    /* 반짝 마카롱: 다른 동료 스킬 게이지 40% 충전 (자기 제외 — 무한 반복 방지) */
+    const k = skPow(id);
+    for (const j of members()) {
+      const q = P[j];
+      if (j === id || !q || q.down || !SKILLS[j]) continue;
+      q.sg = Math.min(SKILLS[j].need, (q.sg || 0) + SKILLS[j].need * 0.4 * k);
+      addFloat(pos[j], py[j] - (HEIGHT[j] + 8) * s, '반짝!', '#ff9ad5', 12);
+    }
+    {
+      const ids = members(),
+        mx = ids.reduce((a, j) => a + pos[j], 0) / ids.length,
+        my = ids.reduce((a, j) => a + py[j], 0) / ids.length;
+      if (fxOk('skill_sophie')) spawnFx('skill_sophie', mx, my - 60 * s, 150 * s, 0.8);
+    }
+  } else if (id === 'oscar') {
+    /* 밀랍 방패: 8초 동안 최대 체력 25% 보호막 (피해를 먼저 받음) */
+    const k = skPow(id);
+    SKX.ward = 8;
+    for (const j of members()) {
+      const q = P[j];
+      if (!q || q.down) continue;
+      q.ward = stats(j).hp * 0.25 * k;
+      addFloat(pos[j], py[j] - (HEIGHT[j] + 8) * s, '보호막!', '#ffd34a', 12);
+    }
+    {
+      const ids = members(),
+        mx = ids.reduce((a, j) => a + pos[j], 0) / ids.length,
+        my = ids.reduce((a, j) => a + py[j], 0) / ids.length;
+      if (fxOk('skill_oscar')) spawnFx('skill_oscar', mx, my - 30 * s, 170 * s, 0.9);
+    }
   } else if (id === 'luka') {
     const k = skPow(id);
     for (const j of members()) {
@@ -13537,7 +13638,7 @@ function castSkill(id) {
 }
 function stepSkills(dt, L, alive) {
   const { ids, s } = L;
-  for (const k of ['shield', 'feast', 'bake', 'mount', 'wall', 'guts', 'lamp', 'sap']) SKX[k] = Math.max(0, SKX[k] - dt);
+  for (const k of ['shield', 'feast', 'bake', 'mount', 'wall', 'guts', 'lamp', 'sap', 'ward']) SKX[k] = Math.max(0, SKX[k] - dt);
   ULB.t = Math.max(0, ULB.t - dt);
   if (SKX.sym > 0) {
     SKX.sym -= dt;
@@ -13700,7 +13801,9 @@ const FORM = {
   naia: [0.31, 1],
   bernard: [0.1, 0.58],
   elm: [0.17, 0.16],
-  hagrin: [0.58, 0.72]
+  hagrin: [0.58, 0.72],
+  sophie: [0.1, 0.58],
+  oscar: [0.17, 0.16]
 };
 function layout() {
   const ids = members(),
@@ -13948,7 +14051,7 @@ function hitMon(m, d, cr, s, gy) {
 function resetFight(msg) {
   if (CH) return chLose();
   const dem = mons.some(m => m.dem);
-  SKX.shield = SKX.honey = SKX.feast = SKX.guts = SKX.sym = SKX.lamp = SKX.sap = 0;
+  SKX.shield = SKX.honey = SKX.feast = SKX.guts = SKX.sym = SKX.lamp = SKX.sap = SKX.ward = 0;
   ULB.t = 0;
   for (const id of members()) {
     P[id].hp = stats(id).hp;
@@ -14040,9 +14143,10 @@ function sealHit(bm, L) {
     if (!q || q.down) continue;
     const dm =
       (bm.atk * BAL.seal * (SKX.shield > 0 ? 0.5 : 1) * (SKX.mount > 0 ? 0.3 : 1) * (q.bsh > 0 ? 1 - 0.4 * (q.bshK || 1) : 1)) / chPmNow();
-    q.hp -= dm;
+    const dd = wardEat(q, dm);
+    q.hp -= dd;
     q.hit = 0.2;
-    addFloat(pos[id], py[id] - (HEIGHT[id] + 8) * s, '-' + fmt(dm), '#ffd34a', 14);
+    addFloat(pos[id], py[id] - (HEIGHT[id] + 8) * s, dd > 0 ? '-' + fmt(dd) : '막음!', '#ffd34a', 14);
     if (q.hp <= 0) {
       if (SKX.guts > 0 && q.guts) {
         q.guts = 0;
@@ -14396,9 +14500,10 @@ function step(dt) {
           hitMon(m, stats('gordon').atk * 0.6 * skPow('gordon'), false, s, 0);
           P.gordon.swing = 0.22;
         }
-        q.hp -= dm;
+        const dd = wardEat(q, dm);
+        q.hp -= dd;
         q.hit = 0.15;
-        addFloat(pos[tid], py[tid] - (HEIGHT[tid] + 8) * s, '-' + fmt(dm), '#ff6b7d', 13);
+        addFloat(pos[tid], py[tid] - (HEIGHT[tid] + 8) * s, dd > 0 ? '-' + fmt(dd) : '막음!', '#ff6b7d', 13);
         if (q.hp <= 0) {
           if (SKX.guts > 0 && q.guts) {
             q.guts = 0;
@@ -14702,7 +14807,7 @@ function chCheck() {
 }
 const chDot = () => !!S.chOpen && (supplyCan() || dunLeft() > 0);
 function chPartyReset() {
-  SKX.shield = SKX.honey = SKX.feast = SKX.guts = SKX.sym = SKX.lamp = SKX.sap = 0;
+  SKX.shield = SKX.honey = SKX.feast = SKX.guts = SKX.sym = SKX.lamp = SKX.sap = SKX.ward = 0;
   ULB.t = 0;
   for (const id of members()) {
     if (!P[id]) continue;
@@ -15931,6 +16036,18 @@ const DRAW = {
     drawBron(x, y, s, o);
     ctx.restore();
   },
+  sophie: (x, y, s, o) => {
+    ctx.save();
+    ctx.filter = 'hue-rotate(290deg) saturate(1.3)';
+    drawMargo(x, y, s, o);
+    ctx.restore();
+  },
+  oscar: (x, y, s, o) => {
+    ctx.save();
+    ctx.filter = 'hue-rotate(20deg) saturate(1.4)';
+    drawRiel(x, y, s, o);
+    ctx.restore();
+  },
   brida: (x, y, s, o) => {
     ctx.save();
     ctx.filter = 'hue-rotate(260deg) saturate(1.4) brightness(1.1)';
@@ -15986,7 +16103,9 @@ const SPRITES = {
   naia: { idle: 4, walk: 6, attack: 4, hit: 2, h: 66 },
   bernard: { idle: 4, walk: 6, attack: 4, hit: 2, h: 68 },
   elm: { idle: 4, walk: 6, attack: 4, hit: 2, h: 64 },
-  hagrin: { idle: 4, walk: 6, attack: 4, hit: 2, h: 76 }
+  hagrin: { idle: 4, walk: 6, attack: 4, hit: 2, h: 76 },
+  sophie: { idle: 4, walk: 6, attack: 4, hit: 2, h: 64 },
+  oscar: { idle: 4, walk: 6, attack: 4, hit: 2, h: 58 }
 };
 const SPR_FRAME = 256,
   SPR_FOOT = 250,
@@ -16037,6 +16156,8 @@ const FXDEF = {
     skill_bernard: 4,
     skill_elm: 4,
     skill_hagrin: 4,
+    skill_sophie: 4,
+    skill_oscar: 4,
     net: 2,
     boss_seal: 4
   },
@@ -16380,7 +16501,9 @@ const SPRITE_ALT = {
   naia: 'haral',
   bernard: 'margo',
   elm: 'riel',
-  hagrin: 'bron'
+  hagrin: 'bron',
+  sophie: 'margo',
+  oscar: 'riel'
 };
 const hasSprite = id => !!SPR[id] && ['idle', 'walk', 'attack', 'hit'].every(a => SPR[id][a].ok);
 function spriteFrame(id, p, walk) {
@@ -17389,7 +17512,9 @@ const WLINE = {
   naia: '물이라면 제가 제일이에요!',
   bernard: '정성은 기사도의 기본이오.',
   elm: '천천히… 그래도… 확실히…',
-  hagrin: '…살살 할게…'
+  hagrin: '…살살 할게…',
+  sophie: '반죽은 마법처럼 부풀려 줄게요!',
+  oscar: '벌통 경비는 기사의 의무!'
 };
 function drawVillage() {
   if (!VW || !VIMG.map) return;

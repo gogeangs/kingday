@@ -415,6 +415,22 @@ const wComp = {
     'base': {'atk': 11, 'hp': 290, 'aps': 0.7},
     'per': {'atk': 3.2, 'hp': 58},
   },
+  'sophie': {
+    'n': '소피',
+    'role': '요리사 · 스킬 충전',
+    'desc': '빗자루 대신 커다란 거품기를 타고 다니는 떠돌이 마녀 제과사. 과자를 구우면 늘 마법이 조금씩 새어 나온다. 빵집 소년 루카와는 「빵이 낫냐, 과자가 낫냐」로 늘 티격태격.',
+    'join': '동료 카드 30장을 모으면 합류',
+    'base': {'atk': 5, 'hp': 82, 'aps': 0.9},
+    'per': {'atk': 1.7, 'hp': 16.5},
+  },
+  'oscar': {
+    'n': '오스카',
+    'role': '양봉가 · 보호막',
+    'desc': '사라진 「꿀벌 기사단」의 마지막 단원인 노기사. 낡은 줄무늬 갑옷을 지금도 반짝반짝 닦아 입는다. 벌에 쏘여도 「기사는 아프지 않다!」 리엘의 벌통을 지키겠다며 허락도 없이 따라다닌다.',
+    'join': '동료 카드 30장을 모으면 합류',
+    'base': {'atk': 8, 'hp': 92, 'aps': 0.75},
+    'per': {'atk': 2.8, 'hp': 18.5},
+  },
   'kael_chief': {
     'n': '카엘 촌장',
     'role': '촌장 · 원정대 전원 강화',
@@ -462,6 +478,8 @@ const wJob = {
   'bernard': 'cook',
   'elm': 'keeper',
   'hagrin': 'miner',
+  'sophie': 'cook',
+  'oscar': 'keeper',
 };
 
 const wJobn = {'miner': '광부', 'fisher': '어부', 'keeper': '양봉가', 'cook': '요리사'};
@@ -505,6 +523,8 @@ const wHeight = {
   'bernard': 68,
   'elm': 64,
   'hagrin': 76,
+  'sophie': 64,
+  'oscar': 58,
 };
 
 const wRecruits = {
@@ -815,6 +835,31 @@ const wRecruits = {
     ],
     'ok': '잘 부탁해요, 하그린',
   },
+  'sophie': {
+    'job': 'cook',
+    'title': '떠돌이 마녀 제과사 소피',
+    'lines': [
+      '달콤한 냄새와 함께, 커다란 거품기를 탄 마녀가 마을 광장에 쿵 내려앉았다.',
+      'm:소피@laugh|짠! 한 입 먹으면 기운이 반짝! 소피표 마카롱 왔어요~',
+      'm:루카|흥, 배를 채우는 건 빵이지. 과자는 간식일 뿐이야.',
+      'm:소피|어머, 빵은 마법이 안 나오잖아? 내 과자는 먹으면 힘이 번쩍 난다고!',
+      'k@smile:…둘 다 맛있으면 안 될까?',
+      'sys:요리사 자리에서 마고 대신 출전할 수 있어요.',
+    ],
+    'ok': '잘 부탁해, 소피',
+  },
+  'oscar': {
+    'job': 'keeper',
+    'title': '꿀벌 기사 오스카',
+    'lines': [
+      '철컥철컥, 줄무늬 갑옷을 입은 작은 노기사가 창을 세우고 경례했다.',
+      'm:오스카|꿀벌 기사단의 마지막 기사, 오스카! 이 벌통은 내가 지키겠소!',
+      'm:리엘|할아버지, 그거 내 벌통인데… 허락한 적 없거든?',
+      'm:오스카@laugh|허허, 기사는 허락을 기다리지 않는 법! 아야, 쏘였다… 기사는 아프지 않다!',
+      'sys:양봉가 자리에서 리엘 대신 출전할 수 있어요.',
+    ],
+    'ok': '잘 부탁드려요, 오스카 경',
+  },
 };
 
 const wStarNeed = [30, 20, 40, 80, 150];
@@ -852,6 +897,8 @@ const wGrade = {
   'bernard': 'legend',
   'elm': 'legend',
   'hagrin': 'legend',
+  'sophie': 'epic',
+  'oscar': 'epic',
   'kael_chief': 'unique',
 };
 
@@ -1096,6 +1143,20 @@ const wSkills = {
     'd': '체력 25% 이하인 일반 적은 한 번에 쓰러뜨리고, 나머지 적은 공격력 3배·보스는 4배 피해 (★3·★5에서 강화)',
     'line': '…미안… 세게 친다…',
     'need': 26,
+    'face': 'laugh',
+  },
+  'sophie': {
+    'n': '반짝 마카롱',
+    'd': '마카롱을 나눠 다른 동료들의 스킬 게이지를 40% 채움 (자기는 빼고, ★3·★5에서 강화)',
+    'line': '한 입 먹으면 기운이 반짝!',
+    'need': 24,
+    'face': 'laugh',
+  },
+  'oscar': {
+    'n': '밀랍 방패',
+    'd': '8초 동안 원정대 모두에게 최대 체력 25%만큼 피해를 먼저 받아 주는 보호막 (★3·★5에서 강화)',
+    'line': '기사는 물러서지 않는다!',
+    'need': 24,
     'face': 'laugh',
   },
   'pori': {
@@ -1496,6 +1557,8 @@ const wSprites = {
   'bernard': {'idle': 4, 'walk': 6, 'attack': 4, 'hit': 2, 'h': 68},
   'elm': {'idle': 4, 'walk': 6, 'attack': 4, 'hit': 2, 'h': 64},
   'hagrin': {'idle': 4, 'walk': 6, 'attack': 4, 'hit': 2, 'h': 76},
+  'sophie': {'idle': 4, 'walk': 6, 'attack': 4, 'hit': 2, 'h': 64},
+  'oscar': {'idle': 4, 'walk': 6, 'attack': 4, 'hit': 2, 'h': 58},
 };
 
 const wSprConst = {'frame': 256, 'foot': 250, 'fig': 171};
@@ -1712,6 +1775,8 @@ const wFxdef = {
   'skill_bernard': 4,
   'skill_elm': 4,
   'skill_hagrin': 4,
+  'skill_sophie': 4,
+  'skill_oscar': 4,
   'net': 2,
   'boss_seal': 4,
 };
@@ -1749,6 +1814,8 @@ const wForm = {
   'bernard': [0.1, 0.58],
   'elm': [0.17, 0.16],
   'hagrin': [0.58, 0.72],
+  'sophie': [0.1, 0.58],
+  'oscar': [0.17, 0.16],
 };
 
 const wGobRare = {'badge': 0.005, 'frame': 0.002};
@@ -1868,6 +1935,8 @@ const wWline = {
   'bernard': '정성은 기사도의 기본이오.',
   'elm': '천천히… 그래도… 확실히…',
   'hagrin': '…살살 할게…',
+  'sophie': '반죽은 마법처럼 부풀려 줄게요!',
+  'oscar': '벌통 경비는 기사의 의무!',
 };
 
 const wVep = {

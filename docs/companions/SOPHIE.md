@@ -1,6 +1,6 @@
 # 영웅 요리사 「소피」 기획 기록
 
-작성일: 2026-10-26 · 상태: **기획·그림 완료, 게임 등록은 보류**
+작성일: 2026-10-26 · 상태: **게임 등록 완료 (2026-10-26, 웹·앱)**
 
 ## 추가 배경
 - 영웅 동료 2명 제안(대표님 지시 "영웅 동료 2명을 만들어보자", 2026-10-25): 소피(요리사)·오스카(양봉가). 대기 중인 동료가 광부·어부에 몰려 있어 요리사·양봉가로 제안. 그중 **소피부터** 진행. 오스카는 아직 미진행.
@@ -49,7 +49,13 @@
 | ② 초상화 | `art/source/portraits/portrait_sophie_idle.png`, `portrait_sophie_laugh.png` |
 | ③ 스킬 아이콘 | `art/source/skills/skill_sophie.png` |
 | ④ 스킬 효과 | `art/source/fx/fx_skill_sophie.png` |
-- `assets/`·`index.html`은 아직 손대지 않음.
 
 ## 등록할 때 할 일 (COMPANION_GUIDE.md 6장)
 COMP · JOB(`cook`) · RECRUITS(루카와 빵 vs 과자 다툼) · GRADE(`epic`) · VPAS(영웅 규칙) · HEIGHT/SPRITES/FORM · SKILLS · castSkill(다른 동료 스킬 게이지 충전, 자기 제외) · FXDEF(`skill_sophie:4`) · SPRITE_ALT/DRAW · NPCID(`'소피':'sophie'`) · extract_skill_fx.py
+
+## 게임 등록 결과 (2026-10-26)
+- 능력치: 공격 5 · 체력 82 · 공속 0.9 (레벨당 공격 +1.7, 체력 +16.5), 영웅 배율 ×1.2 → 같은 직업 일반 평균 대비 1.30
+- 스킬 반짝 마카롱 — 다른 동료(자기 제외, 쓰러진 동료 제외) 스킬 게이지를 각자 필요량의 40%만큼 채움, need 24 (★3 ×1.3 = 52%, ★5 ×1.6 = 64%)
+- 마을 스킬 없음 (영웅 규칙: 마을 스킬은 전설만)
+- 그림: 동작 시트는 `tools/slice_frames.py` CUTS `sophie`(줄 사이 모자 챙이 붙어 있어 경계선 지정, 발 기준 가운데, 피격 칸 320), 초상화·스킬 아이콘·효과
+- 대체 그림(그림이 안 올 때): 마고 그림 색 바꿈

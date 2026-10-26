@@ -163,6 +163,9 @@ const CASES = {
     'set:fisher:naia', 'set:cook:bernard', 'set:keeper:elm', 'set:miner:hagrin', 'en:weapon', 'en:helm', 'cw:hagrin', 'seeds:wheat:9', 'plantall', 'time:' + 3 * M, 'harvre',
     'card:hagrin:9999', 'rec:hagrin', 'rec:hagrin', 'rec:hagrin', 'rec:hagrin', 'en:weapon', 'card:elm:9999', 'rec:elm', 'rec:elm', 'plantall', 'time:' + 2 * M, 'harvre',
     'card:naia:9999', 'rec:naia', 'rec:naia', 'set:fisher:salo', 'set:miner:betty', 'auto', 'time:' + 10 * H]],
+  // 영웅 소피·오스카: 맞이하기·별(★5까지)·편성
+  epic2: [base.mid, ['ensure', 'gold:1e12', 'card:sophie:30', 'rec:sophie', 'card:oscar:30', 'rec:oscar', 'set:cook:sophie', 'set:keeper:oscar',
+    'card:sophie:9999', 'rec:sophie', 'rec:sophie', 'rec:sophie', 'rec:sophie', 'lv:sophie', 'lv:oscar', 'auto', 'time:' + 2 * H]],
   // 출석체크: 7일 판 반복·한달 판 초기화·건너뛰기·같은 날·날짜 되돌리기·광고 2배·큰 보상(7·14·21·28)·배지·무료권 사용
   attend: [base.mid, ['att:2026-10-21', 'att:2026-10-22', 'att:2026-10-23', 'att:2026-10-24', 'att:2026-10-25', 'att:2026-10-26', 'att:2026-10-27',
     'attad:2026-10-27', 'attad:2026-10-27', 'att:2026-10-27', 'att:2026-10-29', 'att:2026-10-28', 'att:2026-11-1', 'att:2026-11-2',

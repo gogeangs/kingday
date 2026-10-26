@@ -46,6 +46,8 @@ const CASES = [
   ['commons3', withTut(base.late, { stage: 66, best: 68, wave: 2, rec: Object.assign({}, base.late.rec || {}, { salo: 3, betty: 3 }), lv: Object.assign({}, base.late.lv || {}, { salo: 60, betty: 60 }), party: { miner: 'betty', fisher: 'salo', keeper: 'riel', cook: 'margo' } }), 200, 240],
   ['legends2', withTut(base.late, { stage: 72, best: 74, wave: 2, rec: Object.assign({}, base.late.rec || {}, { naia: 3, bernard: 5, elm: 4, hagrin: 3 }), lv: Object.assign({}, base.late.lv || {}, { naia: 60, bernard: 60, elm: 60, hagrin: 60 }), party: { fisher: 'naia', keeper: 'elm', cook: 'bernard', miner: 'hagrin' } }), 200, 240],
   ['legends2hard', withTut(base.late, { stage: 90, best: 92, wave: 3, rec: Object.assign({}, base.late.rec || {}, { naia: 5, bernard: 3, elm: 5, hagrin: 5 }), lv: Object.assign({}, base.late.lv || {}, { naia: 40, bernard: 40, elm: 40, hagrin: 40 }), party: { fisher: 'naia', keeper: 'elm', cook: 'bernard', miner: 'hagrin' } }), 200, 240],
+  // 영웅 소피(반짝 마카롱: 다른 동료 게이지 충전)·오스카(밀랍 방패: 보호막) — 보호막이 피해를 받게 어려운 영지
+  ['epics2', withTut(base.late, { stage: 84, best: 86, wave: 3, rec: Object.assign({}, base.late.rec || {}, { sophie: 3, oscar: 5, naia: 3, hagrin: 3 }), lv: Object.assign({}, base.late.lv || {}, { sophie: 50, oscar: 50, naia: 50, hagrin: 50 }), party: { fisher: 'naia', keeper: 'oscar', cook: 'sophie', miner: 'hagrin' } }), 200, 240],
   // 유니크 카엘 촌장 ★3 (다 함께 울력)
   ['chief', withTut(base.chief, { stage: 66, best: 68, wave: 2 }), 200, 120],
 ];
