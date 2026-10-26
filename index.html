@@ -2367,6 +2367,86 @@ table.codds th {
 .attm .attc > span {
   display: none;
 }
+/* 한달 판 5배수 칸: 전설 만능 카드 표시 */
+.attc .lct {
+  position: absolute;
+  left: 50%;
+  bottom: 1px;
+  transform: translateX(-50%);
+  font-style: normal;
+  font-size: 9.5px;
+  font-weight: 700;
+  line-height: 1.3;
+  padding: 0 4px;
+  border-radius: 6px;
+  background: #ffc23a;
+  color: #2a1a00;
+  white-space: nowrap;
+}
+.attc.lc {
+  border-color: rgba(255, 194, 58, 0.7) !important;
+}
+.lcic {
+  position: relative;
+  display: inline-block;
+}
+.lcic i {
+  position: absolute;
+  left: 50%;
+  bottom: -2px;
+  transform: translateX(-50%);
+  font-style: normal;
+  font-size: 9px;
+  font-weight: 700;
+  padding: 0 3px;
+  border-radius: 5px;
+  background: #ffc23a;
+  color: #2a1a00;
+  white-space: nowrap;
+}
+.fgtabs button {
+  position: relative;
+}
+.fgtabs button .dot {
+  position: absolute;
+  top: 4px;
+  right: 6px;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: #ffd23a;
+}
+.lcbar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 2px 0 10px;
+  padding: 8px 12px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 194, 58, 0.6);
+  background: rgba(255, 194, 58, 0.08);
+}
+.lcbar img {
+  width: 30px;
+  height: 40px;
+  object-fit: contain;
+}
+.lcbar span:last-child {
+  display: flex;
+  flex-direction: column;
+}
+.lcbar b {
+  color: #ffc23a;
+}
+.lcbar small {
+  font-size: 12px;
+  color: var(--muted);
+}
+.cbtns .lcbtn {
+  background: linear-gradient(#ffd96a, #d39a1c) !important;
+  color: #2a1a00 !important;
+  font-size: 12.5px;
+}
 .attm .attc.big {
   border: 2px solid var(--gold);
   background: linear-gradient(#3a2c0c, #241a07);
@@ -9028,7 +9108,8 @@ function fresh() {
     gemRank: 0,
     gemLord: {},
     daily: { d: '', kill: 0, box: 0, harv: 0, claim: {} },
-    att: { last: '', w: 0, ym: '', m: 0, ad: '', got: [], intro: 0, tab: 'w' },
+    att: { last: '', w: 0, ym: '', m: 0, ad: '', got: [], intro: 0, tab: 'w', lw: '', lm: '', gw: [], gm: [], adw: '', adm: '' },
+    lcard: 0,
     tickets: { box: 0, box10: 0 },
     capClears: 0,
     capBonus: 0,
@@ -9105,6 +9186,7 @@ function hydrate(d) {
   /* 마을 확장: 광산이 있던 세이브는 브론의 대장간을 Lv.1로 지어 줌(강화 기록 slotEn·cwEn은 그대로) */
   if (d && !(d.bld && d.bld.forge != null) && f.bld.mine > 0) f.bld.forge = 1;
   f.ucard = Math.max(0, Math.floor(+f.ucard || 0));
+  f.lcard = Math.max(0, Math.floor(+f.lcard || 0));
   /* 골드·이삭은 0 아래로 읽지 않고, 영지·최고 영지는 1 이상 정수 */
   f.gold = Math.max(0, f.gold);
   f.gem = Math.max(0, f.gem);
@@ -9170,7 +9252,7 @@ const AD_TEST = true,
     gem: { n: 3, t: '황금 이삭 +5' },
     farm: { n: 2, t: '자라는 작물 바로 키우기' },
     offline: { n: 2, t: '방치 보상 2배' },
-    att: { n: 1, t: '출석 보상 2배' },
+    att: { n: 2, t: '출석 보상 2배' },
     dun: { n: 1, t: '던전 입장권 +1' },
     bless: { n: 1, t: '축복 한 번 더' }
   };
@@ -11810,6 +11892,8 @@ function renderParty() {
     '|' +
     (S.ucard || 0) +
     '|' +
+    (S.lcard || 0) +
+    '|' +
     (S.retires || 0);
   if (sig !== partySig) {
     partySig = sig;
@@ -11851,7 +11935,7 @@ function renderParty() {
           mx = stv >= starMax(id);
         return `<div class="ccard${op ? '' : ' locked'}${stv ? ' own' : ''}" style="--g:${gr(id).c}"><span class="cfr"><img src="assets/ui/frame_${gr(id).fr}.png" alt="" onerror="this.remove()"><canvas class="portrait" id="pcd-${id}"></canvas></span><div class="info"><b>${op ? c.n : '???'}</b>${gradeTag(id)}<span class="role"><img class="jobi" src="assets/ui/job_${JOB[id]}.png" alt="" onerror="this.remove()">${JOBN[JOB[id]]}</span>${stv ? starTxt(id) : ''}
     ${VPAS[id] ? `<div class="vpline"><img src="assets/ui/village_skill.png" alt="" style="width:16px;height:16px;vertical-align:-3px;margin-right:3px">마을 스킬 · ${VPAS[id].n}</div>` : ''}${!op ? `<div>${isRec(id) ? COMP[STORY[RECRUITS[id].job]].n + '이(가) 합류하면 카드가 나오기 시작해요' : c.join}</div>` : mx ? '<div>별을 모두 모았어요</div>' : `<div class="xp"><div style="width:${Math.min(100, (n / need) * 100)}%"></div></div><div>카드 ${n} / ${need}</div>`}</div>
-    ${op && !mx ? `<div class="cbtns"><button class="buy${n >= need ? ' glow' : ''}" id="rc-${id}" ${n >= need ? '' : 'disabled'}>${stv ? '★ 올리기' : '맞이하기'}</button><button class="wish${S.wish === id ? ' on' : ''}" id="ws-${id}">${S.wish === id ? '♥ 희망 중' : '♡ 희망'}</button></div>` : ''}</div>`;
+    ${op && !mx ? `<div class="cbtns"><button class="buy${n >= need ? ' glow' : ''}" id="rc-${id}" ${n >= need ? '' : 'disabled'}>${stv ? '★ 올리기' : '맞이하기'}</button>${GRADE[id] === 'legend' && (S.lcard || 0) > 0 && n < need ? `<button class="buy lcbtn" id="lc-${id}">만능 ${Math.min(S.lcard, need - n)}장 넣기</button>` : ''}<button class="wish${S.wish === id ? ' on' : ''}" id="ws-${id}">${S.wish === id ? '♥ 희망 중' : '♡ 희망'}</button></div>` : ''}</div>`;
       })
       .join('');
     const ucRow =
@@ -11917,7 +12001,7 @@ function renderParty() {
         : ptTab === 'list'
           ? `<div class="pvsw"><p class="note">동료를 누르면 자세한 정보·스킬·출전을 볼 수 있어요.</p><div class="seg"><button data-pv="list" class="${S.ptGrid ? '' : 'on'}">목록</button><button data-pv="grid" class="${S.ptGrid ? 'on' : ''}">격자</button></div></div>` +
             (S.ptGrid ? `<div class="cgrid">${list.map(gcell).join('')}</div>` : list.map(crow).join(''))
-          : `${helpNote('cardgr', '카드 등급·얻는 곳', `카드 등급: <b style="color:#b8c0cc">일반</b>(★3까지) · <b style="color:#5aa8ff">희귀</b>(★4) · <b style="color:#b07bff">영웅</b>(★5) · <b style="color:#ffc23a">전설</b>(★5). 높은 등급일수록 드물게 나오고 기본 능력치가 높아요. 마물·성주·군단장·황금 고블린·오늘의 할 일·피트의 상점에서 카드를 얻어요. ♡ 희망을 눌러 두면 그 동료 카드가 절반 확률로 나와요. 은퇴해도 카드와 별은 남아요.${ucRow ? ' <b style="color:#3ee08f">유니크</b>(★5)는 카드 뽑기에 나오지 않고, 유니크 카드로만 별을 올려요.' : ''}`)}${ucRow}${ttRow}${recs}`;
+          : `${helpNote('cardgr', '카드 등급·얻는 곳', `카드 등급: <b style="color:#b8c0cc">일반</b>(★3까지) · <b style="color:#5aa8ff">희귀</b>(★4) · <b style="color:#b07bff">영웅</b>(★5) · <b style="color:#ffc23a">전설</b>(★5). 높은 등급일수록 드물게 나오고 기본 능력치가 높아요. 마물·성주·군단장·황금 고블린·오늘의 할 일·피트의 상점에서 카드를 얻어요. ♡ 희망을 눌러 두면 그 동료 카드가 절반 확률로 나와요. 은퇴해도 카드와 별은 남아요.${ucRow ? ' <b style="color:#3ee08f">유니크</b>(★5)는 카드 뽑기에 나오지 않고, 유니크 카드로만 별을 올려요.' : ''}`)}${(S.lcard || 0) > 0 ? `<div class="lcbar"><span class="lcic"><img src="assets/ui/card_back.png" alt=""><i>전설</i></span><span><b>전설 만능 카드 ${S.lcard}장</b><small>${lcardCan() ? '전설 동료 줄의 「만능 … 넣기」로 원하는 동료에게 넣어요' : '전설 동료 카드가 나오기 시작하면 넣을 수 있어요'}</small></span></div>` : ''}${ucRow}${ttRow}${recs}`;
     document.querySelectorAll('#ptTabs [data-pt]').forEach(b => b.classList.toggle('on', b.dataset.pt === ptTab));
     helpBind($('party'), () => {
       partySig = '';
@@ -11987,6 +12071,15 @@ function renderParty() {
       if (go) go.onclick = () => setMember(JOB[id], id);
       const rc = $('rc-' + id);
       if (rc) rc.onclick = () => recruitUp(id);
+      const lc = $('lc-' + id);
+      if (lc)
+        lc.onclick = () => {
+          const n = lcardUse(id);
+          if (!n) return;
+          toast(COMP[id].n + ' 카드 +' + n + ' (전설 만능 카드)');
+          save();
+          renderAll();
+        };
       const ws = $('ws-' + id);
       if (ws)
         ws.onclick = () => {
@@ -21367,7 +21460,10 @@ const ATT_BIG = {
 };
 const ATT_G = [1, 4, 10, 13, 17, 20, 24, 27],
   ATT_S = [2, 5, 9, 12, 16, 19, 23, 26];
-const attM = n =>
+/* 한달 판 5·10·15·20·25·30회째: 원래 보상 + 전설 만능 카드 10장 (CONTENT_ATTENDANCE_2.md · 대표님 결정 10-27) */
+const ATT_LC = { k: 'lcard', n: 10, alt: 300 };
+const attM = n => (n % 5 === 0 ? [...attM0(n), ATT_LC] : attM0(n));
+const attM0 = n =>
   ATT_BIG[n] ||
   (n >= 29
     ? [{ k: 'gold', h: 1 }]
@@ -21408,56 +21504,115 @@ function attA() {
   if (!S.att || typeof S.att !== 'object') S.att = {};
   const a = S.att,
     d = fresh().att;
+  /* 옛 저장(두 판 함께 받던 때): 마지막 출석 날짜를 두 판에 나눠 넣음 */
+  if (a.last && !a.lw && !a.lm) {
+    a.lw = a.lm = a.last;
+    if (a.ad === a.last) a.adw = a.adm = a.ad;
+  }
   for (const k in d) if (a[k] == null) a[k] = d[k];
-  if (!Array.isArray(a.got)) a.got = [];
+  for (const k of ['got', 'gw', 'gm']) if (!Array.isArray(a[k])) a[k] = [];
   if (!S.tickets || typeof S.tickets !== 'object') S.tickets = { box: 0, box10: 0 };
   return a;
 }
 const attEligible = () => (S.best || 1) >= 3;
-function attStatusAt(t) {
+/* 판(b: 'w' 7일 · 'm' 한달)마다 따로 받음. b 없이 부르면 두 판을 합쳐서: 둘 다 받았으면 done */
+function attStatusAt(t, b) {
   const a = attA();
-  if (a.last === t) return 'done';
-  if (a.last && dnum(t) < dnum(a.last)) return 'back';
+  if (!b) {
+    const w = attStatusAt(t, 'w'),
+      m = attStatusAt(t, 'm');
+    return w === 'back' || m === 'back' ? 'back' : w === 'done' && m === 'done' ? 'done' : 'ok';
+  }
+  const last = b === 'w' ? a.lw : a.lm;
+  if (last === t) return 'done';
+  if (last && dnum(t) < dnum(last)) return 'back';
   return 'ok';
 }
-const attStatus = () => attStatusAt(today());
+const attStatus = b => attStatusAt(today(), b);
 /* 출석 처리(창 없이): 그날 t 에 출석 → 두 판 보상 지급. 앱 core/attendance.dart 와 같은 규칙 */
-function attDo(t) {
-  const a = attA(),
-    st = attStatusAt(t);
-  if (st !== 'ok') return st;
-  const ym = attYm(t);
-  if (a.ym !== ym) {
-    a.ym = ym;
-    a.m = 0;
+function attDo(t, b) {
+  if (!b) {
+    /* 두 판 한꺼번에 (시험·옛 흐름): 받을 수 있는 판만 */
+    const w = attDo(t, 'w'),
+      m = attDo(t, 'm');
+    if (typeof w === 'string' && typeof m === 'string') return w === 'back' || m === 'back' ? 'back' : 'done';
+    const ow = typeof w === 'object' ? w : null,
+      om = typeof m === 'object' ? m : null;
+    return { b: 'both', wd: ow ? ow.wd : null, md: om ? om.md : null, rows: [...(ow ? ow.rows : []), ...(om ? om.rows : [])], first: !!((ow && ow.first) || (om && om.first)) };
   }
-  const wd = (a.w | 0) % 7,
-    md = Math.min(31, (a.m | 0) + 1),
+  const a = attA(),
+    st = attStatusAt(t, b);
+  if (st !== 'ok') return st;
+  const first = a.lw !== t && a.lm !== t,
     rows = [],
     got = [];
-  for (const r of [...ATT_W[wd], ...attM(md)]) {
+  let wd = null,
+    md = null,
+    rs;
+  if (b === 'w') {
+    wd = (a.w | 0) % 7;
+    rs = ATT_W[wd];
+  } else {
+    const ym = attYm(t);
+    if (a.ym !== ym) {
+      a.ym = ym;
+      a.m = 0;
+    }
+    md = Math.min(31, (a.m | 0) + 1);
+    rs = attM(md);
+  }
+  for (const r of rs) {
     const g = attGive(r);
     got.push(g.it);
     rows.push(g.row);
   }
-  a.w = (wd + 1) % 7;
-  a.m = md;
-  a.last = t;
-  a.got = got;
-  stat('att', 1);
-  return { wd, md, rows };
+  if (b === 'w') {
+    a.w = (wd + 1) % 7;
+    a.lw = t;
+    a.gw = got;
+  } else {
+    a.m = md;
+    a.lm = t;
+    a.gm = got;
+  }
+  /* 옛 버전과 함께 쓰는 저장: 두 판 다 받은 날만 last 를 그날로 */
+  if (a.lw === t && a.lm === t) a.last = t;
+  if (first) stat('att', 1);
+  return { b, wd, md, rows, first };
 }
 /* 광고 2배(창 없이): 그날 받은 보상을 한 번 더, 배지는 빼고 */
-function attAdDo(t) {
-  const a = attA();
-  if (attStatusAt(t) !== 'done' || a.ad === t) return null;
+/* 광고 2배(창 없이): 그 판에서 그날 받은 보상을 한 번 더 — 판마다 하루 1번, 배지는 빼고 (전설 만능 카드는 2배) */
+function attAdDo(t, b) {
+  if (!b) {
+    const w = attAdDo(t, 'w'),
+      m = attAdDo(t, 'm');
+    return w || m ? [...(w || []), ...(m || [])] : null;
+  }
+  const a = attA(),
+    k = b === 'w' ? 'adw' : 'adm';
+  if (attStatusAt(t, b) !== 'done' || a[k] === t) return null;
   const rows = [];
-  for (const r of a.got) {
+  for (const r of b === 'w' ? a.gw : a.gm) {
     if (r.k === 'badge') continue;
     rows.push(attGive(r, true).row);
   }
+  a[k] = t;
   a.ad = t;
   return rows;
+}
+/* 전설 만능 카드: 받을 수 있는(그 직업 이야기 동료 합류·별 5 전) 전설 동료가 있어야 쓸 수 있음 */
+const lcardCan = () => CARDIDS().some(x => GRADE[x] === 'legend' && cardCan(x)),
+  lcardNeed = id => Math.max(0, starNeed(id) - ((S.cards || {})[id] || 0));
+/* 만능 카드를 그 동료 카드로 바꿔 넣음 (다음 합류·별 올리기에 모자란 만큼만). 넣은 장수 */
+function lcardUse(id) {
+  if (GRADE[id] !== 'legend' || !cardCan(id)) return 0;
+  const n = Math.min(S.lcard || 0, lcardNeed(id));
+  if (n <= 0) return 0;
+  if (!S.cards) S.cards = {};
+  S.cards[id] = (S.cards[id] || 0) + n;
+  S.lcard -= n;
+  partySig = '';
+  return n;
 }
 const attMonthN = () => {
   const a = attA();
@@ -21468,10 +21623,10 @@ function attHud() {
   if (!b) return;
   const on = attEligible();
   b.hidden = !on;
-  $('attDot').hidden = !on || attStatus() !== 'ok';
+  $('attDot').hidden = !on || (attStatus('w') !== 'ok' && attStatus('m') !== 'ok');
   if (on && attAutoDay && attAutoDay !== today()) {
     attAutoDay = today();
-    if (attStatus() === 'ok') queue(attOpen);
+    if (attStatus('w') === 'ok' || attStatus('m') === 'ok') queue(attOpen);
     passS();
     queue(passWarn);
   }
@@ -21496,6 +21651,8 @@ function attIc(r, c) {
     case 'card':
     case 'ecard':
       return `<img class="${c}" src="assets/ui/card_back.png" alt="">`;
+    case 'lcard':
+      return `<span class="lcic"><img class="${c}" src="assets/ui/card_back.png" alt=""><i>전설</i></span>`;
     case 'badge':
       return `<img class="${c}" data-k="att" src="assets/profile/badge_att.png" alt="" onerror="bdErr(this)">`;
   }
@@ -21519,6 +21676,8 @@ function attNm(r) {
       return '동료 카드 ' + r.n + '장';
     case 'ecard':
       return '영웅↑ 카드 ' + r.n + '장';
+    case 'lcard':
+      return '전설 만능 카드 ' + r.n + '장';
     case 'badge':
       return '출석 배지';
   }
@@ -21534,6 +21693,7 @@ const attShort = r =>
     tbox10: '10연권',
     card: '카드 ' + r.n,
     ecard: '영웅 ' + r.n,
+    lcard: '전설 ' + r.n,
     badge: '배지'
   })[r.k] || '';
 /* 카드: 받을 카드가 없으면(합류 전·모두 별 가득) 이삭으로 대체. 영웅↑ 카드는 영웅·전설 중에서, 없으면 일반 규칙 → 그것도 없으면 이삭 */
@@ -21619,6 +21779,18 @@ function attGive(r, again) {
         (res.gold ? (res.got.length ? ' · ' : '') + '별 다 채운 몫 골드 +' + fmt(res.gold) : '');
       break;
     }
+    case 'lcard':
+      if (!lcardCan()) {
+        S.gem = (S.gem || 0) + r.alt;
+        txt = '황금 이삭 +' + r.alt;
+        sub = '넣을 수 있는 전설 동료가 아직 없어서 이삭으로 대신 드려요';
+        return { it, row: attRow({ k: 'gem' }, txt, sub, again) };
+      }
+      S.lcard = (S.lcard || 0) + r.n;
+      txt = '전설 만능 카드 +' + r.n + '장';
+      sub = '원정대 → 카드 탭에서 원하는 전설 동료에게 넣어요';
+      partySig = '';
+      break;
     case 'badge': {
       const k = 'att_' + attA().ym.replace('-', '');
       if (!S.bdUnl) S.bdUnl = {};
@@ -21647,14 +21819,18 @@ function attOpen() {
     save();
     attIntroNow = true;
   }
-  attSheet();
+  /* 지금 탭을 이미 받았고 다른 판이 남았으면 그 판부터 */
+  const cur = a.tab === 'm' ? 'm' : 'w',
+    oth = cur === 'w' ? 'm' : 'w';
+  attSheet(attStatus(cur) !== 'ok' && attStatus(oth) === 'ok' ? oth : undefined);
 }
-function attClaim() {
-  const r = attDo(today());
+/* 판(b)마다 따로 받기 (CONTENT_ATTENDANCE_2.md) */
+function attClaim(b) {
+  const r = attDo(today(), b);
   if (r === 'done') return toast('오늘은 이미 받았어요. 내일 자정에 또 만나요');
   if (r === 'back') return toast('날짜가 이상해요. 휴대폰 시간을 확인해 주세요.');
   attJust = r;
-  passAdd('att');
+  if (r.first) passAdd('att');
   haptic([30, 40, 70]);
   shopSig = '';
   eqSig = '';
@@ -21662,18 +21838,20 @@ function attClaim() {
   pfCheck();
   save();
   renderAll();
-  toast('출석 완료! 7일 판 ' + (r.wd + 1) + '일째 · 이번 달 ' + r.md + '회째');
+  toast(b === 'w' ? '출석 완료! 7일 판 ' + (r.wd + 1) + '일째' : '출석 완료! 이번 달 ' + r.md + '회째');
   attSheet();
 }
-function attAd() {
+function attAd(b) {
   const a = attA();
-  if (attStatus() !== 'done') return;
-  if (a.ad === today()) return toast('오늘은 다 봤어요. 내일 다시 받을 수 있어요');
+  if (attStatus(b) !== 'done') return;
+  if (a[b === 'w' ? 'adw' : 'adm'] === today()) return toast('이 판은 오늘 다 봤어요. 내일 다시 받을 수 있어요');
   watchAd('att', () => {
-    const rows = attAdDo(today());
+    const rows = attAdDo(today(), b);
     if (!rows) return;
-    attJust = { ad: 1, rows };
+    attJust = { ad: 1, b, rows };
     pfCheck();
+    partySig = '';
+    save();
     toast('피트가 한 번 더 챙겨 줬어요');
     setTimeout(attSheet, 30);
   });
@@ -21686,13 +21864,15 @@ function attSheet(tab) {
   }
   const tb = a.tab === 'm' ? 'm' : 'w',
     t = today(),
-    st = attStatus(),
+    st = attStatus(tb),
     done = st === 'done',
+    oth = attStatus(tb === 'w' ? 'm' : 'w') === 'ok',
     mc = attMonthN(),
     dim = attDim(t),
     mo = +t.split('-')[1];
   const stp = n =>
     `<i class="stp${n ? ' in' : ''}"><img src="assets/ui/att_stamp.png" alt="" onerror="this.parentNode.classList.add('nf');this.remove()"></i>`;
+  if (attJust && attJust.b && attJust.b !== tb) attJust = null;
   const jw = attJust && attJust.wd != null ? attJust.wd : -1,
     jm = attJust && attJust.md != null ? attJust.md : -1;
   let board = '';
@@ -21714,20 +21894,23 @@ function attSheet(tab) {
       big = !!ATT_BIG[n],
       got = n <= mc,
       now = !done && n === mc + 1;
-    return `<div class="attc${big ? ' big' : ''}${now ? ' now' : ''}${got ? ' got' : ''}" title="${n}회 · ${rs.map(attNm).join(' + ')}"><em>${n}</em>${attIc(rs[0])}${got ? stp(n === jm) : ''}</div>`;
+    return `<div class="attc${big ? ' big' : ''}${n % 5 === 0 ? ' lc' : ''}${now ? ' now' : ''}${got ? ' got' : ''}" title="${n}회 · ${rs.map(attNm).join(' + ')}"><em>${n}</em>${attIc(rs[0])}${n % 5 === 0 ? '<i class="lct">전설</i>' : ''}${got ? stp(n === jm) : ''}</div>`;
   }).join('')}</div>
-  <p class="note">큰 보상 · 7회 동료 카드 10장 · 14회 이삭 100 · 21회 영웅 이상 카드 10장 · 28회 이삭 100 + ${mo}월 출석 배지. 매달 1일에 새로 시작해요.</p>`;
+  <p class="note">큰 보상 · 7회 동료 카드 10장 · 14회 이삭 100 · 21회 영웅 이상 카드 10장 · 28회 이삭 100 + ${mo}월 출석 배지. <b style="color:#ffc23a">5·10·15·20·25·30회</b>엔 <b style="color:#ffc23a">전설 만능 카드 10장</b>을 더 줘요(원하는 전설 동료에게 넣어요). 매달 1일에 새로 시작해요.</p>`;
   }
-  const adOk = done && a.ad !== t && adLeft('att') > 0;
+  const bg = tb === 'w' ? a.gw : a.gm;
+  const adOk = done && a[tb === 'w' ? 'adw' : 'adm'] !== t && adLeft('att') > 0;
   const gotHtml =
     attJust && attJust.rows
       ? `<div class="attgot"><b>${attJust.ad ? '광고 보상 · 한 번 더' : '오늘 받은 선물'}</b>${attJust.rows.join('')}</div>`
-      : done && a.got.length
-        ? `<div class="attgot"><b>오늘 받은 선물</b>${a.got.map(r => attRow(r.k === 'badge' ? { k: 'badge' } : r, r.k === 'badge' ? BDN(r.id) + ' 배지' : attNm(r), '')).join('')}</div>`
+      : done && bg.length
+        ? `<div class="attgot"><b>오늘 받은 선물 · ${tb === 'w' ? '7일 판' : '한달 판'}</b>${bg.map(r => attRow(r.k === 'badge' ? { k: 'badge' } : r, r.k === 'badge' ? BDN(r.id) + ' 배지' : attNm(r), '')).join('')}</div>`
         : '';
   const line =
     attJust && !attJust.ad
-      ? attJust.md === 28
+      ? attJust.md && attJust.md % 5 === 0 && (S.lcard || 0) > 0
+        ? 'm:피트|전설 만능 카드예요! 원정대 카드 탭에서 마음에 드는 전설 동료에게 넣어 주세요.'
+        : attJust.md === 28
         ? 'm:피트|이번 달 출석부를 다 채우셨네요! 이 배지는 아무나 못 받아요.'
         : attJust.wd === 6
           ? 'm:피트|일주일 개근! 특별히 상자 10번 여는 표를 넣었어요.'
@@ -21737,15 +21920,17 @@ function attSheet(tab) {
     st === 'back'
       ? `<button class="pri" disabled>날짜를 확인해 주세요</button>`
       : !done
-        ? `<button class="pri" id="attGo">출석하기</button>`
+        ? `<button class="pri" id="attGo">${tb === 'w' ? '7일 판 받기' : '한달 판 받기'}</button>`
         : adOk
           ? `<button id="attAdB" style="font-size:14px">▶ 광고로 한 번 더</button>`
-          : `<button disabled>내일 또 만나요</button>`;
+          : oth
+            ? `<button class="pri" id="attOth">${tb === 'w' ? '한달 판도 받기 ›' : '7일 판도 받기 ›'}</button>`
+            : `<button disabled>내일 또 만나요</button>`;
   $('sheet').innerHTML =
     `<div class="hdban${ATTIMG.hd_attend ? '' : ' nohd'}" style="--hb:url(assets/ui/hd_attend.png)"><span>피트의 출석부</span></div>
- <div class="fgtabs"><button data-at="w" class="${tb === 'w' ? 'on' : ''}">7일</button><button data-at="m" class="${tb === 'm' ? 'on' : ''}">한달</button></div>
+ <div class="fgtabs"><button data-at="w" class="${tb === 'w' ? 'on' : ''}">7일${attStatus('w') === 'ok' ? '<i class="dot"></i>' : ''}</button><button data-at="m" class="${tb === 'm' ? 'on' : ''}">한달${attStatus('m') === 'ok' ? '<i class="dot"></i>' : ''}</button></div>
  ${attIntroNow ? ['m:피트|어서 와요, 영주님! 오늘부터 출석부를 만들었어요. 하루 한 번 얼굴만 보여 주시면 선물을 챙겨 드릴게요.', 'k@smile:얼굴만 보여 주면 된다고? 그건 은퇴하고도 할 수 있겠네.'].map(para).join('') : ''}${board}${st === 'back' ? '<p class="lore sys">날짜가 이상해요. 휴대폰 시간을 확인해 주세요.</p>' : ''}${line ? para(line) : ''}${gotHtml}
- <div class="acts">${done && st !== 'back' ? btn + '<button class="pri" id="mX">닫기</button>' : '<button id="mX">닫기</button>' + btn}</div>`;
+ <div class="acts">${done && st !== 'back' ? btn + `<button class="${btn.includes('attOth') ? '' : 'pri'}" id="mX">닫기</button>` : '<button id="mX">닫기</button>' + btn}</div>`;
   $('modal').hidden = false;
   attJust = null;
   $('mX').onclick = () => {
@@ -21753,8 +21938,9 @@ function attSheet(tab) {
     closeModal();
   };
   document.querySelectorAll('[data-at]').forEach(b => (b.onclick = () => attSheet(b.dataset.at)));
-  if ($('attGo')) $('attGo').onclick = attClaim;
-  if ($('attAdB')) $('attAdB').onclick = attAd;
+  if ($('attGo')) $('attGo').onclick = () => attClaim(tb);
+  if ($('attAdB')) $('attAdB').onclick = () => attAd(tb);
+  if ($('attOth')) $('attOth').onclick = () => attSheet(tb === 'w' ? 'm' : 'w');
 }
 /* 배지 그림: 출석 배지는 월별 그림 → 공용 그림 → 그림이 없으면 그려 둔 메달 */
 const ATT_BDM = ['11', '12', '01']; /* 월별 배지 그림이 있는 달. 없는 달은 공용 그림 */
@@ -21868,7 +22054,7 @@ function start(data) {
   if (!isNew) queue(passWarn);
   attAutoDay = today();
   attPreload();
-  if (!isNew && attEligible() && attStatus() === 'ok') queue(attOpen);
+  if (!isNew && attEligible() && (attStatus('w') === 'ok' || attStatus('m') === 'ok')) queue(attOpen);
   drawMyFace();
   $('startBtn').onclick = () => {
     $('title').hidden = true;

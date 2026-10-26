@@ -5,6 +5,7 @@ import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 
+import '../core/attendance.dart';
 import '../core/calc.dart';
 import '../core/data.dart';
 import '../core/fmt.dart';
@@ -460,6 +461,28 @@ class PtPage extends StatelessWidget {
         style: KdText.body(12, color: KdColors.muted, height: 1.6),
       ),
       ),
+      // 전설 만능 카드 보유 줄 (웹 .lcbar)
+      if (g.acts.lcard > 0)
+        Container(
+          margin: const EdgeInsets.only(top: 8),
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+          decoration: BoxDecoration(
+            color: const Color(0x14FFC23A),
+            border: Border.all(color: const Color(0x99FFC23A)),
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: Row(children: [
+            kdImg('assets/game/ui/card_back.png', w: 30, h: 40),
+            const SizedBox(width: 10),
+            Expanded(
+              child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                Text('전설 만능 카드 ${g.acts.lcard}장', style: KdText.body(14, color: const Color(0xFFFFC23A), weight: FontWeight.w700)),
+                Text(g.acts.lcardCan() ? '전설 동료 줄의 「만능 … 넣기」로 원하는 동료에게 넣어요' : '전설 동료 카드가 나오기 시작하면 넣을 수 있어요',
+                    style: KdText.body(12, color: KdColors.muted)),
+              ]),
+            ),
+          ]),
+        ),
       if (uc) _ucard(GameCalc.chiefId),
       _ucard(GameCalc.ttukId),
       _ucard(GameCalc.lucId),
@@ -601,6 +624,22 @@ class PtPage extends StatelessWidget {
                 minWidth: 0,
                 onTap: n >= need ? () => g.act((a) => a.recruitUp(id)) : null,
               ),
+              // 전설 만능 카드 넣기 (웹 #lc-id · CONTENT_ATTENDANCE_2.md): 모자란 만큼만
+              if (gradeOf[id] == 'legend' && g.acts.lcard > 0 && n < need) ...[
+                const SizedBox(height: 6),
+                KdBuy(
+                  text: '만능 ${math.min(g.acts.lcard, need - n)}장 넣기',
+                  small: true,
+                  minWidth: 0,
+                  onTap: () {
+                    final k = g.act((a) => a.lcardUse(id));
+                    if (k > 0) {
+                      g.toast('${cd.n} 카드 +$k (전설 만능 카드)');
+                      g.save();
+                    }
+                  },
+                ),
+              ],
               const SizedBox(height: 6),
               GestureDetector(
                 onTap: () => g.act((a) => a.toggleWish(id)),

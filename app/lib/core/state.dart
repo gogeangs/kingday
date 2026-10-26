@@ -34,7 +34,8 @@ class GameState {
         'gemLord': <String, dynamic>{},
         'daily': {'d': '', 'kill': 0, 'box': 0, 'harv': 0, 'claim': <String, dynamic>{}},
         // 출석체크 (docs/content/ATTENDANCE.md) — 웹과 같은 필드명
-        'att': {'last': '', 'w': 0, 'ym': '', 'm': 0, 'ad': '', 'got': <dynamic>[], 'intro': 0, 'tab': 'w'},
+        'att': {'last': '', 'w': 0, 'ym': '', 'm': 0, 'ad': '', 'got': <dynamic>[], 'intro': 0, 'tab': 'w', 'lw': '', 'lm': '', 'gw': <dynamic>[], 'gm': <dynamic>[], 'adw': '', 'adm': ''},
+        'lcard': 0,
         'tickets': {'box': 0, 'box10': 0},
         // 왕도·1부 엔딩 (docs/content/CAPITAL.md 7장)
         'capClears': 0, 'capBonus': 0, 'ending1': 0,
@@ -118,6 +119,7 @@ class GameState {
     if (!(sb != null && sb['forge'] != null) && f['bld'] is Map && asNum((f['bld'] as Map)['mine']) > 0) (f['bld'] as Map)['forge'] = 1;
     // 유니크 카드: 0 이상 정수 · 카엘 자리는 카엘 촌장만 저장 (웹 hydrate)
     f['ucard'] = math.max(0, asNum(f['ucard']).isFinite ? asNum(f['ucard']).floor() : 0);
+    f['lcard'] = math.max(0, asNum(f['lcard']).isFinite ? asNum(f['lcard']).floor() : 0);
     // 골드·이삭은 0 아래로 읽지 않고, 영지·최고 영지는 1 이상 정수 (웹 hydrate)
     f['gold'] = math.max<num>(0, f['gold'] as num);
     f['gem'] = math.max<num>(0, f['gem'] as num);
