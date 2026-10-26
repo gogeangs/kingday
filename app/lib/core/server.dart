@@ -135,6 +135,32 @@ class Server {
     return (res.statusCode, j);
   }
 
+  /// 로그인 토큰 안의 계정 번호 (구글·애플 로그인 뒤에는 [SbAuth.uid] 가 비어 있을 수 있음)
+  static String? jwtSub(String token) {
+    try {
+      final parts = token.split('.');
+      if (parts.length < 2) return null;
+      final j = jsonDecode(utf8.decode(base64Url.decode(base64Url.normalize(parts[1]))));
+      return j is Map && j['sub'] is String ? j['sub'] as String : null;
+    } catch (_) {
+      return null;
+    }
+  }
+
+  /// 파일 올리기 (문의 사진: 저장소 inquiry 의 「계정번호/이름」). 올린 경로를 돌려줌
+  Future<String> upload(String bucket, String name, List<int> bytes, String contentType) async {
+    final a = await login();
+    final uid = jwtSub(a.access) ?? a.uid;
+    if (uid == null) throw ServerError('uid');
+    final path = '$uid/$name';
+    final res = await _http
+        .post(Uri.parse('$sbUrl/storage/v1/object/$bucket/$path'),
+            headers: {'apikey': sbKey, 'Authorization': 'Bearer ${a.access}', 'Content-Type': contentType}, body: bytes)
+        .timeout(const Duration(seconds: 30));
+    if (res.statusCode >= 300) throw ServerError('upload ${res.statusCode}');
+    return path;
+  }
+
   /// 웹 acctFetch(): 지금 계정 정보 (게스트인지, 연결된 이메일)
   Future<({bool anon, String email})?> user() async {
     final a = await login();

@@ -1015,7 +1015,7 @@ class _MailState extends State<_Mail> {
                     child: Row(children: [
                       Expanded(
                         child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                          Text('${m['title'] ?? ''}', style: KdText.body(14, weight: FontWeight.w600)),
+                          Text('${m['kind'] == 'reply' ? '💬 ' : ''}${m['title'] ?? ''}', style: KdText.body(14, weight: FontWeight.w600)),
                           if (m['body'] is String && (m['body'] as String).isNotEmpty) Text(m['body'], style: _muted(12)),
                           const SizedBox(height: 3),
                           Wrap(spacing: 4, runSpacing: 4, children: _chips(asMap(m['reward'])?.cast<String, dynamic>() ?? const {})),
@@ -1027,7 +1027,8 @@ class _MailState extends State<_Mail> {
                       KdBuy(
                         kind: BuyKind.claim,
                         minWidth: 0,
-                        text: '받기',
+                        // 보상 없는 문의 답변은 「확인」 (웹과 같음)
+                        text: m['kind'] == 'reply' && (asMap(m['reward'])?.isEmpty ?? true) ? '확인' : '받기',
                         onTap: _busy.contains(asNum(m['id']).toInt())
                             ? null
                             : () {

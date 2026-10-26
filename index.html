@@ -3138,6 +3138,100 @@ table.codds th {
   -webkit-user-select: text;
   box-sizing: border-box;
 }
+.inqbody {
+  min-height: 120px;
+  font-family: inherit;
+  font-size: 14px;
+  line-height: 1.5;
+}
+.inqph {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.inqph img {
+  width: 72px;
+  height: 72px;
+  object-fit: cover;
+  border-radius: 10px;
+  border: 1px solid var(--line);
+}
+.inqadd {
+  cursor: pointer;
+}
+.inqauto {
+  font-size: 12px;
+}
+.sheet .note a {
+  color: #ffc94a;
+}
+.inqlist {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-height: 56vh;
+  overflow: auto;
+  margin: 6px 0;
+}
+.inqit {
+  padding: 10px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 201, 74, 0.25);
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+.inqhd {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+.inqhd small {
+  margin-left: auto;
+  color: var(--muted, #9aa6c1);
+  font-size: 12px;
+}
+.inqtag,
+.inqst {
+  font-size: 12px;
+  border-radius: 999px;
+  padding: 1px 8px;
+  background: rgba(0, 0, 0, 0.3);
+}
+.inqst.st-new {
+  color: #ffc94a;
+}
+.inqst.st-answered {
+  color: #8fe3a2;
+}
+.inqst.st-closed {
+  color: var(--muted, #9aa6c1);
+}
+.inqit p,
+.inqans {
+  margin: 0;
+  font-size: 13.5px;
+  white-space: pre-wrap;
+  word-break: break-word;
+  user-select: text;
+  -webkit-user-select: text;
+}
+.inqans {
+  padding: 8px;
+  border-radius: 10px;
+  background: rgba(143, 227, 162, 0.08);
+  border: 1px solid rgba(143, 227, 162, 0.3);
+}
+.inqans b {
+  display: block;
+  color: #8fe3a2;
+  font-size: 12px;
+}
+.mtx small.mpre {
+  white-space: pre-wrap;
+}
 .buy.danger {
   background: #5a1a24;
   color: #ffd6dc;
@@ -19956,12 +20050,12 @@ async function mailSheet(cached) {
     const d = (new Date(t) - Date.now()) / 864e5;
     return d >= 1 ? Math.floor(d) + '일 남음' : Math.max(1, Math.ceil(d * 24)) + '시간 남음';
   };
-  const ico = { season: '🏆', hall: '👑', notice: '📜' },
+  const ico = { season: '🏆', hall: '👑', notice: '📜', reply: '💬' },
     lm = passMails(),
     tot = mails.length + lm.length;
   $('sheet').innerHTML =
     head +
-    `<p class="note" style="text-align:center">받은 우편은 30일 동안 보관돼요.</p><div class="mlist" id="mailList">${lm.map(m => `<div class="mitem"><div class="mico">📖</div><div class="mtx"><b>${esc(m.title)}</b><small>시즌이 끝나 받지 않은 보상을 모아 보냈어요.</small><div class="mrws">${passMailChips(m.r)}</div></div><button class="buy claim" data-lmail="${esc(m.id)}">받기</button></div>`).join('')}${mails.length ? mails.map(m => `<div class="mitem"><div class="mico">${ico[m.kind] || '✉️'}</div><div class="mtx"><b>${esc(m.title)}</b>${m.body ? `<small>${esc(m.body)}</small>` : ''}<div class="mrws">${rewChips(m.reward || {})}</div><small class="mexp">${day(m.expires_at)}</small></div><button class="buy claim" data-mail="${m.id}">받기</button></div>`).join('') : lm.length ? '' : '<p class="note" style="text-align:center;padding:18px 0">도착한 우편이 없어요.</p>'}</div>
+    `<p class="note" style="text-align:center">받은 우편은 30일 동안 보관돼요.</p><div class="mlist" id="mailList">${lm.map(m => `<div class="mitem"><div class="mico">📖</div><div class="mtx"><b>${esc(m.title)}</b><small>시즌이 끝나 받지 않은 보상을 모아 보냈어요.</small><div class="mrws">${passMailChips(m.r)}</div></div><button class="buy claim" data-lmail="${esc(m.id)}">받기</button></div>`).join('')}${mails.length ? mails.map(m => `<div class="mitem"><div class="mico">${ico[m.kind] || '✉️'}</div><div class="mtx"><b>${esc(m.title)}</b>${m.body ? `<small${m.kind === 'reply' ? ' class="mpre"' : ''}>${esc(m.body)}</small>` : ''}<div class="mrws">${rewChips(m.reward || {})}</div><small class="mexp">${day(m.expires_at)}</small></div><button class="buy claim" data-mail="${m.id}">${m.kind === 'reply' && !Object.keys(m.reward || {}).length ? '확인' : '받기'}</button></div>`).join('') : lm.length ? '' : '<p class="note" style="text-align:center;padding:18px 0">도착한 우편이 없어요.</p>'}</div>
  <div class="acts">${tot > 1 ? '<button class="pri claim" id="mAll">모두 받기</button>' : ''}<button${tot > 1 ? '' : ' class="pri"'} id="mGo">닫기</button></div>`;
   $('modal').hidden = false;
   $('mGo').onclick = closeModal;
@@ -19985,6 +20079,217 @@ async function mailSheet(cached) {
         mailClaim(+b.dataset.mail);
       })
   );
+}
+/* ---------- 문의하기 (supabase/stage8_inquiry.sql · 대표님 관리 페이지 admin.html) ---------- */
+const INQK = [
+    { k: 'pay', n: '결제', ph: '언제, 어떤 상품을 샀는지 적어 주세요. 예) 오늘 오후 3시쯤 황금 이삭 330개를 샀는데 들어오지 않았어요' },
+    { k: 'bug', n: '버그', ph: '어디서 무엇을 했을 때 어떤 일이 생겼는지 적어 주세요. 화면 사진을 붙이면 더 빨리 찾을 수 있어요' },
+    { k: 'account', n: '계정', ph: '어떤 계정(구글·애플·게스트)으로 하던 중이었는지, 무엇이 안 되는지 적어 주세요' },
+    { k: 'etc', n: '기타', ph: '하고 싶은 말을 자유롭게 적어 주세요' }
+  ],
+  INQN = k => (INQK.find(x => x.k === k) || INQK[3]).n,
+  INQST = { new: '답변 기다리는 중', answered: '답변 완료', closed: '처리 완료' },
+  INQERR = {
+    short: '내용을 5자 이상 적어 주세요',
+    long: '내용은 1000자까지 쓸 수 있어요',
+    limit: '문의는 하루 3번까지 보낼 수 있어요. 내일 다시 보내 주세요',
+    auth: '연결에 실패했어요. 잠시 후 다시 해 주세요',
+    bad: '보내지 못했어요. 잠시 후 다시 해 주세요'
+  };
+let inqDraft = { kind: 'bug', body: '', photo: null, url: '' },
+  inqBusy = false;
+/* 로그인 토큰 안의 계정 번호 (구글 로그인 뒤에는 sbAuth.uid 가 비어 있음) */
+const jwtSub = t => {
+  try {
+    return JSON.parse(atob(t.split('.')[1].replace(/-/g, '+').replace(/_/g, '/'))).sub || null;
+  } catch (e) {
+    return null;
+  }
+};
+/* 웹 버전: 페이지가 올라간 날짜·시각 (GitHub Pages 배포 시각) */
+const inqVer = () => {
+  const d = new Date(document.lastModified);
+  const p = n => String(n).padStart(2, '0');
+  return isNaN(d) ? 'web' : `web-${d.getFullYear()}${p(d.getMonth() + 1)}${p(d.getDate())}-${p(d.getHours())}${p(d.getMinutes())}`;
+};
+const inqDate = t => {
+  const d = new Date(t);
+  return `${d.getMonth() + 1}월 ${d.getDate()}일 ${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
+};
+/* 사진을 긴 쪽 1280px JPEG 로 줄임 (보내는 용량·서버 저장 줄이기) */
+function inqShrink(file) {
+  return new Promise((ok, no) => {
+    const u = URL.createObjectURL(file),
+      im = new Image();
+    im.onload = () => {
+      const k = Math.min(1, 1280 / Math.max(im.naturalWidth, im.naturalHeight)),
+        c = document.createElement('canvas');
+      c.width = Math.max(1, Math.round(im.naturalWidth * k));
+      c.height = Math.max(1, Math.round(im.naturalHeight * k));
+      c.getContext('2d').drawImage(im, 0, 0, c.width, c.height);
+      URL.revokeObjectURL(u);
+      c.toBlob(b => (b ? ok(b) : no(new Error('blob'))), 'image/jpeg', 0.82);
+    };
+    im.onerror = () => {
+      URL.revokeObjectURL(u);
+      no(new Error('image'));
+    };
+    im.src = u;
+  });
+}
+/* 사진 올리기 → 저장소 경로 「계정번호/이름.jpg」 */
+async function inqUpload(blob) {
+  const a = await sbLogin(),
+    uid = jwtSub(a.access_token) || a.uid;
+  if (!uid) throw new Error('uid');
+  const path = uid + '/' + Date.now().toString(36) + Math.random().toString(36).slice(2, 8) + '.jpg';
+  const r = await fetch(SB.url + '/storage/v1/object/inquiry/' + path, {
+    method: 'POST',
+    headers: { apikey: SB.key, Authorization: 'Bearer ' + a.access_token, 'Content-Type': 'image/jpeg' },
+    body: blob
+  });
+  if (!r.ok) throw new Error('upload ' + r.status);
+  return path;
+}
+function inqSheet() {
+  const d = inqDraft,
+    kd = INQK.find(x => x.k === d.kind) || INQK[1];
+  $('sheet').innerHTML = `<div class="eyebrow">카엘의 수첩</div><h2>문의하기</h2>
+ <p class="note">불편한 점을 알려 주세요. 답은 <b>우편함</b>으로 보내 드려요(보통 1~3일). <a href="support.html" target="_blank" rel="noopener">자주 묻는 질문</a>도 먼저 확인해 보세요.</p>
+ <div class="sec">종류</div><div class="subtabs" id="inqKinds">${INQK.map(x => `<button data-ik="${x.k}" class="${x.k === kd.k ? 'on' : ''}">${x.n}</button>`).join('')}</div>
+ <div class="sec">내용 <small id="inqCnt">${d.body.length}/1000</small></div>
+ <textarea class="setcode inqbody" id="inqBody" maxlength="1000" placeholder="${esc(kd.ph)}">${esc(d.body)}</textarea>
+ <div class="sec">사진 <small>선택 · 1장</small></div>
+ <div class="inqph">${d.url ? `<img src="${d.url}" alt="붙인 사진"><button class="buy ghost" id="inqDel">사진 빼기</button>` : `<label class="buy ghost inqadd">📷 사진 붙이기<input type="file" accept="image/*" id="inqFile" hidden></label>`}</div>
+ <p class="note inqauto">함께 보내는 정보: 닉네임 · 계정 번호 · 게임 버전 · 기기 정보. 보내면 이 정보와 내용·사진을 문의 답변에만 쓰는 데 동의하는 것으로 봐요 (<a href="privacy.html" target="_blank" rel="noopener">개인정보처리방침</a>).</p>
+ <div class="acts"><button id="inqBack">돌아가기</button><button class="pri" id="inqSend">보내기</button></div>`;
+  $('modal').hidden = false;
+  const t = $('inqBody');
+  t.oninput = () => {
+    d.body = t.value;
+    $('inqCnt').textContent = t.value.length + '/1000';
+  };
+  document.querySelectorAll('[data-ik]').forEach(
+    b =>
+      (b.onclick = () => {
+        d.kind = b.dataset.ik;
+        inqSheet();
+      })
+  );
+  if ($('inqFile'))
+    $('inqFile').onchange = async e => {
+      const f = e.target.files && e.target.files[0];
+      if (!f) return;
+      try {
+        const b = await inqShrink(f);
+        d.photo = b;
+        d.url = URL.createObjectURL(b);
+        inqSheet();
+      } catch (err) {
+        toast('이 사진은 붙일 수 없어요');
+      }
+    };
+  if ($('inqDel'))
+    $('inqDel').onclick = () => {
+      try {
+        URL.revokeObjectURL(d.url);
+      } catch (e) {}
+      d.photo = null;
+      d.url = '';
+      inqSheet();
+    };
+  $('inqBack').onclick = () => settingsSheet();
+  $('inqSend').onclick = inqSend;
+}
+async function inqSend() {
+  if (inqBusy) return;
+  const d = inqDraft,
+    body = d.body.trim();
+  if (body.length < 5) return toast(INQERR.short);
+  if (!sbOn()) return toast('지금은 문의를 보낼 수 없어요');
+  inqBusy = true;
+  const btn = $('inqSend');
+  if (btn) {
+    btn.disabled = true;
+    btn.textContent = '보내는 중…';
+  }
+  let ok = false,
+    photoFail = false;
+  try {
+    if (!S.nick) await sbEnsure();
+    let path = null;
+    if (d.photo) {
+      try {
+        path = await inqUpload(d.photo);
+      } catch (e) {
+        photoFail = true;
+      }
+    }
+    const r = await sbRpc('kd_inq_send', {
+      p_kind: d.kind,
+      p_body: body,
+      p_photo: path,
+      p_ver: inqVer(),
+      p_device: (navigator.userAgent || '').slice(0, 200),
+      p_platform: 'web'
+    });
+    if (r === 'ok') ok = true;
+    else toast(INQERR[r] || INQERR.bad);
+  } catch (e) {
+    toast('인터넷 연결이 필요해요');
+  } finally {
+    inqBusy = false;
+  }
+  if (!ok) {
+    if ($('inqSend')) {
+      $('inqSend').disabled = false;
+      $('inqSend').textContent = '보내기';
+    }
+    return;
+  }
+  try {
+    if (d.url) URL.revokeObjectURL(d.url);
+  } catch (e) {}
+  inqDraft = { kind: 'bug', body: '', photo: null, url: '' };
+  haptic(20);
+  $('sheet').innerHTML = `<div class="eyebrow">카엘의 수첩</div><h2>문의를 보냈어요 ✉️</h2>
+ <p class="note" style="text-align:center">답이 오면 <b>우편함</b>에 도착해요. 「내 문의」에서 진행 상황을 볼 수 있어요.${photoFail ? '<br><span style="color:#ffb3bd">사진은 올리지 못해 내용만 보냈어요.</span>' : ''}</p>
+ <div class="acts"><button id="inqMine">내 문의 보기</button><button class="pri" id="mGo">닫기</button></div>`;
+  $('modal').hidden = false;
+  $('mGo').onclick = closeModal;
+  $('inqMine').onclick = () => inqMineSheet();
+}
+async function inqMineSheet() {
+  const head = `<div class="eyebrow">카엘의 수첩</div><h2>내 문의</h2>`,
+    acts = `<div class="acts"><button id="inqNew">새 문의</button><button class="pri" id="mGo">닫기</button></div>`;
+  const bind = () => {
+    $('modal').hidden = false;
+    $('mGo').onclick = closeModal;
+    $('inqNew').onclick = () => inqSheet();
+  };
+  $('sheet').innerHTML = head + `<p class="note" style="text-align:center">문의를 불러오는 중…</p>` + acts;
+  bind();
+  let list = null;
+  try {
+    if (sbOn()) list = await sbRpc('kd_inq_mine', {});
+  } catch (e) {}
+  if (!$('inqNew')) return;
+  if (!Array.isArray(list)) {
+    $('sheet').querySelector('.note').textContent = '인터넷에 연결되면 문의를 볼 수 있어요.';
+    return;
+  }
+  $('sheet').innerHTML =
+    head +
+    (list.length
+      ? `<p class="note" style="text-align:center">답변은 우편함으로도 보내 드려요.</p><div class="inqlist">${list
+          .map(
+            q =>
+              `<div class="inqit"><div class="inqhd"><span class="inqtag">${esc(INQN(q.kind))}</span><span class="inqst st-${esc(q.status)}">${esc(INQST[q.status] || q.status)}</span><small>${inqDate(q.created_at)}</small></div><p>${esc(q.body)}</p>${q.has_photo ? '<small class="note" style="margin:0">📷 사진 1장</small>' : ''}${q.answer ? `<div class="inqans"><b>답변 · ${inqDate(q.answered_at)}</b>${esc(q.answer)}</div>` : ''}</div>`
+          )
+          .join('')}</div>`
+      : `<p class="note" style="text-align:center;padding:18px 0">아직 보낸 문의가 없어요.</p>`) +
+    acts;
+  bind();
 }
 /* 클라우드 저장 + 구글 계정 연결 */
 const SITE = location.origin + location.pathname;
@@ -20513,6 +20818,7 @@ function settingsSheet(step) {
  <textarea class="setcode" id="setCode" spellcheck="false" placeholder="여기에 저장 코드를 붙여 넣고 불러오기를 누르세요"></textarea>
  <div class="btns"><button class="buy ghost" id="setExp">코드 만들기·복사</button><button class="buy ghost" id="setImp">불러오기</button></div>
  <div class="sec">진동 <small>보상·보스 처치 때 (안드로이드)</small></div><div class="btns"><button class="buy ghost" id="setVib">${S.vib === false ? '진동 켜기' : '진동 끄기'}</button></div>
+ <div class="sec">문의 <small>결제·버그·계정 · 답은 우편함으로</small></div><div class="btns"><button class="buy ghost" id="setInq">문의하기</button><button class="buy ghost" id="setInqMine">내 문의</button></div>
  <div class="sec">처음부터 다시 하기</div>
  ${
    step === 'reset'
@@ -20523,6 +20829,8 @@ function settingsSheet(step) {
   $('modal').hidden = false;
   $('mGo').onclick = closeModal;
   acctBox();
+  $('setInq').onclick = () => inqSheet();
+  $('setInqMine').onclick = () => inqMineSheet();
   $('setVib').onclick = () => {
     S.vib = S.vib === false ? true : false;
     save();
