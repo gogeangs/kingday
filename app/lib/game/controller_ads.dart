@@ -135,6 +135,9 @@ extension GameAdsX on GameController {
     switch (e) {
       case ToastEvent(:final msg):
         toast(msg);
+      case PillEvent(:final msg):
+        pillMsg = msg;
+        pillUntil = DateTime.now().millisecondsSinceEpoch + 2600;
       case HapticEvent(:final pattern):
         haptic(pattern);
       case SoundEvent(:final k):

@@ -38,8 +38,27 @@ class UpPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final mul = g.acts.upMul, best = g.acts.bestUpgrade();
+    // 후반(공격·체력 Lv.100 이상)에 ×1이면 「최대」 추천 (웹 .upmul .rec)
+    final rec = mul == 1 && math.max(g.state.upLv('atk'), g.state.upLv('hp')) >= 100;
+    // 숫자 단위 설명: 처음 한 번 펼치고, 그 뒤엔 「한 번에」 줄 왼쪽 작은 「? aa·ab」로 접음 (웹 #upHelp · UI 점검 10-27 5번)
+    final big = g.state.gold >= 1e15 || upgrades.any((u) => g.state.upLv(u.k) < u.max && g.calc.upgradeCost(u.k, g.state.upLv(u.k)) >= 1e15);
+    final bigOpen = big && (g.helpSeen['bigu'] == null || (g.helpOpen['bigu'] ?? false));
     return Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
       Row(mainAxisAlignment: MainAxisAlignment.end, children: [
+        if (big && !bigOpen) ...[
+          GestureDetector(
+            onTap: () {
+              g.helpOpen['bigu'] = true;
+              g.refresh();
+            },
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 4),
+              decoration: BoxDecoration(color: KdColors.panel2, border: Border.all(color: KdColors.line), borderRadius: BorderRadius.circular(999)),
+              child: Text('? aa·ab', style: KdText.body(12, color: KdColors.muted, weight: FontWeight.w600)),
+            ),
+          ),
+          const Spacer(),
+        ],
         Text('한 번에', style: KdText.body(12, color: KdColors.muted)),
         for (final (v, n) in const [(1, '×1'), (10, '×10'), ('max', '최대')]) ...[
           const SizedBox(width: 6),
@@ -49,7 +68,8 @@ class UpPage extends StatelessWidget {
               g.save();
               g.refresh();
             },
-            child: Container(
+            child: Stack(clipBehavior: Clip.none, children: [
+              Container(
               constraints: const BoxConstraints(minWidth: 46),
               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
               alignment: Alignment.center,
@@ -60,12 +80,23 @@ class UpPage extends StatelessWidget {
               ),
               child: Text(n, style: KdText.body(13, color: mul == v ? const Color(0xFF1A1206) : KdColors.fg, weight: FontWeight.w600)),
             ),
+              if (rec && v == 'max')
+                Positioned(
+                  top: -9,
+                  right: -6,
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+                    decoration: BoxDecoration(color: const Color(0xFFE0563B), borderRadius: BorderRadius.circular(6)),
+                    child: Text('추천', style: KdText.body(10.5, color: Colors.white, height: 1)),
+                  ),
+                ),
+            ]),
           ),
         ],
       ]),
       const SizedBox(height: 12),
       // 숫자 단위 aa·ab 안내 (웹 helpNote('bigu'), UX 점검 13)
-      if (g.state.gold >= 1e15 || upgrades.any((u) => g.state.upLv(u.k) < u.max && g.calc.upgradeCost(u.k, g.state.upLv(u.k)) >= 1e15)) ...[
+      if (bigOpen) ...[
         HelpNote(
           k: 'bigu',
           title: '숫자 단위 aa·ab는?',
@@ -78,7 +109,8 @@ class UpPage extends StatelessWidget {
       ],
       for (final u in upgrades) ...[_UpRow(g, u, best: u.k == best), const SizedBox(height: 8)],
       const SizedBox(height: 4),
-      _RetireBox(g, key: g.retireKey),
+      // 처음 온 영주(은퇴 전·영지 10 전)에게는 아직 안 보여 줌 (웹 renderRetire · UI 점검 10-27 10번)
+      if (g.state.retires > 0 || g.state.memory > 0 || g.state.best >= 10) _RetireBox(g, key: g.retireKey),
     ]);
   }
 }
@@ -148,18 +180,20 @@ class _UpRowState extends State<_UpRow> {
     final (ic, nm) = _upi[u.k]!;
     final t = g.calc.kStats();
     String? next;
+    final plan = g.acts.upPlan(u);
     if (!mx) {
-      s.up[u.k] = l + 1;
+      // 「한 번에」 ×10·최대면 그만큼 올린 뒤 값 (웹 upNext(k, n) · UI 점검 10-27 2번)
+      final pn = math.max(1, math.min(plan.n, u.max - l));
+      s.up[u.k] = l + pn;
       final n = g.calc.kStats();
       s.up[u.k] = l;
       next = _val(u.k, n);
       // 후반에 숫자가 커서 「454K → 454K」처럼 차이가 안 보이면 오르는 비율로 (웹 upGain, UX 점검 13)
       if (next == _val(u.k, t) && (u.k == 'atk' || u.k == 'hp')) {
         final x = u.k == 'atk' ? t.atk : t.hp, y = u.k == 'atk' ? n.atk : n.hp, p = x > 0 ? (y / x - 1) * 100 : 0;
-        next = p >= .01 ? '+${p.toStringAsFixed(p >= 1 ? 1 : 2)}%' : '+0.01% 미만';
+        next = p >= .01 ? '+${p.toStringAsFixed(p >= 1 ? 1 : 2)}%' : '<0.01%';
       }
     }
-    final plan = g.acts.upPlan(u);
     final can = !mx && s.gold >= g.calc.upgradeCost(u.k, l);
     final age = DateTime.now().millisecondsSinceEpoch - _flash;
     final flash = age < 350 ? 1 - age / 350 : 0.0;

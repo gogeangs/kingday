@@ -202,6 +202,12 @@ class SoundEvent extends BattleEvent {
   final String k;
 }
 
+/// 위쪽 진행 바에 잠깐 띄우는 소식 (웹 pillFlash · 성주 처치처럼 자주 나오는 것은 알림 대신)
+class PillEvent extends BattleEvent {
+  PillEvent(this.msg);
+  final String msg;
+}
+
 class HapticEvent extends BattleEvent {
   HapticEvent(this.pattern);
   final List<int> pattern;
@@ -1700,7 +1706,7 @@ class BattleSim {
       onGrow?.call();
       s.wave = 0;
       seal = null;
-      toast('$bn 처치');
+      events.add(PillEvent('✔ $bn 처치'));
       banner = StageBanner('$tn 탈환!', dem ? '마왕을 몰아냈다' : lord ? '군단장을 쓰러뜨렸다' : gh ? '잔영을 걷어냈다' : '영지를 되찾았다');
       say('k', dem ? '…끝났다. 진짜로.' : lord ? '됐다… 이제 진짜 은퇴해도 되지?' : '여기 흙, 다시 살아나겠네.');
       final chapter = s.stage <= maxLand && (s.stage - 1) % 10 == 0;

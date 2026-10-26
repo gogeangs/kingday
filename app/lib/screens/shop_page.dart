@@ -157,7 +157,7 @@ class _ShopPageState extends State<ShopPage> {
   /// 스토어 가격(나라별 통화)이 있으면 그것, 없으면 웹 가격표
   String _price(String key, num krw) => g.iap.price(key) ?? won(krw);
 
-  /// 웹 .shgrp: 「매일 무료 / 황금 이삭으로 / 상품」 묶음 (2026-10-24 상점 정리)
+  /// 웹 .shgrp: 「매일 무료 / 이삭 상점 / 충전·패키지」 묶음 (2026-10-24 상점 정리 · 10-27 이름)
   Widget _group(String k, String title, Widget small, List<Widget> children, {bool pay = false}) => Container(
         key: _jump[k],
         margin: const EdgeInsets.only(top: 10, bottom: 4),
@@ -278,10 +278,11 @@ class _ShopPageState extends State<ShopPage> {
         ),
       const SizedBox(height: 12),
       // 원정 일지 배너 (상점 맨 위, docs/content/SHOP.md 4장)
-      if (truthy(s.raw['started'])) ...[PassBanner(g), const SizedBox(height: 12)],
+      // 처음 온 영주(영지 10 전)는 「매일 무료」가 위, 원정 일지는 충전·패키지 칸의 작은 줄로 (웹 passMini · UI 점검 10-27 3번)
+      if (truthy(s.raw['started']) && s.best >= 10) ...[PassBanner(g), const SizedBox(height: 12)],
       // 바로 가기 (웹 .shjump) — 무료로 받을 게 있으면 빨간 점
       Row(children: [
-        for (final (k, n, dot) in [('free', '🎁 매일 무료', freeDot), ('gem', '🌾 이삭으로', false), ('pay', '💰 상품', false)]) ...[
+        for (final (k, n, dot) in [('free', '🎁 매일 무료', freeDot), ('gem', '🌾 이삭 상점', false), ('pay', '💳 충전·패키지', false)]) ...[
           if (k != 'free') const SizedBox(width: 6),
           Expanded(
             child: GestureDetector(
@@ -352,7 +353,7 @@ class _ShopPageState extends State<ShopPage> {
       ]),
       _group(
           'gem',
-          '🌾 황금 이삭으로',
+          '🌾 이삭 상점',
           Row(mainAxisSize: MainAxisSize.min, children: [
             Text('가진 이삭 ', style: KdText.body(12, color: KdColors.muted)),
             kdImg(gemIcon, w: 14, h: 14),
@@ -383,7 +384,8 @@ class _ShopPageState extends State<ShopPage> {
         body: KdNote('황금 이삭 ${fmt(s.gem)}개 · 동료 카드, 골드 바꾸기, 성유물 상자 10연속(장비 탭), 작물 바로 키우기·건물 바로 짓기(마을 탭), 방치 보상 2배 받기에 써요.'),
       ),
           ]),
-      _group('pay', '💰 상품', Text('황금 이삭은 상품마다 첫 구매 2배', style: KdText.body(12, color: KdColors.muted)), pay: true, [
+      _group('pay', '💳 충전·패키지', Text('황금 이삭은 상품마다 첫 구매 2배', style: KdText.body(12, color: KdColors.muted)), pay: true, [
+      if (truthy(s.raw['started']) && s.best < 10) ...[PassMini(g), const SizedBox(height: 10)],
       // ── 특별 상품 ──
       if (!truthy(a.buys['starter'])) ...[
         _shopRow(

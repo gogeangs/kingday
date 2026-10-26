@@ -113,8 +113,9 @@ class _Hud extends StatelessWidget {
                   child: Center(
                     child: Container(
                       padding: const EdgeInsets.symmetric(horizontal: 5),
-                      decoration: BoxDecoration(color: const Color(0xFFFF5A6E), borderRadius: BorderRadius.circular(8)),
-                      child: Text('꾸미기', style: KdText.body(9.5, color: Colors.white, weight: FontWeight.w600, height: 1.45)),
+                      // 할 일이라 금색 (빨강은 받을 보상 · 웹 .face.newpf · UI 점검 10-27 9번)
+                      decoration: BoxDecoration(color: KdColors.gold, borderRadius: BorderRadius.circular(8)),
+                      child: Text('꾸미기', style: KdText.body(9.5, color: const Color(0xFF2A1A00), weight: FontWeight.w700, height: 1.45)),
                     ),
                   ),
                 )
@@ -338,7 +339,7 @@ class _ToastView extends StatelessWidget {
         valueListenable: g.toastMsg,
         builder: (ctx, msg, __) {
           // 전투 화면: 초상화 줄 바로 위 (영지 이름표·보스 막대를 가리지 않게). 창이 열려 있으면 맨 위
-          double? bottom;
+          double? bottom, hdTop;
           double? yOf(GlobalKey k) {
             final rb = k.currentContext?.findRenderObject();
             return rb is RenderBox && rb.hasSize && rb.attached ? rb.localToGlobal(Offset.zero).dy : null;
@@ -352,6 +353,9 @@ class _ToastView extends StatelessWidget {
             final py = yOf(g.pageKey), ty = yOf(g.tabsKey);
             if (py != null && py > 90) {
               bottom = h - py + 8;
+            } else if (py != null) {
+              // 탭을 크게 열었으면 그 탭 머리 줄(「마을 ✕」) 가운데 — 목록·버튼을 가리지 않게 (웹 .toast.inhd · UI 점검 10-27 1번)
+              hdTop = py + 12;
             } else if (ty != null) {
               bottom = h - ty + 10;
             }
@@ -359,7 +363,7 @@ class _ToastView extends StatelessWidget {
           return Positioned(
           left: 16,
           right: 16,
-          top: bottom == null ? (g.toastHigh ? 8 : 76) + top : null,
+          top: hdTop ?? (bottom == null ? (g.toastHigh ? 8 : 76) + top : null),
           bottom: bottom,
           child: IgnorePointer(
             child: AnimatedOpacity(
@@ -367,15 +371,15 @@ class _ToastView extends StatelessWidget {
               duration: const Duration(milliseconds: 300),
               child: Center(
                 child: Container(
-                  constraints: const BoxConstraints(maxWidth: 340),
-                  padding: const EdgeInsets.symmetric(horizontal: 13, vertical: 6),
+                  constraints: BoxConstraints(maxWidth: hdTop != null ? math.max(120, MediaQuery.sizeOf(ctx).width - 150) : 340),
+                  padding: EdgeInsets.symmetric(horizontal: hdTop != null ? 10 : 13, vertical: hdTop != null ? 4 : 6),
                   decoration: BoxDecoration(
                     color: const Color(0xF0141A29),
                     border: Border.all(color: const Color(0x8CFFC94A)),
                     borderRadius: BorderRadius.circular(12),
                     boxShadow: const [BoxShadow(color: Color(0x66000000), blurRadius: 16, offset: Offset(0, 6))],
                   ),
-                  child: Text(msg ?? '', textAlign: TextAlign.center, style: KdText.body(12.5, height: 1.4)),
+                  child: Text(msg ?? '', textAlign: TextAlign.center, style: KdText.body(hdTop != null ? 12 : 12.5, height: hdTop != null ? 1.3 : 1.4)),
                 ),
               ),
             ),
