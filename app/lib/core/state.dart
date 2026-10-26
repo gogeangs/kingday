@@ -66,7 +66,13 @@ class GameState {
     final src = deepCopy(d) as Map<String, dynamic>;
     final f = freshMap(now);
     for (final k in src.keys) {
-      final fv = f[k], dv = src[k];
+      final fv = f[k];
+      var dv = src[k];
+      // 숫자 칸에 숫자 글자("12")가 들어 있으면 숫자로 읽음 (웹 hydrate)
+      if (fv is num && dv is String && dv.trim().isNotEmpty) {
+        final n = num.tryParse(dv.trim());
+        if (n != null && n.isFinite) dv = n;
+      }
       // 웹 okVal: 기본값이 숫자·객체·배열인 칸에 종류가 다른 값(null·NaN·무한대·글자 등)은 버리고 기본값
       if (f.containsKey(k) ? !_okVal(fv, dv) : _badNum(dv)) continue;
       if (fv is Map) {
@@ -112,6 +118,11 @@ class GameState {
     if (!(sb != null && sb['forge'] != null) && f['bld'] is Map && asNum((f['bld'] as Map)['mine']) > 0) (f['bld'] as Map)['forge'] = 1;
     // 유니크 카드: 0 이상 정수 · 카엘 자리는 카엘 촌장만 저장 (웹 hydrate)
     f['ucard'] = math.max(0, asNum(f['ucard']).isFinite ? asNum(f['ucard']).floor() : 0);
+    // 골드·이삭은 0 아래로 읽지 않고, 영지·최고 영지는 1 이상 정수 (웹 hydrate)
+    f['gold'] = math.max<num>(0, f['gold'] as num);
+    f['gem'] = math.max<num>(0, f['gem'] as num);
+    f['stage'] = math.max(1, (f['stage'] as num).floor());
+    f['best'] = math.max(1, (f['best'] as num).floor());
     // 원정 일지·성장 패키지: 안쪽 칸 모양이 깨졌으면 기본값 (웹 hydrate)
     {
       final p = f['pass'] as Map, p0 = freshMap(now)['pass'] as Map;
@@ -178,6 +189,20 @@ class GameState {
       hydrate(jsonDecode(s) as Map<String, dynamic>, now, rankIdx);
 
   String toJson() => jsonEncode(raw);
+
+  /// 웹 guardVals(): 저장 직전 안전장치 — 골드·이삭이 유한한 수가 아니면(계산 버그) 마지막 정상 값을 지키고, 음수면 0
+  final Map<String, num> _good = {};
+  void guard() {
+    for (final k in const ['gold', 'gem']) {
+      final v = raw[k];
+      if (v is! num || !v.isFinite) {
+        raw[k] = _good[k] ?? (k == 'gold' ? 60 : 0);
+      } else if (v < 0) {
+        raw[k] = 0;
+      }
+      _good[k] = raw[k] as num;
+    }
+  }
 
   // ── 이름 붙인 손잡이 ──
   Map<String, dynamic> _obj(String k) {

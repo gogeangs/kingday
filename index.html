@@ -274,12 +274,15 @@ body {
   height: 100%;
   font-size: 24px;
 }
+/* 얼굴 이름은 두 줄까지 (폭 320에서 「카엘 촌장」이 잘리지 않게) */
 .fc b {
   font-size: 12px;
   max-width: 100%;
   overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  word-break: keep-all;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
 }
 .fcnote {
   margin: -2px 0 0;
@@ -300,7 +303,7 @@ body {
   cursor: pointer;
   min-width: 0;
 }
-/* 프로필 아래 버튼 줄은 스크롤해도 늘 보이게 (「저장」을 찾으러 내려가지 않게) */
+/* 프로필·은퇴 확인·새 소식 아래 버튼 줄은 스크롤해도 늘 보이게 (작은 화면에서 버튼을 찾으러 내려가지 않게) */
 .pfacts {
   position: sticky;
   bottom: -8px;
@@ -2977,12 +2980,17 @@ table.codds th {
   position: absolute;
   top: -12px;
 }
+/* 긴 닉네임(최대 10자)은 두 줄까지 보여 줌 */
 .pod b {
-  font-size: 13px;
+  font-size: 12.5px;
+  line-height: 1.25;
   max-width: 100%;
+  text-align: center;
+  word-break: break-all;
   overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
 }
 .pod small {
   color: var(--gold);
@@ -8944,8 +8952,10 @@ const isSave = d => isObj(d) && 'gold' in d;
 function hydrate(d) {
   const f = fresh();
   for (const k in d) {
-    const fv = f[k],
-      dv = d[k];
+    const fv = f[k];
+    let dv = d[k];
+    /* 숫자 칸에 숫자 글자("12")가 들어 있으면 숫자로 읽음 */
+    if (typeof fv === 'number' && typeof dv === 'string' && dv.trim() !== '' && isFinite(+dv)) dv = +dv;
     if (fv !== undefined ? !okVal(fv, dv) : badNum(dv)) continue;
     if (isObj(fv)) {
       for (const sk in dv) {
@@ -8977,6 +8987,11 @@ function hydrate(d) {
   /* 마을 확장: 광산이 있던 세이브는 브론의 대장간을 Lv.1로 지어 줌(강화 기록 slotEn·cwEn은 그대로) */
   if (d && !(d.bld && d.bld.forge != null) && f.bld.mine > 0) f.bld.forge = 1;
   f.ucard = Math.max(0, Math.floor(+f.ucard || 0));
+  /* 골드·이삭은 0 아래로 읽지 않고, 영지·최고 영지는 1 이상 정수 */
+  f.gold = Math.max(0, f.gold);
+  f.gem = Math.max(0, f.gem);
+  f.stage = Math.max(1, Math.floor(f.stage));
+  f.best = Math.max(1, Math.floor(f.best));
   /* 원정 일지·성장 패키지: 안쪽 칸 모양이 깨졌으면 기본값 */
   {
     const P = f.pass,
@@ -9777,7 +9792,8 @@ function renderShop() {
  <div class="packs gemp">${PACKS.map((p, i) => {
    const first = !S.buys[p.k];
    return `<button class="pack" data-p="${p.k}">${first ? '<span class="tag">2배</span>' : ''}<img src="assets/gem/gem_pack_${i + 1}.png" alt="" onerror="this.remove()"><b>${fmt(p.gem)}</b><small>${first ? '+' + fmt(p.gem) + ' 보너스' : ''}</small>${UCARD_PK[p.k] ? `<small class="ucb">+유니크 카드 ${UCARD_PK[p.k]}</small>` : ''}<span class="price">${won(p.won)}</span></button>`;
- }).join('')}</div></section>`;
+ }).join('')}</div>
+ <p class="note">· 산 상품은 우편함으로 와요. 산 날부터 7일 안이고 우편함에서 아직 받지 않았다면 구매를 취소할 수 있어요. 받으면 바로 게임에 반영되어 취소가 제한돼요(황금 이삭은 그만큼 쓰지 않았으면 취소 가능).<br>· 취소·환불은 구글 플레이·앱 스토어 환불 요청 또는 ⚙ 설정 → 문의하기(결제)로 해 주세요. 미성년자는 보호자 동의를 받고 사 주세요.<br><a href="terms.html" target="_blank" rel="noopener">이용약관</a> · <a href="odds.html" target="_blank" rel="noopener">확률 안내</a></p></section>`;
   const sh = $('shop');
   if ($('passBn')) $('passBn').onclick = passSheet;
   if ($('growBuy')) $('growBuy').onclick = buyGrow;
@@ -10380,7 +10396,7 @@ function nwFlush() {
   }
   queue(() => {
     $('sheet').innerHTML =
-      `<div class="eyebrow">영지 소식</div><h2>새 소식</h2><p class="lore sys" style="text-align:center">새로 열린 것이 ${b.length}가지 있어요</p><div class="rpl">${b.map((it, i) => `<div class="rpi"><img class="rpf" src="${it.face}" alt="" onerror="this.style.visibility='hidden'"><div class="rpm" data-i="${i}" style="cursor:pointer"><div class="rpe">${it.eb}</div><div class="rpt">${it.t} <small style="color:var(--muted)">▾</small></div></div><button class="rpb go" data-g="${i}">보러 가기</button></div><div class="rpd" id="rpd${i}" hidden>${it.p.map(para).join('')}</div>`).join('')}</div><div class="acts one"><button class="pri" id="mGo">나중에 볼게요</button></div>`;
+      `<div class="eyebrow">영지 소식</div><h2>새 소식</h2><p class="lore sys" style="text-align:center">새로 열린 것이 ${b.length}가지 있어요</p><div class="rpl">${b.map((it, i) => `<div class="rpi"><img class="rpf" src="${it.face}" alt="" onerror="this.style.visibility='hidden'"><div class="rpm" data-i="${i}" style="cursor:pointer"><div class="rpe">${it.eb}</div><div class="rpt">${it.t} <small style="color:var(--muted)">▾</small></div></div><button class="rpb go" data-g="${i}">보러 가기</button></div><div class="rpd" id="rpd${i}" hidden>${it.p.map(para).join('')}</div>`).join('')}</div><div class="acts one pfacts"><button class="pri" id="mGo">나중에 볼게요</button></div>`;
     $('modal').hidden = false;
     sceneOn = true;
     $('mGo').focus({ preventScroll: true });
@@ -11972,7 +11988,7 @@ function retireConfirm(one) {
       r = RET_RW.find(x => x.n === n && !(S.retRw || {})[x.n]);
     return r ? `<p class="note" style="color:#ffd34a">🎉 은퇴 ${n}회 보상: 황금 이삭 +${r.gem}${r.t ? ' · ' + r.t : ''}</p>` : '';
   })()}</div>
- <div class="acts"><button id="mAlt">취소</button><button class="pri danger" id="mGo">은퇴 확정</button></div>`;
+ <div class="acts pfacts"><button id="mAlt">취소</button><button class="pri danger" id="mGo">은퇴 확정</button></div>`;
   $('modal').hidden = false;
   $('mAlt').onclick = closeModal;
   $('mAlt').focus({ preventScroll: true });
@@ -12208,7 +12224,22 @@ function toastPos(t) {
     r = pg ? pg.getBoundingClientRect() : !hi && !curTab && pr ? pr.getBoundingClientRect() : null;
   const nav = hi && $('modal').hidden && curTab ? document.querySelector('.tabs') : null,
     nr = nav ? nav.getBoundingClientRect() : null;
-  if (r && r.height > 0 && r.top > 90) {
+  /* 창이 열려 있으면: 창 위에 자리가 있으면 창 바로 위, 창이 화면을 거의 채우면 창 아래 버튼 줄 바로 위 (창 머리 그림을 가리지 않게) */
+  let mr = null;
+  if (hi && !$('modal').hidden) {
+    const sh = $('sheet'),
+      sr = sh ? sh.getBoundingClientRect() : null;
+    if (sr && sr.top > 60) mr = { top: sr.top - 6 };
+    else {
+      const ac = sh ? [...sh.querySelectorAll('.acts')].filter(a => a.offsetParent).pop() : null,
+        ar = ac ? ac.getBoundingClientRect() : null;
+      if (ar && ar.height > 0 && ar.top > 120 && ar.top < innerHeight) mr = { top: ar.top - 6 };
+    }
+  }
+  if (mr) {
+    t.style.top = Math.round(mr.top) + 'px';
+    t.style.transform = 'translate(-50%,-100%)';
+  } else if (r && r.height > 0 && r.top > 90) {
     t.style.top = Math.round(r.top - 8) + 'px';
     t.style.transform = 'translate(-50%,-100%)';
   } else if (nr && nr.height > 0) {
@@ -19635,8 +19666,19 @@ if (DEMO === 'goblin') {
   gobT = 0;
   setTimeout(() => toast('황금 고블린 미리보기예요. 이 화면의 진행은 저장되지 않아요'), 600);
 }
+/* 저장 직전 안전장치: 골드·이삭이 유한한 수가 아니면(계산 버그) 마지막 정상 값을 지키고, 음수면 0 (앱 GameState.guard 와 같음) */
+const GOOD = { gold: null, gem: null };
+function guardVals() {
+  for (const k of ['gold', 'gem']) {
+    const v = S[k];
+    if (typeof v !== 'number' || !isFinite(v)) S[k] = GOOD[k] != null ? GOOD[k] : k === 'gold' ? 60 : 0;
+    else if (v < 0) S[k] = 0;
+    GOOD[k] = S[k];
+  }
+}
 function save() {
   if (noSave) return;
+  guardVals();
   S.last = Date.now();
   try {
     localStorage.setItem(KEY, JSON.stringify(S));

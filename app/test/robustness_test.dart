@@ -97,6 +97,28 @@ void main() {
     expect(store.prefs.getString('acorn-idle-v1-bak'), '안녕하세요{{{');
   });
 
+  test('음수 이삭·숫자 글자 영지는 바로잡고, 저장 직전 NaN·무한대는 마지막 정상 값 (웹 guardVals 와 같음)', () async {
+    SharedPreferences.setMockInitialValues({'acorn-idle-v1': '{"gold":-1000,"gem":-500,"stage":"12","best":"15","started":true}'});
+    final store = await SaveStore.open();
+    final s = store.load(_now);
+    expect(s.gem, 0);
+    expect(s.gold, 0);
+    expect(s.stage, 12);
+    expect(s.best, 15);
+    s.gold = 5000;
+    s.gem = 300;
+    await store.save(s, _now);
+    s.gold = double.infinity;
+    s.gem = double.nan;
+    await store.save(s, _now + 1000);
+    final back = jsonDecode(store.prefs.getString('acorn-idle-v1')!) as Map;
+    expect(back['gold'], 5000);
+    expect(back['gem'], 300);
+    s.gem = -7;
+    await store.save(s, _now + 2000);
+    expect(s.gem, 0);
+  });
+
   group('화면이 깨진 저장에서도 열림', () {
     for (final e in _badSaves.entries) {
       testWidgets(e.key, (tester) async {
