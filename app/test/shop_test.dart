@@ -113,6 +113,14 @@ void main() {
       expect(g.calc.slotMember('cook'), 'lucian');
       expect(find.text('루시안 맞이하기'), findsNothing);
 
+      // 유니크 골디(₩5,500, 루시안 다음 줄 · 2026-10-27): 합류 장면 → 바로 출전(양봉가) → 상점에서 사라짐
+      await press('₩5,500');
+      await frames(3);
+      expect(find.text('아기 황금용 골디'), findsOneWidget);
+      await press('바로 출전');
+      expect(g.calc.slotMember('keeper'), 'goldie');
+      expect(find.text('골디 맞이하기'), findsNothing);
+
       // 정기 배송: 시작하면 오늘 배송까지 받음
       await press('₩5,500');
       expect(find.text('받음'), findsWidgets);
