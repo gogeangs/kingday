@@ -19,6 +19,8 @@ const TABLES = [
   ['RECRUITS', 'RECRUITS'], ['STAR_NEED', 'STAR_NEED'], ['STAR_MUL', 'STAR_MUL'], ['GRADE', 'GRADE'], ['GR', 'GR'],
   ['VPAS', 'Object.fromEntries(Object.entries(VPAS).map(([k,v])=>[k,{n:v.n}]))'],
   ['SKILLS', 'SKILLS'],
+  // 원정대의 정 (docs/content/BOND.md)
+  ['AFF_NEED', 'AFF_NEED'], ['AFF_SEC', 'AFF_SEC'], ['BONDS', 'BONDS'], ['BOND_INTRO', 'BOND_INTRO'], ['BOND5', 'BOND5'], ['BOND5J', 'BOND5J'],
   ['BAL', 'BAL'], ['COMP_GROW', 'COMP_GROW'], ['BLESS', 'BLESS'], ['EN_MAX', 'enMaxL(0)'], ['CW', 'CW'], ['CW_MAX', 'enMaxL(0)'],
   ['UPG', 'UPG.map(u=>({k:u.k,n:u.n,max:u.max}))'],
   ['CROPS', 'CROPS'], ['GOODS', 'GOODS'], ['RECIPES', 'RECIPES'], ['BUFFN', 'BUFFN'],

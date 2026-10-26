@@ -58,6 +58,10 @@ class GameState {
           'day': {'d': '', 'src': <String, dynamic>{}, 'kc': 0}, 'intro': 0, 'mail': <dynamic>[],
         },
         'grow': {'buy': 0, 'got': <String, dynamic>{}},
+        // 원정대의 정 (docs/content/BOND.md 7장): 동료별 호감 점수 · 오늘 길 위에서 말 건 동료 · 본 관계 이야기·처음 안내·단짝 토스트
+        'aff': <String, dynamic>{},
+        'affTalk': {'d': '', 'ids': <String, dynamic>{}},
+        'bond': {'seen': <String, dynamic>{}, 'intro': 0, 'five': <String, dynamic>{}},
         'v': 3,
       };
 
@@ -146,8 +150,17 @@ class GameState {
     final pty = asMap(f['party']);
     if (pty != null && pty['kael'] != null && pty['kael'] != 'kael_chief') pty.remove('kael');
     final f0 = freshMap(now);
-    for (final k in const ['ordDay', 'bless', 'walkers', 'work']) {
+    for (final k in const ['ordDay', 'bless', 'walkers', 'work', 'aff', 'affTalk', 'bond']) {
       if (f[k] is! Map) f[k] = f0[k];
+    }
+    // 원정대의 정: 점수는 0 이상 숫자만, 예전 세이브(필드 없음)는 위에서 기본값
+    (f['aff'] as Map).removeWhere((k, v) => !(v is num && v.isFinite && v >= 0));
+    final at = f['affTalk'] as Map;
+    if (at['ids'] is! Map) at['ids'] = <String, dynamic>{};
+    if (at['d'] is! String) at['d'] = '';
+    final bd = f['bond'] as Map;
+    for (final k in const ['seen', 'five']) {
+      if (bd[k] is! Map) bd[k] = <String, dynamic>{};
     }
     if (f['orders'] is! List) f['orders'] = <dynamic>[];
     final wk = (f['work'] as Map);

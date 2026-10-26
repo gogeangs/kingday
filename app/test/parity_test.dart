@@ -7,6 +7,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
+import 'package:kingday/core/bond.dart';
 import 'package:kingday/core/actions.dart';
 import 'package:kingday/core/calc.dart';
 import 'package:kingday/core/data.dart';
@@ -351,7 +352,9 @@ void main() {
       });
 
       test('방치 보상', () {
-        same(calcFor(name).offlineReward().gold, sc['offline'], 'offline');
+        final c = calcFor(name), sec = c.offlineSec();
+        if (sec >= 60) c.affTick0(sec); // 원정대의 정: 방치 시간 호감도가 먼저 (웹 offline 순서)
+        same(c.offlineReward().gold, sc['offline'], 'offline');
       });
 
       test('생산·공사 완료', () {

@@ -9,6 +9,7 @@ library;
 
 import 'dart:math' as math;
 
+import 'bond.dart';
 import 'data.dart';
 import 'fmt.dart';
 import 'js.dart';
@@ -331,7 +332,7 @@ class GameCalc {
   Stats cStats(String id) {
     final c = comps[id]!, base = c.base!;
     final l = orNum(s.lv[id], 1);
-    final m = allMul() * cwMul(id) * starMul(id), g = math.pow(compGrow, l - 1), gs = gearSum();
+    final m = allMul() * cwMul(id) * starMul(id) * affMul(id) /* 원정대의 정 ♥마다 +2% */, g = math.pow(compGrow, l - 1), gs = gearSum();
     return Stats(
       (base.atk * g + gs.a * bless) * (1 + .08 * s.bldLv('apiary')) * (buff('atk') ? 1.2 : 1) * m * trAtk() * this.vBrave() * _ulA,
       (base.hp * g + gs.h * bless) * (1 + .05 * s.bldLv('diner')) * m * trHp() * this.vHp() * _stew,
@@ -520,10 +521,13 @@ class GameCalc {
   }
 
 
-  /// offline(): 게임을 꺼 둔 동안 쌓인 골드. 60초 미만이면 0.
+  /// 꺼 둔 시간(초) — 여관 최대 시간까지 (웹 offline 의 sec)
+  num offlineSec() => math.min(offCapH() * 3600, (now - s.last) / 1000);
+
+  /// offline(): 게임을 꺼 둔 동안 쌓인 골드. 60초 미만이면 0. (원정대의 정 affTick 을 먼저 — 웹 순서)
   ({num sec, num cap, num gold}) offlineReward() {
     final cap = offCapH() * 3600;
-    final sec = math.min(cap, (now - s.last) / 1000);
+    final sec = offlineSec();
     if (sec < 60) return (sec: sec, cap: cap, gold: 0);
     final g = jsFloor(idleGold(sec));
     return (sec: sec, cap: cap, gold: g > 0 ? g : 0);

@@ -18,6 +18,7 @@ import '../battle/battle_game.dart';
 import '../battle/sim.dart';
 import '../core/actions.dart';
 import '../core/attendance.dart';
+import '../core/bond.dart';
 import '../core/calc.dart';
 import '../core/challenge.dart';
 import '../core/data.dart';
@@ -44,6 +45,7 @@ import 'online.dart';
 import 'store.dart';
 
 part 'controller_ads.dart';
+part 'controller_bond.dart';
 part 'controller_capital.dart';
 part 'controller_challenge.dart';
 part 'controller_dots.dart';
@@ -103,6 +105,10 @@ class GameController extends ChangeNotifier {
       _intro();
     } else {
       offline();
+      // 원정대의 정: 열렸는데 아직 못 본 관계 이야기 (웹 시작의 bondCheck)
+      for (final b in calc.bondNew()) {
+        bondOpenFx(b.k);
+      }
       attAuto();
       // 은퇴 횟수 보상: 업데이트 전에 넘긴 단계는 첫 접속 때 바로 지급 (웹 start → retRwCheck)
       final rw = calc.retRwCheck();
@@ -335,6 +341,9 @@ class GameController extends ChangeNotifier {
 
   /// 이야기 창(scene·탈환 보고서)이 떠 있는 동안 알림은 모아 두었다가 닫으면 보여 줌 (웹 sceneOn·toastHold, 3회차 리뷰 14)
   bool sceneOn = false;
+
+  /// 원정대의 정: 띄우려고 줄 세운 관계 이야기 (웹 bondQ)
+  final Set<int> bondQ = {};
   final List<String> _toastHold = [];
 
   void _sceneDone() {
@@ -592,6 +601,12 @@ class GameController extends ChangeNotifier {
           }
         case ActHaptic(:final pattern):
           haptic(pattern);
+        case ActAffIntro():
+          scene('원정대의 정', '정이 쌓이는 법', bondIntro, '알겠어');
+        case ActBondOpen(:final k):
+          bondOpenFx(k);
+        case ActBondScene(:final k, :final first):
+          bondSceneFx(k, first);
         case ActFlashSlot(:final slot):
           flashAt[slot] = DateTime.now().millisecondsSinceEpoch;
         case ActBoxLevelScene(:final lv):
@@ -706,7 +721,8 @@ class GameController extends ChangeNotifier {
   final Map<String, bool> helpOpen = {};
 
   /// 길 위 사람을 눌렀을 때 한마디 (id, 대사, 지도 x·y, 끝나는 시각)
-  ({String id, String line, double x, double y, int end})? vTalk;
+  /// aff: 원정대의 정 — 오늘 처음 말 걸어 호감도 +10 (「♥ +10」 표시)
+  ({String id, String line, double x, double y, int end, bool aff})? vTalk;
 
   /// 밭 지정 모드 (웹 plotEdit)
   bool plotEdit = false;

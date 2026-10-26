@@ -6,6 +6,7 @@ import 'dart:io';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:kingday/core/actions.dart';
 import 'package:kingday/core/attendance.dart';
+import 'package:kingday/core/bond.dart';
 import 'package:kingday/core/calc.dart';
 import 'package:kingday/core/data.dart';
 import 'package:kingday/core/profile_data.dart';
@@ -158,6 +159,15 @@ void main() {
           // ── 유니크 루시안 ──
           case 'lbuy':
             a.buyLucian();
+          // ── 원정대의 정 ──
+          case 'aff':
+            (s.raw['aff'] as Map)[o[1]] = num.parse(o[2]);
+          case 'afftick':
+            a.affTick(num.parse(o[1]));
+          case 'afftalk':
+            a.affTalk(o[1]);
+          case 'bondplay':
+            a.bondPlay(int.parse(o[1]));
           case 'open10':
             a.open10();
           case 'mul':

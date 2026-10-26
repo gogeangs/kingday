@@ -9,6 +9,7 @@ library;
 
 import 'dart:math' as math;
 
+import '../core/bond.dart';
 import '../core/calc.dart';
 import '../core/challenge.dart';
 import '../core/data.dart';
@@ -299,6 +300,13 @@ class DunEndEvent extends BattleEvent {
   final int l, kills, star;
   final Reward? r;
   final bool gob, newStar3;
+}
+
+/// 원정대의 정: 함께 싸운 시간으로 ♥가 오름 (웹 step 맨 앞 affTick → affUp). 토스트·안내·관계 이야기는 화면 쪽 GameActions.affUp
+class AffUpEvent extends BattleEvent {
+  AffUpEvent(this.id, this.lv);
+  final String id;
+  final int lv;
 }
 
 class FightResetEvent extends BattleEvent {
@@ -1491,6 +1499,9 @@ class BattleSim {
   // ───────────── 한 프레임 ─────────────
   /// step(dt): 웹 step() 과 같은 순서로 한 프레임 진행
   void step(num dt) {
+    for (final (id, l) in c.affTick0(dt)) {
+      events.add(AffUpEvent(id, l)); // 원정대의 정: 함께한 시간
+    }
     if (talk != null) {
       talk!.t -= dt;
       if (talk!.t <= 0) {

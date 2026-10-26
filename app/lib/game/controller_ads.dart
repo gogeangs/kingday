@@ -135,6 +135,8 @@ extension GameAdsX on GameController {
     switch (e) {
       case ToastEvent(:final msg):
         toast(msg);
+      case AffUpEvent(:final id, :final lv):
+        act((a) => a.affUp(id, lv));
       case PillEvent(:final msg):
         pillMsg = msg;
         pillUntil = DateTime.now().millisecondsSinceEpoch + 2600;
