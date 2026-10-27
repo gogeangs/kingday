@@ -8800,8 +8800,8 @@ function cardReveal(list, title, gold, keep, again) {
    )}</div>${flip && ids.length > 1 ? '<button class="crall" id="crAll">모두 뒤집기</button>' : ''}${gold ? `<div class="crgold"><img src="assets/ui/ui_gold.png" alt=""> 별을 다 채운 동료 카드 → 골드 <b>+${fmt(gold)}</b></div>` : ''}
  <div class="acts">${
    again
-     ? `<button id="mX" hidden>닫기</button><button id="mGo">원정대에서 보기</button><button class="pri crag" id="crAgain">또 뽑기<small><img src="assets/gem/ui_gem.png" alt="" onerror="this.remove()">${again.gem}</small></button>`
-     : '<button id="mX">닫기</button><button class="pri" id="mGo">원정대에서 보기</button>'
+     ? `<button id="mX" hidden>닫기</button><button id="mGo">원정대 보기</button><button class="pri crag" id="crAgain">또 뽑기<small><img src="assets/gem/ui_gem.png" alt="" onerror="this.remove()">${again.gem}</small></button>`
+     : '<button id="mX">닫기</button><button class="pri" id="mGo">원정대 보기</button>'
  }</div>`;
   $('modal').hidden = false;
   ids.forEach(id => faceTo($('rv-' + id), id));
@@ -9350,9 +9350,9 @@ function buildTutorial(b, l) {
           BQ_MAX +
           '개까지 예약해 두면 차례로 지어져요.'
       ],
-      '이삭으로 바로 완료',
+      '바로 완료',
       {
-        label: '그냥 기다릴래요',
+        label: '기다릴게요',
         go: () => {
           if (!building() || !spendGem(timeGem(buildLeft()))) return;
           finishBuild();
@@ -10431,7 +10431,7 @@ function passSheet() {
  <div class="pday">${Object.entries(PASS_SRC)
    .map(([k, c]) => `<div class="pdr${(d.src[k] || 0) >= c[1] ? ' full' : ''}"><span>${c[2]} <small>+${c[0]}</small></span><b>${d.src[k] || 0} / ${c[1]}</b></div>`)
    .join('')}</div>
- <div class="acts">${n ? `<button class="pri claim" id="passAll">모두 받기 (${n})</button>` : ''}<button${n ? '' : ' class="pri"'} id="mGo">닫기</button></div>`;
+ <div class="acts">${n ? `<button class="pri claim" id="passAll">${n}개 받기</button>` : ''}<button${n ? '' : ' class="pri"'} id="mGo">닫기</button></div>`;
   $('modal').hidden = false;
   $('mGo').onclick = closeModal;
   if ($('passAll'))
@@ -11716,7 +11716,7 @@ function buyGemPlot() {
         'm:마르타|황금 이삭을 땅에 뿌리면 굳은 땅도 금세 부드러워지지. 한 칸 더 일궈 볼 텐가?',
         'sys:황금 이삭 ' + c + '개로 밭을 1칸 늘려요 (' + (n + 1) + ' / ' + GEM_PLOTS.length + '). 은퇴해도 사라지지 않아요.'
       ],
-      '이삭 ' + c + '개로 일구기',
+      '일구기 (' + c + ')',
       {
         label: '다음에',
         go: () => {
@@ -12605,7 +12605,7 @@ function chiefJoin(src) {
         'sys:유니크 동료 · 카엘 자리에서 카엘 대신 출전해요. 장비·칭호는 카엘 것을 그대로 써요.',
         'sys:마을 스킬 「새벽 종소리」 마을 건물 생산 +' + chPct(1) + '% (출전 안 해도 적용)'
       ].filter(Boolean),
-      '카엘 자리에 출전',
+      '출전시키기',
       { label: '나중에', go: () => setKaelSeat(CHIEF) }
     )
   );
@@ -12729,7 +12729,7 @@ function chiefSheet() {
  <div class="skl"><img src="assets/skills/skill_${id}.png" alt="" onerror="this.remove()"><div><b>${SKILLS[id].n}</b><span>${SKILLS[id].d}</span></div></div>${vpBox(id)}
  <div class="kv"><span>${UCIMG} 유니크 카드</span><b>${has ? (mx ? '별을 모두 모았어요 · ' + n + '장' : n + ' / ' + need + '장 (★' + (st + 1) + ')') : n + '장 모아 둠'}</b></div>
  ${has && !mx ? `<div class="xp"><div style="width:${Math.min(100, (n / need) * 100)}%"></div></div>` : ''}<p class="note">유니크 카드는 황금 이삭 상품(5,500원 이상)의 덤, 피트의 정기 배송(3일마다 1장), 랭킹 시즌 보상으로 받아요. 원하는 유니크 동료를 골라 별을 올려요.</p>
- <div class="acts">${has ? (on ? `<button id="cdGo">카엘로 바꾸기</button>` : `<button id="cdGo">카엘 자리에 출전</button>`) : `<button id="mX">닫기</button>`}${has ? `<button class="pri${chiefCan() ? ' glow' : ''}" id="cdUp" ${chiefCan() ? '' : 'disabled'}>${mx ? '★ 모두 모음' : '★ 올리기'}</button>` : chiefShop() ? `<button class="pri" id="cdShop">상점 가기</button>` : ''}</div>` +
+ <div class="acts">${has ? (on ? `<button id="cdGo">카엘로 바꾸기</button>` : `<button id="cdGo">출전시키기</button>`) : `<button id="mX">닫기</button>`}${has ? `<button class="pri${chiefCan() ? ' glow' : ''}" id="cdUp" ${chiefCan() ? '' : 'disabled'}>${mx ? '★ 모두 모음' : '★ 올리기'}</button>` : chiefShop() ? `<button class="pri" id="cdShop">상점 가기</button>` : ''}</div>` +
     (has ? '<button id="mX" hidden></button>' : '');
   $('modal').hidden = false;
   faceTo($('cdf-' + id), id);
@@ -22380,7 +22380,7 @@ function cloudPick(cl) {
   $('sheet').innerHTML =
     `<div class="eyebrow">계정</div><h2>어느 기록으로 할까요?</h2><p class="note" style="text-align:center">이 구글 계정에 저장된 기록이 있어요. 하나를 고르면 다른 쪽은 덮어써져요.</p>
  <div class="ckcs">${card('클라우드 기록', { stage: cl.stage, power: cl.power, gem: cl.gem }, ago(cl.updated_at) + ' 저장')}${card('이 기기 기록', me, '지금')}</div>
- <div class="acts"><button id="cpDev">이 기기 기록 유지</button><button class="pri" id="cpCl">클라우드 기록 불러오기</button></div>`;
+ <div class="acts"><button id="cpDev">이 기기 기록</button><button class="pri" id="cpCl">클라우드 기록</button></div>`;
   $('modal').hidden = false;
   $('cpCl').onclick = () => {
     if (!isSave(d)) return toast('클라우드 기록을 읽을 수 없어요');

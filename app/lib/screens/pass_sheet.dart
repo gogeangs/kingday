@@ -267,7 +267,7 @@ class _PassSheetState extends State<_PassSheet> {
                 }),
             ],
             acts: KdActs(buttons: [
-              if (n > 0) KdAct('모두 받기 ($n)', primary: true, claim: true, onTap: () => g.act((x) => x.passClaim())),
+              if (n > 0) KdAct('$n개 받기', primary: true, claim: true, onTap: () => g.act((x) => x.passClaim())),
               KdAct('닫기', primary: n == 0, onTap: () => Navigator.of(widget.sheet).pop()),
             ]),
           );
