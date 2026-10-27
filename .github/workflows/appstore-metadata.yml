@@ -53,5 +53,5 @@ jobs:
             run_precheck_before_submit:false 2>&1 | tee deliver.log
           st=${PIPESTATUS[0]}
           # 로그를 밖에서 못 볼 때를 위해 오류 줄을 알림으로
-          if [ $st -ne 0 ]; then grep -E "\[!\]|Error|error|Exception|denied|not found|could not" deliver.log | tail -25 | sed 's/^/::error::/'; tail -15 deliver.log | sed 's/^/::warning::/'; fi
+          if [ $st -ne 0 ]; then grep -E "\[!\]|Error|error|Exception|denied|not found|could not" deliver.log | tail -25 | sed 's/^/::error::/'; grep -v -E "^\s+from |^$" deliver.log | tail -40 | sed 's/^/::warning::/'; fi
           exit $st
