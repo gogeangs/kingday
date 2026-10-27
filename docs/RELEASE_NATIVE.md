@@ -71,20 +71,20 @@
 
 ## 4. AdMob (보상형 광고)
 
-지금은 구글 공식 **시험용 광고**가 나와요. 진짜 수익을 내려면 실제 ID가 필요해요.
+2026-10-27 AdMob 계정 **biz@project30s.co.kr** (주식회사 프로젝트서티즈) 에 앱 2개 · 보상형 광고 단위 2개를 만들어 앱 0.0.5 부터 넣었어요. 모두 공개돼도 되는 값이에요.
 
-1. https://admob.google.com 에서 앱을 추가해 주세요(안드로이드, 아이폰 각각).
-2. 각 앱에 **보상형 광고 단위**를 하나씩 만들어 주세요. 이름 예: `보상형-공통`
-3. 저에게 아래 4개 값을 알려 주세요.
+| 값 | ID | 넣은 곳 |
+|---|---|---|
+| 안드로이드 앱 ID | `ca-app-pub-8720405407394137~5806892182` | `app/android/app/src/main/AndroidManifest.xml` |
+| 아이폰 앱 ID | `ca-app-pub-8720405407394137~8148230470` | `app/ios/Runner/Info.plist` |
+| 안드로이드 보상형 광고 단위 | `ca-app-pub-8720405407394137/5228095656` | `app/lib/game/ads.dart` `realAndroid` |
+| 아이폰 보상형 광고 단위 | `ca-app-pub-8720405407394137/7880637162` | `app/lib/game/ads.dart` `realIos` |
 
-| 값 | 넣을 곳 (제가 넣어요) |
-|---|---|
-| 안드로이드 앱 ID `ca-app-pub-…~…` | `app/android/app/src/main/AndroidManifest.xml` |
-| 아이폰 앱 ID | `app/ios/Runner/Info.plist` |
-| 안드로이드 보상형 광고 단위 ID `ca-app-pub-…/…` | `app/lib/game/ads.dart` `realAndroid` |
-| 아이폰 보상형 광고 단위 ID | `app/lib/game/ads.dart` `realIos` |
+- 아이폰: 첫 광고를 보기 직전 「추적 허용」 창(ATT, `NSUserTrackingUsageDescription`)을 한 번 띄워요. 구글 광고 네트워크 `cstr6suwn9.skadnetwork` 등록.
+- AdMob 앱은 스토어에 공개된 뒤 「스토어 추가」로 연결해야 광고 제한이 풀려요(그 전에는 「검토 필요 · 광고 게재 제한」).
+- `app-ads.txt` 한 줄: `google.com, pub-8720405407394137, DIRECT, f08c47fec0942fa0` — 스토어에 적힌 개발자 웹사이트 **도메인 맨 위**에 둬야 해요.
 
-> 개발 중에 실제 광고를 직접 누르면 AdMob 계정이 정지될 수 있어요. 출시 전까지는 시험용 광고로 확인해 주세요.
+> 실제 광고를 내 폰에서 직접 누르거나 반복해서 보면 AdMob 계정이 정지될 수 있어요. AdMob 「설정 → 테스트 기기」에 대표님 폰을 등록해 두면 내 폰에는 시험 광고가 나와요.
 
 ## 5. 인앱결제 (상품·결제 확인 서버)
 
@@ -160,7 +160,7 @@
 | 기능 | 파일 | 지금 상태 |
 |---|---|---|
 | 효과음·진동 | `app/lib/game/feel.dart`, `app/assets/audio/` | 켜짐(설정에서 끄기 가능) |
-| 보상형 광고 | `app/lib/game/ads.dart` | 시험용 광고 ID |
+| 보상형 광고 | `app/lib/game/ads.dart` | 실제 광고 ID (0.0.5부터) |
 | 인앱결제 | `app/lib/game/store.dart`, `supabase/functions/kd-iap`, `supabase/stage4_iap.sql` | 꺼짐(시험용 바로 지급) |
 | 구글·애플 로그인 | `app/lib/game/login.dart` | 꺼짐(클라이언트 ID 대기) |
 | 정식 서명 | `.github/workflows/app-build.yml`, `app/android/app/build.gradle.kts` | GitHub 비밀값을 넣으면 자동 사용 |

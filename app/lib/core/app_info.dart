@@ -2,4 +2,4 @@
 /// 문의하기에 「게임 버전」으로 함께 보냄.
 library;
 
-const appVersion = '0.0.4+4';
+const appVersion = '0.0.5+5';
