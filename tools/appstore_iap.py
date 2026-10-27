@@ -46,15 +46,42 @@ def has_shot(path, kind):
     return False
 
 
+def ensure_avail(pid, terr):
+    """사용 가능 국가가 비어 있으면 모든 국가로 (앱 자체는 대한민국만 출시라 실제로는 한국에서만 팔림)."""
+    try:
+        d = call('GET', f'https://api.appstoreconnect.apple.com/v2/inAppPurchases/{pid}/inAppPurchaseAvailability').get('data')
+    except Exception:
+        d = None
+    if d:
+        return False
+    call('POST', '/inAppPurchaseAvailabilities', {'data': {'type': 'inAppPurchaseAvailabilities', 'attributes': {'availableInNewTerritories': True},
+                                                          'relationships': {'inAppPurchase': {'data': {'type': 'inAppPurchases', 'id': pid}},
+                                                                            'availableTerritories': {'data': [{'type': 'territories', 'id': t} for t in terr]}}}})
+    return True
+
+
+def has_price(pid):
+    try:
+        return bool(call('GET', f'https://api.appstoreconnect.apple.com/v2/inAppPurchases/{pid}/iapPriceSchedule').get('data'))
+    except Exception:
+        return False
+
+
 def main():
     aid = call('GET', '/apps', params={'filter[bundleId]': BUNDLE})['data'][0]['id']
     iaps = call('GET', f'/apps/{aid}/inAppPurchasesV2', params={'limit': 50})['data']
+    terr = [t['id'] for t in call('GET', '/territories', params={'limit': 200})['data']]
     for p in iaps:
         a = p['attributes']
+        if a.get('state') == 'MISSING_METADATA':
+            if ensure_avail(p['id'], terr):
+                print('사용 가능 국가 넣음', a['productId'])
+            if not has_price(p['id']):
+                print('::warning::가격 없음', a['productId'])
         if not has_shot(f"https://api.appstoreconnect.apple.com/v2/inAppPurchases/{p['id']}/appStoreReviewScreenshot", 'inAppPurchaseAppStoreReviewScreenshots'):
             upload('inAppPurchaseAppStoreReviewScreenshots', 'inAppPurchaseV2', 'inAppPurchases', p['id'])
             print('스크린샷 넣음', a['productId'])
-        print('인앱', p['id'], a['productId'], a.get('state'))
+        print('인앱', a['productId'], call('GET', f"https://api.appstoreconnect.apple.com/v2/inAppPurchases/{p['id']}")['data']['attributes'].get('state'))
     for g in call('GET', f'/apps/{aid}/subscriptionGroups')['data']:
         gl = call('GET', f"/subscriptionGroups/{g['id']}/subscriptionGroupLocalizations")['data']
         print('구독 그룹', g['id'], g['attributes'].get('referenceName'), '현지화', [l['attributes']['locale'] for l in gl])
@@ -63,7 +90,7 @@ def main():
             if not has_shot(f"/subscriptions/{s['id']}/appStoreReviewScreenshot", 'subscriptionAppStoreReviewScreenshots'):
                 upload('subscriptionAppStoreReviewScreenshots', 'subscription', 'subscriptions', s['id'])
                 print('스크린샷 넣음', a['productId'])
-            print('구독', s['id'], a['productId'], a.get('state'))
+            print('구독', a['productId'], call('GET', f"/subscriptions/{s['id']}")['data']['attributes'].get('state'))
     print('완료')
 
 
