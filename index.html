@@ -4734,6 +4734,32 @@ canvas {
 .allyc.on small {
   color: #9be3a8;
 }
+.allyall {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  margin-top: 6px;
+  padding: 7px 10px;
+  border-radius: 10px;
+  background: var(--panel2);
+  border: 1px dashed var(--line);
+}
+.allyall b {
+  font-size: 12.5px;
+  white-space: nowrap;
+}
+.allyall small {
+  font-size: 11px;
+  color: var(--muted);
+  text-align: right;
+}
+.allyall.on {
+  border: 1px solid rgba(255, 201, 74, 0.6);
+}
+.allyall.on small {
+  color: var(--gold);
+}
 .mzally {
   display: flex;
   gap: 8px;
@@ -7803,11 +7829,11 @@ const CAP0 = MAXLAND - 10,
   isGhost = st => isCap(st) && st % 2 === 1,
   ghostIdx = st => (st - CAP0 - 1) / 2,
   isGuard = st => isCap(st) && st % 2 === 0 && !isDemon(st);
-/* 지금 열린 마지막 영지: 1부만이면 60, 2부 1차(엘프 왕국)가 붙으면 70 (p2Install).
-   그다음 1칸은 보스 없이 사냥하는 곳 — 1부만: 61 「왕궁 뜰」 / 2부: 71 「바다 안개」(다음 나라가 열리면 여기부터 이어짐) */
+/* 지금 열린 마지막 영지: 1부만이면 60, 2부가 붙으면 90 (p2Install, 나라를 더한 만큼).
+   그다음 1칸은 보스 없이 사냥하는 곳 — 1부만: 61 「왕궁 뜰」 / 2부 일부만: 「바다 안개」 / 2부 전체: 91 「연합군 진영」 */
 let LAND = MAXLAND;
 const p2On = () => LAND > MAXLAND,
-  huntName = () => (p2On() ? '바다 안개' : '왕궁 뜰');
+  huntName = () => (LAND >= 90 ? '연합군 진영' : p2On() ? '바다 안개' : '왕궁 뜰'); /* 2부 다 열리면 91 연합군 진영 */
 const fightSt = () => Math.min(S.stage, LAND); /* 사냥터(LAND+1)는 마지막 영지 단계 몬스터 */
 const COMP = {
   kael: { n: '카엘', role: '농부 용사', desc: '은퇴만 꿈꾸는 농부. 성검 루미나르를 뽑아 버렸다.' },
@@ -10080,6 +10106,10 @@ function hydrate(d) {
     f.stage = MAXLAND + 1;
     f.wave = 0;
   }
+  if (p2On() && LAND >= 80 && d && d.p2Intro != null && d.p2v == null && f.stage === 71) {
+    f.wave = 0;
+    p2Mig = 71;
+  }
   if (f.stage > LAND + 1) f.stage = LAND + 1;
   return f;
 }
@@ -11084,12 +11114,15 @@ function kStats() {
   const fm = 1 + 0.06 * S.bld.mine,
     m = allMul();
   return {
-    atk: (10 + S.up.atk * 3 + ga * fm) * (buff('atk') ? 1.2 : 1) * m * trAtk() * vBrave() * ulA(),
-    hp: (100 + S.up.hp * 20 + gh * fm) * (1 + 0.05 * S.bld.diner) * m * trHp() * vHp() * stewM(),
+    atk: (10 + S.up.atk * 3 + ga * fm) * (buff('atk') ? 1.2 : 1) * m * trAtk() * vBrave() * ulA() * p2Atk(),
+    hp: (100 + S.up.hp * 20 + gh * fm) * (1 + 0.05 * S.bld.diner) * m * trHp() * vHp() * stewM() * p2Hp(),
     aps: (1 + S.up.spd * 0.05) * (buff('spd') ? 1.2 : 1) * ulS(),
     crit: (5 + S.up.crit) / 100 + (buff('crit') ? 0.1 : 0)
   };
 }
+/* 2부 (PART2.md 3-3): 연합군 맹주 공격 +10%·사프란 향신료 공격 +15%·북방 동맹 체력 +15%. 1부만이면 모두 1 */
+const p2Atk = () => (SKX.spice > 0 ? 1.15 : 1) * allyAtk(),
+  p2Hp = () => allyHp();
 const COMP_GROW = 1.1,
   BLESS = 0.2; /* 동료 레벨당 능력치 ×1.1, 카엘 성유물 능력치의 20%를 동료도 받음(성검의 축복) */
 function gearSum() {
@@ -11118,8 +11151,8 @@ function cStats(id) {
     g = Math.pow(COMP_GROW, l - 1),
     gs = gearSum();
   return {
-    atk: (c.base.atk * g + gs.a * BLESS) * (1 + 0.08 * S.bld.apiary) * (buff('atk') ? 1.2 : 1) * m * trAtk() * vBrave() * ulA(),
-    hp: (c.base.hp * g + gs.h * BLESS) * (1 + 0.05 * S.bld.diner) * m * trHp() * vHp() * stewM(),
+    atk: (c.base.atk * g + gs.a * BLESS) * (1 + 0.08 * S.bld.apiary) * (buff('atk') ? 1.2 : 1) * m * trAtk() * vBrave() * ulA() * p2Atk(),
+    hp: (c.base.hp * g + gs.h * BLESS) * (1 + 0.05 * S.bld.diner) * m * trHp() * vHp() * stewM() * p2Hp(),
     aps: c.base.aps * (buff('spd') ? 1.2 : 1) * (SKX.bake > 0 ? 1.3 : 1) * ulS(),
     crit: 0.05 + (buff('crit') ? 0.1 : 0)
   };
@@ -11355,6 +11388,10 @@ const NPCID = {
   하랄: 'haral',
   리엘: 'riel',
   솔렌: 'solen',
+  사프란: 'saffron',
+  에이나르: 'einar',
+  미르: 'mir',
+  토르븐: 'torben',
   에일라: 'aila',
   마고: 'margo',
   마르타: 'marta',
@@ -14156,7 +14193,7 @@ function renderAll() {
   if (!inCh)
     $('stLabel').textContent =
       S.stage > LAND ? huntName() : Math.floor((S.stage - 1) / 10) + 1 + '-' + (((S.stage - 1) % 10) + 1) + ' ' + r.n;
-  if (!inCh && !pillOn()) $('stRegion').textContent = S.stage > LAND ? (p2On() ? '보스 없이 사냥 중 · 곧 열려요' : '보스 없이 사냥 중 · 1부 완결') : terrName(S.stage) + ' 탈환전';
+  if (!inCh && !pillOn()) $('stRegion').textContent = S.stage > LAND ? (LAND >= P2_LAST ? '보스 없이 사냥 중 · 2부 완결' : p2On() ? '보스 없이 사냥 중 · 곧 열려요' : '보스 없이 사냥 중 · 1부 완결') : terrName(S.stage) + ' 탈환전';
   pfCheck();
   chCheck();
   renderGuide();
@@ -15235,6 +15272,24 @@ function castSkill(id, cp) {
     }
     if (fxOk('skill_solen')) spawnFx('skill_solen', cx, cy - 40 * s, 160 * s, 0.9);
     else for (const m of alive) spawnFx('bees', m.x, m.y - 30 * s, 50 * s, 0.6);
+  } else if (id === 'saffron') {
+    /* 사프란 「향신료 한 줌」: 8초 동안 원정대 공격 +15% (2부 이야기 동료) */
+    SKX.spice = 8;
+    for (const j of members()) if (P[j] && !P[j].down) addFloat(pos[j], py[j] - (HEIGHT[j] + 8) * s, '공격↑', '#ffb35a', 12);
+    {
+      const ids = members(),
+        mx = ids.reduce((a, j) => a + pos[j], 0) / ids.length,
+        my = ids.reduce((a, j) => a + py[j], 0) / ids.length;
+      if (fxOk('skill_saffron')) spawnFx('skill_saffron', mx, my - 60 * s, 190 * s, 0.9);
+    }
+  } else if (id === 'einar') {
+    /* 에이나르 「얼음 작살」: 앞의 적 하나 2.5배 + 2초 얼림(멈춤) */
+    const tg = alive[0];
+    hitMon(tg, t.atk * 2.5 * (SKX.feast > 0 ? 1.2 : 1), true, s, 0);
+    tg.bind = Math.max(tg.bind || 0, 2);
+    addFloat(tg.x, tg.y - 80 * s, '얼음!', '#bfe6ff', 13);
+    if (fxOk('skill_einar')) spawnFx('skill_einar', tg.x, tg.y - 40 * s, 150 * s, 0.8);
+    else spawnFx('harpoon', tg.x, tg.y - 30 * s, 60 * s, 0.5);
   } else if (id === 'margo') {
     for (const j of members()) {
       const q = P[j];
@@ -15710,6 +15765,7 @@ function castSkill(id, cp) {
 function stepSkills(dt, L, alive) {
   const { ids, s } = L;
   for (const k of ['shield', 'feast', 'bake', 'mount', 'wall', 'guts', 'lamp', 'sap', 'ward', 'dok', 'phx', 'taunt', 'blk']) SKX[k] = Math.max(0, SKX[k] - dt);
+  if (SKX.spice > 0) SKX.spice = Math.max(0, SKX.spice - dt); /* 사프란 (2부) */
   if (SKX.stew > 0) {
     SKX.stew = Math.max(0, SKX.stew - dt);
     /* 스튜가 끝나면 늘었던 체력만큼 다시 줄임 */
@@ -15926,7 +15982,7 @@ function layout() {
 const depthAt = (L, lane) => L.top + (L.bot - L.top) * lane;
 function spawn() {
   if (CH) return chSpawn();
-  if (S.stage > LAND && S.wave >= 10) S.wave = 0; /* 사냥터(71 바다 안개 · 1부만이면 61 왕궁 뜰): 보스 없이 계속 */
+  if (S.stage > LAND && S.wave >= 10) S.wave = 0; /* 사냥터(91 연합군 진영 · 1부만이면 61 왕궁 뜰): 보스 없이 계속 */
   const st = fightSt();
   if (S.wave >= 10) {
     const mx = monHp(st, true),
@@ -16159,6 +16215,7 @@ function resetFight(msg) {
   const dem = mons.some(m => m.dem);
   SKX.shield = SKX.honey = SKX.feast = SKX.guts = SKX.sym = SKX.lamp = SKX.sap = SKX.ward = SKX.dok = SKX.phx = 0;
   SKX.stew = SKX.taunt = SKX.blk = SKX.bloom = 0;
+  if (SKX.spice) SKX.spice = 0;
   ULB.t = 0;
   for (const id of members()) {
     P[id].hp = stats(id).hp;
@@ -16388,7 +16445,7 @@ function part1Sheet() {
   };
 }
 /* ---------- 2부 「흩어진 동맹」 (docs/content/PART2.md) ----------
-   지금은 1차 엘프 왕국(영지 61~70)만 웹에 열림. 71 = 「바다 안개」(보스 없이 70단계 사냥, 사막이 열리면 71부터 이어짐).
+   웹에 2부 전체가 열림: 엘프 왕국(61~70) → 사막 제국(71~80) → 북방 부족(81~90) → 91 「연합군 진영」(보스 없이 90단계 사냥).
    앱은 아직 1부(60·61 왕궁 뜰)라, 웹·앱 비교 표(tools/parity/gen_dart_data.js가 뽑는 REGIONS·COMP·SKILLS·RANKS·BAL 등)가
    바뀌지 않도록 2부 표 내용은 게임을 시작할 때 p2Install()로 붙인다. 앱에 2부를 옮길 때 이 내용을 원래 표로 합칠 것 */
 const P2_MEM = 2 /* 나라 장수 회차 첫 처치 추억(왕도 재탈환 +3과 같은 방식) */,
@@ -16397,13 +16454,17 @@ const P2_MEM = 2 /* 나라 장수 회차 첫 처치 추억(왕도 재탈환 +3�
 /* 동맹 3나라. open: 이번 업데이트에 열린 나라. bonus: 처음 해방 때 영구(은퇴해도 유지) */
 const ALLY = [
   { k: 'elf', n: '엘프 왕국', boss: 70, king: '엘프 여왕 에일라', face: 'aila', t: '엘프 여왕 에일라의 축복', b: '동료 스킬 게이지 차는 속도 +10%' },
-  { k: 'desert', n: '사막 제국', boss: 80, king: '소년 황제 미르', face: '', t: '소년 황제 미르의 금고', b: '모든 골드 +20%' },
-  { k: 'north', n: '북방 부족', boss: 90, king: '곰가죽 족장 토르븐', face: '', t: '곰가죽 족장 토르븐의 맹세', b: '원정대 체력 +15%' }
+  { k: 'desert', n: '사막 제국', boss: 80, king: '소년 황제 미르', face: 'mir', t: '소년 황제 미르의 금고', b: '모든 골드 +20%' },
+  { k: 'north', n: '북방 부족', boss: 90, king: '곰가죽 족장 토르븐', face: 'torben', t: '곰가죽 족장 토르븐의 맹세', b: '원정대 체력 +15%' }
 ];
 const allyOn = k => !!(S && isObj(S.ally) && S.ally[k]),
   allyOpen = a => a.boss <= LAND,
   allyAt = st => (p2On() ? ALLY.find(a => a.boss === st && allyOpen(a)) : null),
-  allySk = () => (allyOn('elf') ? 1.1 : 1); /* 엘프 동맹: 동료 스킬 게이지 +10% */
+  allySk = () => (allyOn('elf') ? 1.1 : 1) /* 엘프 동맹: 동료 스킬 게이지 +10% */,
+  allyGold = () => (allyOn('desert') ? 1.2 : 1) /* 사막 동맹: 모든 골드 +20% */,
+  allyHp = () => (allyOn('north') ? 1.15 : 1) /* 북방 동맹: 원정대 체력 +15% */,
+  allyAll = () => ALLY.every(a => allyOn(a.k)),
+  allyAtk = () => (allyAll() ? 1.1 : 1); /* 세 나라 모두: 연합군 맹주 — 원정대 공격 +10% */
 /* 2부가 열려 있는지(1부 마왕을 한 번이라도 쓰러뜨림) — 지도 「바다 건너」 칩·동맹 칸 */
 const p2Open = () => p2On() && (S.capClears || 0) > 0;
 const P2REG = [
@@ -16423,6 +16484,41 @@ const P2REG = [
       '바다 위 섬을 덮은 거대한 세계수의 숲. 시듦의 장수 벨라독이 세계수 뿌리에 독을 부어, 잎이 하나씩 잿빛으로 변하고 있다.',
       'm:리엘|…내가 태어난 숲이야. 400년 만에 돌아왔는데, 이런 모습이라니.'
     ]
+  },
+  {
+    n: '사막 제국 아르자르',
+    sky: ['#c4602e', '#f2c47a'],
+    hill: '#a8693a',
+    hill2: '#c98b4e',
+    ground: '#d4a865',
+    kind: 'golem',
+    col: '#d9a84e',
+    mn: '모래 전갈',
+    boss: '모래폭풍의 장수 사르칸',
+    p2: 'desert',
+    terr: ['모래 부두', '낙타 길', '향신료 시장', '마른 오아시스', '무너진 기둥', '황금 성문', '모래 궁전', '전갈 굴', '바람 망루', '모래폭풍의 눈'],
+    lore: [
+      '모래 언덕 너머 둥근 지붕의 황금 도시. 모래폭풍의 장수 사르칸이 오아시스를 모래로 덮고 소년 황제를 궁에 가뒀다.',
+      'k:물이 없으면 밭도 없어. …이건 좀 용서가 안 되는데.'
+    ]
+  },
+  {
+    n: '북방 부족 하른 설원',
+    sky: ['#14284a', '#5fa0c8'],
+    hill: '#3d5c7a',
+    hill2: '#6e93b0',
+    ground: '#d6e6f0',
+    kind: 'ghost',
+    col: '#cfeaff',
+    mn: '눈덩이 설인',
+    boss: '눈보라의 장수 크바르',
+    p2: 'north',
+    terr: ['얼음 다리', '눈 덮인 고개', '얼음 낚시터', '천막 마을', '오로라 언덕', '곰 사냥터', '서리 침엽수림', '뼈 토템 길', '얼음 망루', '족장의 대천막'],
+    lore: [
+      '끝없는 설원과 오로라 아래 천막 마을. 눈보라의 장수 크바르가 겨울을 끝나지 않게 묶어 두었다.',
+      'q:이 장수만 쓰러뜨리면 연합군이 모인다. 주인, 마지막이다.',
+      'k:그 「마지막」 몇 번째예요?'
+    ]
   }
 ];
 function p2Install() {
@@ -16430,7 +16526,7 @@ function p2Install() {
   REGIONS.push(...P2REG);
   LAND = REGIONS.length * 10;
   /* 2부 구간(61~)만 따로 쓰는 체력 증가율 — tools/balance_sim.py p2 로 맞춤(PART2.md 8장) */
-  BAL.hpG2 = 1.1; /* 1.2(1부와 같음)면 출퇴근 방치러가 70에 닿는 데 약 19일 → 1.1로 약 7일 (PART2.md 8장) */
+  BAL.hpG2 = 1.03; /* 1차 1.1 → 2부 전체(61~90)에 맞춰 1.03: 출퇴근 방치러 엘프 해방 약 11일 · 사막 약 17일 · 북방(2부 완결) 약 21일 (PART2.md 8-3) */
   BG_IMG[6] = 'elf';
   BG_FULL.elf = true;
   DECO[6] = 'trees';
@@ -16445,8 +16541,37 @@ function p2Install() {
     boss: { id: 'boss_belladok', walk: 4, attack: 4, hit: 2, fig: 155, h: 78 }
   };
   MON_ALT[6] = { id: 'shroom_poison', walk: 4, attack: 4, hit: 2, fig: 150, h: 46, trait: 'swarm' };
+  /* 사막 제국: 모래 전갈 · 붕대 미라 병사(단단함) · 장수 사르칸 / 북방 부족: 눈덩이 설인 · 얼음 까마귀(비행) · 장수 크바르 */
+  BG_IMG[7] = 'desert';
+  BG_FULL.desert = true;
+  DECO[7] = 'spires';
+  BG_IMG[8] = 'north';
+  BG_FULL.north = true;
+  DECO[8] = 'trees';
+  MON_SPRITES[7] = {
+    id: 'sand_scorpion',
+    walk: 4,
+    attack: 4,
+    hit: 2,
+    fig: 140,
+    h: 48,
+    boss: { id: 'boss_sarkan', walk: 4, attack: 4, hit: 2, fig: 150, h: 78 }
+  };
+  MON_ALT[7] = { id: 'mummy_guard', walk: 4, attack: 4, hit: 2, fig: 135, h: 54, trait: 'tank' };
+  MON_SPRITES[8] = {
+    id: 'snow_yeti',
+    walk: 4,
+    attack: 4,
+    hit: 2,
+    fig: 135,
+    h: 56,
+    boss: { id: 'boss_kvar', walk: 4, attack: 4, hit: 2, fig: 125, h: 86 }
+  };
+  MON_ALT[8] = { id: 'ice_crow', walk: 4, attack: 4, hit: 2, fig: 150, h: 44, lift: 28, trait: 'flier' };
   RANKS.push({ at: 70, n: '바다 건너 기사', k: '배멀미 나는 기사도 있나요…' });
-  RANKIMG.push('rank_king');
+  RANKS.push({ at: 80, n: '동맹의 사절', k: '사절이요? 편지 심부름 같은 거죠?' });
+  RANKS.push({ at: 90, n: '연합군 맹주', k: '맹주… 그거 은퇴는 언제 해요?' });
+  RANKIMG.push('rank_king', 'rank_king', 'rank_king');
   /* 솔렌: 엘프 소년 양봉가 · 이야기 동료(일반, ★3까지). 수치는 리엘과 같게 (docs/COMPANION_GUIDE.md) */
   COMP.solen = {
     n: '솔렌',
@@ -16490,42 +16615,135 @@ function p2Install() {
       if (!S.lv.solen) S.lv.solen = 1;
     }
   });
-  PFRAMES.push({ k: 'alliance', n: '연합의 깃발', d: '세 나라 모두 해방 (2부)', ok: () => ALLY.every(a => allyOn(a.k)), tall: 1 });
+  /* 사프란: 사막 향신료 요리사 소녀 · 이야기 동료(일반, ★3까지). 수치는 마고와 같게 */
+  COMP.saffron = {
+    n: '사프란',
+    role: '요리사 · 공격 버프',
+    desc: '낙타 수레 식당을 끌고 사막을 도는 향신료 요리사 소녀. 매운맛이라면 누구와도 금방 친해진다. 다친 동료에게 수프를 던져 치유한다.',
+    join: '사막 제국 향신료 시장에서 합류',
+    base: { atk: 4, hp: 95, aps: 0.8 },
+    per: { atk: 1.5, hp: 19 }
+  };
+  /* 에이나르: 북방 얼음낚시 어부 · 이야기 동료(일반, ★3까지). 수치는 하랄과 같게 */
+  COMP.einar = {
+    n: '에이나르',
+    role: '어부 · 얼림',
+    desc: '얼음 구멍 낚시만 30년 한 무뚝뚝한 북방 어부. 하랄의 허풍을 전부 진지하게 믿는다. 작살을 던져 멀리서 공격한다.',
+    join: '북방 부족 얼음 낚시터에서 합류',
+    base: { atk: 11, hp: 90, aps: 0.9 },
+    per: { atk: 3.4, hp: 18 }
+  };
+  JOB.saffron = 'cook';
+  JOB.einar = 'fisher';
+  GRADE.saffron = GRADE.einar = 'common';
+  STORY2.saffron = 'cook';
+  STORY2.einar = 'fisher';
+  HEIGHT.saffron = 76;
+  HEIGHT.einar = 74;
+  SPRITES.saffron = { idle: 4, walk: 6, attack: 4, hit: 2, h: 76 };
+  SPRITES.einar = { idle: 4, walk: 6, attack: 4, hit: 2, h: 74 }; /* 공격 칸은 넓은 512(리엘과 같은 방식) — 칸 너비는 그림 너비로 계산 */
+  FORM.saffron = FORM.margo;
+  FORM.einar = FORM.haral;
+  SKILLS.saffron = { n: '향신료 한 줌', d: '8초 동안 원정대 공격력 15% 증가', line: '이 향 맡으면 힘이 펄펄 날걸요!', need: 20, face: 'laugh' };
+  SKILLS.einar = { n: '얼음 작살', d: '적 하나에게 공격력 2.5배 피해, 2초 동안 얼려 멈춤', line: '…얼어라.', need: 20, face: 'laugh' };
+  FXDEF.skill_saffron = 4;
+  FXDEF.skill_einar = 4;
+  SKX.spice = 0;
+  VTALK.saffron = ['오늘 수프엔 비밀 향신료 하나!', '카라 언니, 불맛 대결 해요!', '낙타 수레가 그리워요.'];
+  VTALK.einar = ['…얼음이 얇군.', '하랄 선생은 크라켄을 맨손으로 잡았다.', '…물고기가 온다.'];
+  WLINE.saffron = '불 앞은 저한테 맡겨요!';
+  WLINE.einar = '…낚시는 기다림이다.';
+  EVENTS.push(
+    {
+      at: 74,
+      id: 'saffron',
+      eb: '동료 합류',
+      t: '요리사 사프란',
+      p: [
+        'sys:향신료 시장을 되찾자, 낙타 수레 식당에서 매콤한 냄새가 퍼져 나왔다.',
+        'm:사프란|이 향 맡아 봐요. 계피, 카다멈, 그리고… 비밀 하나!',
+        'm:카라|…불맛도 넣어 봤어?',
+        'm:사프란@laugh|오, 매운맛 친구다!',
+        'sys:사프란이 합류했어요. 다친 동료를 수프로 치유하고, 특수 스킬로 8초 동안 원정대 공격을 올려요. 요리사 자리에서 마고와 바꿔 쓸 수 있어요.'
+      ],
+      btn: '함께 간다',
+      act: () => {
+        S.joined.saffron = true;
+        if (!S.lv.saffron) S.lv.saffron = 1;
+      }
+    },
+    {
+      at: 84,
+      id: 'einar',
+      eb: '동료 합류',
+      t: '어부 에이나르',
+      p: [
+        'sys:얼음 낚시터를 되찾자, 얼음 구멍 앞에 앉아 있던 덩치 큰 어부가 천천히 일어났다.',
+        'm:에이나르|…크라켄을 맨손으로 잡았다고 들었다.',
+        'm:하랄|어, 어험! 물론이지!',
+        'm:에이나르|존경한다. 따라가겠다.',
+        'm:막례|…아이고, 또 하나 속았네.',
+        'sys:에이나르가 합류했어요. 작살을 던져 멀리서 공격하고, 특수 스킬로 적 하나를 2초 동안 얼려요. 어부 자리에서 하랄과 바꿔 쓸 수 있어요.'
+      ],
+      btn: '함께 간다',
+      act: () => {
+        S.joined.einar = true;
+        if (!S.lv.einar) S.lv.einar = 1;
+      }
+    }
+  );
+  PFRAMES.push({ k: 'alliance', n: '연합의 깃발', d: '세 나라 모두 해방 (2부)', ok: () => allyAll(), tall: 1 });
+  BADGES.push({ k: 'part2', n: '2부 완결', d: '세 나라 모두 해방 (2부 완결)', ok: () => allyAll() });
 }
 /* 미리보기 ?demo=part2: 저장하지 않고 영지 60 알현실 마왕 바로 앞(웨이브 9)에서 시작 — 1부 엔딩 → 2부 시작 → 엘프 왕국 → 해방까지 빨리 보게 넉넉한 능력치 */
-function p2Demo() {
-  const f = hydrate({ gold: 1e15 });
+/* 미리보기 ?demo=part2 / desert / north / ending2: 저장하지 않고 영지 60·70·80·90 장수 바로 앞(웨이브 9)에서 시작.
+   그 앞 나라는 해방한 상태, 넉넉한 능력치(추억)로 장수를 금방 볼 수 있게 */
+const P2DEMO = { part2: [MAXLAND, 1500], desert: [70, 4000], north: [80, 12000], ending2: [90, 40000] };
+function p2Demo(st, mem) {
+  st = st || MAXLAND;
+  const f = hydrate({ gold: 1e15 }),
+    after = st > MAXLAND;
   Object.assign(f, {
     started: true,
-    stage: MAXLAND,
+    stage: st,
     wave: 9,
-    best: MAXLAND,
+    best: st,
     runStart: 1,
-    memory: 1500,
+    memory: mem || 1500,
     retires: 3,
     gem: 2000,
     mapIntro: 1,
-    fogSeen: MAXLAND,
-    rankSeen: 7,
-    gemRank: 7,
+    fogSeen: st,
     chOpen: 1,
     pfSeen: 1,
-    capClears: 0,
-    ending1: 0,
+    capClears: after ? 1 : 0,
+    ending1: after ? 1 : 0,
     last: Date.now(),
     up: { atk: 900, hp: 850, spd: 40, crit: 55 },
     joined: { margo: true, haral: true, riel: true, bron: true },
     lv: { bron: 70, haral: 70, riel: 70, margo: 70 },
     bld: { inn: 10, farm: 6, diner: 10, dock: 10, apiary: 9, mine: 10, forge: 1, market: 1, ranch: 1, chapel: 1 },
-    regSeen: { 0: 1, 1: 1, 2: 1, 3: 1, 4: 1, 5: 1 },
+    regSeen: {},
     ...p2Fresh()
   });
-  f.done = { tutSkill: true, tutBuild: true, capRoad: true, cap56: true, cap57: true, pete: true, retHint: true, sellAsk: true, primalIntro: true };
-  for (const e of EVENTS) if (e.at <= MAXLAND) f.done[e.id] = true;
+  for (let r = 0; r * 10 < st; r++) f.regSeen[r] = 1;
+  f.done = { tutSkill: true, tutBuild: true, capRoad: true, cap56: true, cap57: true, pete: true, retHint: true, sellAsk: true, primalIntro: true, seaMap: after };
+  for (const e of EVENTS) if (e.at <= st) {
+    f.done[e.id] = true;
+    if (e.id === 'solen' || e.id === 'saffron' || e.id === 'einar') {
+      f.joined[e.id] = true;
+      f.lv[e.id] = 70;
+    }
+  }
+  if (after) f.p2Intro = 1;
+  for (const a of ALLY) if (a.boss < st) f.ally[a.k] = f.p2Clr[a.k] = f.gemLord[a.boss] = 1;
+  f.rankSeen = f.gemRank = rankIdx(f);
   return f;
 }
 /* 2부 저장 기본값 (PART2.md 7장): 2부가 붙어 있을 때만 fresh()에 들어감 */
-const p2Fresh = () => ({ ally: { elf: 0, desert: 0, north: 0 }, p2Clr: { elf: 0, desert: 0, north: 0 }, p2Intro: 0, ending2: 0 });
+/* p2v: 2부 저장 판(3 = 사막·북방까지). 1차 저장(p2v 없음)에서 71 「바다 안개」에 있던 기록은 71 사막 첫 영지 웨이브 0 */
+const p2Fresh = () => ({ ally: { elf: 0, desert: 0, north: 0 }, p2Clr: { elf: 0, desert: 0, north: 0 }, p2Intro: 0, ending2: 0, p2v: 3 });
+let p2Mig = 0; /* 이번에 1차 저장의 71 바다 안개 → 71 사막으로 옮겼으면 게임을 열 때 사막 이야기 창 */
 /* 2부 시작 장면: 1부 마왕을 쓰러뜨리고 61 이상에 있는데 아직 못 봤으면 1번 (1부 완결 창을 닫을 때 · 예전 세이브는 게임을 열 때) */
 function p2Check() {
   if (!p2On() || S.p2Intro || S.stage <= MAXLAND || !((S.capClears || 0) > 0 || S.ending1)) return;
@@ -16624,8 +16842,86 @@ const P2FREE = {
     'k@smile:그럼 천 년 뒤에 올게요.',
       'sys:엘프 왕국이 동맹이 되었다. (동료 스킬 게이지 +10%)'
     ]
+  },
+  desert: {
+    t: '다시 반짝이는 오아시스',
+    p: [
+      'sys:사르칸의 모래폭풍이 걷히자, 묻혀 있던 오아시스가 다시 반짝였다.',
+      'm:미르|짐을 구한 상으로 금화 산을 주겠다! …아니, 반만. 아니, 3분의 1만.',
+      'q:소년 황제가 셈은 빠르군.',
+      'k@smile:금화 말고 물 한 통이면 돼요. 밭에 주게요.',
+      'm:미르@laugh|…이상한 영웅이다. 마음에 들어! 아르자르는 너의 동맹이다!',
+      'sys:사막 제국이 동맹이 되었다. (모든 골드 +20%)'
+    ]
+  },
+  north: {
+    t: '300년 만의 봄바람',
+    p: [
+      'sys:크바르가 쓰러지자 하늘 가득 오로라가 흘렀다. 설원에 300년 만의 봄바람이 불었다.',
+      'm:토르븐|북방은 말이 아니라 도끼로 맹세한다. 우리 도끼는 이제 너의 것이다.',
+      'k@flustered:도끼는 괜찮고, 혹시 곰가죽 이불 남는 거 있어요?',
+      'sys:북방 부족이 동맹이 되었다. (원정대 체력 +15%)'
+    ]
   }
 };
+/* 2부 엔딩 (PART2.md 5-4): 북방 해방 → 동맹 창 → 엔딩 장면 → 「2부 완결」 창 → 91 연합군 진영 */
+const ENDING2 = [
+  {
+    eb: '2부 엔딩 · 1',
+    t: '세 나라의 깃발',
+    il: 'ending_p2',
+    p: [
+      'sys:세 나라의 깃발이 에르단 왕궁 앞에 나란히 꽂혔다.',
+      'm:에일라|엘프의 활.',
+      'm:미르@laugh|사막의 금화!',
+      'm:토르븐|북방의 도끼.',
+      'q:주인, 이제 그대는 연합군의 맹주다. 마계의 문을 넘을 수 있다.',
+      'k:맹주가 되면 밭일은 누가 해요?'
+    ],
+    btn: '다음'
+  },
+  {
+    eb: '2부 엔딩 · 2',
+    t: '다시 열린 검은 문',
+    p: [
+      'sys:그날 밤, 왕궁 하늘에 검은 문이 다시 열렸다. 문 너머에서 왕관이 희미하게 빛났다.',
+      'm:발타사르@laugh|…왔구나. 일곱 마왕이 너를 기다린다.',
+      'sys:2부 「흩어진 동맹」 끝. 3부 「마계 원정」에서 계속됩니다.'
+    ],
+    btn: '2부 완결'
+  }
+];
+function ending2Scene(i) {
+  const e = ENDING2[i];
+  if (!e) return part2Sheet();
+  scene(e.eb, e.t, e.p, e.btn, null, e.il);
+  $('mGo').onclick = () => {
+    sceneQ.unshift(() => ending2Scene(i + 1));
+    closeModal();
+  };
+}
+function part2Sheet() {
+  S.ending2 = 1;
+  pfCheck();
+  save();
+  const li = (ic, a, b) => `<div class="p1r">${ic}<span>${a}</span><b>${b}</b></div>`;
+  $('sheet').innerHTML = `<div class="eyebrow">왕이 되는 그날까지 · 2부 「흩어진 동맹」</div><h2>2부 완결</h2>
+ <div class="p1box">${li(GEMIMG, '황금 이삭', '+' + P2_GEM)}${li('<span class="allyic">⚔</span>', '맹주 보너스', '원정대 공격 +10%')}${li(`<img src="assets/profile/frame_alliance.png" alt="" onerror="this.remove()">`, '프로필 테두리', '연합의 깃발')}${li(`<img src="assets/profile/badge_part2.png" alt="" onerror="this.remove()">`, '배지', '2부 완결')}${li(uiImg(RANKIMG[RANKS.length - 1], 'chipic'), '칭호', '연합군 맹주 (+4%)')}</div>
+ ${para('sys:이제 「연합군 진영」에서 보스 없이 사냥이 이어져요. 동맹 보너스는 은퇴해도 남고, 은퇴하고 다시 나라를 해방하면 회차마다 나라마다 한 번 은퇴의 추억 +' + P2_MEM + '을 더 받아요.')}
+ <p class="note p1next">3부 「마계 원정」 — 일곱 마왕이 기다려요. 준비 중이에요.</p>
+ <div class="acts"><button id="mAlt">은퇴 계획</button><button class="pri" id="mGo">계속하기</button></div>`;
+  $('modal').hidden = false;
+  sceneOn = true;
+  $('mGo').onclick = closeModal;
+  $('mAlt').onclick = () => {
+    closeModal();
+    setTab('up');
+    setTimeout(() => {
+      const e = $('retireBox');
+      if (e) e.scrollIntoView({ block: 'center' });
+    }, 200);
+  };
+}
 function p2FreeScene(a) {
   scene(
     a.n + ' 해방',
@@ -16649,8 +16945,10 @@ function allySheet(a) {
   sceneOn = true;
   $('mGo').focus({ preventScroll: true });
   $('mGo').onclick = () => {
+    /* 마지막 나라(북방)를 처음 해방하면 이어서 2부 엔딩 */
+    if (a.boss === P2_LAST && !S.ending2) sceneQ.unshift(() => ending2Scene(0));
     closeModal();
-    if (S.stage > LAND) setTimeout(() => toast('바다 안개가 짙어요. 곧 열려요'), 400);
+    if (S.stage > LAND && LAND < P2_LAST) setTimeout(() => toast('바다 안개가 짙어요. 곧 열려요'), 400);
   };
 }
 /* 프로필 「동맹」 칸: 해방한 나라는 왕 얼굴 + 보너스, 아직이면 실루엣 「○○을(를) 해방하면 열려요」 */
@@ -16660,7 +16958,7 @@ function allyBox() {
     const on = allyOn(a.k),
       im = a.face ? `<img src="assets/portraits/portrait_${a.face}_idle.png" alt="" onerror="this.remove()">` : '<i>?</i>';
     return `<div class="allyc${on ? ' on' : ''}"><span class="allyf">${im}</span><b>${a.n}</b><small>${on ? a.b : a.n + '을 해방하면 열려요'}</small></div>`;
-  }).join('')}</div>`;
+  }).join('')}</div><div class="allyall${allyAll() ? ' on' : ''}"><b>⚔ 연합군 맹주</b><small>${allyAll() ? '원정대 공격 +10% · 테두리 「연합의 깃발」' : '세 나라를 모두 해방하면 원정대 공격 +10%'}</small></div>`;
 }
 function step(dt) {
   affTick(dt); /* 원정대의 정: 함께한 시간 */
@@ -16871,9 +17169,9 @@ function step(dt) {
         } else if (id === 'makrye') {
           hitMon(tgt, d, cr, s, gy);
           proj.push({ x: pos[id] + 12 * s, y: py[id] - 40 * s, tx: tgt.x, ty: tgt.y - 28 * s, t: 0, d: 0.22, kind: 'harpoon' });
-        } else if (id === 'haral') {
+        } else if (id === 'haral' || id === 'einar') {
           hitMon(tgt, d, cr, s, gy);
-          proj.push({ x: pos.haral + 12 * s, y: py.haral - 40 * s, tx: tgt.x, ty: tgt.y - 28 * s, t: 0, d: 0.2, kind: 'harpoon' });
+          proj.push({ x: pos[id] + 12 * s, y: py[id] - 40 * s, tx: tgt.x, ty: tgt.y - 28 * s, t: 0, d: 0.2, kind: 'harpoon' });
         } else if (JOB[id] === 'cook') {
           hitMon(tgt, d, cr, s, gy);
           proj.push({ x: pos[id] + 10 * s, y: py[id] - 50 * s, tx: tgt.x, ty: tgt.y - 30 * s, t: 0, d: 0.3, kind: 'soup' });
@@ -16958,7 +17256,7 @@ function step(dt) {
       if (m.hp <= 0 && !m.dead && !m.gob) {
         m.dead = 0.35;
         spawnFx('coin', m.x, m.y - 26 * s, 34 * s, 0.6, -60 * s);
-        const g = reward(fightSt(), m.boss) * (buff('gold') ? 1.5 : 1) * (blOn('gold') ? 1.3 : 1) * memMul() * (m.boss ? vpFeast() : 1) * (SKX.dok > 0 ? 1 + 0.5 * SKX.dokK : 1) * vpHoard();
+        const g = reward(fightSt(), m.boss) * (buff('gold') ? 1.5 : 1) * (blOn('gold') ? 1.3 : 1) * memMul() * (m.boss ? vpFeast() : 1) * (SKX.dok > 0 ? 1 + 0.5 * SKX.dokK : 1) * vpHoard() * allyGold();
         S.gold += g;
         dailyAdd('kill', 1);
         passKill();
@@ -17239,6 +17537,7 @@ const chDot = () => !!S.chOpen && (supplyCan() || dunLeft() > 0);
 function chPartyReset() {
   SKX.shield = SKX.honey = SKX.feast = SKX.guts = SKX.sym = SKX.lamp = SKX.sap = SKX.ward = SKX.dok = SKX.phx = 0;
   SKX.stew = SKX.taunt = SKX.blk = SKX.bloom = 0;
+  if (SKX.spice) SKX.spice = 0;
   ULB.t = 0;
   for (const id of members()) {
     if (!P[id]) continue;
@@ -18329,6 +18628,8 @@ const DRAW = {
   haral: drawHaral,
   riel: drawRiel,
   solen: drawRiel,
+  saffron: drawMargo,
+  einar: drawHaral,
   margo: drawMargo,
   luka: (x, y, s, o) => {
     ctx.save();
@@ -19039,6 +19340,8 @@ const SPRITE_ALT = {
   bruno: 'riel',
   vander: 'haral',
   pipps: 'bron',
+  saffron: 'margo',
+  einar: 'haral',
   solen: 'riel',
   goldie: 'riel',
   bao: 'margo',
@@ -21209,26 +21512,55 @@ const SEAPOS = {
     [236, 738],
     [262, 700],
     [288, 666],
-    [252, 604]
+    [252, 604],
+    /* 사막 길: 사막 부두(71)에서 오아시스·황금 궁전을 지나 북쪽 망루(80 장수) */
+    [690, 1095],
+    [745, 1050],
+    [800, 1002],
+    [792, 952],
+    [842, 905],
+    [876, 850],
+    [893, 772],
+    [790, 690],
+    [748, 620],
+    [800, 532],
+    /* 설원 길: 얼음 다리 아래(81)에서 굽이굽이 올라가 족장의 대천막(90 장수) */
+    [722, 432],
+    [690, 376],
+    [632, 324],
+    [596, 296],
+    [690, 268],
+    [722, 246],
+    [662, 226],
+    [604, 196],
+    [632, 166],
+    [646, 128]
   ],
-  fog: [470, 1040] /* 71 바다 안개: 엘프 섬 앞바다 */,
+  /* 보스 없이 사냥하는 자리(LAND+1): 1차 71 바다 안개(엘프 섬 앞바다) · 2부 완결 91 연합군 진영(에르단 항구 앞) */
+  fog: [470, 1040],
+  camp: [560, 1235],
+  /* 뱃길: at = 이 영지를 가 보면 걷힘 */
   route: [
-    [410, 1220],
-    [360, 1120],
-    [350, 1040]
-  ] /* 항구 → 엘프 섬 뱃길 */,
-  spot: { port: [430, 1330, 110], desert: [800, 790, 190], north: [560, 220, 210] },
-  ctr: [[285, 790]] /* 지역 가운데 (REGIONS 6번부터) */
+    { at: 61, pts: [[410, 1220], [360, 1120], [350, 1040]] },
+    { at: 71, pts: [[500, 1010], [570, 1050], [630, 1100]] }
+  ],
+  spot: { port: [430, 1330, 110], desert: [820, 800, 190], north: [660, 260, 190] },
+  ctr: [[285, 790], [820, 830], [660, 280]] /* 지역 가운데 (REGIONS 6번부터) */
 };
+const seaHunt = () => (LAND >= P2_LAST ? SEAPOS.camp : SEAPOS.fog);
 const SEA_R0 = 6; /* 바다 건너 첫 지역 번호 */
-const SEA_FOG = { 6: ['실바니엘의 안개가 걷혔다!', 'q:세계수가 다시 숨을 쉰다.'] };
+const SEA_FOG = {
+  6: ['실바니엘의 안개가 걷혔다!', 'q:세계수가 다시 숨을 쉰다.'],
+  7: ['아르자르의 모래폭풍이 걷혔다!', 'q:오아시스가 다시 반짝인다.'],
+  8: ['하른 설원의 눈보라가 걷혔다!', 'q@moved:…300년 만의 봄바람이다, 주인.']
+};
 /* 지금 지도 기준: 첫 영지 · 마지막 영지 · 지역 번호 범위 · 영지 좌표 · 지역 가운데 */
 const wmSt0 = () => (wmSea ? MAXLAND + 1 : 1),
   wmStN = () => (wmSea ? LAND : MAXLAND),
   wmR0 = () => (wmSea ? SEA_R0 : 0),
   wmRN = () => (wmSea ? REGIONS.length : SEA_R0),
   wmOn = st => st >= wmSt0() && st <= wmStN(),
-  wmPt = st => (wmSea ? (st > LAND ? SEAPOS.fog : SEAPOS.pts[st - MAXLAND - 1]) : MAPPOS.pts[st - 1]),
+  wmPt = st => (wmSea ? (st > LAND ? seaHunt() : SEAPOS.pts[st - MAXLAND - 1]) : MAPPOS.pts[st - 1]),
   wmCtr = r => (r >= SEA_R0 ? SEAPOS.ctr[r - SEA_R0] : MAPPOS.ctr[r]);
 const seaExplore = () => {
   let n = 0;
@@ -21291,7 +21623,7 @@ for (const k of ['locked', 'open']) {
   im.onload = () => (CAPIMG[k] = im);
   im.src = 'assets/map/capital_' + k + '.png';
 }
-const RNODE = ['erdan', 'dusk', 'canyon', 'frost', 'ash', 'capital', 'elf'].map(r => {
+const RNODE = ['erdan', 'dusk', 'canyon', 'frost', 'ash', 'capital', 'elf', 'desert', 'north'].map(r => {
   const o = {};
   for (const t of ['boss']) {
     const im = new Image();
@@ -21327,14 +21659,14 @@ function seaHoles() {
   const h = [],
     sp = SEAPOS.spot;
   h.push([sp.port[0], sp.port[1], 170]);
-  for (const q of SEAPOS.route) h.push([q[0], q[1], 75]);
+  for (const r of SEAPOS.route) if (S.best + 1 >= r.at) for (const q of r.pts) h.push([q[0], q[1], 75]);
   for (let st = MAXLAND + 1; st <= Math.min(LAND, S.best + 1); st++) h.push([...wmPt(st), FOG_R]);
   for (let r = SEA_R0; r < REGIONS.length; r++)
     if (mapRegCleared(r)) {
       for (let j = 0; j < 10; j++) h.push([...SEAPOS.pts[(r - SEA_R0) * 10 + j], 130]);
       h.push([...wmCtr(r), 230]);
     }
-  if (S.best > LAND) h.push([...SEAPOS.fog, 90]);
+  if (S.best > LAND) h.push([...seaHunt(), 90]);
   return h;
 }
 function wmHoles() {
@@ -21514,7 +21846,7 @@ function wmSetSea(on, quiet) {
         [
           'q:바다 건너 세 나라다. 왼쪽 섬이 엘프 왕국, 오른쪽이 사막 제국, 위가 북방 부족.',
           'k:배멀미 약은 챙겼나…',
-          'sys:지금은 엘프 왕국이 열려 있어요. 사막 제국·북방 부족은 바다 안개가 걷히면 열려요.'
+          'sys:엘프 왕국 → 사막 제국 → 북방 부족 순서로 해방해요. 세 나라를 모두 해방하면 연합군이 모여요.'
         ],
         '지도를 본다'
       )
@@ -21734,8 +22066,10 @@ function drawMap() {
         wmPill('🌫 ' + a.n + ' · 곧 열려요', px, py, fs - 1, 'rgba(10,8,18,.72)', '#d8d0ee');
       }
     if (S.best > LAND) {
-      const [px, py] = wmToS(v, SEAPOS.fog[0], SEAPOS.fog[1]);
-      wmPill('바다 안개 · 곧 열려요', px, py + fs * 1.6, fs - 1, 'rgba(225,230,240,.88)', '#2a3140');
+      const [hx, hy] = seaHunt(),
+        [px, py] = wmToS(v, hx, hy);
+      if (LAND >= P2_LAST) wmPill('⚔ 연합군 진영', px, py + fs * 1.6, fs - 1, 'rgba(255,201,74,.92)', '#3a2a00');
+      else wmPill('바다 안개 · 곧 열려요', px, py + fs * 1.6, fs - 1, 'rgba(225,230,240,.88)', '#2a3140');
     }
     {
       const [px, py] = wmToS(v, ss.port[0], ss.port[1] + 40);
@@ -22054,7 +22388,9 @@ function renderMapInfo() {
   };
   $('mapNext').innerHTML =
     S.stage > LAND
-      ? p2On()
+      ? LAND >= P2_LAST
+        ? '⚔ 2부 완결 · 연합군 진영에서 사냥 중'
+        : p2On()
         ? '🌫 바다 안개가 짙어요 · 곧 열려요'
         : '🏰 1부 완결 · 왕궁 뜰에서 사냥 중'
       : `다음: <b>${r.n} ${i}-${j}</b> · ${terrName(st)} · ${j === 10 ? (i === 6 ? '마왕 발타사르' : r.p2 ? '장수 ' + r.boss.split(' ').pop() : '군단장 ' + r.boss.split(' ').pop()) : r.p2 ? '마왕군 성주' : '마족 성주'} <i>›</i>`;
@@ -23539,7 +23875,7 @@ function goldRate() {
       return a + t.atk * t.aps * critE(t);
     }, 0),
     tpk = monHp(S.stage, false) / Math.max(1, dps) + 1.2;
-  return (reward(S.stage, false) / tpk) * memMul();
+  return (reward(S.stage, false) / tpk) * memMul() * allyGold();
 }
 const goldX = x => Math.max(100, Math.floor(goldRate() * 3600 * x.h));
 function buyGoldX(k) {
@@ -23558,7 +23894,7 @@ function idleGold(sec) {
       return a + t.atk * t.aps * critE(t);
     }, 0),
     tpk = monHp(fightSt(), false) / dps + 1.2;
-  return (sec / tpk) * reward(fightSt(), false) * 0.5 * memMul() * (subOn() ? 1.5 : 1) * vIdle() * vpDok();
+  return (sec / tpk) * reward(fightSt(), false) * 0.5 * memMul() * (subOn() ? 1.5 : 1) * vIdle() * vpDok() * allyGold();
 }
 function offline() {
   const cap = offCapH() * 3600,
@@ -24188,10 +24524,10 @@ function start(data) {
   }
   BANNER.src = 'assets/ui/banner_capture.png';
   S = isSave(data) ? hydrate(data) : load() || hydrate({ gold: 60 });
-  if (DEMO === 'part2' && p2On()) {
+  if (P2DEMO[DEMO] && p2On()) {
     noSave = true;
-    S = p2Demo();
-    setTimeout(() => toast('2부 미리보기예요. 알현실(영지 60)부터 시작하고, 진행은 저장되지 않아요'), 600);
+    S = p2Demo(...P2DEMO[DEMO]);
+    setTimeout(() => toast('2부 미리보기예요. 영지 ' + P2DEMO[DEMO][0] + ' 장수 바로 앞에서 시작하고, 진행은 저장되지 않아요'), 600);
   }
   $('autoSell').checked = S.autoSell;
   $('autoOpen').checked = S.autoOpen;
@@ -24211,6 +24547,7 @@ function start(data) {
     chiefCheck();
     bondCheck(); /* 원정대의 정: 열렸는데 아직 못 본 관계 이야기 (지난번에 보기 전에 껐을 때) */
     p2Check(); /* 2부: 61 「왕궁 뜰」에 있던 예전 세이브 → 2부 시작 장면 */
+    if (p2Mig && S.p2Intro && S.stage === p2Mig) queue(() => p2LoreScene(p2Mig)); /* 1차 71 바다 안개 → 사막 이야기 */
   }
   passS();
   growCheck();
