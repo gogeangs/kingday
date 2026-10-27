@@ -652,7 +652,7 @@ class GameController extends ChangeNotifier {
             'k@flustered:벽돌 쌓는 건 자신 있는데… 기다리는 건 좀 지루하네요.',
             'q@proud:주인, 이걸 받아라. 성검이 축복한 황금 이삭이다. 이삭을 내면 마을 사람들이 힘을 내서 공사를 바로 끝낸다.',
             'sys:황금 이삭 $tutGem개를 선물로 받았어요. 공사 중인 건물의 파란 "바로 완료" 버튼을 누르면 이삭으로 공사를 끝낼 수 있어요. 공사 중에도 다른 건물을 $buildQueueMax개까지 예약해 두면 차례로 지어져요.',
-          ], '이삭으로 바로 완료', altLabel: '그냥 기다릴래요', onGo: () => act((a) => a.finishByGem()));
+          ], '바로 완료', altLabel: '기다릴게요', onGo: () => act((a) => a.finishByGem()));
         case ActCardReveal(:final got, :final title, :final gold, :final again):
           sound('gem');
           queue((ctx) => showCardReveal(ctx, this, got, title, gold: gold, again: again));
@@ -679,7 +679,7 @@ class GameController extends ChangeNotifier {
           scene('황금 밭', '새 밭 일구기', [
             'm:마르타|황금 이삭을 땅에 뿌리면 굳은 땅도 금세 부드러워지지. 한 칸 더 일궈 볼 텐가?',
             'sys:황금 이삭 $cost개로 밭을 1칸 늘려요 (${n + 1} / ${gemPlotCost.length}). 은퇴해도 사라지지 않아요.',
-          ], '이삭 $cost개로 일구기', altLabel: '다음에', onGo: () => act((a) => a.buyGemPlot(n, cost)));
+          ], '일구기 ($cost)', altLabel: '다음에', onGo: () => act((a) => a.buyGemPlot(n, cost)));
         case ActRecruitScene(:final id):
           final rc = recruits[id]!;
           scene('동료 합류', rc.title, rc.lines, rc.ok, illust: 'join', illustFace: id);
@@ -699,7 +699,7 @@ class GameController extends ChangeNotifier {
                 'sys:유니크 동료 · 카엘 자리에서 카엘 대신 출전해요. 장비·칭호는 카엘 것을 그대로 써요.',
                 'sys:마을 스킬 「새벽 종소리」 마을 건물 생산 +${pctTxt(GameCalc.chPct(1))}% (출전 안 해도 적용)',
               ],
-              '카엘 자리에 출전',
+              '출전시키기',
               altLabel: '나중에',
               onGo: () => act((a) => a.setKaelSeat(GameCalc.chiefId)));
       }

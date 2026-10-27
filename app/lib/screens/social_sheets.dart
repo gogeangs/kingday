@@ -1317,7 +1317,7 @@ class _CardRevealState extends State<_CardReveal> with SingleTickerProviderState
       ],
       acts: KdActs(buttons: [
         if (widget.again == null) KdAct('닫기', onTap: () => Navigator.of(context).pop()),
-        KdAct('원정대에서 보기', primary: widget.again == null, onTap: () {
+        KdAct('원정대 보기', primary: widget.again == null, onTap: () {
           Navigator.of(context).pop();
           g.state.raw['ptTab'] = 'card';
           g.setTab(GameTab.pt);
@@ -1492,13 +1492,13 @@ Future<void> showCloudPick(BuildContext ctx, GameController g, Map<String, dynam
           ]),
         ],
         acts: KdActs(buttons: [
-          KdAct('이 기기 기록 유지', onTap: () async {
+          KdAct('이 기기 기록', onTap: () async {
             Navigator.of(c).pop();
             await g.online.ensure();
             await g.online.cloudPut(true);
             g.toast('이 기기 기록을 클라우드에 저장했어요');
           }),
-          KdAct('클라우드 기록 불러오기', primary: true, onTap: () {
+          KdAct('클라우드 기록', primary: true, onTap: () {
             Navigator.of(c).pop();
             g.loadFromCode(data);
           }),

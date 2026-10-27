@@ -793,7 +793,7 @@ void chiefSheet(GameController g) {
             ],
             acts: KdActs(buttons: [
               if (has)
-                KdAct(on ? '카엘로 바꾸기' : '카엘 자리에 출전', onTap: () => g.act((a) => a.setKaelSeat(on ? 'kael' : id)))
+                KdAct(on ? '카엘로 바꾸기' : '출전시키기', onTap: () => g.act((a) => a.setKaelSeat(on ? 'kael' : id)))
               else
                 KdAct('닫기', onTap: () => Navigator.of(ctx).pop()),
               if (has)

@@ -226,9 +226,9 @@ void main() {
         g.act((a) => a.buyChief());
         await frames();
         expect(find.text('은퇴하면 더 바빠진다'), findsOneWidget);
-        await tester.ensureVisible(find.text('카엘 자리에 출전'));
+        await tester.ensureVisible(find.text('출전시키기'));
         await frames(1);
-        await tester.tap(find.text('카엘 자리에 출전'));
+        await tester.tap(find.text('출전시키기'));
         await frames();
         expect(g.calc.slotMember('kael'), 'kael_chief');
         g.state.raw['ucard'] = 30;
