@@ -351,6 +351,7 @@
 ---
 
 ## 2차 사막 제국 아르자르 (14장) — 작성 2026-10-28
+- **14장 모두 받음·반영 완료 (2026-10-28)** — 원본 `art/source/part2/`, 게임용 `assets/bg/desert_*`·`assets/monsters/{sand_scorpion,mummy_guard,boss_sarkan}_*`·`assets/map/desert_{enemy,boss}.png`·`assets/portraits/portrait_{mir,saffron}_*`·`assets/characters/saffron_*`·`assets/skills/skill_saffron.png`·`assets/fx/fx_skill_saffron.png`. 처리 메모: 몬스터 배율 0.5(전갈 0.45·몸 가운데 맞춤), 사르칸 시트는 프레임이 붙어 있어 칸을 벌린 `boss_sarkan_motion_fix.png`로 뽑음.
 - 같은 대화창: D-1~D-4(배경) 한 창 · D-10~D-14(사프란) 한 창. 엘프 그림을 첨부하면 2부끼리 화풍이 맞음.
 - 처리 메모(받은 뒤): 몬스터 공격 동작이 256 칸에 들어가게 배율 조정(엘프 때처럼 0.45~0.5), 사프란 공격 효과가 옆 칸까지 이어지면 칸 벌려서 자르기.
 
