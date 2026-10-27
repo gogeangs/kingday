@@ -1,8 +1,8 @@
-// 2부 엘프 왕국(61~70) 시간 재기 — tools/balance_sim.py p2 가 브라우저에서 실행 (docs/content/PART2.md 8장)
+// 2부(엘프 61~70 · 사막 71~80 · 북방 81~90 · 91 연합군 진영) 시간 재기 — tools/balance_sim.py p2 가 브라우저에서 실행 (docs/content/PART2.md 8장)
 // ① 1부 엔딩까지: CAPITAL.md 10장의 「처음 60을 깨는 유저」(추억 MEM·은퇴 RET, 욕심쟁이 소비)로 쉬지 않고 사냥해 60 알현실을 깸
 // ② 1부 엔딩 직후부터 「출퇴근 방치러」(docs/PLAYER_PLANNING.md 3장): 하루 3번(간격 9·10·5시간) 들어와
 //    방치 보상(여관 최대 시간까지)을 받아 다 쓰고 5분 사냥. 이번 회차가 최고 영지 앞(벽)까지 와서 하루 동안 못 나가면 그날 마지막에 은퇴(1부와 같은 성장 방법)
-//    → 영지 61~71 에 처음 닿은 날(며칠째)을 잰다.
+//    → 영지 61~91 에 처음 닿은 날(며칠째)을 잰다.
 // 넣지 않은 것(실제보다 느림): 은퇴 일기 특성(지름길 등)·카드·모집 동료·할 일·출석 이삭·(VIL=0이면) 마을 건물. 여관 Lv.8(방치 최대 14시간)
 (()=>{Object.assign(BAL,TUNE);window.toast=()=>{};window.queue=()=>{};window.renderAll=()=>{};window.say=()=>{};window.rpAdd=()=>{};window.rpFlush=()=>{};
  const rf=resetFight;let wipes=0,timeouts=0;window.resetFight=m=>{if(m.includes('가호'))wipes++;else timeouts++;return rf(m)};

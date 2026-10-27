@@ -5,7 +5,7 @@
     python3 tools/balance_sim.py village            # 마을 확장 밸런스 ①~④ (docs/content/VILLAGE.md 8장)
     python3 tools/balance_sim.py pass               # 원정 일지 점수: 하루 2~3번 접속 유저 · 출석만 하는 유저 (docs/content/SHOP.md 8장)
     python3 tools/balance_sim.py bond               # 원정대의 정: 하루 10시간 쌓이는 유저의 ♥3·♥5 도달일 · 같은 직업 짝 (docs/content/BOND.md 8장)
-    python3 tools/balance_sim.py p2 4 50 8 '{"hpG2":1.1}' 30 1   # 2부 엘프(61~70): 1부 엔딩까지(최대 4시간, 추억 50·은퇴 8 + 1부 끝 무렵 마을 = 60을 겨우 깨는 유저) → 출퇴근 방치러가 61~71에 닿는 날 (PART2.md 8장)
+    python3 tools/balance_sim.py p2 4 50 8 '{"hpG2":1.03}' 70 1   # 2부(61~90): 1부 엔딩까지(최대 4시간, 추억 50·은퇴 8 + 1부 끝 무렵 마을 = 60을 겨우 깨는 유저) → 출퇴근 방치러가 61~91에 닿는 날 (PART2.md 8장)
 """
 import asyncio,sys,json
 from playwright.async_api import async_playwright
