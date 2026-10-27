@@ -9,7 +9,7 @@
         <!-- AdMob 앱 ID: 지금은 구글 공식 시험용. 출시 전 AdMob 에서 받은 앱 ID 로 바꿈 (docs/RELEASE_NATIVE.md) -->
         <meta-data
             android:name="com.google.android.gms.ads.APPLICATION_ID"
-            android:value="ca-app-pub-3940256099942544~3347511713"/>
+            android:value="ca-app-pub-8720405407394137~5806892182"/>
         <activity
             android:name=".MainActivity"
             android:screenOrientation="portrait"
