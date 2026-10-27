@@ -612,6 +612,7 @@
 ---
 
 ## 3차 북방 부족 하른 설원 (14장) + 공통 마무리 2장 — 작성 2026-10-28
+- **16장 모두 받음·반영 완료 (2026-10-28) → 2부 그림 48장 전부 준비 끝** — 원본 `art/source/part2/`, 게임용 `assets/bg/north_*`·`assets/monsters/{snow_yeti,ice_crow,boss_kvar}_*`·`assets/map/north_{enemy,boss}.png`·`assets/portraits/portrait_{torben,einar}_*`·`assets/characters/einar_*`·`assets/skills/skill_einar.png`·`assets/fx/fx_skill_einar.png`·`assets/illust/illust_ending_p2.jpg`·`assets/profile/badge_part2.png`. 처리 메모: 몬스터·크바르 배율 0.45·몸 가운데 맞춤, 크바르는 칸 벌린 `boss_kvar_motion_fix.png`, 에이나르 공격은 3프레임만 와서 3번째(작살 던짐)를 한 번 더 써 4프레임 + 넓은 칸(512, 리엘처럼) — `einar_motion_fix.png`.
 - 같은 대화창: N-1~N-4(배경) 한 창 · N-10~N-14(에이나르) 한 창. 사막 그림을 첨부하면 2부끼리 화풍이 맞음.
 - 공통 C-4(2부 엔딩 일러스트)·C-6(「2부 완결」 배지)도 이번에 함께.
 
