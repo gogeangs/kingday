@@ -4626,6 +4626,141 @@ canvas {
   text-align: center;
   margin: 0;
 }
+/* 2부 「흩어진 동맹」: 큰 제목 · 동맹 창 · 프로필 동맹 칸 */
+.p2title {
+  text-align: center;
+  padding: 18px 4px 8px;
+}
+#sheet .p2title small {
+  display: block;
+  margin-top: 10px;
+  font-family: var(--f-display);
+  font-size: 18px;
+  color: #9be3a8;
+  letter-spacing: 0.2em;
+}
+#sheet .p2title h2 {
+  font-size: 30px;
+  line-height: 1.25;
+  margin: 2px 0 12px;
+  color: var(--gold);
+}
+#sheet .p2title p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 13.5px;
+  line-height: 1.6;
+}
+.allyhd {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 2px 0 8px;
+}
+.allyhd img {
+  width: 76px;
+  height: 76px;
+  border-radius: 50%;
+  object-fit: cover;
+  background: #1f3a2a;
+  border: 2px solid #8fd06a;
+  flex: 0 0 auto;
+}
+.allyhd b {
+  display: block;
+  font-size: 15px;
+}
+.allyhd small {
+  color: #9be3a8;
+  font-size: 12.5px;
+}
+.allyic {
+  width: 28px;
+  text-align: center;
+  font-size: 20px;
+}
+.allyrow {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 6px;
+}
+.allyc {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  text-align: center;
+  padding: 8px 4px;
+  border-radius: 10px;
+  background: var(--panel2);
+  border: 1px solid var(--line);
+  min-width: 0;
+}
+.allyc.on {
+  border-color: rgba(143, 208, 106, 0.7);
+}
+.allyf {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  overflow: hidden;
+  background: #232a40;
+  display: grid;
+  place-items: center;
+}
+.allyf img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.allyf i {
+  font-style: normal;
+  font-weight: 700;
+  font-size: 20px;
+  color: #59627f;
+}
+.allyc:not(.on) .allyf img {
+  filter: brightness(0) opacity(0.55);
+}
+.allyc b {
+  font-size: 12.5px;
+}
+.allyc small {
+  font-size: 11px;
+  line-height: 1.35;
+  color: var(--muted);
+  word-break: keep-all;
+}
+.allyc.on small {
+  color: #9be3a8;
+}
+.mzally {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  padding: 6px 8px;
+  border-radius: 10px;
+  background: rgba(143, 208, 106, 0.08);
+  border: 1px dashed rgba(143, 208, 106, 0.5);
+}
+.mzally.on {
+  border-style: solid;
+}
+.mzally img {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex: 0 0 auto;
+}
+.mzally b {
+  display: block;
+  font-size: 12.5px;
+}
+.mzally small {
+  color: var(--muted);
+  font-size: 12px;
+}
 .capb {
   color: #ffd77a !important;
   margin: 2px 0 6px;
@@ -6476,6 +6611,31 @@ canvas {
   font-weight: 700;
   cursor: pointer;
 }
+.mapsw {
+  display: flex;
+  gap: 6px;
+}
+.mapsw[hidden] {
+  display: none;
+}
+.mapsw button {
+  flex: 1;
+  min-height: 36px;
+  border-radius: 18px;
+  border: 1px solid #4a3a5a;
+  background: #1a1428;
+  color: #d8d0ee;
+  font: 700 13.5px 'IBM Plex Sans KR', sans-serif;
+  cursor: pointer;
+}
+.mapsw button.on {
+  background: linear-gradient(#ffd977, #e8a92c);
+  color: #3a2a00;
+  border-color: #ffd977;
+}
+.mapsw button.lock {
+  color: #8a84a0;
+}
 .mapwrap {
   position: relative;
   box-sizing: border-box;
@@ -7412,6 +7572,7 @@ input:focus-visible {
 
     <section class="page" id="p-mp" hidden>
       <div class="phead"><h2>지도</h2><button class="pclose" data-close aria-label="전투로 돌아가기">✕</button></div>
+      <div class="mapsw" id="mapSw" role="group" aria-label="지도 고르기" hidden></div>
       <div class="mapbar" id="mapBar"></div>
       <button class="mapnext" id="mapNext"></button>
       <div class="mapwrap"><canvas id="mc" aria-label="에르단 대륙 지도. 지역을 누르면 크게 보여요"></canvas><button class="mapall" id="mapAll" hidden>⤢ 전체 보기</button></div>
@@ -7633,15 +7794,21 @@ const REGIONS = [
     ]
   }
 ];
-const MAXLAND = REGIONS.length * 10;
-/* 왕도: 51~60. 60 = 알현실(마왕), 61 = 왕궁 뜰(보스 없이 사냥, 끝) */
+/* 1부 마지막 영지(60 알현실). 왕도 판정(51~60)은 이 값에 고정 — 2부가 붙어도 바뀌지 않음 */
+const MAXLAND = 60;
+/* 왕도: 51~60. 60 = 알현실(마왕) */
 const CAP0 = MAXLAND - 10,
   isCap = st => st > CAP0 && st <= MAXLAND,
   isDemon = st => st === MAXLAND,
   isGhost = st => isCap(st) && st % 2 === 1,
   ghostIdx = st => (st - CAP0 - 1) / 2,
   isGuard = st => isCap(st) && st % 2 === 0 && !isDemon(st);
-const fightSt = () => Math.min(S.stage, MAXLAND); /* 61 왕궁 뜰은 60단계 몬스터 */
+/* 지금 열린 마지막 영지: 1부만이면 60, 2부 1차(엘프 왕국)가 붙으면 70 (p2Install).
+   그다음 1칸은 보스 없이 사냥하는 곳 — 1부만: 61 「왕궁 뜰」 / 2부: 71 「바다 안개」(다음 나라가 열리면 여기부터 이어짐) */
+let LAND = MAXLAND;
+const p2On = () => LAND > MAXLAND,
+  huntName = () => (p2On() ? '바다 안개' : '왕궁 뜰');
+const fightSt = () => Math.min(S.stage, LAND); /* 사냥터(LAND+1)는 마지막 영지 단계 몬스터 */
 const COMP = {
   kael: { n: '카엘', role: '농부 용사', desc: '은퇴만 꿈꾸는 농부. 성검 루미나르를 뽑아 버렸다.' },
   bron: {
@@ -8053,6 +8220,8 @@ const JOB = {
   JOBN = { miner: '광부', fisher: '어부', keeper: '양봉가', cook: '요리사' };
 const JSLOT = ['miner', 'kael', 'fisher', 'keeper', 'cook'],
   STORY = { miner: 'bron', fisher: 'haral', keeper: 'riel', cook: 'margo' };
+/* 2부 이야기 동료(나라마다 1명): id → 직업. 1부 이야기 동료처럼 일반·★3까지, 이야기로 합류. 2부가 붙을 때 p2Install에서 채움 */
+const STORY2 = {};
 const RECRUITS = {
     luka: {
       job: 'cook',
@@ -8645,8 +8814,8 @@ const chiefOn = () => owned(CHIEF) && !!S.party && S.party.kael === CHIEF,
 const ulA = () => (ULB.t > 0 ? ULB.a : 1),
   ulS = () => (ULB.t > 0 ? ULB.s : 1);
 const gr = id => GR[GRADE[id] || 'common'],
-  CARDIDS = () => [...Object.values(STORY), ...Object.keys(RECRUITS).filter(id => GRADE[id] !== 'unique')] /* 카드 뽑기 대상 (유니크 제외) */,
-  COMPIDS = () => [...Object.values(STORY), ...Object.keys(RECRUITS)] /* 동료 전체 (일꾼·마을 이야기·초상화) */;
+  CARDIDS = () => [...Object.values(STORY), ...Object.keys(STORY2), ...Object.keys(RECRUITS).filter(id => GRADE[id] !== 'unique')] /* 카드 뽑기 대상 (유니크 제외) */,
+  COMPIDS = () => [...Object.values(STORY), ...Object.keys(STORY2), ...Object.keys(RECRUITS)] /* 동료 전체 (일꾼·마을 이야기·초상화) */;
 const isRec = id => id in RECRUITS,
   recStar = id => (isRec(id) ? (S.rec && S.rec[id]) || 0 : S.joined[id] ? Math.max(1, (S.rec && S.rec[id]) || 0) : 0);
 const starNeed = id => (isRec(id) && recStar(id) === 0 ? 30 : gr(id).need[recStar(id)]),
@@ -8685,7 +8854,8 @@ function slotMember(j) {
   if (pk && owned(pk)) return pk;
   return S.joined[STORY[j]] ? STORY[j] : null;
 }
-const jobMembers = j => [STORY[j], ...Object.keys(RECRUITS).filter(id => RECRUITS[id].job === j)].filter(owned);
+const jobMembers = j =>
+  [STORY[j], ...Object.keys(STORY2).filter(id => STORY2[id] === j), ...Object.keys(RECRUITS).filter(id => RECRUITS[id].job === j)].filter(owned);
 /* ---------- 편성 ---------- */
 const cPow = id => {
   const t = stats(id);
@@ -9815,6 +9985,7 @@ function fresh() {
     aff: {},
     affTalk: { d: '', ids: {} },
     bond: { seen: {}, intro: 0, five: {} },
+    ...(p2On() ? p2Fresh() : {}) /* 2부: ally·p2Clr·p2Intro·ending2 (PART2.md 7장) */,
     v: 3
   };
 }
@@ -9904,7 +10075,12 @@ function hydrate(d) {
   if (!Array.isArray(f.bless.opts)) f.bless.opts = [];
   if (!f.ordDay.skip || typeof f.ordDay.skip !== 'object') f.ordDay.skip = {};
   if (!Array.isArray(f.walkers.ids)) f.walkers.ids = [];
-  if (f.stage > MAXLAND + 1) f.stage = MAXLAND + 1;
+  /* 2부 이전 저장: 61 「왕궁 뜰」에 있던 기록은 61(엘프 왕국 첫 영지) 웨이브 0부터, 2부 시작 장면은 게임을 열 때 (best 61은 그대로) */
+  if (p2On() && d && d.p2Intro == null && f.stage > MAXLAND) {
+    f.stage = MAXLAND + 1;
+    f.wave = 0;
+  }
+  if (f.stage > LAND + 1) f.stage = LAND + 1;
   return f;
 }
 const MISSIONS = [
@@ -10859,7 +11035,7 @@ function mmss(sec) {
   return m + ':' + String(s).padStart(2, '0');
 }
 const region = st => REGIONS[Math.max(0, Math.min(Math.floor((st - 1) / 10), REGIONS.length - 1))]; /* 61 이상은 왕도에 머묾 */
-const terrName = st => (st > MAXLAND ? '왕궁 뜰' : region(st).terr[(st - 1) % 10]);
+const terrName = st => (st > LAND ? huntName() : region(st).terr[(st - 1) % 10]);
 const isLord = st => st % 10 === 0;
 const bossName = st =>
   isDemon(st)
@@ -10873,10 +11049,10 @@ const bossName = st =>
           : terrName(st) + '의 마족 성주';
 const bossLim = st => (isDemon(st) ? 60 : isLord(st) ? 40 : 30) + 2 * tl('stubborn'); /* 보스 제한 시간 (+끈질긴 농부) */
 const buff = k => (S.buffs[k] || 0) > Date.now();
-const landCount = () => Math.min(MAXLAND, S.stage - 1);
+const landCount = () => Math.min(LAND, S.stage - 1);
 function rankIdx(s) {
   s = s || S;
-  const c = Math.min(MAXLAND, s.stage - 1);
+  const c = Math.min(LAND, s.stage - 1);
   let i = 0;
   RANKS.forEach((r, j) => {
     if (c >= r.at) i = j;
@@ -10978,7 +11154,9 @@ const BAL = {
   demAtk2: 2.4,
   seal: 2
 }; /* dem*: 마왕 발타사르 — 체력 ×12(체력바 하나), 공격 1단계 ×2 → 2단계 ×2.4, 봉인의 파동 = 공격 ×2. tools/capital_sim.py 로 맞춤(docs/content/CAPITAL.md 3-3) */
-const monHp = (st, b) => 20 * Math.pow(BAL.hpG, st - 1) * (b ? (isDemon(st) ? BAL.demHp : isLord(st) ? BAL.lordHp : BAL.bossHp) : 1);
+/* 체력 증가: 1부(1~60)는 hpG, 2부(61~)는 그 위에 hpG2로 이어서 (PART2.md 3-2) */
+const hpPow = st => (st <= MAXLAND || !BAL.hpG2 ? Math.pow(BAL.hpG, st - 1) : Math.pow(BAL.hpG, MAXLAND - 1) * Math.pow(BAL.hpG2, st - MAXLAND));
+const monHp = (st, b, p1) => 20 * (p1 ? Math.pow(BAL.hpG, st - 1) : hpPow(st)) * (b ? (isDemon(st) ? BAL.demHp : isLord(st) ? BAL.lordHp : BAL.bossHp) : 1); /* p1: 시련의 탑은 층이 높아도 1부 공식 그대로 */
 const monAtk = (st, b) => 4 * Math.pow(BAL.atkG, st - 1) * (b ? (isDemon(st) ? BAL.demAtk : isLord(st) ? BAL.lordAtk : BAL.bossAtk) : 1);
 const reward = (st, b) => 3 * Math.pow(BAL.goldG, st - 1) * (b ? 10 : 1);
 const boxCost = () => Math.floor(20 * Math.pow(BAL.boxG, S.stage - 1));
@@ -11176,6 +11354,8 @@ const NPCID = {
   브론: 'bron',
   하랄: 'haral',
   리엘: 'riel',
+  솔렌: 'solen',
+  에일라: 'aila',
   마고: 'margo',
   마르타: 'marta',
   피트: 'pete',
@@ -11371,6 +11551,7 @@ function capChapter() {
 function chapter() {
   const st = S.stage;
   if (isCap(st)) return capChapter();
+  if (region(st).p2) return p2Chapter(st);
   if (quietStory()) {
     const r = region(st),
       i = Math.floor((st - 1) / 10) % 5;
@@ -13267,7 +13448,7 @@ function retireConfirm(one) {
   const half = sc && 1 + 5 * tl('shortcut') > Math.floor((S.best || 1) / 2) && !one;
   $('sheet').innerHTML = `<div class="eyebrow" style="color:#ff8a7a">은퇴 확인</div><h2>정말 은퇴할까요?</h2>
  <div class="rtbox lose"><div class="rth">처음으로 돌아가요</div><ul>
-  ${li('되찾은 영지', Math.min(S.stage, MAXLAND + 1) - 1 + '곳 → ' + (st - 1) + '곳 (<span class="nw">' + stgName(st) + '부터</span>)')}
+  ${li('되찾은 영지', Math.min(S.stage, LAND + 1) - 1 + '곳 → ' + (st - 1) + '곳 (<span class="nw">' + stgName(st) + '부터</span>)')}
   ${li('골드', fmt(S.gold) + ' → ' + fmt(pg))}
   ${li('착용한 성유물', eqN + '개 → 모두 사라짐')}
   ${li('단련 능력치', up ? '+' + up + '단계 → 0' : '없음')}
@@ -13328,6 +13509,7 @@ function retire(p, one) {
   S.memory += p;
   S.retires++;
   S.capBonus = 0;
+  if (isObj(S.p2Clr)) for (const k in S.p2Clr) S.p2Clr[k] = 0; /* 2부 장수 회차 첫 처치(추억 +2)는 회차마다 다시 */
   S.gold = 60 + pg;
   S.stage = st;
   S.runStart = st;
@@ -13441,7 +13623,7 @@ function diarySheet() {
   <button class="buy ghost dyreset" id="dyReset" ${trSpent() ? '' : 'disabled'}>특성 초기화 · ${trResetGem() ? '황금 이삭 100' : '무료'}</button>`;
   } else if (diaryTab === 'log') {
     const li = (a, b) => `<li><span>${a}</span><b>${b}</b></li>`;
-    body = `<div class="rtbox"><ul>${li('은퇴 횟수', (S.retires || 0) + '번')}${li('받은 은퇴의 추억', (S.memory || 0) + '개 (모든 능력치·골드 +' + (S.memory || 0) * 5 + '%)')}${li('쓴 추억 포인트', trSpent() + ' / ' + MEMT.reduce((a, t) => a + trCostTo(t, t.c.length), 0))}${li('가장 멀리 간 영지', Math.min(S.best, MAXLAND + 1) - 1 + '곳')}${li('시련의 탑 최고 층', ((S.tower && S.tower.top) || 0) + '층')}${li('왕도 탈환', (S.capClears || 0) + '번')}${li('이번 회차 시작', stgName(S.runStart || 1))}</ul></div>`;
+    body = `<div class="rtbox"><ul>${li('은퇴 횟수', (S.retires || 0) + '번')}${li('받은 은퇴의 추억', (S.memory || 0) + '개 (모든 능력치·골드 +' + (S.memory || 0) * 5 + '%)')}${li('쓴 추억 포인트', trSpent() + ' / ' + MEMT.reduce((a, t) => a + trCostTo(t, t.c.length), 0))}${li('가장 멀리 간 영지', Math.min(S.best, LAND + 1) - 1 + '곳')}${li('시련의 탑 최고 층', ((S.tower && S.tower.top) || 0) + '층')}${li('왕도 탈환', (S.capClears || 0) + '번')}${li('이번 회차 시작', stgName(S.runStart || 1))}</ul></div>`;
   } else
     body = `<div class="rtbox"><ul>${RET_RW.map(r => {
       const got = !!(S.retRw || {})[r.n];
@@ -13973,8 +14155,8 @@ function renderAll() {
   const inCh = chHud();
   if (!inCh)
     $('stLabel').textContent =
-      S.stage > MAXLAND ? '왕궁 뜰' : Math.floor((S.stage - 1) / 10) + 1 + '-' + (((S.stage - 1) % 10) + 1) + ' ' + r.n;
-  if (!inCh && !pillOn()) $('stRegion').textContent = S.stage > MAXLAND ? '보스 없이 사냥 중 · 1부 완결' : terrName(S.stage) + ' 탈환전';
+      S.stage > LAND ? huntName() : Math.floor((S.stage - 1) / 10) + 1 + '-' + (((S.stage - 1) % 10) + 1) + ' ' + r.n;
+  if (!inCh && !pillOn()) $('stRegion').textContent = S.stage > LAND ? (p2On() ? '보스 없이 사냥 중 · 곧 열려요' : '보스 없이 사냥 중 · 1부 완결') : terrName(S.stage) + ' 탈환전';
   pfCheck();
   chCheck();
   renderGuide();
@@ -14052,7 +14234,7 @@ function renderAll() {
   if (!inCh)
     $('pips').innerHTML =
       Array.from({ length: 10 }, (_, i) => `<i class="pip${i < S.wave ? ' on' : ''}"></i>`).join('') +
-      (S.stage > MAXLAND ? '' : `<i class="pip boss${boss ? ' on' : ''}" aria-label="보스"></i>`);
+      (S.stage > LAND ? '' : `<i class="pip boss${boss ? ' on' : ''}" aria-label="보스"></i>`);
   /* 버프가 3개 이상이면 이름은 빼고 그림 + 남은 시간만 (한 줄로, UX 점검 9) */
   const now = Date.now(),
     BF = [
@@ -14918,7 +15100,7 @@ function stretchSk() {
 function chargeSkill(id) {
   const p = P[id];
   if (!p) return;
-  p.sg = Math.min(SKILLS[id].need, (p.sg || 0) + (buff('sk') ? 1.2 : 1));
+  p.sg = Math.min(SKILLS[id].need, (p.sg || 0) + (buff('sk') ? 1.2 : 1) * (id === 'kael' || id === CHIEF ? 1 : allySk())); /* 엘프 동맹: 동료 게이지 +10% */
   if (p.sg >= SKILLS[id].need && !S.done.tutSkill && $('modal').hidden) {
     S.done.tutSkill = true;
     const was = S.autoSkill;
@@ -15045,6 +15227,14 @@ function castSkill(id, cp) {
     SKX.honey = 6;
     SKX.honeyTick = 0;
     spawnFx('skill_riel', cx, cy - 40 * s, 150 * s, 0.9);
+  } else if (id === 'solen') {
+    /* 솔렌 「세계수 꽃가루」: 모든 적에게 공격력 1배 + 3초 느려짐 (2부 이야기 동료, PART2.md 3-5) */
+    for (const m of alive) {
+      hitMon(m, t.atk * (SKX.feast > 0 ? 1.2 : 1), false, s, 0);
+      m.slow = Math.max(m.slow || 0, 3);
+    }
+    if (fxOk('skill_solen')) spawnFx('skill_solen', cx, cy - 40 * s, 160 * s, 0.9);
+    else for (const m of alive) spawnFx('bees', m.x, m.y - 30 * s, 50 * s, 0.6);
   } else if (id === 'margo') {
     for (const j of members()) {
       const q = P[j];
@@ -15736,14 +15926,15 @@ function layout() {
 const depthAt = (L, lane) => L.top + (L.bot - L.top) * lane;
 function spawn() {
   if (CH) return chSpawn();
-  if (S.stage > MAXLAND && S.wave >= 10) S.wave = 0; /* 61 왕궁 뜰: 보스 없이 계속 */
+  if (S.stage > LAND && S.wave >= 10) S.wave = 0; /* 사냥터(71 바다 안개 · 1부만이면 61 왕궁 뜰): 보스 없이 계속 */
   const st = fightSt();
   if (S.wave >= 10) {
     const mx = monHp(st, true),
       dem = isDemon(st),
       gh = isGhost(st),
       gd = isGuard(st),
-      lord = isLord(st) && !dem;
+      lord = isLord(st) && !dem,
+      p2L = lord && !!region(st).p2;
     mons = [
       {
         x: W + 70,
@@ -15770,8 +15961,8 @@ function spawn() {
       bb.classList.toggle('cmd', cm);
       bb.classList.toggle('dem', dem);
       bb.classList.remove('hurry', 'gold');
-      $('bossTag').textContent = dem ? '마왕' : gh ? '잔영' : gd ? '근위대장' : lord ? '군단장' : '성주';
-      warn = { t: 1.4, cmd: cm, txt: dem ? '⚠ 마왕 출현! ⚠' : gh ? '⚠ 군단장의 잔영! ⚠' : gd ? '⚠ 근위대장 출현! ⚠' : null };
+      $('bossTag').textContent = dem ? '마왕' : gh ? '잔영' : gd ? '근위대장' : lord ? (p2L ? '장수' : '군단장') : '성주';
+      warn = { t: 1.4, cmd: cm, txt: dem ? '⚠ 마왕 출현! ⚠' : gh ? '⚠ 군단장의 잔영! ⚠' : gd ? '⚠ 근위대장 출현! ⚠' : p2L ? '⚠ 마왕군 장수 출현! ⚠' : null };
       shakeT = cm ? 0.6 : 0.4;
       mons[0].mv = 0.55;
     }
@@ -15795,6 +15986,9 @@ function spawn() {
       } else if (gh) {
         f.src = 'assets/portraits/portrait_' + BOSSID[ghostIdx(st)] + '_idle.png';
         f.hidden = false;
+      } else if (p2L) {
+        f.src = 'assets/map/' + region(st).p2 + '_boss.png'; /* 2부 장수: 초상화 대신 지도 얼굴 그림 */
+        f.hidden = false;
       } else if (lord) {
         f.src = 'assets/portraits/portrait_' + BOSSID[Math.floor((st - 1) / 10) % 5] + '_idle.png';
         f.hidden = false;
@@ -15809,7 +16003,9 @@ function spawn() {
           ? '쓰러뜨린 군단장의 잔영이다! 다시 한번 베어라, 주인!'
           : gd
             ? '마왕 근위대장이다! 왕도를 되찾자, 주인!'
-            : lord
+            : p2L
+              ? '마왕군 장수다! 이 나라를 해방하자, 주인!'
+              : lord
               ? '군단장이다! 이번엔 도망치지 마라, 주인!'
               : '성주다! 정신 차려라, 주인!'
       );
@@ -16095,7 +16291,10 @@ function bossDemonWin() {
   S.capBonus = 1;
   pfCheck();
   if (!S.ending1) queue(() => endingScene(0));
-  else if (bonus) setTimeout(() => toast('왕도 재탈환 보너스! 은퇴의 추억 +' + bonus), 2600);
+  else {
+    if (bonus) setTimeout(() => toast('왕도 재탈환 보너스! 은퇴의 추억 +' + bonus), 2600);
+    setTimeout(p2Check, 0); /* 1부를 이미 끝낸 유저가 2부 시작 장면을 아직 못 봤으면 (S.stage가 61로 바뀐 뒤) */
+  }
 }
 /* 왕도 이야기: 처음 한 번만 (은퇴 후에는 알림 한 줄) */
 function capStory(st0) {
@@ -16166,14 +16365,18 @@ function endingScene(i) {
 function part1Sheet() {
   S.ending1 = 1;
   save();
-  const li = (ic, a, b) => `<div class="p1r">${ic}<span>${a}</span><b>${b}</b></div>`;
+  const li = (ic, a, b) => `<div class="p1r">${ic}<span>${a}</span><b>${b}</b></div>`,
+    p2 = p2On();
   $('sheet').innerHTML = `<div class="eyebrow">왕이 되는 그날까지 · 1부 「잃어버린 왕국」</div><h2>1부 완결</h2>
- <div class="p1box">${li(GEMIMG, '황금 이삭', '+' + DEMON_GEM)}${li(`<img src="assets/profile/frame_capital.png" alt="" onerror="this.remove()">`, '프로필 테두리', '왕도의 별')}${li(`<img src="assets/profile/badge_part1.png" alt="" onerror="this.remove()">`, '배지', '1부 완결')}${li(uiImg(RANKIMG[RANKS.length - 1], 'chipic'), '칭호', '왕도 탈환자 (+4%)')}</div>
- ${para('sys:이제 「왕궁 뜰」에서 보스 없이 사냥이 이어져요. 은퇴하고 다시 왕도를 되찾으면 회차마다 한 번 은퇴의 추억 +' + CAP_MEM + '을 더 받아요.')}
- <p class="note p1next">2부 「흩어진 동맹」 — 엘프 왕국, 사막 제국, 북방 부족. 준비 중이에요.</p>
- <div class="acts"><button id="mAlt">은퇴 계획 보기</button><button class="pri" id="mGo">계속 사냥하기</button></div>`;
+ <div class="p1box">${li(GEMIMG, '황금 이삭', '+' + DEMON_GEM)}${li(`<img src="assets/profile/frame_capital.png" alt="" onerror="this.remove()">`, '프로필 테두리', '왕도의 별')}${li(`<img src="assets/profile/badge_part1.png" alt="" onerror="this.remove()">`, '배지', '1부 완결')}${li(uiImg(RANKIMG[7], 'chipic'), '칭호', '왕도 탈환자 (+4%)')}</div>
+ ${para(p2 ? 'sys:은퇴하고 다시 왕도를 되찾으면 회차마다 한 번 은퇴의 추억 +' + CAP_MEM + '을 더 받아요.' : 'sys:이제 「왕궁 뜰」에서 보스 없이 사냥이 이어져요. 은퇴하고 다시 왕도를 되찾으면 회차마다 한 번 은퇴의 추억 +' + CAP_MEM + '을 더 받아요.')}
+ <p class="note p1next">${p2 ? '2부 「흩어진 동맹」 — 바다 건너 엘프 왕국부터 <b>지금 이어서 할 수 있어요.</b>' : '2부 「흩어진 동맹」 — 엘프 왕국, 사막 제국, 북방 부족. 준비 중이에요.'}</p>
+ <div class="acts"><button id="mAlt">${p2 ? '은퇴 계획' : '은퇴 계획 보기'}</button><button class="pri" id="mGo">${p2 ? '2부로' : '계속 사냥하기'}</button></div>`;
   $('modal').hidden = false;
-  $('mGo').onclick = closeModal;
+  $('mGo').onclick = () => {
+    closeModal();
+    p2Check();
+  };
   $('mAlt').onclick = () => {
     closeModal();
     setTab('up');
@@ -16181,7 +16384,283 @@ function part1Sheet() {
       const e = $('retireBox');
       if (e) e.scrollIntoView({ block: 'center' });
     }, 200);
+    p2Check();
   };
+}
+/* ---------- 2부 「흩어진 동맹」 (docs/content/PART2.md) ----------
+   지금은 1차 엘프 왕국(영지 61~70)만 웹에 열림. 71 = 「바다 안개」(보스 없이 70단계 사냥, 사막이 열리면 71부터 이어짐).
+   앱은 아직 1부(60·61 왕궁 뜰)라, 웹·앱 비교 표(tools/parity/gen_dart_data.js가 뽑는 REGIONS·COMP·SKILLS·RANKS·BAL 등)가
+   바뀌지 않도록 2부 표 내용은 게임을 시작할 때 p2Install()로 붙인다. 앱에 2부를 옮길 때 이 내용을 원래 표로 합칠 것 */
+const P2_MEM = 2 /* 나라 장수 회차 첫 처치 추억(왕도 재탈환 +3과 같은 방식) */,
+  P2_GEM = 300 /* 나라 처음 해방 이삭 */,
+  P2_LAST = 90; /* 2부 마지막 영지(북방 장수) — 지도 탐험률 분모 */
+/* 동맹 3나라. open: 이번 업데이트에 열린 나라. bonus: 처음 해방 때 영구(은퇴해도 유지) */
+const ALLY = [
+  { k: 'elf', n: '엘프 왕국', boss: 70, king: '엘프 여왕 에일라', face: 'aila', t: '엘프 여왕 에일라의 축복', b: '동료 스킬 게이지 차는 속도 +10%' },
+  { k: 'desert', n: '사막 제국', boss: 80, king: '소년 황제 미르', face: '', t: '소년 황제 미르의 금고', b: '모든 골드 +20%' },
+  { k: 'north', n: '북방 부족', boss: 90, king: '곰가죽 족장 토르븐', face: '', t: '곰가죽 족장 토르븐의 맹세', b: '원정대 체력 +15%' }
+];
+const allyOn = k => !!(S && isObj(S.ally) && S.ally[k]),
+  allyOpen = a => a.boss <= LAND,
+  allyAt = st => (p2On() ? ALLY.find(a => a.boss === st && allyOpen(a)) : null),
+  allySk = () => (allyOn('elf') ? 1.1 : 1); /* 엘프 동맹: 동료 스킬 게이지 +10% */
+/* 2부가 열려 있는지(1부 마왕을 한 번이라도 쓰러뜨림) — 지도 「바다 건너」 칩·동맹 칸 */
+const p2Open = () => p2On() && (S.capClears || 0) > 0;
+const P2REG = [
+  {
+    n: '엘프 왕국 실바니엘',
+    sky: ['#2f6f7a', '#b9e3a0'],
+    hill: '#2c5a3e',
+    hill2: '#4c7f4c',
+    ground: '#55703a',
+    kind: 'slime',
+    col: '#8fd06a',
+    mn: '가시덩굴 마물',
+    boss: '시듦의 장수 벨라독',
+    p2: 'elf',
+    terr: ['은빛 나루터', '이끼 오름길', '세계수 양봉장', '시든 꽃밭', '달빛 샘', '덩굴 구름다리', '잿빛 잎 숲', '엘프 궁 정원', '독 고인 뿌리', '세계수 심장'],
+    lore: [
+      '바다 위 섬을 덮은 거대한 세계수의 숲. 시듦의 장수 벨라독이 세계수 뿌리에 독을 부어, 잎이 하나씩 잿빛으로 변하고 있다.',
+      'm:리엘|…내가 태어난 숲이야. 400년 만에 돌아왔는데, 이런 모습이라니.'
+    ]
+  }
+];
+function p2Install() {
+  if (p2On()) return;
+  REGIONS.push(...P2REG);
+  LAND = REGIONS.length * 10;
+  /* 2부 구간(61~)만 따로 쓰는 체력 증가율 — tools/balance_sim.py p2 로 맞춤(PART2.md 8장) */
+  BAL.hpG2 = 1.1; /* 1.2(1부와 같음)면 출퇴근 방치러가 70에 닿는 데 약 19일 → 1.1로 약 7일 (PART2.md 8장) */
+  BG_IMG[6] = 'elf';
+  BG_FULL.elf = true;
+  DECO[6] = 'trees';
+  /* 엘프 왕국: 가시덩굴 마물 · 독버섯 정령(떼) · 장수 벨라독 */
+  MON_SPRITES[6] = {
+    id: 'thorn_vine',
+    walk: 4,
+    attack: 4,
+    hit: 2,
+    fig: 130,
+    h: 52,
+    boss: { id: 'boss_belladok', walk: 4, attack: 4, hit: 2, fig: 155, h: 78 }
+  };
+  MON_ALT[6] = { id: 'shroom_poison', walk: 4, attack: 4, hit: 2, fig: 150, h: 46, trait: 'swarm' };
+  RANKS.push({ at: 70, n: '바다 건너 기사', k: '배멀미 나는 기사도 있나요…' });
+  RANKIMG.push('rank_king');
+  /* 솔렌: 엘프 소년 양봉가 · 이야기 동료(일반, ★3까지). 수치는 리엘과 같게 (docs/COMPANION_GUIDE.md) */
+  COMP.solen = {
+    n: '솔렌',
+    role: '양봉가 · 둔화',
+    desc: '세계수의 꽃꿀을 모으는 엘프 소년 양봉가. 리엘을 「전설 속 요정 할머니」라며 동경한다. 세계수 벌들로 모든 적을 공격한다.',
+    join: '엘프 왕국 세계수 양봉장에서 합류',
+    base: { atk: 9, hp: 70, aps: 0.7 },
+    per: { atk: 3.2, hp: 14 }
+  };
+  JOB.solen = 'keeper';
+  GRADE.solen = 'common';
+  STORY2.solen = 'keeper';
+  HEIGHT.solen = 72;
+  SPRITES.solen = { idle: 4, walk: 6, attack: 4, hit: 2, h: 72 };
+  FORM.solen = FORM.riel;
+  SKILLS.solen = {
+    n: '세계수 꽃가루',
+    d: '모든 적에게 공격력 1배 피해, 3초 동안 적이 느려짐',
+    line: '세계수 벌들아, 꽃가루를 뿌려 줘!',
+    need: 22,
+    face: 'laugh'
+  };
+  FXDEF.skill_solen = 4;
+  VTALK.solen = ['리엘 님, 이 꿀 맛 좀 봐 주세요!', '세계수 벌들이 여기 꽃도 좋아해요.', '할머니라고 부르면 안 된대요…'];
+  WLINE.solen = '벌통은 제가 맡을게요!';
+  EVENTS.push({
+    at: 64,
+    id: 'solen',
+    eb: '동료 합류',
+    t: '양봉가 솔렌',
+    p: [
+      'sys:세계수 양봉장을 되찾자, 벌통 사이에서 엘프 소년이 뛰어나왔다.',
+      'm:솔렌|리엘 님! 진짜 리엘 님이죠? 전설 속 요정 할머니!',
+      'm:리엘|…할머니 아니다.',
+      'm:솔렌@laugh|세계수 벌들을 데려갈게요. 저도 원정대에 넣어 주세요!',
+      'sys:솔렌이 합류했어요. 벌 떼로 모든 적을 공격하고, 특수 스킬로 적을 느리게 해요. 양봉가 자리에서 리엘과 바꿔 쓸 수 있어요.'
+    ],
+    btn: '함께 간다',
+    act: () => {
+      S.joined.solen = true;
+      if (!S.lv.solen) S.lv.solen = 1;
+    }
+  });
+  PFRAMES.push({ k: 'alliance', n: '연합의 깃발', d: '세 나라 모두 해방 (2부)', ok: () => ALLY.every(a => allyOn(a.k)), tall: 1 });
+}
+/* 미리보기 ?demo=part2: 저장하지 않고 영지 60 알현실 마왕 바로 앞(웨이브 9)에서 시작 — 1부 엔딩 → 2부 시작 → 엘프 왕국 → 해방까지 빨리 보게 넉넉한 능력치 */
+function p2Demo() {
+  const f = hydrate({ gold: 1e15 });
+  Object.assign(f, {
+    started: true,
+    stage: MAXLAND,
+    wave: 9,
+    best: MAXLAND,
+    runStart: 1,
+    memory: 1500,
+    retires: 3,
+    gem: 2000,
+    mapIntro: 1,
+    fogSeen: MAXLAND,
+    rankSeen: 7,
+    gemRank: 7,
+    chOpen: 1,
+    pfSeen: 1,
+    capClears: 0,
+    ending1: 0,
+    last: Date.now(),
+    up: { atk: 900, hp: 850, spd: 40, crit: 55 },
+    joined: { margo: true, haral: true, riel: true, bron: true },
+    lv: { bron: 70, haral: 70, riel: 70, margo: 70 },
+    bld: { inn: 10, farm: 6, diner: 10, dock: 10, apiary: 9, mine: 10, forge: 1, market: 1, ranch: 1, chapel: 1 },
+    regSeen: { 0: 1, 1: 1, 2: 1, 3: 1, 4: 1, 5: 1 },
+    ...p2Fresh()
+  });
+  f.done = { tutSkill: true, tutBuild: true, capRoad: true, cap56: true, cap57: true, pete: true, retHint: true, sellAsk: true, primalIntro: true };
+  for (const e of EVENTS) if (e.at <= MAXLAND) f.done[e.id] = true;
+  return f;
+}
+/* 2부 저장 기본값 (PART2.md 7장): 2부가 붙어 있을 때만 fresh()에 들어감 */
+const p2Fresh = () => ({ ally: { elf: 0, desert: 0, north: 0 }, p2Clr: { elf: 0, desert: 0, north: 0 }, p2Intro: 0, ending2: 0 });
+/* 2부 시작 장면: 1부 마왕을 쓰러뜨리고 61 이상에 있는데 아직 못 봤으면 1번 (1부 완결 창을 닫을 때 · 예전 세이브는 게임을 열 때) */
+function p2Check() {
+  if (!p2On() || S.p2Intro || S.stage <= MAXLAND || !((S.capClears || 0) > 0 || S.ending1)) return;
+  S.p2Intro = 1;
+  save();
+  queue(p2IntroScene);
+}
+function p2IntroScene() {
+  scene(
+    '2부 시작',
+    '바다 건너 온 편지',
+    [
+      'sys:왕도를 되찾은 지 사흘째. 왕궁 뒤뜰 밭에 첫 싹이 올라왔다.',
+      'k@smile:이제 진짜 은퇴만 남았…',
+      'sys:그때, 갈매기 한 마리가 카엘의 밀짚모자 위에 편지를 떨어뜨렸다.',
+      'q:엘프 왕국의 문장이다. 바다 건너에서 온 구조 요청이로군.',
+      'm:하랄|바다라면 내가 길잡이지! 어험, 크라켄 정도는 내가—',
+      'q:주인, 발타사르는 마계에 있다. 혼자서는 그 문을 넘을 수 없다. 대륙의 힘을 모아야 한다.',
+      'k@flustered:…은퇴하려면 동맹부터 만들어야 한다는 거지?'
+    ],
+    '바다를 건넌다',
+    null,
+    'part2'
+  );
+  /* 이어지는 창(큰 제목 → 나라 이야기)은 대기열 맨 앞에 넣어 다른 알림보다 먼저 */
+  $('mGo').onclick = () => {
+    sceneQ.unshift(p2Title);
+    closeModal();
+  };
+}
+function p2Title() {
+  $('sheet').innerHTML = `<div class="p2title"><div class="eyebrow">왕이 되는 그날까지</div><small>2부</small><h2>「흩어진 동맹」</h2><p>엘프 왕국 · 사막 제국 · 북방 부족<br>마왕군에게 점령당한 세 나라를 해방해 동맹을 모으세요.</p></div><div class="acts one"><button class="pri" id="mGo">출항!</button></div>`;
+  $('modal').hidden = false;
+  sceneOn = true;
+  $('mGo').focus({ preventScroll: true });
+  $('mGo').onclick = () => {
+    if (S.stage > MAXLAND && S.stage <= LAND) sceneQ.unshift(() => p2LoreScene(S.stage));
+    closeModal();
+  };
+}
+function p2LoreScene(st) {
+  const r = region(st),
+    face = 'assets/map/' + r.p2 + '_boss.png';
+  scene(
+    '바다 건너 · 마왕군 점령지',
+    `<img class="bossportrait" src="${face}" alt="" onerror="this.remove()">` + r.n,
+    [...r.lore, 'sys:이 나라를 점령한 장수 · ' + r.boss + ' · 쓰러뜨리면 나라가 해방되고 동맹이 돼요'],
+    '진격한다'
+  );
+}
+/* 2부 나라에 들어갈 때 (영지 61·71·81): 지역 이야기 창. 2부 시작 장면 전이면 시작 장면이 끝난 뒤(p2LoreScene) 보여 줌 */
+function p2Chapter(st) {
+  const r = region(st);
+  if (!S.p2Intro) return;
+  if (quietStory()) return toast(r.n + ' 진입 · ' + r.boss.split(' ').pop() + '까지 10곳');
+  const face = 'assets/map/' + r.p2 + '_boss.png';
+  rpAdd({
+    face,
+    eb: '바다 건너 · 마왕군 점령지',
+    t: r.n,
+    th: `<img class="bossportrait" src="${face}" alt="" onerror="this.remove()">` + r.n,
+    p: [...r.lore, 'sys:이 나라를 점령한 장수 · ' + r.boss + ' · 쓰러뜨리면 나라가 해방되고 동맹이 돼요'],
+    btn: '진격한다'
+  });
+}
+/* 나라 장수 처치: 처음 → 해방 장면 · 「동맹이 되었어요」 창 · 이삭 300 / 은퇴 뒤 다시 → 회차마다 처음 1번 추억 +2 */
+function p2Win(a) {
+  if (!isObj(S.ally)) S.ally = p2Fresh().ally;
+  if (!isObj(S.p2Clr)) S.p2Clr = p2Fresh().p2Clr;
+  const first = !S.ally[a.k];
+  let bonus = 0;
+  if (!first && !S.p2Clr[a.k]) {
+    S.memory += P2_MEM;
+    bonus = P2_MEM;
+  }
+  S.p2Clr[a.k] = 1;
+  if (first) {
+    S.ally[a.k] = 1;
+    if (!S.gemLord[a.boss]) {
+      S.gemLord[a.boss] = 1;
+      S.gem = (S.gem || 0) + P2_GEM;
+    }
+    save();
+    queue(() => p2FreeScene(a));
+  } else if (bonus) setTimeout(() => toast(a.n + ' 재해방 보너스! 은퇴의 추억 +' + bonus), 2600);
+  pfCheck();
+}
+const P2FREE = {
+  elf: {
+    t: '세계수의 새잎',
+    p: [
+    'sys:벨라독이 쓰러지자 세계수 가지 끝에서 연둣빛 새잎이 터져 나왔다.',
+    'm:에일라|300년 전 발타사르도 이 나무 아래서 맹세했지요. 그대는 다른 길을 가길 바랍니다.',
+    'k:저는 맹세 같은 거 말고 씨앗이나 좀 얻어 가고 싶은데요.',
+    'm:에일라|…세계수 씨앗은 천 년에 한 알 맺힙니다.',
+    'k@smile:그럼 천 년 뒤에 올게요.',
+      'sys:엘프 왕국이 동맹이 되었다. (동료 스킬 게이지 +10%)'
+    ]
+  }
+};
+function p2FreeScene(a) {
+  scene(
+    a.n + ' 해방',
+    `<img class="bossportrait" src="assets/portraits/portrait_${a.face}_idle.png" alt="" onerror="this.remove()">` + P2FREE[a.k].t,
+    P2FREE[a.k].p,
+    '손을 잡는다'
+  );
+  $('mGo').onclick = () => {
+    sceneQ.unshift(() => allySheet(a));
+    closeModal();
+  };
+}
+function allySheet(a) {
+  const li = (ic, x, y) => `<div class="p1r">${ic}<span>${x}</span><b>${y}</b></div>`;
+  $('sheet').innerHTML = `<div class="eyebrow">${a.n} 해방</div><h2>동맹이 되었어요</h2>
+ <div class="allyhd"><img src="assets/portraits/portrait_${a.face}_laugh.png" alt="" onerror="this.src='assets/portraits/portrait_${a.face}_idle.png'"><div><b>${a.king}</b><small>${a.t}</small></div></div>
+ <div class="p1box">${li('<span class="allyic">🤝</span>', '동맹 보너스', a.b.replace(/ \+/, '<br>+'))}${li(GEMIMG, '황금 이삭', '+' + P2_GEM)}</div>
+ ${para('sys:동맹 보너스는 영구예요. 은퇴해도 그대로 남아요. 은퇴하고 다시 이 나라를 해방하면 회차마다 한 번 은퇴의 추억 +' + P2_MEM + '을 더 받아요.')}
+ <div class="acts one"><button class="pri" id="mGo">함께 간다</button></div>`;
+  $('modal').hidden = false;
+  sceneOn = true;
+  $('mGo').focus({ preventScroll: true });
+  $('mGo').onclick = () => {
+    closeModal();
+    if (S.stage > LAND) setTimeout(() => toast('바다 안개가 짙어요. 곧 열려요'), 400);
+  };
+}
+/* 프로필 「동맹」 칸: 해방한 나라는 왕 얼굴 + 보너스, 아직이면 실루엣 「○○을(를) 해방하면 열려요」 */
+function allyBox() {
+  if (!p2Open()) return '';
+  return `<div class="sec">동맹 <small>해방한 나라의 영구 보너스</small></div><div class="allyrow">${ALLY.map(a => {
+    const on = allyOn(a.k),
+      im = a.face ? `<img src="assets/portraits/portrait_${a.face}_idle.png" alt="" onerror="this.remove()">` : '<i>?</i>';
+    return `<div class="allyc${on ? ' on' : ''}"><span class="allyf">${im}</span><b>${a.n}</b><small>${on ? a.b : a.n + '을 해방하면 열려요'}</small></div>`;
+  }).join('')}</div>`;
 }
 function step(dt) {
   affTick(dt); /* 원정대의 정: 함께한 시간 */
@@ -16379,9 +16858,9 @@ function step(dt) {
               }
             }
           proj.push({ x: pos[id] + 10 * s, y: py[id] - 46 * s, tx: tgt.x, ty: tgt.y - 30 * s, t: 0, d: 0.35, kind: 'pollen' });
-        } else if (id === 'riel') {
+        } else if (id === 'riel' || id === 'solen') {
           for (const m of alive) if (m.hp > 0) hitMon(m, d * 0.7, cr, s, gy);
-          proj.push({ x: pos.riel + 10 * s, y: py.riel - 46 * s, tx: tgt.x, ty: tgt.y - 30 * s, t: 0, d: 0.35, kind: 'bees' });
+          proj.push({ x: pos[id] + 10 * s, y: py[id] - 46 * s, tx: tgt.x, ty: tgt.y - 30 * s, t: 0, d: 0.35, kind: 'bees' });
         } else if (id === 'nella') {
           hitMon(tgt, d, cr, s, gy);
           tgt.slow = 2;
@@ -16505,9 +16984,12 @@ function step(dt) {
             bn = bossName(st0),
             lord = isLord(st0),
             dem = isDemon(st0),
-            tn = terrName(st0);
+            tn = terrName(st0),
+            ally = allyAt(st0);
           if (dem) {
             bossDemonWin();
+          } else if (ally) {
+            p2Win(ally); /* 2부 나라 장수: 해방·동맹 (첫 처치 이삭은 해방 보상 300으로) */
           } else {
             if (lord && !S.gemLord[st0]) {
               S.gemLord[st0] = 1;
@@ -16518,7 +17000,7 @@ function step(dt) {
               setTimeout(() => gainGem(GHOST_GEM, '잔영 첫 처치'), 2300);
             }
           }
-          S.stage = Math.min(MAXLAND + 1, st0 + 1);
+          S.stage = Math.min(LAND + 1, st0 + 1);
           S.best = Math.max(S.best, S.stage);
           passAdd('boss');
           growCheck();
@@ -16530,10 +17012,10 @@ function step(dt) {
           banner = {
             t: 2,
             txt: tn + ' 탈환!',
-            sub: dem ? '마왕을 몰아냈다' : lord ? '군단장을 쓰러뜨렸다' : isGhost(st0) ? '잔영을 걷어냈다' : '영지를 되찾았다'
+            sub: dem ? '마왕을 몰아냈다' : ally ? ally.n + '을 해방했다' : lord ? '군단장을 쓰러뜨렸다' : isGhost(st0) ? '잔영을 걷어냈다' : '영지를 되찾았다'
           };
-          say('k', dem ? '…끝났다. 진짜로.' : lord ? '됐다… 이제 진짜 은퇴해도 되지?' : '여기 흙, 다시 살아나겠네.');
-          if (S.stage <= MAXLAND && (S.stage - 1) % 10 === 0) chapter();
+          say('k', dem ? '…끝났다. 진짜로.' : ally ? '배멀미 참은 보람이 있네.' : lord ? '됐다… 이제 진짜 은퇴해도 되지?' : '여기 흙, 다시 살아나겠네.');
+          if (S.stage <= LAND && (S.stage - 1) % 10 === 0) chapter();
           capStory(st0);
           events();
         } else S.wave++;
@@ -16609,7 +17091,7 @@ function towerInfo(f) {
       face = BOSSID[gi];
     }
   }
-  const hp = monHp(s, false) * (gate ? BAL.lordHp : BAL.bossHp) * (rule === 2 ? 0.8 : 1) * (rule === 1 ? 0.6 : 1),
+  const hp = monHp(s, false, true) * (gate ? BAL.lordHp : BAL.bossHp) * (rule === 2 ? 0.8 : 1) * (rule === 1 ? 0.6 : 1),
     atk = monAtk(s, false) * (gate ? BAL.lordAtk : BAL.bossAtk) * (rule === 3 ? 0.5 : 1);
   return { f, s, gate, rule, art, name, face, hp, atk, lim: gate ? TOWER_GATE_LIM : rule === 2 ? TOWER_RUSH_LIM : TOWER_LIM };
 }
@@ -16673,7 +17155,7 @@ const dunLeft = () => {
   return Math.max(0, DUN_TK + (d.ad ? 1 : 0) - d.used);
 };
 const dunOpenK = (wd = new Date().getDay()) => Object.keys(DUNS).filter(k => wd === 0 || DUNS[k].days.includes(wd));
-const bestLand = () => Math.max(1, Math.min(S.best, MAXLAND + 1) - 1);
+const bestLand = () => Math.max(1, Math.min(S.best, MAXLAND + 1) - 1); /* 요일 던전 세기는 1부(60)까지로 맞춰 둠 — 2부로 가도 그대로 (CHALLENGE.md 밸런스) */
 const dunL = () => Math.max(1, Math.min(12, Math.floor(bestLand() / 5)));
 const dunMs = () => Math.max(1, bestLand() - 3);
 const dunStar = (k, L) => (S.dun.star[k] || {})[L] || 0;
@@ -17288,7 +17770,7 @@ const regNow = () => {
   try {
     st = (typeof S !== 'undefined' && S && S.stage) || (JSON.parse(localStorage.getItem(KEY)) || {}).stage || 1;
   } catch (e) {}
-  return Math.max(0, Math.min(Math.floor((Math.min(st, MAXLAND) - 1) / 10), REGIONS.length - 1));
+  return Math.max(0, Math.min(Math.floor((Math.min(st, LAND) - 1) / 10), REGIONS.length - 1));
 };
 function loadBgs() {
   const r = regNow();
@@ -17846,6 +18328,7 @@ const DRAW = {
   bron: drawBron,
   haral: drawHaral,
   riel: drawRiel,
+  solen: drawRiel,
   margo: drawMargo,
   luka: (x, y, s, o) => {
     ctx.save();
@@ -18556,6 +19039,7 @@ const SPRITE_ALT = {
   bruno: 'riel',
   vander: 'haral',
   pipps: 'bron',
+  solen: 'riel',
   goldie: 'riel',
   bao: 'margo',
   polly: 'haral',
@@ -20702,12 +21186,54 @@ const REG_FOG = [
 const mapRegCleared = r => S.best > 10 * (r + 1); /* 그 지역 군단장을 처음 쓰러뜨림 */
 const mapAllClear = () => S.best > MAXLAND; /* 왕도(60)를 깸 → 에르단 전체 */
 const mapEntered = r => S.best >= 10 * r + 1;
-const mapSeen = st => st <= S.best + 1 || mapAllClear() || mapRegCleared(Math.floor((st - 1) / 10)); /* 안개 밖 영지(가 본 곳 + 다음 1곳) */
+const mapSeen = st => st <= S.best + 1 || (st <= MAXLAND && mapAllClear()) || mapRegCleared(Math.floor((st - 1) / 10)); /* 안개 밖 영지(가 본 곳 + 다음 1곳) */
 const mapTaken = st => st < S.stage; /* 이번 회차에 되찾음 (지름길 시작 앞 영지 포함) */
 const mapExplore = () => {
   let n = 0;
   for (let st = 1; st <= MAXLAND; st++) if (mapSeen(st) && st <= Math.max(S.best, 0)) n++;
   return mapAllClear() ? MAXLAND : Math.min(MAXLAND, n);
+};
+/* ---------- 바다 건너 지도 (2부, PART2.md 4장) ----------
+   지도 두 장: 「에르단」(영지 1~60, MAPPOS) · 「바다 건너」(61~, SEAPOS). wmSea = 지금 보는 지도.
+   그림 assets/map/sea_map(_dark).jpg (1024×1536, 대륙 지도와 같은 규격). 왼쪽 섬 = 엘프 왕국, 오른쪽 = 사막 제국, 위 = 북방 부족 */
+let wmSea = false;
+const SEAPOS = {
+  /* 엘프 섬 길: 아래 나루터(61)에서 굽이굽이 올라가 세계수 밑(70 장수) */
+  pts: [
+    [333, 975],
+    [282, 932],
+    [252, 886],
+    [292, 842],
+    [318, 806],
+    [266, 772],
+    [236, 738],
+    [262, 700],
+    [288, 666],
+    [252, 604]
+  ],
+  fog: [470, 1040] /* 71 바다 안개: 엘프 섬 앞바다 */,
+  route: [
+    [410, 1220],
+    [360, 1120],
+    [350, 1040]
+  ] /* 항구 → 엘프 섬 뱃길 */,
+  spot: { port: [430, 1330, 110], desert: [800, 790, 190], north: [560, 220, 210] },
+  ctr: [[285, 790]] /* 지역 가운데 (REGIONS 6번부터) */
+};
+const SEA_R0 = 6; /* 바다 건너 첫 지역 번호 */
+const SEA_FOG = { 6: ['실바니엘의 안개가 걷혔다!', 'q:세계수가 다시 숨을 쉰다.'] };
+/* 지금 지도 기준: 첫 영지 · 마지막 영지 · 지역 번호 범위 · 영지 좌표 · 지역 가운데 */
+const wmSt0 = () => (wmSea ? MAXLAND + 1 : 1),
+  wmStN = () => (wmSea ? LAND : MAXLAND),
+  wmR0 = () => (wmSea ? SEA_R0 : 0),
+  wmRN = () => (wmSea ? REGIONS.length : SEA_R0),
+  wmOn = st => st >= wmSt0() && st <= wmStN(),
+  wmPt = st => (wmSea ? (st > LAND ? SEAPOS.fog : SEAPOS.pts[st - MAXLAND - 1]) : MAPPOS.pts[st - 1]),
+  wmCtr = r => (r >= SEA_R0 ? SEAPOS.ctr[r - SEA_R0] : MAPPOS.ctr[r]);
+const seaExplore = () => {
+  let n = 0;
+  for (let st = MAXLAND + 1; st <= LAND; st++) if (mapSeen(st) && st <= Math.max(S.best, 0)) n++;
+  return n;
 };
 /* 그림: 지도 탭을 처음 열 때 불러옴 */
 const WMI = { ok: false, n: 0 };
@@ -20728,6 +21254,10 @@ function wmLoad() {
   };
   L('lit', 'assets/map/world_map.jpg');
   L('dark', 'assets/map/world_map_dark.jpg');
+  if (p2On()) {
+    L2('slit', 'assets/map/sea_map.jpg');
+    L2('sdark', 'assets/map/sea_map_dark.jpg');
+  }
   for (let i = 1; i <= 6; i++) L('fog' + i, 'assets/map/fog_' + i + '.png');
   L2('kael', 'assets/portraits/portrait_kael_idle.png');
   for (const id of BOSSID) L2(id, 'assets/portraits/portrait_' + id + '_idle.png');
@@ -20761,7 +21291,7 @@ for (const k of ['locked', 'open']) {
   im.onload = () => (CAPIMG[k] = im);
   im.src = 'assets/map/capital_' + k + '.png';
 }
-const RNODE = ['erdan', 'dusk', 'canyon', 'frost', 'ash', 'capital'].map(r => {
+const RNODE = ['erdan', 'dusk', 'canyon', 'frost', 'ash', 'capital', 'elf'].map(r => {
   const o = {};
   for (const t of ['boss']) {
     const im = new Image();
@@ -20792,7 +21322,23 @@ function wmSoft(g, x, y, r, a0) {
   g.arc(x, y, r, 0, Math.PI * 2);
   g.fill();
 }
+/* 바다 건너: 에르단 항구 · 가 본 영지 + 다음 1곳 · 해방한(장수를 처음 쓰러뜨린) 나라 · 바다 안개 자리. 사막·북방은 어둠 구름 그대로 */
+function seaHoles() {
+  const h = [],
+    sp = SEAPOS.spot;
+  h.push([sp.port[0], sp.port[1], 170]);
+  for (const q of SEAPOS.route) h.push([q[0], q[1], 75]);
+  for (let st = MAXLAND + 1; st <= Math.min(LAND, S.best + 1); st++) h.push([...wmPt(st), FOG_R]);
+  for (let r = SEA_R0; r < REGIONS.length; r++)
+    if (mapRegCleared(r)) {
+      for (let j = 0; j < 10; j++) h.push([...SEAPOS.pts[(r - SEA_R0) * 10 + j], 130]);
+      h.push([...wmCtr(r), 230]);
+    }
+  if (S.best > LAND) h.push([...SEAPOS.fog, 90]);
+  return h;
+}
 function wmHoles() {
+  if (wmSea) return seaHoles();
   const h = [],
     P = MAPPOS.pts,
     sp = MAPPOS.spot;
@@ -20815,13 +21361,24 @@ function wmHoles() {
 }
 function wmBuild() {
   if (!WMI.ok) return;
+  if (wmSea && !(WMI.slit && WMI.sdark)) return;
   const P = MAPPOS.pts,
     sp = MAPPOS.spot;
   const land = WLAND || (WLAND = wmCanvas()),
     g = land.getContext('2d');
   g.globalCompositeOperation = 'source-over';
-  g.drawImage(WMI.dark, 0, 0, MAPW, MAPH);
-  if (S.stage > MAXLAND) g.drawImage(WMI.lit, 0, 0, MAPW, MAPH);
+  g.drawImage(wmSea ? WMI.sdark : WMI.dark, 0, 0, MAPW, MAPH);
+  if (wmSea) {
+    /* 바다 건너 탈환 판: 항구 + 이번 회차에 되찾은 영지 + 나라를 지나간 회차면 그 나라 전체 */
+    const m = wmCanvas(),
+      mg = m.getContext('2d');
+    wmSoft(mg, SEAPOS.spot.port[0], SEAPOS.spot.port[1], 150);
+    for (let st = MAXLAND + 1; st < Math.min(S.stage, LAND + 1); st++) wmSoft(mg, ...wmPt(st), LAND_R);
+    for (let r = SEA_R0; r < REGIONS.length; r++) if (S.stage > 10 * (r + 1)) wmSoft(mg, ...wmCtr(r), 210);
+    mg.globalCompositeOperation = 'source-in';
+    mg.drawImage(WMI.slit, 0, 0, MAPW, MAPH);
+    g.drawImage(m, 0, 0);
+  } else if (S.stage > MAXLAND) g.drawImage(WMI.lit, 0, 0, MAPW, MAPH);
   else {
     const m = wmCanvas(),
       mg = m.getContext('2d');
@@ -20876,7 +21433,7 @@ function wmBuild() {
   } catch (e) {}
 }
 function wmCache() {
-  const sig = [S.best, S.stage, S.chOpen ? 1 : 0, WMI.ok ? 1 : 0].join();
+  const sig = [S.best, S.stage, S.chOpen ? 1 : 0, WMI.ok ? 1 : 0, wmSea ? 1 : 0, WMI.slit && WMI.sdark ? 1 : 0].join();
   if (sig !== wmSig || wmDirty) {
     wmSig = sig;
     wmDirty = 0;
@@ -20908,15 +21465,33 @@ function wmGo(x, y, z) {
   const b = $('mapAll');
   if (b) b.hidden = !(wmZoomR < 0 && z > 1.01);
 }
-const wmCur = () => Math.max(1, Math.min(MAXLAND, S.stage));
+/* 카엘 자리: 에르단 지도에서는 1~60(2부에 가 있으면 알현실), 바다 건너에서는 61~(사냥터면 바다 안개 자리) */
+const wmCur = () => (wmSea ? Math.max(MAXLAND + 1, Math.min(LAND + 1, S.stage)) : Math.max(1, Math.min(MAXLAND, S.stage)));
 function wmFocusCur(z) {
-  const p = MAPPOS.pts[wmCur() - 1];
+  const p = wmPt(wmCur());
   wmGo(p[0], p[1], z || 1.25);
 }
-/* 지도 탭을 열 때: 처음 대사 · 걷힘 연출(처음 1번씩) */
-function mapOpen() {
+/* 지도 전환 칩: 「에르단 · 바다 건너」 (1부를 끝내기 전에는 바다 건너 🔒) */
+function mapSwRender() {
+  const el = $('mapSw');
+  if (!el) return;
+  el.hidden = !p2On();
+  if (!p2On()) return;
+  const ok = p2Open(),
+    sig = [wmSea ? 1 : 0, ok ? 1 : 0].join();
+  if (el.dataset.sig === sig) return;
+  el.dataset.sig = sig;
+  el.innerHTML = `<button data-sea="0" class="${wmSea ? '' : 'on'}" aria-pressed="${!wmSea}">에르단</button><button data-sea="1" class="${wmSea ? 'on' : ''}${ok ? '' : ' lock'}" aria-pressed="${wmSea}">${ok ? '' : '🔒 '}바다 건너</button>`;
+  for (const b of el.querySelectorAll('button')) b.onclick = () => wmSetSea(b.dataset.sea === '1');
+}
+function wmSetSea(on, quiet) {
+  if (on && !p2Open()) {
+    haptic(8);
+    return toast('1부를 끝내면 열려요');
+  }
+  if (on === wmSea && !quiet) return;
+  wmSea = on;
   wmLoad();
-  resizeM();
   wmZoomR = -1;
   mzClose(true);
   wmFocusCur(1.25);
@@ -20924,6 +21499,42 @@ function mapOpen() {
   k.x = k.tx;
   k.y = k.ty;
   k.z = k.tz;
+  wmDirty = 1;
+  mapSig = '';
+  wmCapSeen = -1;
+  mapSwRender();
+  renderMapInfo();
+  if (on) mapReveal();
+  if (on && !S.done.seaMap) {
+    S.done.seaMap = true;
+    queue(() =>
+      scene(
+        '바다 건너 지도',
+        '세 나라가 기다린다',
+        [
+          'q:바다 건너 세 나라다. 왼쪽 섬이 엘프 왕국, 오른쪽이 사막 제국, 위가 북방 부족.',
+          'k:배멀미 약은 챙겼나…',
+          'sys:지금은 엘프 왕국이 열려 있어요. 사막 제국·북방 부족은 바다 안개가 걷히면 열려요.'
+        ],
+        '지도를 본다'
+      )
+    );
+  }
+}
+/* 지도 탭을 열 때: 처음 대사 · 걷힘 연출(처음 1번씩). 지금 영지가 61 이상이면 바다 건너부터 */
+function mapOpen() {
+  wmLoad();
+  resizeM();
+  wmSea = p2Open() && S.stage > MAXLAND;
+  mapSwRender();
+  wmZoomR = -1;
+  mzClose(true);
+  wmFocusCur(1.25);
+  const k = WCAM;
+  k.x = k.tx;
+  k.y = k.ty;
+  k.z = k.tz;
+  wmDirty = 1;
   if (!S.mapIntro) {
     S.mapIntro = 1;
     queue(() =>
@@ -20940,19 +21551,33 @@ function mapOpen() {
       )
     );
   }
+  if (wmSea && !S.done.seaMap) {
+    wmSea = false;
+    wmSetSea(true, true);
+  }
+  mapReveal();
+  save();
+}
+/* 걷힘 연출: 새로 가 본 영지(금빛 번쩍) · 지역 군단장(장수)을 처음 쓰러뜨린 곳(밝은 땅 번짐) · 이번 회차에 되찾은 영지. 지금 보는 지도의 것만 */
+function mapReveal() {
   const now = performance.now(),
-    P = MAPPOS.pts;
-  if ((S.fogSeen || 1) < S.best) {
-    for (let st = Math.max(2, (S.fogSeen || 1) + 1); st <= Math.min(MAXLAND, S.best + 1); st++)
-      wmAnims.push({ x: P[st - 1][0], y: P[st - 1][1], t0: now + 80 * (st - (S.fogSeen || 1)), d: 800, k: 'fog' });
-    S.fogSeen = S.best;
+    f0 = S.fogSeen || 1;
+  if (f0 < S.best) {
+    for (let st = Math.max(2, f0 + 1); st <= Math.min(wmStN(), S.best + 1); st++)
+      if (wmOn(st)) {
+        const p = wmPt(st);
+        wmAnims.push({ x: p[0], y: p[1], t0: now + 80 * Math.max(1, st - Math.max(f0, wmSt0() - 1)), d: 800, k: 'fog' });
+      }
+    /* 다른 지도 쪽 영지는 그 지도를 열 때 보이도록 남겨 둠 */
+    if (S.best <= wmStN() + 1) S.fogSeen = S.best;
+    else S.fogSeen = Math.max(f0, Math.min(S.best, wmStN()));
   }
   if (!S.regSeen) S.regSeen = {};
   let delay = 0;
-  for (let r = 0; r < 6; r++)
+  for (let r = wmR0(); r < wmRN(); r++)
     if (mapRegCleared(r) && !S.regSeen[r]) {
       S.regSeen[r] = 1;
-      const c = MAPPOS.ctr[r],
+      const c = wmCtr(r),
         t = now + delay;
       wmAnims.push({ x: c[0], y: c[1], t0: t, d: 2000, k: 'reg' });
       setTimeout(() => {
@@ -20963,7 +21588,7 @@ function mapOpen() {
           }, 1700);
         }
       }, delay);
-      const m = REG_FOG[r];
+      const m = r >= SEA_R0 ? SEA_FOG[r] : REG_FOG[r];
       if (m)
         setTimeout(() => {
           toast(m[0]);
@@ -20973,9 +21598,12 @@ function mapOpen() {
     }
   const cap = landCount();
   if (wmCapSeen >= 0 && cap > wmCapSeen)
-    for (let st = wmCapSeen + 1; st <= cap; st++) wmAnims.push({ x: P[st - 1][0], y: P[st - 1][1], t0: now, d: 600, k: 'cap' });
+    for (let st = wmCapSeen + 1; st <= cap; st++)
+      if (wmOn(st)) {
+        const p = wmPt(st);
+        wmAnims.push({ x: p[0], y: p[1], t0: now, d: 600, k: 'cap' });
+      }
   wmCapSeen = cap;
-  save();
 }
 /* 그리기 */
 function wmFlag(x, y, s, col) {
@@ -21031,7 +21659,7 @@ function drawMap() {
   C.x += (C.tx - C.x) * a * 1.6;
   C.y += (C.ty - C.y) * a * 1.6;
   C.z += (C.tz - C.z) * a * 1.6;
-  if (!WMI.ok) {
+  if (!WMI.ok || (wmSea && !(WMI.slit && WMI.sdark))) {
     ctx.fillStyle = '#1a1028';
     ctx.fillRect(0, 0, MW, MH);
     ctx.fillStyle = '#c9b8e8';
@@ -21051,6 +21679,7 @@ function drawMap() {
   ctx.drawImage(WLAND, v.x, v.y, v.w, v.h, 0, 0, MW, MH);
   /* 2부 땅: 옅은 회색 바다 안개 (왕도를 깨면 조금 더 또렷) */
   const clr = mapAllClear();
+  if (!wmSea)
   for (const k of ['elf', 'desert', 'north']) {
     const [x, y, r] = sp[k],
       [px, py] = wmToS(v, x, y),
@@ -21061,11 +21690,11 @@ function drawMap() {
     ctx.fillStyle = g;
     ctx.fillRect(px - R, py - R, R * 2, R * 2);
   }
-  /* 영지 점 · 군단장 · 왕도 */
+  /* 영지 점 · 군단장(장수) · 왕도 */
   const fs = Math.round(Math.max(9.5, Math.min(12, MW * 0.028)));
-  for (let st = 1; st <= MAXLAND; st++) {
+  for (let st = wmSt0(); st <= wmStN(); st++) {
     if (!mapSeen(st)) continue;
-    const [x, y] = P[st - 1],
+    const [x, y] = wmPt(st),
       [px, py] = wmToS(v, x, y),
       taken = mapTaken(st),
       r = Math.floor((st - 1) / 10),
@@ -21075,7 +21704,7 @@ function drawMap() {
       const z = Math.max(44, 56 * s),
         im = CAPIMG[S.stage > MAXLAND ? 'open' : 'locked'];
       if (im) ctx.drawImage(im, px - z / 2, py - z * 0.75, z, z);
-      if (S.stage > MAXLAND) wmPill('왕궁 뜰', px, py + fs * 1.3, fs - 1, 'rgba(255,201,74,.92)', '#3a2a00');
+      if (S.stage > MAXLAND) wmPill(p2On() ? '되찾은 왕도' : '왕궁 뜰', px, py + fs * 1.3, fs - 1, 'rgba(255,201,74,.92)', '#3a2a00');
     } else if (lord) {
       const z = Math.max(30, 40 * s),
         im = RNODE[r].boss;
@@ -21096,8 +21725,25 @@ function drawMap() {
       ctx.fill();
     }
   }
+  /* 바다 건너: 아직 안 연 나라 「곧 열려요」 · 바다 안개(71) · 에르단 항구 */
+  if (wmSea) {
+    const ss = SEAPOS.spot;
+    for (const a of ALLY)
+      if (!allyOpen(a) && ss[a.k]) {
+        const [px, py] = wmToS(v, ss[a.k][0], ss[a.k][1]);
+        wmPill('🌫 ' + a.n + ' · 곧 열려요', px, py, fs - 1, 'rgba(10,8,18,.72)', '#d8d0ee');
+      }
+    if (S.best > LAND) {
+      const [px, py] = wmToS(v, SEAPOS.fog[0], SEAPOS.fog[1]);
+      wmPill('바다 안개 · 곧 열려요', px, py + fs * 1.6, fs - 1, 'rgba(225,230,240,.88)', '#2a3140');
+    }
+    {
+      const [px, py] = wmToS(v, ss.port[0], ss.port[1] + 40);
+      wmPill('⚓ 에르단 항구', px, py, fs - 1, 'rgba(8,6,14,.6)', '#fff');
+    }
+  }
   /* 명소 표시: 시련의 탑(잠김 🔒) · 요일 던전(오늘 반짝) */
-  {
+  if (!wmSea) {
     const [tx, ty] = wmToS(v, sp.tower[0], sp.tower[1]);
     if (!S.chOpen) wmPill('🔒 시련의 탑', tx, ty - 6, fs - 1, 'rgba(10,8,18,.7)', '#d8d0ee');
     if (S.chOpen) {
@@ -21137,7 +21783,7 @@ function drawMap() {
   }
   /* 카엘 (지금 위치) */
   {
-    const [x, y] = P[wmCur() - 1],
+    const [x, y] = wmPt(wmCur()),
       [px, py] = wmToS(v, x, y),
       R = Math.max(13, 17 * Math.min(1.5, s)),
       by = py - R - 6 - Math.abs(Math.sin(T * 3)) * 3;
@@ -21170,10 +21816,10 @@ function drawMap() {
   }
   /* 지역 이름 (전체 지도) */
   if (!zoom)
-    for (let r = 0; r < 6; r++) {
-      const c = MAPPOS.ctr[r],
-        [px, py] = wmToS(v, c[0], c[1] - (r === 0 ? 150 : r === 5 ? 60 : 110));
-      wmPill(mapEntered(r) ? REGIONS[r].n : '???', px, py, fs, 'rgba(8,6,14,.6)', '#fff');
+    for (let r = wmR0(); r < wmRN(); r++) {
+      const c = wmCtr(r),
+        [px, py] = wmToS(v, c[0], c[1] - (r === 0 ? 150 : r === 5 ? 60 : r >= SEA_R0 ? 250 : 110));
+      wmPill(mapEntered(r) ? REGIONS[r].n + (r >= SEA_R0 && allyOn(REGIONS[r].p2) ? ' 🤝' : '') : '???', px, py, fs, 'rgba(8,6,14,.6)', '#fff');
     }
   /* 연출: 걷힘(금빛 번쩍 + 흩어지는 구름) · 되찾음(밝은 땅 번짐) */
   wmAnims = wmAnims.filter(an => now < an.t0 + an.d);
@@ -21228,14 +21874,14 @@ mc.addEventListener('click', e => {
   wmTapTimer = setTimeout(() => wmTap(mx, my, v), 260);
 });
 function wmTap(mx, my, v) {
-  const sp = MAPPOS.spot,
-    hit = k => Math.hypot(mx - sp[k][0], my - sp[k][1]) < Math.max(sp[k][2], 22 / v.s);
+  const sp = wmSea ? SEAPOS.spot : MAPPOS.spot,
+    hit = k => !!sp[k] && Math.hypot(mx - sp[k][0], my - sp[k][1]) < Math.max(sp[k][2], 22 / v.s);
   /* 확대 화면: 점 먼저 */
   if (wmZoomR >= 0) {
     let best = 0,
       bd = 1e9;
     for (let st = wmZoomR * 10 + 1; st <= wmZoomR * 10 + 10; st++) {
-      const p = MAPPOS.pts[st - 1],
+      const p = wmPt(st),
         d = Math.hypot(mx - p[0], my - p[1]);
       if (d < bd) {
         bd = d;
@@ -21245,25 +21891,37 @@ function wmTap(mx, my, v) {
     if (best && bd * v.s <= 20) {
       if (!mapSeen(best)) return toast('아직 안개에 덮여 있어요');
       const i = Math.floor((best - 1) / 10) + 1,
-        j = ((best - 1) % 10) + 1;
+        j = ((best - 1) % 10) + 1,
+        p2r = !!region(best).p2;
       return toast(
-        `${i}-${j} ${terrName(best)} · ${best === wmCur() && S.stage <= MAXLAND ? '지금 싸우는 곳' : mapTaken(best) ? '이번 회차에 되찾음 ✓' : '마족 점령지'}${best % 10 === 0 ? ' · 군단장' : ''}`
+        `${i}-${j} ${terrName(best)} · ${best === wmCur() && S.stage <= LAND ? '지금 싸우는 곳' : mapTaken(best) ? '이번 회차에 되찾음 ✓' : p2r ? '마왕군 점령지' : '마족 점령지'}${best % 10 === 0 ? (p2r ? ' · 장수' : ' · 군단장') : ''}`
       );
     }
   }
-  for (const k of ['elf', 'desert', 'north'])
-    if (hit(k)) {
-      toast('2부 「흩어진 동맹」에서 열려요');
-      setTimeout(() => toast('루미나르: 바다 건너에도 마족에 맞서는 이들이 있다.'), 1900);
-      return;
+  if (wmSea) {
+    for (const a of ALLY)
+      if (!allyOpen(a) && hit(a.k)) {
+        toast('바다 안개가 짙어요. 곧 열려요');
+        setTimeout(() => toast('루미나르: ' + a.n + '에도 마왕군에 맞서는 이들이 있다.'), 1900);
+        return;
+      }
+    if (hit('port')) return wmSetSea(false);
+  } else {
+    for (const k of ['elf', 'desert', 'north'])
+      if (hit(k)) {
+        if (p2Open()) return wmSetSea(true);
+        toast(p2On() ? '1부를 끝내면 열려요' : '2부 「흩어진 동맹」에서 열려요');
+        setTimeout(() => toast('루미나르: 바다 건너에도 마족에 맞서는 이들이 있다.'), 1900);
+        return;
+      }
+    if (hit('village')) return setTab('vl');
+    if (hit('tower')) {
+      if (!S.chOpen) return toast('영지 ' + CH_OPEN + '을 되찾으면 열려요');
+      return chSheet();
     }
-  if (hit('village')) return setTab('vl');
-  if (hit('tower')) {
-    if (!S.chOpen) return toast('영지 ' + CH_OPEN + '을 되찾으면 열려요');
-    return chSheet();
+    for (const k of ['field', 'vault', 'mine']) if (S.chOpen && hit(k)) return chSheet();
+    if (hit('capital') && mapEntered(5)) return mzOpen(5);
   }
-  for (const k of ['field', 'vault', 'mine']) if (S.chOpen && hit(k)) return chSheet();
-  if (hit('capital') && mapEntered(5)) return mzOpen(5);
   if (wmZoomR >= 0) {
     wmZoomR = -1;
     mzClose(true);
@@ -21271,41 +21929,48 @@ function wmTap(mx, my, v) {
   }
   let r = -1,
     bd = 1e9;
-  MAPPOS.ctr.forEach((c, i) => {
-    const d = Math.hypot(mx - c[0], my - c[1]);
+  for (let i = wmR0(); i < wmRN(); i++) {
+    const c = wmCtr(i),
+      d = Math.hypot(mx - c[0], my - c[1]);
     if (d < bd) {
       bd = d;
       r = i;
     }
-  });
+  }
   if (r < 0) return;
+  if (wmSea && bd > 320) return; /* 바다·안 연 나라를 눌렀을 때는 확대하지 않음 */
   if (!mapEntered(r)) return toast('아직 안개에 덮여 있어요');
   mzOpen(r);
 }
 /* 지역 확대 + 아래 반 창 */
 /* 지역 확대 배율: 기본 1.8배, 점이 가까운 지역은 점 사이가 화면에서 34px 이상 되게 더 크게 */
-const wmDmin = MAPPOS.ctr.map((_, r) => {
+const wmDmin = r => {
+  if (wmDmin[r] != null) return wmDmin[r];
   let mn = 1e9;
   for (let a = 0; a < 10; a++)
     for (let b = a + 1; b < 10; b++) {
-      const p = MAPPOS.pts[r * 10 + a],
-        q = MAPPOS.pts[r * 10 + b];
+      const p = wmRegPt(r, a),
+        q = wmRegPt(r, b);
       mn = Math.min(mn, Math.hypot(p[0] - q[0], p[1] - q[1]));
     }
-  return mn;
-});
-const wmZoomFor = r => Math.max(1.8, Math.min(3, (34 * MAPW) / (Math.max(1, MW) * wmDmin[r])));
+  return (wmDmin[r] = mn);
+};
+/* 지역 r의 j번째 영지 좌표 (어느 지도든) */
+const wmRegPt = (r, j) => (r >= SEA_R0 ? SEAPOS.pts[(r - SEA_R0) * 10 + j] : MAPPOS.pts[r * 10 + j]);
+const wmZoomFor = r => Math.max(1.8, Math.min(3, (34 * MAPW) / (Math.max(1, MW) * wmDmin(r))));
 /* 지역 점들의 가운데(확대할 때 화면 가운데에 둠) */
 const wmRegMid = r => {
   let x = 0,
     y = 0;
   for (let j = 0; j < 10; j++) {
-    x += MAPPOS.pts[r * 10 + j][0];
-    y += MAPPOS.pts[r * 10 + j][1];
+    const p = wmRegPt(r, j);
+    x += p[0];
+    y += p[1];
   }
   return [x / 10, y / 10];
 };
 function mzOpen(r) {
+  if (r >= SEA_R0 !== wmSea) wmSetSea(r >= SEA_R0, true);
   wmZoomR = r;
   $('p-mp').classList.add('mzon');
   const pg = $('p-mp'),
@@ -21322,17 +21987,20 @@ function mzOpen(r) {
     sc = MW / (MAPW / z);
   wmGo(m[0], m[1] + (MH / 2 - vis / 2) / sc, z);
   const R = REGIONS[r],
+    a = R.p2 ? ALLY.find(x => x.k === R.p2) : null,
     got = Array.from({ length: 10 }, (_, j) => mapTaken(r * 10 + j + 1)).filter(Boolean).length,
-    bid = r < 5 ? BOSSID[r] : 'baltasar';
+    bid = r < 5 ? BOSSID[r] : 'baltasar',
+    face = a ? 'assets/map/' + R.p2 + '_boss.png' : 'assets/portraits/portrait_' + bid + '_idle.png';
   $('mzT').textContent = R.n;
   $('mzBody').innerHTML =
-    `<div class="mzh"><img class="mzf" src="assets/portraits/portrait_${bid}_idle.png" alt="" onerror="this.remove()"><div><b>${R.boss}</b><small>되찾은 영지 ${got}/10 (이번 회차)</small><div class="xp"><div style="width:${got * 10}%"></div></div></div></div>
+    `<div class="mzh"><img class="mzf" src="${face}" alt="" onerror="this.remove()"><div><b>${R.boss}</b><small>되찾은 영지 ${got}/10 (이번 회차)</small><div class="xp"><div style="width:${got * 10}%"></div></div></div></div>
+  ${a ? `<div class="mzally${allyOn(a.k) ? ' on' : ''}"><img src="assets/portraits/portrait_${a.face}_idle.png" alt="" onerror="this.remove()"><div><b>${allyOn(a.k) ? '동맹 ✓ ' + a.t : '해방하면 동맹 · ' + a.king}</b><small>${a.b}${allyOn(a.k) ? ' (영구)' : ''}</small></div></div>` : ''}
   <div class="mzl">${Array.from({ length: 10 }, (_, j) => {
     const st = r * 10 + j + 1,
       seen = mapSeen(st),
       tk = mapTaken(st),
-      cur = st === wmCur() && S.stage <= MAXLAND;
-    return `<div class="mzr${cur ? ' cur' : ''}"><i>${r + 1}-${j + 1}</i><span>${seen ? terrName(st) : '???'}</span><em>${j === 9 ? '군단장' : '성주'}</em><b>${cur ? '⚔ 지금' : tk ? '✓' : seen ? '' : '🌫'}</b></div>`;
+      cur = st === wmCur() && S.stage <= LAND;
+    return `<div class="mzr${cur ? ' cur' : ''}"><i>${r + 1}-${j + 1}</i><span>${seen ? terrName(st) : '???'}</span><em>${j === 9 ? (a ? '장수' : '군단장') : '성주'}</em><b>${cur ? '⚔ 지금' : tk ? '✓' : seen ? '' : '🌫'}</b></div>`;
   }).join('')}</div>
   ${R.lore.map(para).join('')}<button class="buy ghost" id="mzAll" style="width:100%">전체 지도</button>`;
   $('mzAll').onclick = () => {
@@ -21359,19 +22027,22 @@ $('mapAll').onclick = () => {
 /* 위쪽 탐험 막대 · 다음 목표 */
 let mapSig = '';
 function renderMapInfo() {
-  const ex = mapExplore(),
-    c = landCount(),
-    st = wmCur(),
+  const sea = wmSea,
+    ex = sea ? seaExplore() : mapExplore(),
+    exN = sea ? P2_LAST - MAXLAND : MAXLAND,
+    c = sea ? Math.max(0, Math.min(LAND, S.stage - 1) - MAXLAND) : Math.min(MAXLAND, landCount()),
+    st = Math.min(S.stage, LAND),
     r = region(st),
     i = Math.floor((st - 1) / 10) + 1,
     j = ((st - 1) % 10) + 1;
   const pl = S.started ? passLv() : 0,
     pn = S.started ? passCanN() : 0;
-  const sig = [ex, c, S.stage, S.best, pl, pn].join();
+  const sig = [ex, c, S.stage, S.best, pl, pn, sea ? 1 : 0].join();
   if (sig === mapSig) return;
   mapSig = sig;
+  mapSwRender();
   $('mapBar').innerHTML =
-    `<span class="mbx"><b>대륙 탐험 ${Math.round((ex / MAXLAND) * 100)}%</b><i><i style="width:${(ex / MAXLAND) * 100}%"></i></i></span><span class="mbr"><span>이번 회차</span> <b>${c}/${MAXLAND}</b></span>${S.started ? `<button class="mbp" id="mapPass" aria-label="원정 일지"><small>원정 일지</small><b>${pl}/${PASS.steps}</b>${pn ? '<i class="dot"></i>' : ''}</button>` : ''}<button class="mbk" id="mapRank2" aria-label="랭킹">🏆</button>`;
+    `<span class="mbx"><b>${sea ? '바다' : '대륙'} 탐험 ${Math.round((ex / exN) * 100)}%</b><i><i style="width:${(ex / exN) * 100}%"></i></i></span><span class="mbr"><span>이번 회차</span> <b>${c}/${exN}</b></span>${S.started ? `<button class="mbp" id="mapPass" aria-label="원정 일지"><small>원정 일지</small><b>${pl}/${PASS.steps}</b>${pn ? '<i class="dot"></i>' : ''}</button>` : ''}<button class="mbk" id="mapRank2" aria-label="랭킹">🏆</button>`;
   if ($('mapPass'))
     $('mapPass').onclick = e => {
       e.stopPropagation();
@@ -21382,12 +22053,14 @@ function renderMapInfo() {
     rankSheet();
   };
   $('mapNext').innerHTML =
-    S.stage > MAXLAND
-      ? '🏰 1부 완결 · 왕궁 뜰에서 사냥 중'
-      : `다음: <b>${r.n} ${i}-${j}</b> · ${terrName(st)} · ${j === 10 ? (i === 6 ? '마왕 발타사르' : '군단장 ' + r.boss.split(' ').pop()) : '마족 성주'} <i>›</i>`;
+    S.stage > LAND
+      ? p2On()
+        ? '🌫 바다 안개가 짙어요 · 곧 열려요'
+        : '🏰 1부 완결 · 왕궁 뜰에서 사냥 중'
+      : `다음: <b>${r.n} ${i}-${j}</b> · ${terrName(st)} · ${j === 10 ? (i === 6 ? '마왕 발타사르' : r.p2 ? '장수 ' + r.boss.split(' ').pop() : '군단장 ' + r.boss.split(' ').pop()) : r.p2 ? '마왕군 성주' : '마족 성주'} <i>›</i>`;
 }
 $('mapNext').onclick = () => {
-  const r = Math.floor((wmCur() - 1) / 10);
+  const r = Math.floor((Math.min(S.stage, LAND) - 1) / 10);
   if (mapEntered(r)) mzOpen(r);
 };
 
@@ -21512,13 +22185,33 @@ async function faceSync() {
     faceSent = f;
   }
 }
+/* 랭킹 최고 영지: 2부(62 이상)는 새 서버 함수 kd_submit2(supabase/stage12_part2_rank.sql, 상한 kd_stage_max() = 71)로.
+   그 SQL을 아직 실행하지 않았으면(함수 없음) 지금 함수 kd_submit에 61까지로 보냄 — 앱이 쓰는 kd_submit은 그대로 */
+let rk2Off = false;
 async function rankSubmit(force) {
   if (!sbOn() || !S.nick || rkBusy) return;
-  const st = Math.min(S.stage, MAXLAND + 1);
-  if (!force && st <= rkSent) return;
+  const st = Math.min(S.stage, LAND + 1);
+  if (!force && (rk2Off ? Math.min(st, MAXLAND + 1) : st) <= rkSent) return;
   rkBusy = true;
   try {
-    const r = await sbRpc('kd_submit', { p_stage: st, p_power: Math.round(power()), ...rkMeta() });
+    const args = { p_power: Math.round(power()), ...rkMeta() };
+    let r = null;
+    if (st > MAXLAND + 1 && !rk2Off) {
+      try {
+        r = await sbRpc('kd_submit2', { p_stage: st, ...args });
+      } catch (e) {
+        if (/ 404$/.test(e.message)) rk2Off = true;
+        else throw e;
+      }
+    }
+    if (r == null) {
+      const s1 = Math.min(st, MAXLAND + 1);
+      r = await sbRpc('kd_submit', { p_stage: s1, ...args });
+      if (r === 'ok' && s1 < st) {
+        r = 'part';
+        rkSent = s1;
+      }
+    }
     if (r === 'ok') rkSent = st;
   } catch (e) {
   } finally {
@@ -21586,7 +22279,7 @@ async function gobRankToast() {
   }
   toast('황금 고블린 이번 주 ' + n + '마리' + (r ? ' · 지금 ' + r + '위' : ''));
 }
-const stgName = st => (st > MAXLAND ? '왕궁 뜰' : Math.floor((st - 1) / 10) + 1 + '-' + (((st - 1) % 10) + 1));
+const stgName = st => (st > LAND ? huntName() : Math.floor((st - 1) / 10) + 1 + '-' + (((st - 1) % 10) + 1));
 const NICKERR = {
   length: '2~10글자로 정해 주세요',
   chars: '한글·영문·숫자·_ 만 쓸 수 있어요',
@@ -22292,7 +22985,7 @@ async function acctFetch() {
 }
 const cloudBody = () => ({
   p_data: S,
-  p_stage: Math.min(S.stage, MAXLAND + 1),
+  p_stage: Math.min(S.stage, MAXLAND + 1) /* 서버 저장 칸 stage는 61까지(kd_save_put) — 실제 영지는 data 안에 그대로 */,
   p_power: Math.round(power()),
   p_gem: Math.floor(S.gem || 0)
 });
@@ -22373,7 +23066,7 @@ const ago = t => {
   return m < 1 ? '방금 전' : m < 60 ? Math.floor(m) + '분 전' : m < 1440 ? Math.floor(m / 60) + '시간 전' : Math.floor(m / 1440) + '일 전';
 };
 function cloudPick(cl) {
-  const me = { stage: Math.min(S.stage, MAXLAND + 1), power: Math.round(power()), gem: S.gem || 0 },
+  const me = { stage: Math.min(S.stage, LAND + 1), power: Math.round(power()), gem: S.gem || 0 },
     d = cl.data || {};
   const card = (t, x, when) =>
     `<div class="ckc"><i class="cpt">${t}</i><em class="cps">${stgName(x.stage)}</em><small>전투력 ${fmt(x.power)} · 황금 이삭 ${fmt(x.gem)}</small><small>${when}</small></div>`;
@@ -22643,7 +23336,8 @@ function profileSheet(keep) {
     ri = rankIdx(),
     nb = '<small>&nbsp;</small>';
   $('sheet').innerHTML =
-    `<div class="hdban" style="--hb:url(assets/ui/hd_profile.png)"><span>프로필</span></div><div class="pfhead"><div class="pfbig"><canvas id="pfCv"></canvas><img class="pfr${pfTall(cur)}" src="${pfSrc(cur)}" alt=""></div><div class="pfinfo"><div class="pfnm"><b>카엘${d.badge ? `<img class="pfbd" data-k="${d.badge}" src="${bdSrc(d.badge)}" alt="" onerror="bdErr(this)">` : ''}</b><span class="pfq"><button class="buy ghost sm" id="pfSet">⚙ 설정</button><button class="buy ghost sm" id="pfRank">🏆 랭킹</button></span></div><small class="pfnick">닉네임 <b>${esc(S.nick || '준비 중')}</b>${S.nickTemp ? ' <i>임시</i>' : ''}${sbOn() ? '<button class="buy" id="pfNick">' + (S.nickTemp || !S.nick ? '정하기' : '바꾸기') + '</button>' : ''}</small><small>${RANKS[ri].n} · 전투력 ${fmt(power())}</small><small>최고 영지 ${Math.min(S.best, MAXLAND)} · 은퇴 ${S.retires || 0}번 · 은퇴의 추억 ${S.memory || 0}개</small>${S.chOpen ? `<small>시련의 탑 최고 ${S.tower.top || 0}층</small>` : ''}</div></div>
+    `<div class="hdban" style="--hb:url(assets/ui/hd_profile.png)"><span>프로필</span></div><div class="pfhead"><div class="pfbig"><canvas id="pfCv"></canvas><img class="pfr${pfTall(cur)}" src="${pfSrc(cur)}" alt=""></div><div class="pfinfo"><div class="pfnm"><b>카엘${d.badge ? `<img class="pfbd" data-k="${d.badge}" src="${bdSrc(d.badge)}" alt="" onerror="bdErr(this)">` : ''}</b><span class="pfq"><button class="buy ghost sm" id="pfSet">⚙ 설정</button><button class="buy ghost sm" id="pfRank">🏆 랭킹</button></span></div><small class="pfnick">닉네임 <b>${esc(S.nick || '준비 중')}</b>${S.nickTemp ? ' <i>임시</i>' : ''}${sbOn() ? '<button class="buy" id="pfNick">' + (S.nickTemp || !S.nick ? '정하기' : '바꾸기') + '</button>' : ''}</small><small>${RANKS[ri].n} · 전투력 ${fmt(power())}</small><small>최고 영지 ${Math.min(S.best, LAND)} · 은퇴 ${S.retires || 0}번 · 은퇴의 추억 ${S.memory || 0}개</small>${S.chOpen ? `<small>시련의 탑 최고 ${S.tower.top || 0}층</small>` : ''}</div></div>
+ ${allyBox()}
  <p class="note pfhint">${dirty ? '고른 대로 위에 미리 보여요. <b>저장</b>을 눌러야 바뀌어요.' : '칸을 눌러 고른 뒤 <b>저장</b>을 누르세요.'}</p>
  <div class="sec">얼굴 <small>합류한 동료 · 내 사진</small></div>
  <div class="pfgrid fcgrid">${(() => {
@@ -23470,6 +24164,7 @@ function loop(ts) {
   requestAnimationFrame(loop);
 }
 function start(data) {
+  p2Install(); /* 2부 1차(엘프 왕국)를 붙임 — 저장 불러오기·그림 받기보다 먼저 */
   loadSprites();
   loadMonSprites();
   loadBgs();
@@ -23493,6 +24188,11 @@ function start(data) {
   }
   BANNER.src = 'assets/ui/banner_capture.png';
   S = isSave(data) ? hydrate(data) : load() || hydrate({ gold: 60 });
+  if (DEMO === 'part2' && p2On()) {
+    noSave = true;
+    S = p2Demo();
+    setTimeout(() => toast('2부 미리보기예요. 알현실(영지 60)부터 시작하고, 진행은 저장되지 않아요'), 600);
+  }
   $('autoSell').checked = S.autoSell;
   $('autoOpen').checked = S.autoOpen;
   const isNew = !S.started;
@@ -23510,6 +24210,7 @@ function start(data) {
     if (rw) queue(() => toast(retRwText(rw)));
     chiefCheck();
     bondCheck(); /* 원정대의 정: 열렸는데 아직 못 본 관계 이야기 (지난번에 보기 전에 껐을 때) */
+    p2Check(); /* 2부: 61 「왕궁 뜰」에 있던 예전 세이브 → 2부 시작 장면 */
   }
   passS();
   growCheck();
