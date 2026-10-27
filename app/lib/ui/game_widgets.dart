@@ -15,7 +15,7 @@ import 'widgets.dart';
 const frameNames = ['normal', 'uncommon', 'rare', 'epic', 'legendary', 'mythic', 'primal'];
 
 /// 등급 번호 → 테두리 이름 (범위 밖이면 가장 가까운 등급)
-String frameOf(int? g) => frameNames[(g ?? 0).clamp(0, frameNames.length - 1)];
+String gradeFrame(int? g) => frameNames[(g ?? 0).clamp(0, frameNames.length - 1)];
 const slotImg = {'weapon': 'slot_weapon', 'helm': 'slot_hat', 'armor': 'slot_armor', 'gloves': 'slot_gloves', 'boots': 'slot_boots', 'ring': 'slot_ring'};
 
 Color gradeColor(int g) => Color(hexColor(itemGrades[g].color));
@@ -35,7 +35,7 @@ class RelicIcon extends StatelessWidget {
         width: size,
         height: size,
         child: Stack(children: [
-          Positioned.fill(child: Opacity(opacity: it == null ? .45 : 1, child: uiImg('frame_${frameOf(it?.g)}', size: size))),
+          Positioned.fill(child: Opacity(opacity: it == null ? .45 : 1, child: uiImg('frame_${gradeFrame(it?.g)}', size: size))),
           if (it != null)
             Positioned.fill(
               left: size * .14,

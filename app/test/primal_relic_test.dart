@@ -15,9 +15,9 @@ Map<String, dynamic> _rel(String slot, int g) => {'slot': slot, 'g': g, 'lv': 33
 
 void main() {
   test('테두리 이름: 모든 등급(태초 포함)', () {
-    expect(frameOf(6), 'primal');
-    expect(frameOf(99), 'primal');
-    expect(frameOf(null), 'normal');
+    expect(gradeFrame(6), 'primal');
+    expect(gradeFrame(99), 'primal');
+    expect(gradeFrame(null), 'normal');
   });
 
   for (final w in [320.0, 390.0]) {
