@@ -277,7 +277,7 @@ class _Slot extends StatelessWidget {
             child: LayoutBuilder(builder: (_, c) {
               final w = c.maxWidth;
               return Stack(children: [
-                Positioned.fill(child: uiImg('frame_${frameNames[it?.g ?? 0]}', size: w)),
+                Positioned.fill(child: uiImg('frame_${gradeFrame(it?.g)}', size: w)),
                 Positioned.fill(
                   left: w * (it != null ? .12 : .16),
                   top: w * (it != null ? .12 : .16),
