@@ -82,7 +82,7 @@
 
 - 아이폰: 첫 광고를 보기 직전 「추적 허용」 창(ATT, `NSUserTrackingUsageDescription`)을 한 번 띄워요. 구글 광고 네트워크 `cstr6suwn9.skadnetwork` 등록.
 - AdMob 앱은 스토어에 공개된 뒤 「스토어 추가」로 연결해야 광고 제한이 풀려요(그 전에는 「검토 필요 · 광고 게재 제한」).
-- `app-ads.txt` 한 줄: `google.com, pub-8720405407394137, DIRECT, f08c47fec0942fa0` — 스토어에 적힌 개발자 웹사이트 **도메인 맨 위**에 둬야 해요.
+- `app-ads.txt`: https://gogeangs.github.io/app-ads.txt (저장소 gogeangs/gogeangs.github.io, 2026-10-27). 스토어 개발자 웹사이트 도메인 맨 위에 있어야 해서 이 저장소에 둠.
 
 > 실제 광고를 내 폰에서 직접 누르거나 반복해서 보면 AdMob 계정이 정지될 수 있어요. AdMob 「설정 → 테스트 기기」에 대표님 폰을 등록해 두면 내 폰에는 시험 광고가 나와요.
 
