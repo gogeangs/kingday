@@ -84,3 +84,4 @@ build(load("art/source/fx/fx_skill_flora.png"), "fx_skill_flora", 384, 256, bott
 # 2026-10-27 2부 엘프 왕국 이야기 동료
 build(load("art/source/fx/fx_skill_solen.png"), "fx_skill_solen", 384, 256, bottom=True)
 build(load("art/source/fx/fx_skill_saffron.png"), "fx_skill_saffron", 384, 256, bottom=True)
+build(load("art/source/fx/fx_skill_einar.png"), "fx_skill_einar", 384, 256, bottom=True)
