@@ -237,6 +237,7 @@
 ---
 
 ## 2차 크리스마스 주간 (11장) — 작성 2026-10-28
+- **11장 모두 받음·반영 (2026-10-29)** — 원본 `art/source/event/`, 게임용 `portrait_pete_santa_*`·`boss_snowman_santa_*`(칸 벌림, 0.45)·`assets/village/xmas_tree.png`(512)·`badge_xmas`·`badge_delivery`(160)·`assets/mini/sled.png`(384×4)·`house_{1,2,3,gold,smoke}.png`(320 폭)·`gift_{1,2,3}.png`(96)·`fx_in.png`(256×3)·`bg_night.jpg`(1536×768)·`kael_santa_*`(공격 넓은 칸 512)·`portrait_kael_santa_*`. 메모: 산타 카엘 공격 2번째 프레임은 검기 끝이 칸 오른쪽에서 조금 잘림(원본에서 옆 프레임과 겹쳐 있었음)
 - 기획서 `CONTENT_EVENT_SNOW.md` 6-2. **같은 대화창**: X-6~X-9(미니게임 4장) 한 창 · X-10~X-11(산타 카엘) 한 창.
 
 ### X-1 산타 모자 피트 초상화 → `assets/portraits/portrait_pete_santa_{idle,laugh}.png`
