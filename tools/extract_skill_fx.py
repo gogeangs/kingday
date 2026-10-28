@@ -85,3 +85,5 @@ build(load("art/source/fx/fx_skill_flora.png"), "fx_skill_flora", 384, 256, bott
 build(load("art/source/fx/fx_skill_solen.png"), "fx_skill_solen", 384, 256, bottom=True)
 build(load("art/source/fx/fx_skill_saffron.png"), "fx_skill_saffron", 384, 256, bottom=True)
 build(load("art/source/fx/fx_skill_einar.png"), "fx_skill_einar", 384, 256, bottom=True)
+# 2026-10-28 눈꽃제 한정 동료
+build(load("art/source/fx/fx_skill_sobok.png"), "fx_skill_sobok", 384, 256, bottom=True)
