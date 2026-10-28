@@ -7499,6 +7499,574 @@ input:focus-visible {
     transform: none;
   }
 }
+/* ---------- 정기 이벤트 (눈꽃제) ---------- */
+.fabcol .evfab img {
+  filter: drop-shadow(0 0 4px rgba(150, 210, 255, 0.6));
+}
+.fabcol .evfab.lock img {
+  filter: grayscale(0.7) brightness(0.8);
+}
+.evfab .evhat {
+  display: none;
+  position: absolute;
+  top: -9px;
+  left: -5px;
+  font-size: 16px;
+  font-style: normal;
+  transform: rotate(-18deg);
+  pointer-events: none;
+}
+.evfab.xm .evhat {
+  display: block;
+}
+.evfab .dot {
+  position: absolute;
+  top: -3px;
+  right: -3px;
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+  background: #ffd23a;
+  border: 1.5px solid #fff;
+  box-shadow: 0 0 6px #ffd23a;
+}
+.hdban.evban span {
+  color: #f2fbff;
+  text-shadow:
+    0 2px 3px rgba(10, 30, 70, 0.8),
+    0 0 8px rgba(120, 180, 255, 0.6);
+}
+.evxm {
+  margin: 2px 0 6px;
+  padding: 6px 10px;
+  border-radius: 10px;
+  background: linear-gradient(90deg, #7a1424, #a52234, #1f6b3a);
+  color: #fff3d6;
+  font-weight: 700;
+  font-size: 13px;
+  text-align: center;
+}
+.evxm small {
+  display: block;
+  font-weight: 500;
+  font-size: 11.5px;
+  opacity: 0.9;
+}
+.evsw {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 6px;
+}
+.evsw button {
+  flex: 1;
+  background: var(--panel2);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  color: var(--muted);
+  font: inherit;
+  font-size: 12.5px;
+  padding: 5px 0;
+}
+.evsw button.on {
+  color: #0e2238;
+  background: #bfe6ff;
+  border-color: #bfe6ff;
+}
+.evtop {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px 10px;
+  padding: 8px 10px;
+  margin-bottom: 6px;
+  border-radius: 12px;
+  background: linear-gradient(180deg, #23345c, #1b2847);
+  border: 1px solid #3b5385;
+  font-size: 12.5px;
+  color: var(--muted);
+}
+.evtop .evcur {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+.evtop .evcur img {
+  width: 28px;
+  height: 28px;
+}
+.evtop .evcur b {
+  font-size: 19px;
+  color: #e9f7ff;
+  font-family: var(--f-display);
+}
+.evtop .evdd {
+  margin-left: auto;
+  font-weight: 800;
+  color: #ffd34a;
+}
+.evtop .evbat b {
+  color: #e9f7ff;
+}
+.evwarn {
+  color: #ffb3bd !important;
+  text-align: center;
+}
+.evtabs button {
+  font-size: 13px;
+  letter-spacing: -0.02em;
+  white-space: nowrap;
+}
+.evshut {
+  text-align: center;
+  padding: 14px 4px;
+}
+.evjust {
+  margin: 6px 0;
+  padding: 8px 10px;
+  border-radius: 10px;
+  background: rgba(255, 211, 74, 0.1);
+  border: 1px solid rgba(255, 211, 74, 0.45);
+  display: grid;
+  gap: 6px;
+}
+.evjust > b {
+  color: #ffd34a;
+  text-align: center;
+}
+.attrws {
+  display: grid;
+  gap: 6px;
+  margin: 8px 0;
+}
+.evatt {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px;
+  margin: 8px 0 4px;
+}
+.evac {
+  position: relative;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 14px 1px 4px;
+  border-radius: 8px;
+  background: var(--panel2);
+  border: 1px solid var(--line);
+  text-align: center;
+}
+.evac > i {
+  position: absolute;
+  top: 1px;
+  left: 4px;
+  font-style: normal;
+  font-size: 10px;
+  color: var(--muted);
+}
+.evac img,
+.evac .lcic {
+  width: 26px;
+  height: 26px;
+  object-fit: contain;
+}
+.evac .evpic {
+  border-radius: 6px;
+}
+.evac small {
+  font-size: 9.5px;
+  line-height: 1.15;
+  color: var(--fg);
+  word-break: keep-all;
+}
+.evac.big {
+  border-color: #b07bff;
+  background: linear-gradient(180deg, #3a2c5c, #29334f);
+}
+.evac.nxt {
+  border-color: #ffd34a;
+  box-shadow: 0 0 0 1px #ffd34a inset;
+}
+.evac.got {
+  opacity: 0.55;
+}
+.evac .evst {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  font-size: 22px;
+  color: #7be08f;
+  text-shadow: 0 1px 2px #000;
+}
+.evbig {
+  width: 100%;
+  padding: 11px 0;
+  font-size: 15px;
+}
+.evbossc {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  padding: 8px;
+  border-radius: 12px;
+  background: linear-gradient(180deg, #2a3c63, #1f2b48);
+  border: 1px solid #3b5385;
+  margin: 8px 0 4px;
+}
+.evbossc > div {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+.evbossc b {
+  color: #e9f7ff;
+}
+.evbossc small {
+  font-size: 12px;
+  color: var(--muted);
+}
+.evbossc small b {
+  color: #ffd34a;
+}
+.evbossimg {
+  flex: 0 0 auto;
+  width: 84px;
+  height: 84px;
+  background-repeat: no-repeat;
+  background-size: 640px 160px;
+  background-position: -38px -72px;
+}
+.evsr > .lcic img,
+.evac .lcic img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+.evshop {
+  display: grid;
+  gap: 6px;
+  margin: 8px 0 4px;
+}
+.evsr {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 8px;
+  border-radius: 10px;
+  background: var(--panel2);
+  border: 1px solid var(--line);
+}
+.evsr > img,
+.evsr > .lcic,
+.evsr > .tkfb {
+  width: 34px;
+  height: 34px;
+  object-fit: contain;
+  flex: 0 0 auto;
+}
+.evsr .evpic {
+  border-radius: 8px;
+}
+.evsr.hot {
+  border-color: #ffd34a;
+  background: linear-gradient(180deg, #3d3320, #29334f);
+  box-shadow: 0 0 0 1px rgba(255, 211, 74, 0.5) inset;
+}
+.evsr.out {
+  opacity: 0.55;
+}
+.evsn {
+  flex: 1;
+  min-width: 0;
+  display: grid;
+}
+.evsn b {
+  font-size: 13.5px;
+}
+.evsn small {
+  font-size: 11.5px;
+  color: var(--muted);
+}
+.evsn small b {
+  font-size: 11.5px;
+  color: #ffd34a;
+}
+.evsr .buy {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  min-width: 70px;
+  justify-content: center;
+}
+.evsr .buy img {
+  width: 18px;
+  height: 18px;
+}
+.evsay {
+  text-align: center;
+  color: #cfe8ff;
+  font-family: var(--f-display);
+  margin: 6px 0;
+}
+.evgot {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  margin: 8px 0;
+}
+.evgot img {
+  width: 36px;
+  height: 36px;
+}
+.evgot b {
+  font-family: var(--f-display);
+  font-size: 26px;
+  color: #e9f7ff;
+}
+.evgot small {
+  color: var(--muted);
+  font-size: 12px;
+}
+.evxmhd {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.evxmhd img {
+  width: 72px;
+  height: 72px;
+  border-radius: 12px;
+  border: 2px solid #d93a4a;
+  background: #2a1a20;
+}
+.evxmhd h2 {
+  text-align: left;
+}
+.evmg {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  padding: 8px;
+  margin: 8px 0 4px;
+  border-radius: 12px;
+  background: linear-gradient(180deg, #1c2650, #131a38);
+  border: 1px solid #3b5385;
+}
+.evmg > div {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+.evmg small {
+  font-size: 12px;
+  color: var(--muted);
+}
+.evmg small b {
+  color: #ffd34a;
+}
+.evmgimg {
+  width: 96px;
+  height: 64px;
+  object-fit: cover;
+  object-position: 0 0;
+  flex: 0 0 auto;
+}
+.evrw {
+  margin-top: 6px;
+  font-size: 12.5px;
+}
+.evrw summary {
+  cursor: pointer;
+  color: var(--muted);
+}
+.evrkrw {
+  display: grid;
+  gap: 2px;
+  text-align: center;
+  padding: 8px;
+  border-radius: 10px;
+  background: rgba(255, 211, 74, 0.1);
+  margin: 6px 0;
+}
+.evrkrw b {
+  color: #ffd34a;
+}
+.evrkrw small {
+  color: var(--muted);
+}
+.evskinpv {
+  display: block;
+  width: 110px;
+  height: 110px;
+  margin: 0 auto 4px;
+  border-radius: 16px;
+  border: 2px solid #ffd34a;
+}
+.evch {
+  border-color: #6aa8e8;
+  background: linear-gradient(180deg, #24365e, #1c2747);
+}
+/* 장비 탭 「외형」 */
+.eqstage {
+  position: relative;
+}
+.skinbtn {
+  position: absolute;
+  left: 50%;
+  bottom: 6px;
+  transform: translateX(-50%);
+  padding: 3px 10px;
+  border-radius: 12px;
+  border: 1px solid #6a5634;
+  background: rgba(30, 22, 12, 0.85);
+  color: #ffe7a6;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+}
+.skrow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  margin: 6px 0;
+  padding: 8px;
+  border-radius: 12px;
+  background: var(--panel2);
+  border: 1px solid var(--line);
+  color: var(--fg);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+.skrow img {
+  width: 54px;
+  height: 54px;
+  border-radius: 10px;
+  flex: 0 0 auto;
+}
+.skrow span {
+  flex: 1;
+  min-width: 0;
+  display: grid;
+}
+.skrow small {
+  color: var(--muted);
+  font-size: 12px;
+}
+.skrow em {
+  font-style: normal;
+  font-size: 12px;
+  font-weight: 800;
+  color: var(--muted);
+}
+.skrow.on {
+  border-color: var(--gold);
+}
+.skrow.on em {
+  color: var(--gold);
+}
+.skrow.locked {
+  opacity: 0.55;
+  cursor: default;
+}
+.sktag {
+  font-style: normal;
+  color: #ffd34a;
+  font-weight: 700;
+}
+/* 미니게임 「선물 배달」 */
+.mgov {
+  position: fixed;
+  inset: 0;
+  z-index: 25;
+  background: #070b1c;
+  display: grid;
+  place-items: center;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+}
+.mgbox {
+  position: relative;
+  width: min(100vw, 480px, calc((100dvh - 8px) * 0.8));
+  aspect-ratio: 4/5;
+}
+#mgCv {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-radius: 10px;
+  touch-action: none;
+}
+.mgx {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  background: rgba(8, 12, 30, 0.6);
+  color: #fff;
+  font-size: 16px;
+  cursor: pointer;
+}
+.mgpan {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: min(92%, 360px);
+  padding: 14px;
+  border-radius: 16px;
+  background: rgba(20, 26, 48, 0.94);
+  border: 1px solid #3b5385;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+  text-align: center;
+}
+.mgpan h2 {
+  margin: 2px 0;
+  font-family: var(--f-display);
+  font-size: 30px;
+  color: #ffe08a;
+}
+.mgnb {
+  font-size: 13px;
+  color: #ff9a3c;
+}
+.mgacts {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+  margin-top: 10px;
+}
+.mgacts button {
+  padding: 9px 0;
+  border-radius: 10px;
+  border: 1px solid var(--line);
+  background: var(--panel2);
+  color: var(--fg);
+  font: inherit;
+  font-weight: 700;
+  font-size: 13.5px;
+}
+.mgacts button.pri {
+  background: var(--gold);
+  border-color: var(--gold);
+  color: #1a1206;
+}
+.mgacts button:disabled {
+  opacity: 0.45;
+}
+body.mgon {
+  overflow: hidden;
+}
 </style>
 </head>
 <body>
@@ -8839,8 +9407,11 @@ const chiefOn = () => owned(CHIEF) && !!S.party && S.party.kael === CHIEF,
   chiefShop = () => (S.retires || 0) >= 1 && !owned(CHIEF);
 const ulA = () => (ULB.t > 0 ? ULB.a : 1),
   ulS = () => (ULB.t > 0 ? ULB.s : 1);
+/* 이벤트 한정 동료(눈꽃제 소복이 등): 일반 카드 뽑기에 안 나옴 · 카드가 있거나 합류했을 때만 카드 목록에 보임 (evInstall 이 채움) */
+const EVCARD = {};
 const gr = id => GR[GRADE[id] || 'common'],
-  CARDIDS = () => [...Object.values(STORY), ...Object.keys(STORY2), ...Object.keys(RECRUITS).filter(id => GRADE[id] !== 'unique')] /* 카드 뽑기 대상 (유니크 제외) */,
+  CARDIDS = () => [...Object.values(STORY), ...Object.keys(STORY2), ...Object.keys(RECRUITS).filter(id => GRADE[id] !== 'unique' && !EVCARD[id])] /* 카드 뽑기 대상 (유니크·이벤트 한정 제외) */,
+  CARDLIST = () => [...CARDIDS(), ...Object.keys(EVCARD).filter(id => owned(id) || ((S.cards && S.cards[id]) || 0) > 0)] /* 카드 목록·★ 올리기 */,
   COMPIDS = () => [...Object.values(STORY), ...Object.keys(STORY2), ...Object.keys(RECRUITS)] /* 동료 전체 (일꾼·마을 이야기·초상화) */;
 const isRec = id => id in RECRUITS,
   recStar = id => (isRec(id) ? (S.rec && S.rec[id]) || 0 : S.joined[id] ? Math.max(1, (S.rec && S.rec[id]) || 0) : 0);
@@ -9059,6 +9630,12 @@ function recruitUp(id, quiet) {
     const R = RECRUITS[id];
     queue(() => {
       scene('동료 합류', R.title, R.lines, R.ok, null, 'join');
+      if (R.go)
+        $('mGo').onclick = () => {
+          closeModal();
+          R.go();
+          renderAll();
+        };
       const il = $('sheet').querySelector('.illust');
       if (il) {
         const w = document.createElement('div');
@@ -12531,7 +13108,7 @@ const benchBest = () =>
   JSLOT.filter(j => j !== 'kael' && betterBench(j)).map(j => jobMembers(j).reduce((a, x) => (cPow(x) > cPow(a) ? x : a)));
 /* 빨간 점: 지금 누르면 바로 이득일 때만, 확인하면 다음 변화 전까지 꺼짐 */
 const cardReady = () =>
-  CARDIDS().filter(id => cardOpen(id) && recStar(id) < starMax(id) && ((S.cards && S.cards[id]) || 0) >= starNeed(id));
+  CARDLIST().filter(id => cardOpen(id) && recStar(id) < starMax(id) && ((S.cards && S.cards[id]) || 0) >= starNeed(id));
 /* ---------- 원정대의 정 (docs/content/BOND.md): 호감도 ♥0~5 · 관계 이야기 6장면 ----------
    출전 동료·마을 일꾼 5분마다 1점(방치 포함) · 길 위에서 말 걸기 하루 1번 +10 · ♥마다 공격·체력 +2% · 은퇴해도 유지 */
 const AFF_NEED = [0, 60, 300, 900, 2000, 4000],
@@ -13169,7 +13746,7 @@ function renderParty() {
     /* 별 올리기 찾기 (대표님 결정 10-27 ①②③): 올릴 수 있는 동료 맨 위 · 별을 다 모은 동료는 맨 아래 작은 줄 */
     const ready0 = cardReady(),
       cmax = [];
-    const recs = CARDIDS()
+    const recs = CARDLIST()
       .sort((a, b) => (cardOpen(b) ? 2 : 0) + (owned(b) ? 1 : 0) - ((cardOpen(a) ? 2 : 0) + (owned(a) ? 1 : 0)) || gr(a).w - gr(b).w)
       .sort((a, b) => (ready0.includes(b) ? 1 : 0) - (ready0.includes(a) ? 1 : 0))
       .filter(id => {
@@ -13189,7 +13766,7 @@ function renderParty() {
           mx = stv >= starMax(id);
         return `<div class="ccard${op ? '' : ' locked'}${stv ? ' own' : ''}" style="--g:${gr(id).c}"><span class="cfr"><img src="assets/ui/frame_${gr(id).fr}.png" alt="" onerror="this.remove()"><canvas class="portrait" id="pcd-${id}"></canvas></span><div class="info"><b>${op ? c.n : '???'}</b>${gradeTag(id)}${affOk(id) && owned(id) ? affHearts(id) : ''}<span class="role"><img class="jobi" src="assets/ui/job_${JOB[id]}.png" alt="" onerror="this.remove()">${JOBN[JOB[id]]}</span>${stv ? starTxt(id) : ''}
     ${VPAS[id] ? `<div class="vpline"><img src="assets/ui/village_skill.png" alt="" style="width:16px;height:16px;vertical-align:-3px;margin-right:3px">마을 스킬 · ${VPAS[id].n}</div>` : ''}${!op ? `<div>${isRec(id) ? COMP[STORY[RECRUITS[id].job]].n + '이(가) 합류하면 카드가 나오기 시작해요' : c.join}</div>` : mx ? '<div>별을 모두 모았어요</div>' : `<div class="xp"><div style="width:${Math.min(100, (n / need) * 100)}%"></div></div><div>카드 ${n} / ${need}</div>`}</div>
-    ${op && !mx ? `<div class="cbtns"><button class="buy${n >= need ? ' glow' : ''}" id="rc-${id}" ${n >= need ? '' : 'disabled'}>${stv ? '★ 올리기' : '맞이하기'}</button>${GRADE[id] === 'legend' && (S.lcard || 0) > 0 && n < need ? `<button class="buy lcbtn" id="lc-${id}">만능 ${Math.min(S.lcard, need - n)}장 넣기</button>` : ''}<button class="wish${S.wish === id ? ' on' : ''}" id="ws-${id}">${S.wish === id ? '♥ 희망 중' : '♡ 희망'}</button></div>` : ''}</div>`;
+    ${op && !mx ? `<div class="cbtns"><button class="buy${n >= need ? ' glow' : ''}" id="rc-${id}" ${n >= need ? '' : 'disabled'}>${stv ? '★ 올리기' : '맞이하기'}</button>${GRADE[id] === 'legend' && (S.lcard || 0) > 0 && n < need ? `<button class="buy lcbtn" id="lc-${id}">만능 ${Math.min(S.lcard, need - n)}장 넣기</button>` : ''}${EVCARD[id] ? '' : `<button class="wish${S.wish === id ? ' on' : ''}" id="ws-${id}">${S.wish === id ? '♥ 희망 중' : '♡ 희망'}</button>`}</div>` : ''}</div>`;
         })();
         return { id, html };
       });
@@ -13995,7 +14572,7 @@ function drawEqHero() {
   const prev = ctx;
   ctx = pc;
   ell(r.width * 0.45, r.height - 14, r.width * 0.32, 8, 'rgba(0,0,0,.35)');
-  if (hasSprite('kael')) drawSprite('kael', r.width * 0.42, r.height - 12, Math.min(2.05, r.width / 88), 'idle', Math.floor(T * 5) % 4);
+  if (hasSprite('kael')) drawSprite(skinSpr('kael'), r.width * 0.42, r.height - 12, Math.min(2.05, r.width / 88), 'idle', Math.floor(T * 5) % 4);
   else DRAW.kael(r.width / 2, r.height - 12, 2.2, pose(null, false));
   ctx = prev;
 }
@@ -14189,6 +14766,7 @@ function renderAll() {
   numFlash('gem', S.gem || 0);
   $('gemDot').hidden = !(MISSIONS.some(misCan) || misCan(null) || (subOn() && S.sub.last !== today()));
   attHud();
+  evHud();
   const inCh = chHud();
   if (!inCh)
     $('stLabel').textContent =
@@ -14692,7 +15270,8 @@ function faceTo(c, id) {
   c.height = h * d;
   const pc = c.getContext('2d');
   pc.setTransform(d, 0, 0, d, 0, 0);
-  const pim = pfImg(id);
+  const pim = pfImg(skinFace(id));
+  if (!pim && id === 'kael') skinFacePre();
   if (pim) {
     pc.drawImage(pim, 0, 0, 512, 512, -w * 0.12, -h * 0.02, w * 1.24, h * 1.24);
     return;
@@ -15272,6 +15851,17 @@ function castSkill(id, cp) {
     }
     if (fxOk('skill_solen')) spawnFx('skill_solen', cx, cy - 40 * s, 160 * s, 0.9);
     else for (const m of alive) spawnFx('bees', m.x, m.y - 30 * s, 50 * s, 0.6);
+  } else if (id === 'sobok') {
+    /* 소복이 「눈꽃 조각」: 8초 동안 원정대 치명타 피해 +40% (★3·★5 강화) */
+    SKX.flake = 8;
+    SKX.flakeK = skPow(id);
+    for (const j of members()) if (P[j] && !P[j].down) addFloat(pos[j], py[j] - (HEIGHT[j] + 8) * s, '치명 피해↑', '#bfe8ff', 12);
+    if (fxOk('skill_sobok')) {
+      const ids = members(),
+        mx = ids.reduce((a, j) => a + pos[j], 0) / ids.length,
+        my = ids.reduce((a, j) => a + py[j], 0) / ids.length;
+      spawnFx('skill_sobok', mx, my - 40 * s, 170 * s, 0.9);
+    }
   } else if (id === 'saffron') {
     /* 사프란 「향신료 한 줌」: 8초 동안 원정대 공격 +15% (2부 이야기 동료) */
     SKX.spice = 8;
@@ -15766,6 +16356,7 @@ function stepSkills(dt, L, alive) {
   const { ids, s } = L;
   for (const k of ['shield', 'feast', 'bake', 'mount', 'wall', 'guts', 'lamp', 'sap', 'ward', 'dok', 'phx', 'taunt', 'blk']) SKX[k] = Math.max(0, SKX[k] - dt);
   if (SKX.spice > 0) SKX.spice = Math.max(0, SKX.spice - dt); /* 사프란 (2부) */
+  if (SKX.flake > 0) SKX.flake = Math.max(0, SKX.flake - dt); /* 소복이 (눈꽃제) */
   if (SKX.stew > 0) {
     SKX.stew = Math.max(0, SKX.stew - dt);
     /* 스튜가 끝나면 늘었던 체력만큼 다시 줄임 */
@@ -16216,6 +16807,7 @@ function resetFight(msg) {
   SKX.shield = SKX.honey = SKX.feast = SKX.guts = SKX.sym = SKX.lamp = SKX.sap = SKX.ward = SKX.dok = SKX.phx = 0;
   SKX.stew = SKX.taunt = SKX.blk = SKX.bloom = 0;
   if (SKX.spice) SKX.spice = 0;
+  if (SKX.flake) SKX.flake = 0;
   ULB.t = 0;
   for (const id of members()) {
     P[id].hp = stats(id).hp;
@@ -17113,7 +17705,8 @@ function step(dt) {
         const p = P[id];
         if (p.down) continue;
         const t = stats(id);
-        p.cd -= dt;
+        if (p.slow > 0) p.slow -= dt; /* 눈사람 대장 「눈덩이 굴리기」: 느려짐 */
+        p.cd -= dt * (p.slow > 0 ? 0.5 : 1);
         if (p.cd > 0) continue;
         p.cd = 1 / t.aps;
         chargeSkill(id);
@@ -17143,7 +17736,7 @@ function step(dt) {
         }
         if (!tgt) continue;
         const cr = Math.random() < t.crit + (SKX.lamp > 0 ? 0.2 * SKX.lampK : 0),
-          d = t.atk * (cr ? crX() : 1) * (0.9 + Math.random() * 0.2) * (SKX.feast > 0 ? 1.2 : 1);
+          d = t.atk * (cr ? crX() * (SKX.flake > 0 ? 1 + 0.4 * SKX.flakeK : 1) : 1) * (0.9 + Math.random() * 0.2) * (SKX.feast > 0 ? 1.2 : 1);
         p.swing = 0.22;
         if (id === 'daisy') {
           for (const m of alive)
@@ -17260,6 +17853,7 @@ function step(dt) {
         S.gold += g;
         dailyAdd('kill', 1);
         passKill();
+        evKill();
         addFloat(m.x, m.y - 30 * s, '+' + fmt(g), '#ffc94a', 14);
         {
           const nc = m.boss ? (isLord(fightSt()) ? 5 : 2) : Math.random() < 0.003 ? 1 : 0;
@@ -17324,6 +17918,7 @@ function step(dt) {
     if (mons.some(m => m.boss && m.hp > 0 && !m.dead) && engaged) {
       const lim = CH ? CH.lim : bossLim(fightSt());
       demStep(dt, L);
+      if (CH && CH.mode === 'ev') evBossStep(dt, L);
       bossT -= dt;
       $('bossTime').style.width = Math.max(0, (bossT / lim) * 100) + '%';
       $('bosst').textContent = Math.ceil(Math.max(0, bossT)) + '초';
@@ -17492,7 +18087,7 @@ const rwText = r =>
     .filter(k => r[k])
     .map(k => RWN[k][0] + ' +' + fmt(r[k]))
     .join(' · ');
-const chRi = () => (!CH ? 0 : CH.mode === 'tower' ? 3 : DUNS[CH.k].ri); /* 배경 지역: 탑은 그림이 없으면 서리 무덤을 어둡게 */
+const chRi = () => (!CH ? 0 : CH.mode === 'tower' ? 3 : CH.mode === 'ev' ? CH.ri : DUNS[CH.k].ri); /* 배경 지역: 탑은 그림이 없으면 서리 무덤을 어둡게 */
 /* 도전 해금: 영지 20 탈환 때 한 번 */
 function chCheck() {
   if (S.chOpen || !chCan()) return;
@@ -17538,6 +18133,7 @@ function chPartyReset() {
   SKX.shield = SKX.honey = SKX.feast = SKX.guts = SKX.sym = SKX.lamp = SKX.sap = SKX.ward = SKX.dok = SKX.phx = 0;
   SKX.stew = SKX.taunt = SKX.blk = SKX.bloom = 0;
   if (SKX.spice) SKX.spice = 0;
+  if (SKX.flake) SKX.flake = 0;
   ULB.t = 0;
   for (const id of members()) {
     if (!P[id]) continue;
@@ -17611,6 +18207,7 @@ function chExit(quiet) {
 function chSpawn() {
   if (!CH || CH.st !== 'fight') return;
   if (CH.mode === 'tower') return towerSpawn();
+  if (CH.mode === 'ev') return evBossSpawn();
   dunSpawn();
 }
 /* ---- 시련의 탑 ---- */
@@ -17768,6 +18365,10 @@ function towerLose() {
 }
 function chLose() {
   if (!CH) return;
+  if (CH.mode === 'ev') {
+    if (CH.st === 'fight') evBossLose();
+    return;
+  }
   if (CH.mode === 'tower') {
     if (CH.st === 'fight') towerLose();
     return;
@@ -17874,6 +18475,10 @@ function chDunStep(dt) {
 }
 function chKill(m, s) {
   spawnFx('coin', m.x, m.y - 26 * s, 34 * s, 0.6, -60 * s);
+  if (CH.mode === 'ev') {
+    if (CH.st === 'fight' && m.boss && !mons.some(o => o.boss && o.hp > 0 && !o.dead)) evBossWin();
+    return;
+  }
   if (CH.mode === 'tower') {
     if (CH.st === 'fight' && m.boss && !mons.some(o => o.boss && o.hp > 0 && !o.dead)) towerWin();
     return;
@@ -17931,7 +18536,7 @@ function chSheet() {
   pkCheck();
   const pm = chPm();
   $('sheet').innerHTML = `<div class="hdban chban" style="--hb:url(assets/ui/hd_challenge.png)"><span>도전</span></div>
- <p class="chpk${pm >= PK_SHOW ? ' on' : ''}">🕯 <b>추억 속 원정대</b> ${pm >= PK_SHOW ? `<em>×${pm < 10 ? pm.toFixed(1) : fmt(pm)}</em>` : ''}<br><small>탑·던전에서는 지금 원정대와 역대 가장 강했던 원정대(전투력 ${fmt(pkPow())}) 중 센 쪽으로 싸워요. 은퇴해도 그대로예요</small></p>
+ ${evChHtml()}<p class="chpk${pm >= PK_SHOW ? ' on' : ''}">🕯 <b>추억 속 원정대</b> ${pm >= PK_SHOW ? `<em>×${pm < 10 ? pm.toFixed(1) : fmt(pm)}</em>` : ''}<br><small>탑·던전에서는 지금 원정대와 역대 가장 강했던 원정대(전투력 ${fmt(pkPow())}) 중 센 쪽으로 싸워요. 은퇴해도 그대로예요</small></p>
  <div class="chcard"><div class="chh"><span class="chi">🗼</span><b>시련의 탑</b><small>최고 <b>${top}층</b></small></div>
   <p class="chp">다음 <b>${nx.name}</b>${towerTag(top + 1)}<br><small>제한 ${nx.lim}초 · 처음 돌파하면 골드·광석${(top + 1) % 10 === 0 ? '·황금 이삭 ' + TOWER_GEM : ''} · 실패해도 잃는 것 없음</small></p>
   <div class="btns"><button class="buy pri" id="chTw">도전하기</button><button class="buy claim" id="chSp" ${supplyCan() ? '' : 'disabled'}>${supplyCan() ? '🎁 탑 보급 받기' : '보급 받음 · 내일 다시'}</button></div>
@@ -17950,6 +18555,7 @@ function chSheet() {
  <div class="acts one"><button class="pri" id="mGo">닫기</button></div>`;
   $('modal').hidden = false;
   $('mGo').onclick = closeModal;
+  evChBind();
   $('chTw').onclick = () => towerStart((S.tower.top || 0) + 1);
   $('chAuto').onchange = e => {
     S.tower.auto = e.target.checked ? 1 : 0;
@@ -17990,6 +18596,11 @@ function chHud() {
     $('stLabel').textContent = '시련의 탑 ' + I.f + '층';
     $('stRegion').textContent =
       (I.gate ? '수문장' : I.rule >= 0 ? '시련 · ' + TOWER_RULES[I.rule].n : '최고 ' + (S.tower.top || 0) + '층') + pmTag();
+    $('pips').innerHTML = '';
+  } else if (CH.mode === 'ev') {
+    const E = EVT[CH.ev];
+    $('stLabel').textContent = E.n + ' · ' + (CH.santa ? '산타 ' : '') + E.boss.n;
+    $('stRegion').textContent = CH.stg + '단계 · 오늘 ' + evS(CH.ev).boss.n + '/' + evTries(E, evS(CH.ev)) + pmTag();
     $('pips').innerHTML = '';
   } else {
     const D = DUNS[CH.k],
@@ -19023,7 +19634,7 @@ function drawFxs() {
     const n = FXDEF[f.k],
       i = Math.min(n - 1, Math.floor((f.t / f.d) * n));
     ctx.globalAlpha = f.t > f.d * 0.7 ? Math.max(0, 1 - (f.t - f.d * 0.7) / (f.d * 0.3)) : 1;
-    fxFrame(f.k, i, f.x, f.y + f.vy * f.t, f.size);
+    fxFrame(f.k, i, f.x + (f.vx || 0) * f.t, f.y + f.vy * f.t, f.size);
     ctx.globalAlpha = 1;
   }
 }
@@ -19235,6 +19846,7 @@ const sprOk = d => {
 };
 function monSprite(r, mon) {
   if (mon && mon.gob) return gobSprite();
+  if (mon && mon.snow) return evBossSprite(mon);
   if (mon && (mon.dem || mon.balt)) {
     const ph = mon.ph2 ? 1 : 0,
       a = sprOk(BALT[ph])
@@ -19386,7 +19998,7 @@ function drawMember(id, x, y, s, p, walk) {
   }
   if (hasSprite(id)) {
     const [a, i] = spriteFrame(id, p, walk && !p.down);
-    drawSprite(id, x, y, s, a, i);
+    drawSprite(skinSpr(id), x, y, s, a, i); /* 카엘 외형 (산타 카엘 등) */
   } else DRAW[id](x, y, s, pose(p.down ? null : p, walk && !p.down));
   ctx.globalAlpha = 1;
   bar(x, y - (HEIGHT[id] - 2) * s, 26 * s, p.hp / stats(id).hp, p.down ? '#666' : '#7be08f');
@@ -19835,6 +20447,7 @@ function draw() {
   ents.sort((a, b) => a.y - b.y).forEach(e => e.f());
   for (const p of proj) drawProj(p, s);
   drawFxs();
+  evSnowDraw();
   ctx.textAlign = 'center';
   floats.forEach(f => {
     ctx.globalAlpha = 1 - f.t / 0.9;
@@ -20226,6 +20839,7 @@ vc.addEventListener('click', e => {
     vTalk = { id: w.id, x: w.x, y: w.y, end: performance.now() + 3200, line: five ? BOND5[w.id] || BOND5J[JOB[w.id]] : vLine(w.id), aff: up };
     return;
   }
+  if (evTreeHit(mx, my)) return;
   const k = vHit(mx, my);
   if (k) vlSelect(k);
 });
@@ -20415,6 +21029,7 @@ function drawVillage() {
     }
     lab.push([b, x, y, lv, open]);
   }
+  evTreeDraw(k); /* 크리스마스 주간: 광장 트리 */
   if (night) {
     ctx.fillStyle = 'rgba(10,16,48,.44)';
     ctx.fillRect(0, 0, VW, VH);
@@ -20443,7 +21058,7 @@ function drawVillage() {
     ell(px, py, 11 * k * 2.2, 3.5 * k * 2.2, 'rgba(0,0,0,.28)');
     if (!p.ppl && hasSprite(p.id)) {
       ctx.save();
-      drawSprite(p.id, px, py, Math.max(0.32, VW / 760) * (p.wk ? 0.82 : 1), 'idle', fr); /* 일꾼은 조금 작게 */
+      drawSprite(skinSpr(p.id), px, py, Math.max(0.32, VW / 760) * (p.wk ? 0.82 : 1), 'idle', fr); /* 일꾼은 조금 작게 */
       ctx.restore();
     } else {
       const im = VIMG.p[p.id] || portraitImg(p.id),
@@ -22692,6 +23307,8 @@ const RKREW = [
 let rkTab = 'season';
 async function rankSheet(tab) {
   if (tab) rkTab = tab;
+  const mgE = Object.values(EVT).find(E => E.mg && (evMgShow(E) || evMgOn(E)));
+  if (rkTab === 'mg' && !mgE) rkTab = 'season';
   if (!sbOn()) {
     scene(
       '랭킹',
@@ -22701,7 +23318,7 @@ async function rankSheet(tab) {
     );
     return;
   }
-  if (!S.nick) {
+  if (!S.nick && !(evDemoOn && rkTab === 'mg')) {
     await sbEnsure();
     if (!S.nick) {
       $('sheet').innerHTML =
@@ -22711,7 +23328,7 @@ async function rankSheet(tab) {
       return;
     }
   }
-  const tabs = `<div class="subtabs rktabs"><button data-rk="season" class="${rkTab === 'season' ? 'on' : ''}">시즌</button><button data-rk="hall" class="${rkTab === 'hall' ? 'on' : ''}">명예의 전당</button><button data-rk="goblin" class="${rkTab === 'goblin' ? 'on' : ''}">고블린</button><button data-rk="tower" class="${rkTab === 'tower' ? 'on' : ''}">탑</button></div>`;
+  const tabs = `<div class="subtabs rktabs"><button data-rk="season" class="${rkTab === 'season' ? 'on' : ''}">시즌</button><button data-rk="hall" class="${rkTab === 'hall' ? 'on' : ''}">명예의 전당</button><button data-rk="goblin" class="${rkTab === 'goblin' ? 'on' : ''}">고블린</button><button data-rk="tower" class="${rkTab === 'tower' ? 'on' : ''}">탑</button>${mgE ? `<button data-rk="mg" class="${rkTab === 'mg' ? 'on' : ''}">선물 배달</button>` : ''}</div>`;
   $('sheet').innerHTML =
     `${rkBan()}${tabs}<p class="note" style="text-align:center">불러오는 중…</p><div class="acts one"><button class="pri" id="mGo">닫기</button></div>`;
   $('modal').hidden = false;
@@ -22727,6 +23344,8 @@ async function rankSheet(tab) {
     } else if (rkTab === 'tower') {
       await towerSubmit();
       rows = await sbRpc('kd_tower_ranking', {});
+    } else if (rkTab === 'mg') {
+      rows = noSave ? [] : await sbRpc('kd_mg_ranking', { p_game: mgE.mg });
     } else {
       await rankSubmit(false);
       rows = await sbRpc('kd_ranking', { p_season: rkTab === 'hall' ? 0 : null });
@@ -22740,7 +23359,7 @@ async function rankSheet(tab) {
   const me = rows.find(x => x.me),
     tot = rows.length ? rows[0].total : 0,
     top = rows.filter(x => x.rank <= 100);
-  const sc = x => (rkTab === 'goblin' ? GOBI + fmt(x.kills) + '마리' : rkTab === 'tower' ? TWI + fmt(x.top) + '층' : stgName(x.stage));
+  const sc = x => (rkTab === 'goblin' ? GOBI + fmt(x.kills) + '마리' : rkTab === 'tower' ? TWI + fmt(x.top) + '층' : rkTab === 'mg' ? '🎁' + fmt(x.score) + '점' : stgName(x.stage));
   const face = x =>
     `<span class="rkf"><img class="pt" src="${x.me && myFace() === 'photo' ? photoData() : 'assets/portraits/portrait_' + (x.me ? pubFace() : /^[a-z_]{2,16}$/.test(x.face || '') && COMP[x.face] ? x.face : 'kael') + '_idle.png'}" alt="" onerror="this.src='assets/portraits/portrait_kael_idle.png'"><img class="fr" src="${pfSrc(x.frame || 'wood')}" alt="" onerror="this.remove()"></span>`;
   const bd = x =>
@@ -22757,6 +23376,10 @@ async function rankSheet(tab) {
       end = rows.length ? new Date(rows[0].week_end) : new Date(WEEK0 + w * 6048e5),
       left = Math.max(0, (end - Date.now()) / 1000);
     info = `<div class="rkinfo"><b>${w}주차 황금 고블린</b> · ${left > 86400 ? Math.ceil(left / 86400) + '일' : Math.max(1, Math.ceil(left / 3600)) + '시간'} 남음 · ${tot}명 참여<br>이번 주 내 기록 ${GOBI}${fmt(gobWeek().n)}마리<details><summary>주간 보상 보기</summary>${GOBREW.map(([a, b]) => `<div class="kv"><span>${a}</span><b>${b}</b></div>`).join('')}</details></div>`;
+  } else if (rkTab === 'mg') {
+    const M = MGEV[mgE.mg],
+      st = rows.length ? rows[0].settled : evNow() >= evT(M.settle);
+    info = `<div class="rkinfo"><b>🎁 선물 배달</b> · 크리스마스 주간 한 판 최고 점수 · ${tot}명<br>${st ? '정산이 끝났어요 · 보상은 우편함으로' : kstDate(evT(M.settle) - 1) + ' 하루 끝에 정산 → 우편 보상'}<br>내 최고 ${fmt(evS(mgE.id).mg.best || 0)}점<details><summary>순위 보상 보기</summary>${M.rew.map(([a, b]) => `<div class="kv"><span>${a}</span><b>${b}</b></div>`).join('')}</details></div>`;
   } else if (rkTab === 'tower') {
     const w = rows.length ? rows[0].week : curWeek(),
       end = rows.length ? new Date(rows[0].week_end) : new Date(WEEK0 + w * 6048e5),
@@ -22770,7 +23393,7 @@ async function rankSheet(tab) {
    rows.length
      ? `<div class="rkpod${rkTab === 'goblin' ? ' gob' : ''}">${[1, 0, 2].map(i => (pod[i] ? `<div class="pod p${i + 1}${pod[i].me ? ' me' : ''}"><i class="crown">${['🥇', '🥈', '🥉'][i]}</i>${face(pod[i])}<b>${bd(pod[i])}${esc(pod[i].nick)}</b><small>${sc(pod[i])}</small></div>` : '<div class="pod empty"></div>')).join('')}</div>
  <div class="rklist">${rest.map(line).join('')}</div>`
-     : `<p class="note" style="text-align:center">${rkTab === 'goblin' ? '이번 주에 황금 고블린을 잡은 영주가 아직 없어요. 1-3 영지부터 나타나요!' : rkTab === 'tower' ? '아직 탑 기록이 없어요. 영지 20을 되찾으면 지도의 「도전」에서 시련의 탑이 열려요!' : '아직 기록이 없어요. 첫 1위가 되어 보세요!'}</p>`
+     : `<p class="note" style="text-align:center">${rkTab === 'goblin' ? '이번 주에 황금 고블린을 잡은 영주가 아직 없어요. 1-3 영지부터 나타나요!' : rkTab === 'tower' ? '아직 탑 기록이 없어요. 영지 20을 되찾으면 지도의 「도전」에서 시련의 탑이 열려요!' : rkTab === 'mg' ? (noSave ? '미리보기에서는 랭킹을 불러오지 않아요' : '아직 기록이 없어요. 크리스마스 주간에 선물 배달 보상 판으로 첫 1위가 되어 보세요!') : '아직 기록이 없어요. 첫 1위가 되어 보세요!'}</p>`
  }
  ${me ? `<div class="rkme">${line(me)}<small>상위 ${Math.max(1, Math.ceil((me.rank / Math.max(1, tot)) * 100))}%</small></div>` : ''}
  <div class="acts one"><button class="pri" id="mGo">닫기</button></div>`;
@@ -22925,6 +23548,16 @@ function mailApply(list) {
     if (r.goldie) goldieJoin();
     if (r.pass) passOpen(+r.pass);
     if (r.grow) growGive();
+    if (r.skin && SKINS[r.skin]) {
+      skinGive(r.skin, Math.floor(+r.skin_year || 0));
+      items.push('외형 「' + SKINS[r.skin].n + '」');
+      drawMyFace();
+    }
+    if (r.evc && typeof r.evc === 'object')
+      for (const k in r.evc) {
+        const n = evAdd(k, Math.min(Math.floor(+r.evc[k] || 0), 100000));
+        if (n) items.push(EVT[k].cur.n + ' +' + fmt(n));
+      }
     if (r.ucard > 0) {
       const u = Math.min(Math.floor(+r.ucard), 1000);
       S.ucard = (S.ucard || 0) + u;
@@ -23727,7 +24360,7 @@ function profileSheet(keep) {
         const k = b.dataset.bd,
           f = BADGES.find(x => x.k === k);
         if (!bdHas(k))
-          return toast(f.rk ? f.d + '로 우편함에 도착해요' : f.rare ? '황금 고블린을 잡으면 아주 드물게 얻어요' : f.d + ' 달성 시 얻어요');
+          return toast(f.ev ? f.d + '에서 받아요' : f.rk ? f.d + '로 우편함에 도착해요' : f.rare ? '황금 고블린을 잡으면 아주 드물게 얻어요' : f.d + ' 달성 시 얻어요');
         d.badge = d.badge === k ? null : k;
         re();
       })
@@ -23776,7 +24409,7 @@ function profileSheet(keep) {
         const k = b.dataset.pf,
           f = pfList().find(x => x.k === k);
         if (!pfHas(k))
-          return toast(f.pass ? f.d + ' 보상이에요' : f.rk ? f.d + '로 우편함에 도착해요' : f.rare ? '황금 고블린을 잡으면 아주 드물게 얻어요' : f.d + ' 달성 시 얻어요');
+          return toast(f.pass ? f.d + ' 보상이에요' : f.ev ? f.d + '에서 받아요' : f.rk ? f.d + '로 우편함에 도착해요' : f.rare ? '황금 고블린을 잡으면 아주 드물게 얻어요' : f.d + ' 달성 시 얻어요');
         d.pf = k;
         re();
       })
@@ -23790,6 +24423,7 @@ function settingsSheet(step) {
  <textarea class="setcode" id="setCode" spellcheck="false" placeholder="여기에 저장 코드를 붙여 넣고 불러오기를 누르세요"></textarea>
  <div class="btns"><button class="buy ghost" id="setExp">코드 만들기·복사</button><button class="buy ghost" id="setImp">불러오기</button></div>
  <div class="sec">진동</div><button class="tglrow" id="setVib" role="switch" aria-checked="${S.vib !== false}"><span><b>진동</b><small>보상·보스 처치 때 (안드로이드)</small></span><em>${S.vib === false ? '꺼짐' : '켜짐'}</em><i class="tgl${S.vib === false ? '' : ' on'}"></i></button>
+ <div class="sec">화면</div><button class="tglrow" id="setFx" role="switch" aria-checked="${!!S.lowFx}"><span><b>효과 줄이기</b><small>눈 내리기 같은 화면 효과를 끄기</small></span><em>${S.lowFx ? '켜짐' : '꺼짐'}</em><i class="tgl${S.lowFx ? ' on' : ''}"></i></button>
  <div class="sec">문의 <small>결제·버그·계정 · 답은 우편함으로</small></div><div class="btns"><button class="buy ghost" id="setInq">문의하기</button><button class="buy ghost" id="setInqMine">내 문의</button></div>
  <div class="sec">처음부터 다시 하기</div>
  ${
@@ -23806,6 +24440,11 @@ function settingsSheet(step) {
     S.vib = S.vib === false ? true : false;
     save();
     if (S.vib) haptic(30);
+    settingsSheet(step);
+  };
+  $('setFx').onclick = () => {
+    S.lowFx = !S.lowFx;
+    save();
     settingsSheet(step);
   };
   $('setExp').onclick = () => {
@@ -23901,6 +24540,10 @@ function offline() {
     sec = Math.min(cap, (Date.now() - S.last) / 1000);
   if (sec < 60) return;
   affTick(sec); /* 원정대의 정: 방치 시간도 (여관 최대 시간까지) */
+  {
+    const sf = evIdle(sec); /* 눈꽃제: 방치 처치도 눈송이 (하루 100까지) */
+    if (sf) queue(() => toast('❄ 쉬는 동안 눈송이 +' + sf));
+  }
   const g = Math.floor(idleGold(sec));
   if (g <= 0) return;
   S.gold += g;
@@ -24499,8 +25142,1865 @@ function loop(ts) {
   if (curTab === 'mp') drawMap();
   requestAnimationFrame(loop);
 }
+/* ---------- 정기 이벤트 틀 (docs/content/EVENT_SNOW.md · 다음 이벤트 EVENT_NEWYEAR.md) ----------
+   EVT 표 하나에 이벤트마다 이름·기간·재화·출석 표·보스·상점·그림 이름을 적고, 화면·저장은 표만 읽음 → 다음 이벤트는 표 한 줄 추가.
+   저장: S.evs[이벤트 id] = { sf 재화, day 오늘 전투 재화, boss, att, shop, seen, xm 크리스마스, mg 미니게임, hi 가장 늦게 본 날 }
+   (두 이벤트 동시 저장 — 끝난 이벤트는 상점이 닫힌 뒤 지움). 날짜는 서버 kd_events(supabase/stage11_minigame.sql)를 읽고, 못 읽으면 아래 기본값.
+   시계 되돌림: 출석·패스와 같은 규칙 — 이벤트에서 본 가장 늦은 날보다 앞이면 그날 보상(출석·도전·선물·트리·미니게임 보상)을 주지 않음 */
+const EV_OPEN = 10; /* 영지 10에 닿으면 열림 (처음 온 사람의 첫날 흐름을 방해하지 않게) */
+const EVT = {
+  snow2026: {
+    id: 'snow2026',
+    n: '눈꽃제',
+    start: '2026-12-11T00:00:00+09:00',
+    end: '2027-01-01T00:00:00+09:00' /* 12/31 23:59까지 */,
+    shopEnd: '2027-01-08T00:00:00+09:00' /* 상점만 1/7 23:59까지 */,
+    xmas: ['2026-12-21T00:00:00+09:00', '2026-12-26T00:00:00+09:00'] /* 크리스마스 주간 12/21~25 */,
+    cur: { n: '눈송이', img: 'assets/ui/item_snow.png' },
+    shopN: '눈꽃 상점',
+    art: { hd: 'assets/ui/hd_snow.png', icon: 'assets/ui/icon_snow.png', illust: 'snow', badge: 'snow', frame: 'snow' },
+    bat: {
+      per: 25,
+      cap: 100,
+      idleK: 0.03
+    } /* 처치 25마리마다 1 · 하루 100 · 방치(꺼 둔 동안) 처치는 0.03배로 셈 (기획서 8장 시뮬레이터로 맞춤) */,
+    /* 이벤트 출석 14칸 (21일 안에 14번 받으면 끝, 광고 2배 없음) */
+    att: [
+      ...[1, 2, 3, 4, 5, 6].map(i =>
+        i % 2
+          ? [{ k: 'sf', n: 20 }]
+          : [
+              { k: 'sf', n: 20 },
+              { k: 'gold', h: 1 }
+            ]
+      ),
+      [
+        { k: 'sf', n: 100 },
+        { k: 'card', n: 10, alt: 100 }
+      ],
+      ...[8, 9, 10, 11, 12, 13].map(i =>
+        i % 2
+          ? [{ k: 'sf', n: 20 }]
+          : [
+              { k: 'sf', n: 20 },
+              { k: 'gold', h: 1 }
+            ]
+      ),
+      [
+        { k: 'sf', n: 100 },
+        { k: 'evcard', id: 'sobok', n: 10 }
+      ]
+    ],
+    boss: {
+      n: '눈사람 대장',
+      tries: 3,
+      lim: 30,
+      ri: 8 /* 하른 설원(북방) 배경 */,
+      hp0: 0.7 /* 1단계 = 기준 영지 성주 체력의 0.7배 (기획 0.8 → 기획서 8장 시뮬레이터로 조정) */,
+      hpG: 1.1 /* 단계마다 ×1.1 (기획 1.15 → 조정) */,
+      atk: 1,
+      win: st => Math.min(60, 20 + 2 * st),
+      lose: 10,
+      santaX: 2 /* 크리스마스 주간 산타 눈사람: 이기면 눈송이 2배 */,
+      mile: st => (st % 10 === 0 ? [{ k: 'lcard', n: 2, alt: 60 }] : st % 5 === 0 ? [{ k: 'gem', n: 30 }] : null),
+      sk: { n: '눈덩이 굴리기', every: 10, warn: 1, dmg: 3, slow: 2 },
+      spr: { id: 'boss_snowman', walk: 4, attack: 4, hit: 2, fig: 133, h: 86 },
+      sprX: { id: 'boss_snowman_santa', walk: 4, attack: 4, hit: 2, fig: 133, h: 86 },
+      fx: 'boss_snowball',
+      say: {
+        start: ['눈싸움 한 판 하자!', '이번엔 더 크게 뭉쳐 왔다!'],
+        win: '으아, 녹는다… 내일 다시 뭉쳐 오마!',
+        lose: '으하하! 눈사람이 최고다!'
+      }
+    },
+    /* 눈꽃 상점 (가격·한도 — 기획서 3-5, 8장 시뮬레이터로 확인) */
+    shop: [
+      { k: 'sobok', r: [{ k: 'evcard', id: 'sobok', n: 10 }], p: 400, lim: 3, hot: 1 },
+      { k: 'frame', r: [{ k: 'frame', id: 'snow' }], p: 600, lim: 1 },
+      { k: 'badge', r: [{ k: 'badge', id: 'snow' }], p: 200, lim: 1 },
+      { k: 'lcard', r: [{ k: 'lcard', n: 5, alt: 150 }], p: 500, lim: 2 },
+      { k: 'gem', r: [{ k: 'gem', n: 50 }], p: 150, lim: 5 },
+      { k: 'tbox', r: [{ k: 'tbox', n: 5 }], p: 100, lim: 5 },
+      { k: 'ore', r: [{ k: 'ore', n: 50 }], p: 50, lim: 10 },
+      { k: 'gold', r: [{ k: 'gold', h: 2 }], p: 30, lim: 10 }
+    ],
+    comp: 'sobok',
+    /* 크리스마스 주간 (기획서 3-8) */
+    xm: {
+      gift: [
+        { k: 'sf', n: 50 },
+        { k: 'gold', h: 1 }
+      ],
+      big: {
+        day: 25,
+        r: [
+          { k: 'sf', n: 300 },
+          { k: 'gem', n: 100 },
+          { k: 'lcard', n: 5, alt: 150 }
+        ]
+      },
+      tree: [[{ k: 'sf', n: 30 }], [{ k: 'card', n: 3, alt: 30 }], [{ k: 'tbox', n: 2 }]],
+      badge: 'xmas',
+      need: 3
+    },
+    mg: 'gift2026' /* 미니게임 「선물 배달」 · 랭킹 id (서버 kd_minigames) */,
+    lines: {
+      start: [
+        'sys:아침에 눈을 뜨니 에르단 마을이 하얗게 덮여 있었다. 올겨울 첫눈이다.',
+        'k@smile:첫눈이다! 오늘은 밭일 쉬고 눈사람이나 만들까.',
+        'q:주인, 저 눈사람… 움직인다.',
+        'm:눈사람 대장|으하하! 첫눈은 내 거다! 눈송이를 전부 모아 가겠다!',
+        'k@flustered:…눈사람이 말을 하네.',
+        'm:소복이|아, 아니에요! 그 눈사람은 제가 깎다 만 거예요, 소복… 눈꽃제 때마다 장난을 쳐요!',
+        'm:소복이|눈송이를 모아 주시면 제가 멋진 선물을 깎아 드릴게요, 소복!',
+        'sys:정기 이벤트 「눈꽃제」 · 12/11 ~ 12/31'
+      ],
+      end: own => [
+        own
+          ? 'm:소복이|올해 눈꽃제도 끝이에요. 저는 계속 같이 있을게요, 소복!'
+          : 'm:소복이|올해 눈꽃제도 끝이에요. 다음 겨울에 또 만나요, 소복!',
+        'sys:눈꽃 상점은 1월 7일까지 열려 있어요. 남은 눈송이는 그 뒤에 사라져요'
+      ],
+      xmas: [
+        'm:산타 피트|호호호! 올해는 내가 산타다! 크리스마스까지 매일 선물 받으러 와!',
+        'k@smile:피트 아저씨, 수염이 솜인데요.',
+        'm:산타 피트|쉿!'
+      ],
+      big: ['m:산타 피트|메리 크리스마스! 올 한 해 고생 많았어, 영주님!'],
+      mg: ['q:주인, 굴뚝이 오기 조금 전에 떨어뜨려라. 내 검술보다 쉬울 것이다.', 'k:검술이 그렇게 쉬웠어?']
+    }
+  }
+};
+/* 미니게임 랭킹 (기획서 3-10): 서버 kd_minigames 와 같은 값. 기록은 크리스마스 주간, 정산 12/26 00:00 */
+const MGEV = {
+  gift2026: {
+    ev: 'snow2026',
+    n: '선물 배달',
+    from: '2026-12-21T00:00:00+09:00',
+    to: '2026-12-26T00:00:00+09:00',
+    settle: '2026-12-26T00:00:00+09:00',
+    year: 2026,
+    daily: 3,
+    ad: 1,
+    rew: [
+      ['1위', '황금 이삭 500 · 배지 「선물 배달왕」 · 외형 「산타 카엘」'],
+      ['2~10위', '황금 이삭 200 · 외형 「산타 카엘」'],
+      ['11~100위', '황금 이삭 100'],
+      ['상위 30%', '황금 이삭 30'],
+      ['참가(1판 이상)', '눈송이 100']
+    ]
+  }
+};
+/* 외형 (기획서 3-11): 겉모습만 바뀜, 능력은 그대로. 카엘 촌장에는 적용 안 함. 저장 S.skin(지금 쓰는 것) · S.skins{ id: [받은 해] } */
+const SKINS = {
+  santa: {
+    n: '산타 카엘',
+    spr: 'kael_santa',
+    face: 'kael_santa',
+    tag: ys => ys.join('·') + ' 선물 배달 TOP 10',
+    how: '선물 배달 랭킹 1~10위 보상 (크리스마스 주간)'
+  }
+};
+const skinOn = () => (S && S.skin && SKINS[S.skin] && S.skins && S.skins[S.skin] ? SKINS[S.skin] : null);
+const skinSpr = id => {
+  const k = id === 'kael' && skinOn();
+  return k && SPR[k.spr] && hasSprite(k.spr) ? k.spr : id;
+};
+const skinFace = id => {
+  const k = id === 'kael' && skinOn();
+  return k ? k.face : id;
+};
+/* 외형 얼굴 그림이 늦게 오면 다 받은 뒤 위쪽 얼굴을 다시 그림 */
+function skinFacePre() {
+  const k = skinOn();
+  if (!k || pfImg(k.face)) return;
+  const im = PFIMG[k.face];
+  if (im && !im._sk) {
+    im._sk = 1;
+    im.addEventListener('load', () => drawMyFace());
+  }
+}
+function skinGive(k, y) {
+  if (!SKINS[k]) return false;
+  if (!S.skins || typeof S.skins !== 'object') S.skins = {};
+  const a = Array.isArray(S.skins[k]) ? S.skins[k] : (S.skins[k] = []);
+  const nw = !a.length;
+  if (y && !a.includes(y)) {
+    a.push(y);
+    a.sort((p, q) => p - q);
+  } else if (!a.length) a.push(0);
+  if (nw && !S.skin) S.skin = k;
+  return nw;
+}
+/* ---- 날짜 ---- */
+let evSkew = 0 /* 서버 시간 − 기기 시간 (이번 접속에서 서버를 읽었을 때만) */,
+  evRows = null /* 서버 kd_events (마지막으로 읽은 것은 기기에 남겨 둠) */,
+  evDemoOn = null; /* ?demo=snow·xmas·mg·mgrank */
+try {
+  const c = JSON.parse(localStorage.getItem('kd-ev') || 'null');
+  if (c && Array.isArray(c.rows)) evRows = c.rows;
+} catch (e) {}
+const evNow = () => Date.now() + evSkew;
+const evT = s => (s == null ? NaN : typeof s === 'number' ? s : Date.parse(s));
+/* 이벤트 날짜(한국 시간 자정 기준)의 'Y-M-D' — today() 와 같은 모양(0 안 붙임)이라 dnum 으로 비교 */
+const kstDay = t => {
+  const d = new Date(t + 9 * 3600e3);
+  return d.getUTCFullYear() + '-' + (d.getUTCMonth() + 1) + '-' + d.getUTCDate();
+};
+const evDay = () => kstDay(evNow());
+const kstDate = t => {
+  const d = new Date(t + 9 * 3600e3);
+  return d.getUTCMonth() + 1 + '/' + d.getUTCDate();
+};
+function evDates(E) {
+  const r = evRows && evRows.find(x => x && x.id === E.id),
+    x = (r && r.extra) || {},
+    pick = (a, b) => (Number.isFinite(evT(a)) ? evT(a) : evT(b));
+  const d = {
+    start: pick(r && r.start_at, E.start),
+    end: pick(r && r.end_at, E.end),
+    shop: pick(r && r.shop_end_at, E.shopEnd),
+    xs: E.xmas ? pick(x.xmas && x.xmas[0], E.xmas[0]) : NaN,
+    xe: E.xmas ? pick(x.xmas && x.xmas[1], E.xmas[1]) : NaN
+  };
+  if (evDemoOn && E.id === EV_MAIN) {
+    const n = evNow();
+    d.start = n - 3 * 864e5;
+    d.end = n + 12.5 * 864e5;
+    d.shop = d.end + 7 * 864e5;
+    if (evDemoOn !== 'snow') {
+      d.xs = n - 864e5;
+      d.xe = n + 3.5 * 864e5;
+    } else {
+      d.xs = n + 7 * 864e5;
+      d.xe = n + 12 * 864e5;
+    }
+  }
+  return d;
+}
+const EV_MAIN = 'snow2026'; /* 미리보기(?demo=)로 켜는 이벤트 */
+/* 'pre' 열리기 전 · 'on' 기간 중 · 'shop' 상점만 · 'off' 끝 */
+function evPhase(E) {
+  const t = evNow(),
+    d = evDates(E);
+  return t < d.start ? 'pre' : t < d.end ? 'on' : t < d.shop ? 'shop' : 'off';
+}
+const evXmas = E => {
+  if (!E.xm || evPhase(E) !== 'on') return false;
+  const d = evDates(E),
+    t = evNow();
+  return t >= d.xs && t < d.xe;
+};
+const evOpen = () => !!S && (S.best || 1) >= EV_OPEN;
+/* 지금 화면에 보일 이벤트(기간 중 → 상점만 순) */
+const evList = () => Object.values(EVT).filter(E => ['on', 'shop'].includes(evPhase(E)));
+const evCur = () => {
+  const l = evList();
+  return l.find(E => evPhase(E) === 'on') || l[0] || null;
+};
+/* ---- 저장 ---- */
+function evS(id) {
+  if (!S.evs || typeof S.evs !== 'object' || Array.isArray(S.evs)) S.evs = {};
+  let e = S.evs[id];
+  if (!e || typeof e !== 'object') e = S.evs[id] = {};
+  const d = {
+    sf: 0,
+    day: { d: '', bat: 0, kc: 0 },
+    boss: { d: '', n: 0, ad: 0, st: 1, best: 0, mile: {}, ref: 0 },
+    att: { last: '', cnt: 0 },
+    shop: {},
+    seen: { start: 0, end: 0, xmas: 0, mgEnd: 0, warn: '' },
+    xm: { gift: {}, tree: '', days: {} },
+    mg: { d: '', n: 0, ad: 0, best: 0 },
+    hi: 0
+  };
+  for (const k in d) if (e[k] == null || typeof e[k] !== typeof d[k] || Array.isArray(e[k])) e[k] = d[k];
+  for (const k of ['day', 'boss', 'seen', 'xm', 'mg'])
+    for (const j in d[k]) if (e[k][j] == null || typeof e[k][j] !== typeof d[k][j]) e[k][j] = d[k][j];
+  e.sf = Math.max(0, Math.floor(+e.sf || 0));
+  return e;
+}
+/* 하루가 바뀌면 오늘 칸을 새로 */
+function evToday(e) {
+  const t = evDay();
+  if (e.day.d !== t) e.day = { d: t, bat: 0, kc: 0 };
+  if (e.boss.d !== t) Object.assign(e.boss, { d: t, n: 0, ad: 0 });
+  if (e.mg.d !== t) Object.assign(e.mg, { d: t, n: 0, ad: 0 });
+  return e;
+}
+/* 시계 되돌림: 이 이벤트에서 본 가장 늦은 날보다 앞이면 true (그날 보상 없음) */
+const evBack = e => dnum(evDay()) < (e.hi || 0);
+const evTouch = e => {
+  e.hi = Math.max(e.hi || 0, dnum(evDay()));
+};
+const EV_BACK_MSG = '날짜가 이상해요. 휴대폰 시간을 확인해 주세요.';
+/* 이벤트 재화 더하기 (상점이 닫힌 이벤트는 무시) */
+function evAdd(id, n) {
+  const E = EVT[id];
+  if (!E || !(n > 0) || !['on', 'shop'].includes(evPhase(E))) return 0;
+  const e = evS(id);
+  e.sf += Math.floor(n);
+  return Math.floor(n);
+}
+/* 끝난 이벤트(상점까지 닫힘) 저장 지우기 · 서버에 없는 옛 이벤트도 */
+function evClean() {
+  if (!S.evs || typeof S.evs !== 'object') return;
+  for (const id in S.evs) {
+    const E = EVT[id];
+    if (!E || evPhase(E) === 'off') delete S.evs[id];
+  }
+}
+/* ---- 보상 주기 (출석·상점·선물 공통) → 화면 한 줄 ---- */
+const EVIMG = id => (EVT[id] && EVT[id].cur.img) || 'assets/ui/item_snow.png';
+function evGive(id, list) {
+  attA();
+  const rows = [];
+  for (const r of list) {
+    if (r.k === 'sf') {
+      const e = evS(id);
+      e.sf += r.n;
+      rows.push(`<div class="attrw"><img src="${EVIMG(id)}" alt=""><span><b>${EVT[id].cur.n} +${fmt(r.n)}</b></span></div>`);
+    } else if (r.k === 'evcard') {
+      if (!S.cards) S.cards = {};
+      S.cards[r.id] = (S.cards[r.id] || 0) + r.n;
+      stat('card', r.n);
+      partySig = '';
+      const c = COMP[r.id];
+      rows.push(
+        `<div class="attrw"><img src="assets/portraits/portrait_${r.id}_idle.png" alt="" style="border-radius:8px"><span><b>${c.n} 카드 +${r.n}</b><small>${evJoinLeft(r.id) > 0 ? '합류까지 ' + evJoinLeft(r.id) + '장' : owned(r.id) ? '★ 올리기에 써요' : '원정대 → 카드 탭에서 맞이해요'}</small></span></div>`
+      );
+    } else if (r.k === 'frame') {
+      S.pfUnl = S.pfUnl || {};
+      if (!S.pfUnl[r.id]) {
+        S.pfUnl[r.id] = 1;
+        S.pfNew = S.pfNew || {};
+        S.pfNew['f_' + r.id] = 1;
+      }
+      rows.push(
+        `<div class="attrw"><img src="assets/profile/frame_${r.id}.png" alt=""><span><b>테두리 「${PFN(r.id)}」</b><small>프로필에서 쓸 수 있어요</small></span></div>`
+      );
+    } else if (r.k === 'badge') {
+      S.bdUnl = S.bdUnl || {};
+      if (!S.bdUnl[r.id]) {
+        S.bdUnl[r.id] = 1;
+        S.pfNew = S.pfNew || {};
+        S.pfNew['b_' + r.id] = 1;
+      }
+      rows.push(
+        `<div class="attrw"><img src="${bdSrc(r.id)}" alt=""><span><b>배지 「${BDN(r.id)}」</b><small>프로필에서 대표 배지로 달 수 있어요</small></span></div>`
+      );
+    } else rows.push(attGive(r).row);
+  }
+  shopSig = '';
+  eqSig = '';
+  partySig = '';
+  pfCheck();
+  return rows.join('');
+}
+/* 보상 미리보기 칸 (아이콘 + 짧은 글) */
+function evRwTxt(id, r) {
+  switch (r.k) {
+    case 'sf':
+      return EVT[id].cur.n + ' ' + r.n;
+    case 'gold':
+      return '골드 ' + r.h + '시간';
+    case 'gem':
+      return '이삭 ' + r.n;
+    case 'ore':
+      return '광석 ' + r.n;
+    case 'tbox':
+      return '상자 ' + r.n + '개';
+    case 'card':
+      return '동료 카드 ' + r.n;
+    case 'lcard':
+      return '전설 만능 ' + r.n;
+    case 'evcard':
+      return COMP[r.id].n + ' 카드 ' + r.n;
+    case 'frame':
+      return '테두리 「' + PFN(r.id) + '」';
+    case 'badge':
+      return '배지 「' + BDN(r.id) + '」';
+  }
+  return '';
+}
+function evRwIc(id, r) {
+  if (r.k === 'sf') return `<img src="${EVIMG(id)}" alt="">`;
+  if (r.k === 'evcard') return `<img src="assets/portraits/portrait_${r.id}_idle.png" alt="" class="evpic">`;
+  if (r.k === 'frame') return `<img src="assets/profile/frame_${r.id}.png" alt="">`;
+  if (r.k === 'badge') return `<img src="${bdSrc(r.id)}" alt="">`;
+  return attIc(r);
+}
+/* ---- 전투 눈송이: 처치 25마리마다 1, 하루 100 (방치 포함) ---- */
+function evKill(n) {
+  if (!S || !S.started || CH || !evOpen()) return;
+  for (const E of evList()) {
+    if (!E.bat || evPhase(E) !== 'on') continue;
+    const e = evToday(evS(E.id));
+    if (e.day.bat >= E.bat.cap || evBack(e)) continue;
+    evTouch(e);
+    e.day.kc += n || 1;
+    while (e.day.kc >= E.bat.per && e.day.bat < E.bat.cap) {
+      e.day.kc -= E.bat.per;
+      e.day.bat++;
+      e.sf++;
+      if (n == null) evFlakeFx();
+    }
+  }
+}
+/* 방치(꺼 둔 동안) 처치 수: 방치 골드와 같은 계산 (sec 초 동안 마물 처치) */
+function idleKills(sec) {
+  const dps = members().reduce((a, id) => {
+    const t = stats(id);
+    return a + t.atk * t.aps * critE(t);
+  }, 0);
+  if (!(dps > 0)) return 0;
+  return sec / (monHp(fightSt(), false) / dps + 1.2);
+}
+function evIdle(sec) {
+  if (!evOpen()) return 0;
+  let got = 0;
+  for (const E of evList()) {
+    if (!E.bat || evPhase(E) !== 'on') continue;
+    const e = evToday(evS(E.id)),
+      b0 = e.day.bat;
+    if (evBack(e)) continue;
+    evTouch(e);
+    e.day.kc += idleKills(sec) * (E.bat.idleK || 1);
+    while (e.day.kc >= E.bat.per && e.day.bat < E.bat.cap) {
+      e.day.kc -= E.bat.per;
+      e.day.bat++;
+      e.sf++;
+    }
+    if (e.day.bat >= E.bat.cap) e.day.kc = 0;
+    got += e.day.bat - b0;
+  }
+  return got;
+}
+let evFlakeT = 0;
+function evFlakeFx() {
+  if (T - evFlakeT < 0.4) return;
+  evFlakeT = T;
+  const L = layout();
+  addFloat(L.front + 40 * L.s, L.top + 10 * L.s, '❄ +1', '#cfefff', 12);
+}
+
+/* ---- 눈사람 대장 (기간 한정 보스, 도전 모드 CH.mode = 'ev') ----
+   하루 3번(광고 +1). 체력은 내 최고 영지 성주 × 0.8 × 1.15^(단계−1). 30초 안에 처치. 10초마다 「눈덩이 굴리기」(1초 전 경고) */
+/* 기준 영지: 이번 이벤트에서 처음 도전할 때 되찾은 가장 먼 영지 (e.boss.ref 에 고정).
+   지금 최고 영지를 그대로 따라가면 영지를 넓힐수록 눈사람도 같이 세져 단계가 멈추므로, 시작 때 기준으로 고정하고
+   이벤트 동안 원정대가 자라는 만큼 단계가 오르게 함 (기획서 8장 시뮬레이터) */
+const evBossSt = () => Math.max(1, Math.min((S.best || 1) - 1, LAND));
+const evBossRef = e => (e && e.boss.ref > 0 ? Math.min(e.boss.ref, LAND) : evBossSt());
+const evBossHp = (B, stg, ref) => monHp(ref || evBossSt(), false) * BAL.bossHp * B.hp0 * Math.pow(B.hpG, stg - 1);
+const evBossAtk = (B, stg, ref) => monAtk(ref || evBossSt(), false) * BAL.bossAtk * B.atk * Math.pow(B.atkG || 1.05, stg - 1);
+const evTries = (E, e) => E.boss.tries + (e.boss.ad ? 1 : 0);
+const evTriesLeft = E => {
+  const e = evToday(evS(E.id));
+  return Math.max(0, evTries(E, e) - e.boss.n);
+};
+function evBossStart(id) {
+  const E = EVT[id];
+  if (!E || !E.boss) return;
+  if (!evOpen()) return toast(E.n + '은(는) 영지 ' + EV_OPEN + '부터 함께해요');
+  if (evPhase(E) !== 'on') return toast('눈사람 대장은 이벤트 기간에만 나와요');
+  const e = evToday(evS(id));
+  if (evBack(e)) return toast(EV_BACK_MSG);
+  if (e.boss.n >= evTries(E, e)) return toast('오늘 도전을 다 했어요. 내일 다시 와요');
+  if (CH) return toast('지금 하는 도전을 먼저 끝내요');
+  e.boss.n++;
+  if (!(e.boss.ref > 0)) e.boss.ref = evBossSt();
+  evTouch(e);
+  passAdd('snow');
+  const stg = e.boss.st,
+    santa = evXmas(E);
+  chBegin({ mode: 'ev', ev: id, stg, santa, ref: evBossRef(e), st: 'fight', lim: E.boss.lim, ri: E.boss.ri, skT: E.boss.sk.every, warned: 0 });
+  save();
+}
+function evBossSpawn() {
+  const E = EVT[CH.ev],
+    B = E.boss,
+    hp = evBossHp(B, CH.stg, CH.ref);
+  CH.st = 'fight';
+  mons = [
+    {
+      x: W + 70,
+      lane: 0.55,
+      hp,
+      max: hp,
+      atk: evBossAtk(B, CH.stg, CH.ref),
+      boss: true,
+      snow: CH.ev,
+      santa: !!CH.santa,
+      ri: B.ri,
+      cd: 0.8,
+      hit: 0,
+      dead: 0,
+      mv: 0.55
+    }
+  ];
+  bossT = CH.lim;
+  CH.skT = B.sk.every;
+  CH.warned = 0;
+  $('bossName').textContent = (CH.santa ? '산타 ' : '') + B.n;
+  const bb = $('bossbar');
+  bb.classList.remove('cmd', 'dem', 'hurry', 'gold');
+  $('bossTag').textContent = CH.stg + '단계';
+  $('bossFace').hidden = true;
+  bb.hidden = false;
+  const ln = B.say.start[Math.floor(Math.random() * B.say.start.length)];
+  banner = { t: 2.2, txt: (CH.santa ? '산타 ' : '') + B.n, sub: '「' + ln + '」' };
+  shakeT = 0.3;
+}
+/* 「눈덩이 굴리기」: 앞줄 동료에게 공격의 3배 + 2초 느려짐 (막기·보호막 스킬로 줄일 수 있음) */
+function evBossStep(dt, L) {
+  const bm = mons.find(m => m.snow && m.hp > 0 && !m.dead);
+  if (!bm || !CH || CH.mode !== 'ev') return;
+  const SK = EVT[CH.ev].boss.sk;
+  CH.skT -= dt;
+  if (CH.skT <= SK.warn && !CH.warned) {
+    CH.warned = 1;
+    warn = { t: 1.2, cmd: false, txt: '⚠ ' + SK.n + '! ⚠' };
+  }
+  if (CH.skT > 0) return;
+  CH.skT = SK.every;
+  CH.warned = 0;
+  const { ids, pos, py, s } = L,
+    alive = ids.filter(i => P[i] && !P[i].down);
+  if (!alive.length) return;
+  const fx = Math.max(...alive.map(i => pos[i])),
+    front = alive.filter(i => pos[i] >= fx - 34 * s);
+  shakeT = 0.5;
+  haptic([60]);
+  const B = EVT[CH.ev].boss;
+  if (fxOk(B.fx))
+    fxs.push({ k: B.fx, x: bm.x - 30 * s, y: bm.y - 30 * s, size: 90 * s, d: 0.7, t: 0, vy: 0, vx: (fx - bm.x + 30 * s) / 0.7 });
+  for (const id of front) {
+    const q = P[id],
+      dm =
+        (bm.atk *
+          SK.dmg *
+          (SKX.shield > 0 ? 0.5 : 1) *
+          (SKX.mount > 0 ? 0.3 : 1) *
+          (q.bsh > 0 ? 1 - 0.4 * (q.bshK || 1) : 1) *
+          (bm.weak > 0 ? 1 - bm.weakK : 1)) /
+        chPmNow(),
+      dd = blkEat(q, dm);
+    q.hp -= dd;
+    q.hit = 0.25;
+    q.slow = SK.slow;
+    addFloat(pos[id], py[id] - (HEIGHT[id] + 8) * s, dd > 0 ? '-' + fmt(dd) : '막음!', '#bfe8ff', 14);
+    if (q.hp <= 0) {
+      if (SKX.guts > 0 && q.guts) {
+        q.guts = 0;
+        q.hp = 1;
+      } else {
+        q.hp = 0;
+        q.down = true;
+      }
+    }
+  }
+}
+function evBossWin() {
+  const id = CH.ev,
+    E = EVT[id],
+    B = E.boss,
+    e = evS(id),
+    stg = CH.stg,
+    santa = CH.santa;
+  CH.st = 'win';
+  $('bossbar').hidden = true;
+  mons = mons.filter(m => m.dead);
+  let sf = B.win(stg) * (santa ? B.santaX : 1);
+  e.sf += sf;
+  e.boss.st = Math.max(e.boss.st, stg + 1);
+  e.boss.best = Math.max(e.boss.best, stg);
+  const mr = !e.boss.mile[stg] && B.mile(stg);
+  let rows = '';
+  if (mr) {
+    e.boss.mile[stg] = 1;
+    rows = evGive(id, mr);
+  }
+  save();
+  haptic([40, 30, 60]);
+  banner = { t: 2, txt: stg + '단계 돌파!', sub: '「' + B.say.win + '」' };
+  say('k', '눈사람은 역시 녹아야 제맛이지.');
+  setTimeout(() => evBossEnd(id, true, stg, sf, rows), 1300);
+}
+function evBossLose() {
+  const id = CH.ev,
+    E = EVT[id],
+    B = E.boss,
+    stg = CH.stg;
+  CH.st = 'lose';
+  mons = [];
+  $('bossbar').hidden = true;
+  $('bossbar').classList.remove('hurry');
+  chPartyReset();
+  evS(id).sf += B.lose;
+  save();
+  evBossEnd(id, false, stg, B.lose, '');
+}
+function evBossEnd(id, won, stg, sf, rows) {
+  if (!CH || CH.mode !== 'ev') return;
+  const E = EVT[id],
+    B = E.boss,
+    santa = CH.santa;
+  chExit(true);
+  queue(() => {
+    const left = evTriesLeft(E),
+      e = evS(id);
+    $('sheet').innerHTML =
+      `<div class="eyebrow">${E.n} · ${santa ? '산타 ' : ''}${B.n}</div><h2>${won ? stg + '단계 돌파!' : stg + '단계 실패'}</h2>
+ <p class="evsay">「${won ? B.say.win : B.say.lose}」</p>
+ <div class="evgot"><img src="${EVIMG(id)}" alt=""><b>+${sf}</b><small>${E.cur.n}${won && santa ? ' (산타 2배)' : won ? '' : ' (져도 받아요)'}</small></div>
+ ${rows ? `<p class="note" style="text-align:center;color:#ffd34a">${stg}단계 첫 돌파 보상</p><div class="attrws">${rows}</div>` : ''}
+ <p class="note" style="text-align:center">${won ? '다음 ' + (stg + 1) + '단계' : '원정대를 키워서 다시 와요'} · 오늘 남은 도전 <b>${left}</b>번 · 최고 ${e.boss.best}단계</p>
+ <div class="acts"><button id="mAlt">이벤트 창</button><button class="pri" id="mGo">${left > 0 ? '다시 도전' : '확인'}</button></div>`;
+    $('modal').hidden = false;
+    $('mGo').onclick = () => {
+      closeModal();
+      if (left > 0) evBossStart(id);
+    };
+    $('mAlt').onclick = () => {
+      closeModal();
+      evSheet(id, 'boss');
+    };
+  });
+}
+/* 눈사람 대장 그림 (산타 모자는 크리스마스 주간) */
+function evBossSprite(mon) {
+  const B = EVT[mon.snow] && EVT[mon.snow].boss;
+  if (!B) return null;
+  const d = mon.santa && sprOk(B.sprX) ? B.sprX : B.spr;
+  return sprOk(d) ? Object.assign({ lordArt: true }, d) : null;
+}
+
+/* ---- 이벤트 출석 14칸 (기존 출석부와 따로, 기간 중에만) ---- */
+const evAttCan = E => {
+  if (!E.att || evPhase(E) !== 'on' || !evOpen()) return false;
+  const e = evS(E.id);
+  return e.att.cnt < E.att.length && e.att.last !== evDay() && !evBack(e);
+};
+function evAttClaim(id) {
+  const E = EVT[id],
+    e = evS(id);
+  if (evBack(e)) return toast(EV_BACK_MSG);
+  if (!evAttCan(E)) return toast(e.att.cnt >= E.att.length ? '출석 14칸을 모두 채웠어요' : '오늘은 이미 받았어요. 내일 또 만나요');
+  const i = e.att.cnt;
+  e.att.cnt++;
+  e.att.last = evDay();
+  evTouch(e);
+  const rows = evGive(id, E.att[i]);
+  haptic([30, 40, 70]);
+  save();
+  renderAll();
+  evSheet(id, 'att', `<div class="evjust"><b>${i + 1}번째 출석!</b>${rows}</div>`);
+}
+/* ---- 눈꽃 상점 ---- */
+const evShopLeft = (E, it) => it.lim - ((evS(E.id).shop || {})[it.k] || 0);
+/* 테두리·배지는 이미 가진 사람에게는 「받음」(다음 겨울에 못 받은 사람만) */
+const evShopOwned = it => it.r.some(r => (r.k === 'frame' && pfHas(r.id)) || (r.k === 'badge' && bdHas(r.id)));
+const evJoinLeft = id => (owned(id) ? 0 : Math.max(0, 30 - ((S.cards && S.cards[id]) || 0)));
+function evBuy(id, k) {
+  const E = EVT[id],
+    e = evS(id),
+    it = E.shop.find(x => x.k === k);
+  if (!it || !['on', 'shop'].includes(evPhase(E))) return;
+  if (evShopLeft(E, it) <= 0 || evShopOwned(it)) return toast('더 살 수 없어요');
+  if (it.r.some(r => r.k === 'lcard') && !lcardCan()) return toast('전설 동료 카드가 나오기 시작하면 살 수 있어요');
+  if (it.r.some(r => r.k === 'evcard' && recStar(r.id) >= starMax(r.id))) return toast('별을 모두 모았어요');
+  if (e.sf < it.p) return toast(E.cur.n + '이(가) 부족해요');
+  e.sf -= it.p;
+  e.shop[k] = (e.shop[k] || 0) + 1;
+  const rows = evGive(id, it.r);
+  haptic(25);
+  save();
+  renderAll();
+  evSheet(id, 'shop', `<div class="evjust">${rows}</div>`);
+}
+/* ---- 크리스마스 주간: 산타 피트 선물 · 트리 · 배지 ---- */
+const evXmDay = () => +evDay().split('-')[2];
+function evXmasCheck(E) {
+  if (!evXmas(E) || !evOpen()) return;
+  const e = evS(E.id),
+    t = evDay();
+  if (evBack(e)) return;
+  if (!e.xm.days[t]) {
+    e.xm.days[t] = 1;
+    evTouch(e);
+    pfCheck();
+    save();
+  }
+  if (!e.seen.xmas) {
+    e.seen.xmas = 1;
+    save();
+    queue(() => {
+      scene('크리스마스 주간', '산타 피트가 왔어요', E.lines.xmas, '선물 받기');
+      $('mGo').onclick = () => {
+        sceneQ.unshift(() => evGiftSheet(E.id));
+        closeModal();
+      };
+    });
+    return;
+  }
+  if (!e.xm.gift[t] && !evGiftQ) {
+    evGiftQ = 1;
+    queue(() => {
+      evGiftQ = 0;
+      evGiftSheet(E.id);
+    });
+  }
+}
+let evGiftQ = 0;
+function evGiftSheet(id) {
+  const E = EVT[id],
+    e = evS(id),
+    t = evDay();
+  if (!evXmas(E) || e.xm.gift[t] || evBack(e)) return pump();
+  const big = evXmDay() === E.xm.big.day,
+    list = big ? E.xm.big.r : E.xm.gift;
+  e.xm.gift[t] = 1;
+  evTouch(e);
+  const rows = evGive(id, list);
+  save();
+  renderAll();
+  $('sheet').innerHTML =
+    `<div class="evxmhd"><img src="assets/portraits/portrait_pete_santa_${big ? 'laugh' : 'idle'}.png" alt="" onerror="this.remove()"><div><div class="eyebrow">크리스마스 주간 · ${kstDate(evNow())}</div><h2>${big ? '산타 피트의 큰 선물!' : '산타 피트의 선물'}</h2></div></div>${big ? E.lines.big.map(para).join('') : ''}<div class="attrws">${rows}</div><p class="note" style="text-align:center">${big ? '메리 크리스마스!' : '크리스마스(25일)에는 큰 선물이 있어요'} · 5일 중 3일 접속하면 배지 「메리 크리스마스」</p><div class="acts one"><button class="pri claim" id="mGo">받기</button></div>`;
+  $('modal').hidden = false;
+  haptic([30, 40, 70]);
+  $('mGo').onclick = closeModal;
+}
+const evXmasCount = () =>
+  Object.keys(EVT).reduce((a, id) => Math.max(a, S.evs && S.evs[id] && S.evs[id].xm ? Object.keys(S.evs[id].xm.days || {}).length : 0), 0);
+/* 마을 광장 트리: 크리스마스 주간 하루 1번 선물 (눈송이 30 · 동료 카드 3장 · 상자 2개 중 하나) */
+const EV_TREE = [515, 650, 150]; /* 지도 좌표: 광장 우물 뒤 [x, 바닥 y, 너비] (길 위 사람 자리 WSPOT 를 피함) */
+let evTreeIm = null;
+const evTreeE = () => Object.values(EVT).find(E => E.xm && evXmas(E) && evOpen());
+function evTreeDraw(k) {
+  const E = evTreeE();
+  if (!E) return;
+  if (!evTreeIm) {
+    evTreeIm = new Image();
+    evTreeIm.onload = () => (evTreeIm.ok = 1);
+    evTreeIm.src = 'assets/village/xmas_tree.png';
+  }
+  if (!evTreeIm.ok) return;
+  const [x, y, w] = EV_TREE,
+    e = evS(E.id);
+  ell(x * k, (y - 4) * k, w * 0.32 * k, w * 0.08 * k, 'rgba(0,0,0,.3)');
+  ctx.drawImage(evTreeIm, (x - w / 2) * k, (y - w * 0.98) * k, w * k, w * k);
+  if (e.xm.tree !== evDay() && !evBack(e)) {
+    const fs = Math.round(Math.min(12, Math.max(9.5, VW * 0.029)));
+    vPill('🎁 선물', x * k, (y - w * 1.02 + Math.sin(T * 3) * 3) * k, fs, '#d93a4a', '#fff');
+  }
+}
+function evTreeHit(mx, my) {
+  const E = evTreeE();
+  if (!E || !evTreeIm || !evTreeIm.ok) return false;
+  const [x, y, w] = EV_TREE;
+  if (Math.abs(mx - x) > w * 0.4 || my > y || my < y - w * 0.95) return false;
+  const e = evS(E.id),
+    t = evDay();
+  if (evBack(e)) return toast(EV_BACK_MSG), true;
+  if (e.xm.tree === t) {
+    toast('🎄 오늘 선물은 받았어요. 내일 또 생겨요');
+    return true;
+  }
+  e.xm.tree = t;
+  evTouch(e);
+  const r = E.xm.tree[Math.floor(Math.random() * E.xm.tree.length)],
+    rows = evGive(E.id, r);
+  save();
+  haptic([30, 40, 70]);
+  $('sheet').innerHTML =
+    `<div class="eyebrow">마을 광장</div><h2>🎄 트리 아래 선물</h2><div class="attrws">${rows}</div><p class="note" style="text-align:center">크리스마스 주간에는 하루 1번 선물이 생겨요</p><div class="acts one"><button class="pri claim" id="mGo">받기</button></div>`;
+  $('modal').hidden = false;
+  $('mGo').onclick = closeModal;
+  renderAll();
+  return true;
+}
+/* ---- 상단 버튼 (상점 버튼 아래) ---- */
+let evHudSig = '',
+  evHudDay = '';
+function evHud() {
+  const b = $('evBtn');
+  if (!b || !S) return;
+  const E = evCur();
+  if (!E) {
+    if (!b.hidden) b.hidden = true;
+    return;
+  }
+  const ph = evPhase(E),
+    d = evDates(E),
+    lock = !evOpen(),
+    left = Math.max(0, Math.floor(((ph === 'on' ? d.end : d.shop) - evNow()) / 864e5)),
+    lb = lock ? '영지 ' + EV_OPEN : (ph === 'shop' ? '상점 ' : '') + (left ? 'D-' + left : 'D-DAY'),
+    xm = evXmas(E),
+    dot = !lock && evDot(E),
+    sig = E.id + ph + lb + xm + dot + lock;
+  if (sig !== evHudSig) {
+    evHudSig = sig;
+    b.hidden = false;
+    b.dataset.l = lb;
+    b.setAttribute('aria-label', E.n + ' ' + lb);
+    b.classList.toggle('lock', lock);
+    b.classList.toggle('xm', xm);
+    $('evDot').hidden = !dot;
+  }
+  /* 날이 바뀌면 크리스마스 선물·눈송이 사라짐 알림 */
+  const t = evDay();
+  if (t !== evHudDay && S.started && !titleOpen) {
+    evHudDay = t;
+    for (const X of evList()) {
+      evXmasCheck(X);
+      evWarnCheck(X);
+    }
+  }
+}
+const evDot = E => {
+  if (evPhase(E) !== 'on') return false;
+  const e = evToday(evS(E.id));
+  if (evBack(e)) return false;
+  return evAttCan(E) || evTriesLeft(E) > 0 || (evXmas(E) && (!e.xm.gift[evDay()] || e.xm.tree !== evDay() || evMgLeft(E) > 0));
+};
+/* 상점이 닫히기 3일 전부터 하루 한 번 「눈송이를 써 주세요」 */
+function evWarnCheck(E) {
+  if (evPhase(E) !== 'shop' || !evOpen()) return;
+  const e = evS(E.id),
+    d = evDates(E),
+    left = (d.shop - evNow()) / 864e5;
+  if (left > 3 || e.sf <= 0 || e.seen.warn === evDay()) return;
+  e.seen.warn = evDay();
+  save();
+  queue(() => toast('❄ ' + E.cur.n + '이(가) ' + Math.max(1, Math.ceil(left)) + '일 뒤 사라져요. ' + E.shopN + '에서 써 주세요'));
+}
+function evBtnTap() {
+  const E = evCur();
+  if (!E) return;
+  if (!evOpen()) {
+    $('sheet').innerHTML =
+      `<div class="hdban evban" style="--hb:url(${E.art.hd})"><span>${E.n}</span></div><p class="note" style="text-align:center;padding:8px 0">정기 이벤트 「${E.n}」이(가) 열렸어요!<br><b>영지 ${EV_OPEN}</b>에 닿으면 함께할 수 있어요 · ${kstDate(evDates(E).start)} ~ ${kstDate(evDates(E).end - 1)}</p><div class="acts one"><button class="pri" id="mGo">영지 ${EV_OPEN}부터 함께해요</button></div>`;
+    $('modal').hidden = false;
+    $('mGo').onclick = closeModal;
+    return;
+  }
+  evSheet(E.id);
+}
+/* ---- 이벤트 창: 출석 · 눈사람 대장 · 눈꽃 상점 (+ 크리스마스 주간 선물 배달) ---- */
+let evTab = {};
+function evSheet(id, tab, just) {
+  const E = EVT[id || (evCur() || {}).id];
+  if (!E) return;
+  id = E.id;
+  const ph = evPhase(E);
+  if (!['on', 'shop'].includes(ph)) return toast(E.n + '이(가) 끝났어요');
+  const e = evToday(evS(id)),
+    xm = evXmas(E),
+    d = evDates(E),
+    tabs = [
+      ['att', '출석', !!E.att],
+      ['boss', E.boss ? E.boss.n : '', !!E.boss],
+      ['shop', E.shopN, !!E.shop],
+      ['mg', '선물 배달', !!E.mg && (xm || evMgShow(E))]
+    ].filter(x => x[2]);
+  if (tab) evTab[id] = tab;
+  let cur = evTab[id] || (ph === 'shop' ? 'shop' : evAttCan(E) ? 'att' : xm ? 'mg' : 'boss');
+  if (!tabs.some(x => x[0] === cur)) cur = tabs[0][0];
+  evTab[id] = cur;
+  const left = Math.max(0, Math.floor(((ph === 'on' ? d.end : d.shop) - evNow()) / 864e5)),
+    others = evList().filter(X => X.id !== id),
+    shut = ph === 'shop' && (cur === 'att' || cur === 'boss');
+  let body = '';
+  if (shut) body = `<p class="note evshut">이벤트 기간이 끝났어요. <b>${E.shopN}</b>은(는) ${kstDate(d.shop - 1)}까지 열려 있어요</p>`;
+  else if (cur === 'att') body = evAttHtml(E, e);
+  else if (cur === 'boss') body = evBossHtml(E, e);
+  else if (cur === 'shop') body = evShopHtml(E, e);
+  else body = evMgHtml(E, e);
+  $('sheet').innerHTML = `<div class="hdban evban" style="--hb:url(${E.art.hd})"><span>${E.n}</span></div>
+ ${xm ? `<div class="evxm">🎄 크리스마스 주간 · ${kstDate(d.xe - 1)}까지 <small>산타 피트 선물 · 산타 눈사람 2배 · 마을 트리 · 선물 배달</small></div>` : ''}
+ ${others.length ? `<div class="evsw">${[E, ...others].map(X => `<button data-evsw="${X.id}" class="${X.id === id ? 'on' : ''}">${X.n}${evPhase(X) === 'shop' ? ' · 상점' : ''}</button>`).join('')}</div>` : ''}
+ <div class="evtop"><span class="evcur"><img src="${E.cur.img}" alt=""><b>${fmt(e.sf)}</b><small>${E.cur.n}</small></span>${ph === 'on' && E.bat ? `<span class="evbat">오늘 전투 ${E.cur.n} <b>${e.day.bat}/${E.bat.cap}</b></span>` : ''}<span class="evdd">${ph === 'shop' ? '상점 ' : ''}${left ? 'D-' + left : 'D-DAY'}</span></div>
+ ${ph === 'shop' && e.sf > 0 ? `<p class="note evwarn">${E.cur.n}은(는) ${kstDate(d.shop - 1)}이 지나면 사라져요</p>` : ''}
+ <div class="subtabs evtabs">${tabs.map(([k, n]) => `<button data-evt="${k}" class="${k === cur ? 'on' : ''}">${n}${(k === 'att' && evAttCan(E)) || (k === 'boss' && ph === 'on' && evTriesLeft(E) > 0 && !evBack(e)) || (k === 'mg' && evMgLeft(E) > 0 && !evBack(e)) ? '<i class="dot"></i>' : ''}</button>`).join('')}</div>
+ ${just || ''}${body}
+ <div class="acts one"><button class="pri" id="mGo">닫기</button></div>`;
+  $('modal').hidden = false;
+  $('mGo').onclick = closeModal;
+  document.querySelectorAll('[data-evt]').forEach(b => (b.onclick = () => evSheet(id, b.dataset.evt)));
+  document.querySelectorAll('[data-evsw]').forEach(b => (b.onclick = () => evSheet(b.dataset.evsw)));
+  const q = s => $('sheet').querySelector(s);
+  if (q('#evAtt')) q('#evAtt').onclick = () => evAttClaim(id);
+  if (q('#evBoss'))
+    q('#evBoss').onclick = () => {
+      closeModal();
+      evBossStart(id);
+    };
+  if (q('#evBossAd'))
+    q('#evBossAd').onclick = () =>
+      evAdWatch(id, 'boss', () => {
+        evToday(evS(id)).boss.ad = 1;
+        toast('눈사람 대장 도전 +1');
+        evSheet(id, 'boss');
+      });
+  document.querySelectorAll('[data-evbuy]').forEach(b => (b.onclick = () => evBuy(id, b.dataset.evbuy)));
+  evMgBind(E);
+}
+/* 광고 +1 (이벤트마다 하루 1번, 기존 광고 표 ADS 를 건드리지 않고 이벤트 저장에 기록) */
+function evAdWatch(id, k, give) {
+  const e = evToday(evS(id));
+  if (e[k].ad) return toast('오늘은 다 봤어요. 내일 다시 받을 수 있어요');
+  playAd(() => {
+    give();
+    save();
+    renderAll();
+  });
+}
+function evAttHtml(E, e) {
+  const can = evAttCan(E),
+    back = evBack(e);
+  return `<div class="evatt">${E.att
+    .map((r, i) => {
+      const got = i < e.att.cnt,
+        big = r.some(x => x.k === 'evcard' || x.k === 'card'),
+        nxt = i === e.att.cnt && can;
+      return `<div class="evac${got ? ' got' : ''}${big ? ' big' : ''}${nxt ? ' nxt' : ''}"><i>${i + 1}</i>${evRwIc(E.id, r[r.length > 1 && r[1].k !== 'gold' ? 1 : 0])}<small>${r.map(x => evRwTxt(E.id, x)).join('<br>')}</small>${got ? '<b class="evst">✔</b>' : ''}</div>`;
+    })
+    .join('')}</div>
+ <p class="note">${E.n} 기간(${kstDate(evDates(E).start)}~${kstDate(evDates(E).end - 1)}) 중 하루 1칸 · 14칸을 채우면 끝 · <b>14칸째 ${COMP[E.comp].n} 카드 10장</b></p>
+ <button class="buy pri claim evbig" id="evAtt" ${can ? '' : 'disabled'}>${back ? '휴대폰 시간을 확인해 주세요' : e.att.cnt >= E.att.length ? '14칸 모두 받았어요' : can ? e.att.cnt + 1 + '번째 출석 받기' : '오늘은 받았어요 · 내일 또 만나요'}</button>`;
+}
+function evBossHtml(E, e) {
+  const B = E.boss,
+    left = evTriesLeft(E),
+    xm = evXmas(E),
+    st = e.boss.st,
+    nm = (B.mile(st) && !e.boss.mile[st]) || null,
+    nxtM = [...Array(10).keys()].map(i => st + i).find(s => B.mile(s) && !e.boss.mile[s]),
+    back = evBack(e);
+  return `<div class="evbossc"><span class="evbossimg${xm ? ' santa' : ''}" style="background-image:url(assets/monsters/${(xm ? B.sprX : B.spr).id}_walk.png)"></span><div>
+  <b>${xm ? '🎅 산타 ' : ''}${B.n} · ${st}단계</b>
+  <small>오늘 남은 도전 <b>${left}/${evTries(E, e)}</b> · 최고 <b>${e.boss.best}단계</b></small>
+  <small>이기면 ${E.cur.n} <b>${B.win(st) * (xm ? B.santaX : 1)}</b>${xm ? ' (산타 2배)' : ''} · 져도 ${B.lose}</small>
+  <small>${
+    nxtM
+      ? nxtM +
+        '단계 첫 돌파: ' +
+        B.mile(nxtM)
+          .map(r => evRwTxt(E.id, r))
+          .join(' · ')
+      : ''
+  }</small></div></div>
+ <p class="note">${B.lim}초 안에 쓰러뜨리면 다음 단계로 · 기술 「${B.sk.n}」: ${B.sk.every}초마다 앞줄 동료에게 큰 피해 + ${B.sk.slow}초 느려짐 (경고가 뜨면 막기·보호막 스킬!) · 배경 하른 설원</p>
+ <div class="btns"><button class="buy pri evbig" id="evBoss" ${left > 0 && !back ? '' : 'disabled'}>${back ? '휴대폰 시간을 확인해 주세요' : left > 0 ? '도전하기' : '오늘 도전 끝 · 내일 다시'}</button>${!e.boss.ad && !back ? `<button class="buy ad" id="evBossAd">▶ 광고 보고 +1</button>` : ''}</div>${nm ? '' : ''}`;
+}
+function evShopHtml(E, e) {
+  return `<div class="evshop">${E.shop
+    .map(it => {
+      const left = evShopLeft(E, it),
+        own = evShopOwned(it),
+        sob = it.r.find(r => r.k === 'evcard'),
+        lc = it.r.some(r => r.k === 'lcard') && !lcardCan(),
+        mx = sob && recStar(sob.id) >= starMax(sob.id),
+        ok = left > 0 && !own && !lc && !mx && e.sf >= it.p;
+      const nm = sob ? COMP[sob.id].n + ' 카드 ' + sob.n + '장' : it.r.map(r => evRwTxt(E.id, r)).join(' · ');
+      const sub = sob
+        ? evJoinLeft(sob.id) > 0
+          ? `합류까지 <b>${evJoinLeft(sob.id)}장</b> · ${GR[GRADE[sob.id]].n} 광부 · 일반 카드 뽑기에 안 나와요`
+          : mx
+            ? '별을 모두 모았어요'
+            : '합류했어요 · ★ 올리기 카드'
+        : own
+          ? '이미 가지고 있어요'
+          : lc
+            ? '전설 동료 카드가 나오기 시작하면 살 수 있어요'
+            : '';
+      return `<div class="evsr${it.hot ? ' hot' : ''}${left <= 0 || own ? ' out' : ''}">${evRwIc(E.id, it.r[0])}<div class="evsn"><b>${nm}</b><small>${sub ? sub + ' · ' : ''}남은 ${Math.max(0, left)}/${it.lim}</small></div><button class="buy${ok ? ' pri' : ''}" data-evbuy="${it.k}" ${left > 0 && !own ? '' : 'disabled'}><img src="${E.cur.img}" alt="">${it.p}</button></div>`;
+    })
+    .join(
+      ''
+    )}</div><p class="note">전부 사면 ${fmt(E.shop.reduce((a, x) => a + x.p * x.lim, 0))} · 매일 오면 ${COMP[E.comp].n}·테두리·배지는 확실히 받을 수 있어요. 다음 겨울에도 같은 상점이 다시 열려요</p>`;
+}
+
+/* ---- 미니게임 「선물 배달」 (기획서 3-9, 크리스마스 주간) ----
+   카엘이 썰매를 타고 날고, 집들이 오른쪽에서 왼쪽으로 지나감. 누르면 선물이 떨어지고 굴뚝에 들어가면 점수.
+   고정 시간 단위(1/60초)로만 움직임: 화면이 몇 번 그려지든 같은 판(같은 번호)·같은 누름 → 같은 점수. 점수 규칙은 mgStep 하나(앱 반영 때 같게) */
+const MGC = {
+  W: 512,
+  H: 640 /* 논리 화면 (가로:세로 4:5, 기기마다 같은 크기로 늘려 그림 → 폭 320에서도 집 3채 이상) */,
+  T: 30 /* 한 판 30초 */,
+  dt: 1 / 60,
+  sledX: 132,
+  sledY: 122,
+  dropY: 172,
+  ground: 612,
+  hw: 108 /* 집 그림 너비(배율 0.9~1.1) */,
+  hsc: [0.9, 1.1],
+  gap: [150, 220] /* 집 사이 (가운데~가운데) */,
+  v0: 150 /* 집이 지나가는 빠르기: 처음 150 → 30초에 270 */,
+  vA: 4,
+  G: 1876 /* 선물이 굴뚝까지 떨어지는 시간 약 0.6초 */,
+  cd: 0.35 /* 다음 선물까지 */,
+  hit: 14 /* 굴뚝 가운데에서 이만큼 안이면 쏙 */,
+  perf: 4.5 /* 딱 맞음 */,
+  pt: 10,
+  gold: 30,
+  perfP: 5,
+  step: 5 /* 연속 5번마다 +1배 */,
+  mulMax: 5,
+  goldP: 0.09,
+  smokeP: 0.13,
+  /* 굴뚝 가운데 x · 굴뚝 입구 y (그림 320×429 기준, 실제 그림에서 잼) */
+  C: { h1: [212, 106], h2: [207, 117], h3: [212.5, 112], gold: [190.5, 117], smoke: [184, 118] },
+  maxScore: 2600 /* 서버 kd_minigames.max_score 와 같게 (tools/sim/minigame_check.js 로 잰 최대 + 여유) */
+};
+function mgRng(seed) {
+  let a = seed >>> 0;
+  return () => {
+    a = (a + 0x6d2b79f5) >>> 0;
+    let t = a;
+    t = Math.imul(t ^ (t >>> 15), t | 1);
+    t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+const mgMul = c => Math.min(MGC.mulMax, 1 + Math.floor((c - 1) / MGC.step));
+function mgNew(seed) {
+  const g = {
+    seed: seed >>> 0,
+    rnd: mgRng(seed),
+    n: 0,
+    t: 0,
+    x: 0,
+    hs: [],
+    gifts: [],
+    score: 0,
+    combo: 0,
+    maxC: 0,
+    hits: 0,
+    perf: 0,
+    drops: 0,
+    miss: 0,
+    cdT: 0,
+    tapQ: 0,
+    over: false,
+    nx: 330,
+    last: '',
+    ev: []
+  };
+  mgFill(g);
+  return g;
+}
+function mgHouse(g) {
+  const r = g.rnd,
+    a = r(),
+    b = r(),
+    c = r(),
+    d = r(),
+    e = r();
+  let ty = a < MGC.goldP ? 'gold' : b < MGC.smokeP ? 'smoke' : 'h' + (1 + Math.floor(c * 3));
+  if (ty === 'smoke' && g.last === 'smoke') ty = 'h' + (1 + Math.floor(c * 3)); /* 연기 굴뚝은 두 번 연달아 안 나옴 */
+  const w = MGC.hw * (MGC.hsc[0] + d * (MGC.hsc[1] - MGC.hsc[0])),
+    h = (w * 429) / 320,
+    C = MGC.C[ty];
+  g.hs.push({ ty, wx: g.nx, w, h, cx: g.nx - w / 2 + (w * C[0]) / 320, cy: MGC.ground - h + (h * C[1]) / 429, done: 0 });
+  g.last = ty;
+  g.nx += MGC.gap[0] + e * (MGC.gap[1] - MGC.gap[0]);
+}
+function mgFill(g) {
+  while (g.nx - g.x < MGC.W + 220) mgHouse(g);
+  if (g.hs.length && g.hs[0].wx - g.x < -160) g.hs = g.hs.filter(h => h.wx - g.x >= -160);
+}
+const mgV = t => MGC.v0 + MGC.vA * Math.min(t, MGC.T);
+/* 한 단위 진행 (누름은 다음 단위 처음에 반영) */
+function mgStep(g) {
+  if (g.over) return;
+  const dt = MGC.dt;
+  if (g.tapQ) {
+    g.tapQ = 0;
+    if (g.t < MGC.T && g.cdT <= 0) {
+      g.gifts.push({ x: MGC.sledX + 4, y: MGC.dropY, vy: 0, k: g.drops % 3, r: 0 });
+      g.drops++;
+      g.cdT = MGC.cd;
+    }
+  }
+  g.n++;
+  g.t = g.n * dt;
+  g.cdT = Math.max(0, g.cdT - dt);
+  const dx = mgV(g.t) * dt;
+  g.x += dx;
+  mgFill(g);
+  for (const q of g.gifts) {
+    const y0 = q.y;
+    q.vy += MGC.G * dt;
+    q.y += q.vy * dt;
+    q.r += dt * 4;
+    for (const h of g.hs) {
+      if (h.done || !(y0 < h.cy && q.y >= h.cy)) continue;
+      const f = (h.cy - y0) / (q.y - y0),
+        sx = h.cx - g.x + dx * (1 - f),
+        d = Math.abs(q.x - sx);
+      if (d > MGC.hit) continue;
+      q.dead = 1;
+      h.done = 1;
+      if (h.ty === 'smoke') {
+        g.combo = 0;
+        g.ev.push({ k: 'smoke', x: sx, y: h.cy, t: g.t, gx: g.x });
+      } else {
+        g.combo++;
+        g.maxC = Math.max(g.maxC, g.combo);
+        g.hits++;
+        const m = mgMul(g.combo),
+          pf = d <= MGC.perf,
+          p = (h.ty === 'gold' ? MGC.gold : MGC.pt) * m + (pf ? MGC.perfP : 0);
+        if (pf) g.perf++;
+        g.score += p;
+        g.ev.push({ k: 'in', x: sx, y: h.cy, t: g.t, gx: g.x, p, pf, m, gold: h.ty === 'gold' });
+      }
+      break;
+    }
+    if (q.dead) continue;
+    /* 지붕이나 땅에 떨어지면 점수 없음 · 연속 끊김 */
+    const roof = g.hs.find(h => Math.abs(q.x - (h.wx - g.x)) < h.w * 0.42 && q.y >= MGC.ground - h.h * 0.62);
+    if (roof || q.y >= MGC.ground - 6) {
+      q.dead = 1;
+      g.combo = 0;
+      g.miss++;
+      g.ev.push({ k: 'miss', x: q.x, y: q.y, t: g.t, gx: g.x });
+    }
+  }
+  g.gifts = g.gifts.filter(q => !q.dead);
+  if (g.ev.length > 40) g.ev.splice(0, g.ev.length - 40);
+  if (g.t >= MGC.T && (!g.gifts.length || g.t >= MGC.T + 1.5)) g.over = true;
+}
+/* ---- 화면 ---- */
+const MGI = {};
+function mgLoad() {
+  for (const n of ['sled', 'house_1', 'house_2', 'house_3', 'house_gold', 'house_smoke', 'gift_1', 'gift_2', 'gift_3', 'fx_in', 'bg_night'])
+    if (!MGI[n]) {
+      const im = new Image();
+      im.onload = () => (im.ok = 1);
+      im.src = 'assets/mini/' + n + (n === 'bg_night' ? '.jpg' : '.png');
+      MGI[n] = im;
+    }
+}
+let MGS = null; /* 지금 판: { g, E, id, practice, ph:'ready'|'play'|'end', cd, tok, demo, hint, t0, raf } */
+function mgDraw() {
+  const c = $('mgCv');
+  if (!c || !MGS) return;
+  const r = c.getBoundingClientRect(),
+    dpr = Math.min(2, window.devicePixelRatio || 1);
+  if (c.width !== Math.round(r.width * dpr)) {
+    c.width = Math.round(r.width * dpr);
+    c.height = Math.round(r.height * dpr);
+  }
+  const x = c.getContext('2d'),
+    k = c.width / MGC.W,
+    g = MGS.g,
+    tt = g.t;
+  x.setTransform(k, 0, 0, k, 0, 0);
+  x.imageSmoothingQuality = 'high';
+  /* 밤하늘·먼 마을 (가로로 이어짐) */
+  const bg = MGI.bg_night;
+  if (bg && bg.ok) {
+    const bw = (bg.width * MGC.H) / bg.height,
+      off = (g.x * 0.25) % bw;
+    for (let bx = -off; bx < MGC.W; bx += bw) x.drawImage(bg, bx, 0, bw + 1, MGC.H);
+  } else {
+    x.fillStyle = '#101a3c';
+    x.fillRect(0, 0, MGC.W, MGC.H);
+  }
+  /* 땅 눈 */
+  const gr = x.createLinearGradient(0, MGC.ground - 20, 0, MGC.H);
+  gr.addColorStop(0, 'rgba(225,236,250,0)');
+  gr.addColorStop(0.35, '#e3edf8');
+  gr.addColorStop(1, '#b9cbe2');
+  x.fillStyle = gr;
+  x.fillRect(0, MGC.ground - 20, MGC.W, MGC.H - MGC.ground + 20);
+  /* 집 */
+  for (const h of g.hs) {
+    const im = MGI['house_' + (h.ty[0] === 'h' ? h.ty.slice(1) : h.ty)],
+      sx = h.wx - g.x;
+    if (sx < -h.w || sx > MGC.W + h.w) continue;
+    if (im && im.ok) x.drawImage(im, sx - h.w / 2, MGC.ground - h.h + 6, h.w, h.h);
+    if (h.done && h.ty !== 'smoke') {
+      x.fillStyle = 'rgba(255,230,120,.9)';
+      x.font = '700 15px sans-serif';
+      x.textAlign = 'center';
+      x.fillText('✔', h.cx - g.x, h.cy - 14);
+    }
+  }
+  /* 썰매 (위아래로 살짝 흔들림 — 선물 떨어지는 높이는 그대로) */
+  const sl = MGI.sled;
+  if (sl && sl.ok) {
+    const fw = sl.width / 4,
+      sw = 156,
+      sh = (sw * sl.height) / fw,
+      fr = Math.floor(tt * 10) % 4;
+    x.drawImage(sl, fr * fw, 0, fw, sl.height, MGC.sledX - sw / 2, MGC.sledY - sh / 2 + Math.sin(tt * 3) * 3, sw, sh);
+  }
+  /* 선물 */
+  for (const q of g.gifts) {
+    const im = MGI['gift_' + (q.k + 1)];
+    x.save();
+    x.translate(q.x, q.y);
+    x.rotate(Math.sin(q.r) * 0.3);
+    if (im && im.ok) x.drawImage(im, -15, -15, 30, 30);
+    else {
+      x.fillStyle = '#e04a5a';
+      x.fillRect(-12, -12, 24, 24);
+    }
+    x.restore();
+  }
+  /* 쏙! · 퍽 · 콜록 */
+  for (const v of g.ev) {
+    const a = tt - v.t;
+    if (a > 0.9 || a < 0) continue;
+    const sx = v.x - (g.x - v.gx);
+    x.globalAlpha = 1 - a / 0.9;
+    x.textAlign = 'center';
+    if (v.k === 'in') {
+      const fi = MGI.fx_in;
+      if (fi && fi.ok && a < 0.36) {
+        const fw = fi.width / 3;
+        x.drawImage(fi, Math.min(2, Math.floor(a / 0.12)) * fw, 0, fw, fi.height, sx - 40, v.y - 70, 80, 80 * (fi.height / fw));
+      }
+      x.font = `800 ${v.pf ? 22 : 19}px Hahmlet, serif`;
+      x.lineWidth = 4;
+      x.strokeStyle = '#1b0f04';
+      const tx = '+' + v.p + (v.pf ? ' 딱 맞음!' : '');
+      x.strokeText(tx, sx, v.y - 40 - a * 50);
+      x.fillStyle = v.gold ? '#ffd34a' : v.pf ? '#9cf0ff' : '#fff3c4';
+      x.fillText(tx, sx, v.y - 40 - a * 50);
+    } else {
+      x.font = '700 16px "IBM Plex Sans KR",sans-serif';
+      x.lineWidth = 3;
+      x.strokeStyle = '#0b1230';
+      const tx = v.k === 'smoke' ? '콜록! 연속 끊김' : '퍽!';
+      x.strokeText(tx, sx, v.y - 20 - a * 30);
+      x.fillStyle = v.k === 'smoke' ? '#c9c9c9' : '#bcd6ff';
+      x.fillText(tx, sx, v.y - 20 - a * 30);
+    }
+    x.globalAlpha = 1;
+  }
+  /* 위쪽: 점수 · 남은 시간 · 연속 배수 */
+  const left = Math.max(0, MGC.T - tt);
+  x.fillStyle = 'rgba(8,12,30,.55)';
+  x.fillRect(0, 0, MGC.W, 46);
+  x.fillStyle = '#2a3a66';
+  x.fillRect(12, 38, MGC.W - 24, 5);
+  x.fillStyle = left < 5 ? '#ff6b7d' : '#9cd8ff';
+  x.fillRect(12, 38, (MGC.W - 24) * (left / MGC.T), 5);
+  x.textAlign = 'left';
+  x.font = '800 24px Hahmlet, serif';
+  x.fillStyle = '#ffe08a';
+  x.fillText(fmt(g.score), 14, 29);
+  x.font = '700 15px "IBM Plex Sans KR",sans-serif';
+  x.fillStyle = '#e6eeff';
+  x.textAlign = 'center';
+  x.fillText((MGS.practice ? '연습 · ' : '') + Math.ceil(left) + '초', MGC.W / 2, 27);
+  if (g.combo > 0) {
+    const m = mgMul(g.combo);
+    x.textAlign = 'right';
+    x.font = '800 18px Hahmlet, serif';
+    x.fillStyle = m >= 5 ? '#ff9a3c' : m >= 3 ? '#ffd34a' : '#bfe8ff';
+    x.fillText(g.combo + '연속 ×' + m, MGC.W - 54, 29);
+  }
+  /* 처음 판 안내 손가락 */
+  if (MGS.hint && MGS.ph !== 'end' && tt < 7) {
+    const nx = g.hs.find(h => !h.done && h.ty !== 'smoke' && h.cx - g.x > MGC.sledX + 20);
+    x.globalAlpha = 0.95;
+    x.fillStyle = 'rgba(8,12,30,.7)';
+    x.fillRect(MGC.W / 2 - 170, 250, 340, 34);
+    x.fillStyle = '#fff6d6';
+    x.font = '700 16px "IBM Plex Sans KR",sans-serif';
+    x.textAlign = 'center';
+    x.fillText('굴뚝이 오기 조금 전에 눌러요', MGC.W / 2, 273);
+    x.font = '34px sans-serif';
+    x.fillText('👆', MGC.sledX + 6, MGC.dropY + 60 + Math.sin(T * 8) * 6);
+    if (nx) {
+      x.strokeStyle = 'rgba(255,240,170,.8)';
+      x.setLineDash([5, 5]);
+      x.beginPath();
+      x.moveTo(MGC.sledX + 4, MGC.dropY);
+      x.lineTo(MGC.sledX + 4, MGC.ground - 40);
+      x.stroke();
+      x.setLineDash([]);
+    }
+    x.globalAlpha = 1;
+  }
+  if (MGS.ph === 'ready') {
+    x.fillStyle = 'rgba(8,12,30,.45)';
+    x.fillRect(0, 0, MGC.W, MGC.H);
+    x.textAlign = 'center';
+    x.font = '800 72px Hahmlet, serif';
+    x.lineWidth = 6;
+    x.strokeStyle = '#1b0f04';
+    const n = Math.max(1, Math.ceil(MGS.cd));
+    x.strokeText(n, MGC.W / 2, MGC.H / 2);
+    x.fillStyle = '#ffe08a';
+    x.fillText(n, MGC.W / 2, MGC.H / 2);
+    x.font = '700 17px "IBM Plex Sans KR",sans-serif';
+    x.fillStyle = '#fff';
+    x.fillText(MGS.practice ? '연습판 · 보상·기록 없음' : '화면을 누르면 선물이 떨어져요', MGC.W / 2, MGC.H / 2 + 44);
+  }
+}
+function mgLoop(ts) {
+  if (!MGS) return;
+  const now = ts / 1000,
+    real = Math.min(0.1, Math.max(0, now - (MGS.t0 || now)));
+  MGS.t0 = now;
+  if (MGS.ph === 'ready') {
+    MGS.cd -= real;
+    if (MGS.cd <= 0) MGS.ph = 'play';
+  } else if (MGS.ph === 'play') {
+    MGS.acc += real;
+    while (MGS.acc >= MGC.dt && !MGS.g.over) {
+      MGS.acc -= MGC.dt;
+      mgStep(MGS.g);
+    }
+    if (MGS.g.over) mgEnd();
+  }
+  mgDraw();
+  MGS.raf = requestAnimationFrame(mgLoop);
+}
+const evMgOn = E => !!E.mg && MGEV[E.mg] && (evXmas(E) || (evDemoOn && evDemoOn !== 'snow' && E.id === EV_MAIN));
+const evMgShow = E => !!E.mg && MGEV[E.mg] && evNow() >= evT(MGEV[E.mg].from) && ['on', 'shop'].includes(evPhase(E));
+const evMgLeft = E => {
+  if (!evMgOn(E)) return 0;
+  const M = MGEV[E.mg],
+    e = evToday(evS(E.id));
+  return Math.max(0, M.daily + (e.mg.ad ? M.ad : 0) - e.mg.n);
+};
+async function evMgStart(id, practice) {
+  const E = EVT[id];
+  if (!E || !evMgOn(E)) return toast('선물 배달은 크리스마스 주간에만 열려요');
+  if (!evOpen()) return toast(E.n + '은(는) 영지 ' + EV_OPEN + '부터 함께해요');
+  const e = evToday(evS(id)),
+    M = MGEV[E.mg];
+  if (!practice) {
+    if (evBack(e)) return toast(EV_BACK_MSG);
+    if (evMgLeft(E) <= 0) return toast('오늘 판을 다 했어요. 연습판은 계속 할 수 있어요');
+  }
+  if (!S.mgHint) {
+    S.mgHint = 1;
+    save();
+    scene('선물 배달', '굴뚝에 선물을 넣어요', E.lines.mg, '시작!');
+    $('mGo').onclick = () => {
+      closeModal();
+      evMgStart(id, practice);
+    };
+    return;
+  }
+  closeModal();
+  mgLoad();
+  mgOpen();
+  let tok = null,
+    seed = (Math.random() * 4294967296) >>> 0;
+  if (!practice) {
+    e.mg.n++;
+    evTouch(e);
+    save();
+    $('mgPan').hidden = false;
+    $('mgPan').innerHTML = '<p class="note">썰매 준비 중…</p>';
+    if (sbOn() && !noSave)
+      try {
+        await sbEnsure();
+        const r = await sbRpc('kd_mg_start', { p_game: E.mg });
+        if (r && r.id) {
+          tok = r.id;
+          seed = r.seed >>> 0;
+        } else if (r && r.err === 'limit') {
+          e.mg.n = Math.max(e.mg.n, M.daily + (e.mg.ad ? M.ad : 0));
+          save();
+          mgClose();
+          return toast('오늘 판을 다 했어요 (다른 기기 포함). 연습판은 계속 할 수 있어요');
+        }
+      } catch (err) {}
+    if (!MGS || MGS.closing) {
+      if (!tok) e.mg.n = Math.max(0, e.mg.n - 1); /* 시작 전에 닫으면 판을 돌려줌 */
+      save();
+      return;
+    }
+  }
+  $('mgPan').hidden = true;
+  MGS.g = mgNew(seed);
+  Object.assign(MGS, { E, id, practice: !!practice, ph: 'ready', cd: 3, tok, acc: 0, hint: !S.mgPlayed, demo: noSave });
+}
+function mgOpen() {
+  if (!$('mgOv')) return;
+  $('mgOv').hidden = false;
+  document.body.classList.add('mgon');
+  if (MGS && MGS.raf) cancelAnimationFrame(MGS.raf);
+  MGS = { g: mgNew(1), ph: 'wait', cd: 3, acc: 0, t0: 0, practice: true };
+  MGS.raf = requestAnimationFrame(mgLoop);
+}
+function mgClose() {
+  if (MGS) {
+    MGS.closing = 1;
+    if (MGS.raf) cancelAnimationFrame(MGS.raf);
+    /* 보상 판을 끝까지 안 하고 나가면 그 판은 0점 (판 수는 시작할 때 이미 씀) */
+  }
+  MGS = null;
+  $('mgOv').hidden = true;
+  $('mgPan').hidden = true;
+  document.body.classList.remove('mgon');
+  renderAll();
+}
+let mgXT = 0;
+function mgX() {
+  /* 보상 판 도중에는 한 번 더 눌러야 나감 (이번 판은 0점) */
+  if (MGS && MGS.ph === 'play' && !MGS.practice && performance.now() - mgXT > 2500) {
+    mgXT = performance.now();
+    return toast('한 번 더 누르면 나가요 · 이번 판은 0점이에요');
+  }
+  mgClose();
+}
+function mgTap(ev) {
+  if (!MGS || MGS.ph !== 'play') return;
+  if (ev) ev.preventDefault();
+  MGS.g.tapQ = 1;
+}
+function mgEnd() {
+  if (!MGS || MGS.ph === 'end') return;
+  MGS.ph = 'end';
+  S.mgPlayed = 1;
+  const { g, E, id, practice, tok } = MGS,
+    M = MGEV[E.mg],
+    e = evS(id),
+    sf = practice ? 0 : Math.min(100, Math.floor(g.score / 10)),
+    nb = !practice && g.score > (e.mg.best || 0);
+  if (!practice) {
+    e.sf += sf;
+    e.mg.best = Math.max(e.mg.best || 0, g.score);
+    save();
+    if (tok)
+      sbRpc('kd_mg_submit', { p_id: tok, p_score: g.score })
+        .then(r => {
+          if (MGS && MGS.g === g) mgRankLine(E, r);
+        })
+        .catch(() => mgRankLine(E, 'net'));
+  }
+  haptic([30, 40, 70]);
+  const left = evMgLeft(E);
+  $('mgPan').hidden = false;
+  $('mgPan').innerHTML =
+    `<div class="eyebrow">${practice ? '연습판' : M.n}</div><h2>${fmt(g.score)}점${nb ? ' <small class="mgnb">최고 기록!</small>' : ''}</h2>
+ <p class="note">굴뚝 ${g.hits}개 · 딱 맞음 ${g.perf}번 · 최대 ${g.maxC}연속</p>
+ ${practice ? '<p class="note">연습판은 보상·기록이 없어요</p>' : `<div class="evgot"><img src="${E.cur.img}" alt=""><b>+${sf}</b><small>${E.cur.n} (점수 ÷ 10, 최대 100)</small></div><p class="note" id="mgRk">${noSave ? '미리보기: 기록은 서버에 보내지 않아요' : tok ? '랭킹에 기록하는 중…' : '서버에 연결되지 않아 이번 판은 랭킹에 기록되지 않았어요'}</p>`}
+ <div class="acts mgacts"><button id="mgAgain" ${!practice && left <= 0 ? 'disabled' : ''}>${practice ? '연습 다시' : left > 0 ? '한 판 더 (' + left + ')' : '오늘 판 끝'}</button>${practice ? `<button id="mgReal" ${left > 0 ? '' : 'disabled'}>보상 판 (${left})</button>` : '<button id="mgPrac">연습</button>'}<button id="mgRank">랭킹</button><button class="pri" id="mgDone">닫기</button></div>`;
+  const q = s => $('mgPan').querySelector(s);
+  q('#mgAgain').onclick = () => evMgStart(id, practice);
+  if (q('#mgPrac')) q('#mgPrac').onclick = () => evMgStart(id, true);
+  if (q('#mgReal')) q('#mgReal').onclick = () => evMgStart(id, false);
+  q('#mgRank').onclick = () => {
+    mgClose();
+    rankSheet('mg');
+  };
+  q('#mgDone').onclick = () => {
+    mgClose();
+    evSheet(id, 'mg');
+  };
+}
+function mgRankLine(E, r) {
+  const el = $('mgRk');
+  if (!el) return;
+  if (r === 'ok')
+    sbRpc('kd_mg_ranking', { p_game: E.mg })
+      .then(rows => {
+        const me = Array.isArray(rows) && rows.find(x => x.me);
+        if ($('mgRk'))
+          $('mgRk').innerHTML = me
+            ? `랭킹에 기록했어요 · 내 최고 <b>${fmt(me.score)}점</b> · <b>${me.rank}위</b> / ${me.total}명`
+            : '랭킹에 기록했어요';
+      })
+      .catch(() => (el.textContent = '랭킹에 기록했어요'));
+  else
+    el.textContent =
+      r === 'range' || r === 'early' || r === 'used'
+        ? '이 판 기록은 랭킹에 올리지 못했어요 (확인되지 않은 기록)'
+        : r === 'closed' || r === 'late'
+          ? '랭킹 기록 시간이 지났어요'
+          : '서버에 연결되지 않아 랭킹에 기록하지 못했어요';
+}
+/* 이벤트 창 「선물 배달」 탭 */
+function evMgHtml(E, e) {
+  const M = MGEV[E.mg],
+    on = evMgOn(E),
+    left = evMgLeft(E),
+    back = evBack(e),
+    st = evNow() >= evT(M.settle);
+  return `<div class="evmg"><img class="evmgimg" src="assets/mini/sled.png" alt=""><div>
+  <b>🎁 선물 배달</b>
+  <small>${on ? `오늘 남은 판 <b>${left}/${M.daily + (e.mg.ad ? M.ad : 0)}</b> · 연습판은 무제한` : st ? '랭킹 정산이 끝났어요 · 보상은 우편함으로' : '크리스마스 주간에 열려요'}</small>
+  <small>내 최고 <b>${fmt(e.mg.best || 0)}점</b> <span id="evMgRk"></span></small></div></div>
+ <p class="note">30초 동안 화면을 눌러 굴뚝에 선물을 넣어요. 굴뚝 10점 × 연속 배수(5번마다 +1배, 최대 5배) · 한가운데 +5 · <b style="color:#ffd34a">황금 굴뚝</b> 30점 · 연기 나는 굴뚝은 연속이 끊겨요. 판마다 ${E.cur.n} 점수÷10 (최대 100)</p>
+ ${on ? `<div class="btns"><button class="buy pri evbig" id="evMgGo" ${left > 0 && !back ? '' : 'disabled'}>${back ? '휴대폰 시간을 확인해 주세요' : left > 0 ? '시작' : '오늘 판 끝'}</button><button class="buy" id="evMgPr">연습</button>${!e.mg.ad && !back ? '<button class="buy ad" id="evMgAd">▶ 광고 +1판</button>' : ''}</div>` : ''}
+ <button class="buy ghost" id="evMgRank" style="width:100%">🏆 선물 배달 랭킹</button>
+ <details class="evrw"><summary>랭킹 보상 (${kstDate(evT(M.settle) - 1)} 하루 끝에 정산 → 우편)</summary>${M.rew.map(([a, b]) => `<div class="kv"><span>${a}</span><b>${b}</b></div>`).join('')}<p class="note">크리스마스 주간 동안 보상 판 한 판 최고 점수로 순위를 정해요 (같은 점수면 먼저 낸 사람)</p></details>`;
+}
+function evMgBind(E) {
+  const q = s => $('sheet').querySelector(s);
+  if (!q('#evMgRank')) return;
+  q('#evMgRank').onclick = () => rankSheet('mg');
+  if (q('#evMgGo')) q('#evMgGo').onclick = () => evMgStart(E.id, false);
+  if (q('#evMgPr')) q('#evMgPr').onclick = () => evMgStart(E.id, true);
+  if (q('#evMgAd'))
+    q('#evMgAd').onclick = () =>
+      evAdWatch(E.id, 'mg', () => {
+        evToday(evS(E.id)).mg.ad = 1;
+        toast('선물 배달 +1판');
+        evSheet(E.id, 'mg');
+      });
+  if (sbOn() && S.nick && !noSave)
+    sbRpc('kd_mg_ranking', { p_game: E.mg })
+      .then(rows => {
+        const me = Array.isArray(rows) && rows.find(x => x.me),
+          el = $('evMgRk');
+        if (el && me) el.innerHTML = `· <b>${me.rank}위</b> / ${me.total}명`;
+      })
+      .catch(() => {});
+}
+
+/* ---- 랭킹 결과 창 (12/26 정산 뒤 처음 접속 1번) · 외형·배지는 우편으로도 오지만 여기서도 한 번 더 확인해 넣음(같은 것 두 번 안 줌) ---- */
+let evRkBusy = false;
+async function evMgResult(E) {
+  if (!E.mg || !MGEV[E.mg] || evRkBusy) return;
+  const M = MGEV[E.mg],
+    e = evS(E.id);
+  if (evNow() < evT(M.settle) || e.seen.mgEnd || !(e.mg.best > 0) || !sbOn() || !S.nick) return;
+  evRkBusy = true;
+  try {
+    const rows = await sbRpc('kd_mg_ranking', { p_game: E.mg }),
+      me = Array.isArray(rows) && rows.find(x => x.me);
+    if (!rows.length || !rows[0].settled) return;
+    e.seen.mgEnd = 1;
+    save();
+    if (me) queue(() => evMgResultSheet(E, me.rank, me.total, me.score));
+  } catch (err) {
+  } finally {
+    evRkBusy = false;
+  }
+}
+function evMgResultSheet(E, rank, total, score) {
+  const M = MGEV[E.mg],
+    top = rank <= 10,
+    pct = rank <= Math.ceil(total * 0.3);
+  let nw = false;
+  if (top) nw = skinGive('santa', M.year);
+  if (rank === 1) evGive(E.id, [{ k: 'badge', id: 'delivery' }]);
+  save();
+  const rw = rank === 1 ? M.rew[0][1] : top ? M.rew[1][1] : rank <= 100 ? M.rew[2][1] : pct ? M.rew[3][1] : '';
+  $('sheet').innerHTML = `<div class="hdban evban" style="--hb:url(${E.art.hd})"><span>선물 배달 랭킹</span></div>
+ ${top ? `<img class="evskinpv" src="assets/portraits/portrait_kael_santa_laugh.png" alt="" onerror="this.remove()">` : ''}
+ <h2 style="text-align:center">선물 배달 ${rank}위!</h2>
+ <p class="note" style="text-align:center">${fmt(score)}점 · ${fmt(total)}명 참여</p>
+ <div class="evrkrw">${rw ? `<b>${rw}</b>` : ''}<small>참가 보상 ${E.cur.n} 100${rw ? '' : ' (모두에게)'}</small></div>
+ ${top ? `<p class="note" style="text-align:center;color:#ffd34a">외형 「산타 카엘」을 받았어요!${nw ? ' 지금 카엘이 산타 옷을 입었어요' : ''}<br><small>장비 탭 카엘 칸 「외형」에서 바꿀 수 있어요</small></p>` : ''}
+ <p class="note" style="text-align:center">보상은 우편함에서 받아요</p>
+ <div class="acts"><button id="mAlt">랭킹 보기</button><button class="pri" id="mGo">우편함</button></div>`;
+  $('modal').hidden = false;
+  haptic([30, 40, 70]);
+  drawMyFace();
+  eqSig = '';
+  $('mGo').onclick = () => {
+    closeModal();
+    if (typeof mailSheet === 'function') mailSheet();
+  };
+  $('mAlt').onclick = () => {
+    closeModal();
+    rankSheet('mg');
+  };
+}
+/* ---- 외형 고르기 (장비 탭 카엘 칸 「외형」) ---- */
+function skinSheet() {
+  const has = k => !!(S.skins && Array.isArray(S.skins[k]) && S.skins[k].length);
+  const row = (k, n, img, sub, ok) =>
+    `<button class="skrow${(S.skin || '') === k ? ' on' : ''}${ok ? '' : ' locked'}" data-skin="${k}" ${ok ? '' : 'disabled'}><img src="${img}" alt="" onerror="this.remove()"><span><b>${n}</b><small>${sub}</small></span><em>${(S.skin || '') === k ? '쓰는 중' : ok ? '고르기' : '🔒'}</em></button>`;
+  $('sheet').innerHTML =
+    `<div class="eyebrow">카엘</div><h2>외형</h2><p class="note">겉모습만 바뀌어요. 능력은 그대로예요${owned(CHIEF) ? ' · 카엘 촌장에는 적용되지 않아요' : ''}</p>
+ ${row('', '기본 카엘', 'assets/portraits/portrait_kael_idle.png', '밀짚모자 농부 용사', true)}
+ ${Object.keys(SKINS)
+   .map(k => {
+     const K = SKINS[k],
+       ys = ((S.skins && S.skins[k]) || []).filter(y => y > 0);
+     return row(
+       k,
+       K.n,
+       'assets/portraits/portrait_' + K.face + '_idle.png',
+       has(k) ? (ys.length ? `<i class="sktag">${K.tag(ys)}</i>` : '받은 외형') : K.how,
+       has(k)
+     );
+   })
+   .join('')}
+ <div class="acts one"><button class="pri" id="mGo">닫기</button></div>`;
+  $('modal').hidden = false;
+  $('mGo').onclick = closeModal;
+  document.querySelectorAll('[data-skin]').forEach(
+    b =>
+      (b.onclick = () => {
+        S.skin = b.dataset.skin;
+        save();
+        drawMyFace();
+        eqSig = '';
+        prowSig = '';
+        partySig = '';
+        renderAll();
+        skinSheet();
+      })
+  );
+}
+/* ---- 전투 화면 눈 내리기 (효과 줄이기·움직임 줄이기면 끔) ---- */
+const evSnowOn = () => !S.lowFx && !RM && evOpen() && Object.values(EVT).some(E => E.bat && evPhase(E) === 'on');
+let evFlakes = null;
+function evSnowDraw() {
+  if (!evSnowOn()) return;
+  if (!evFlakes) {
+    const r = mgRng(20261211);
+    evFlakes = Array.from({ length: 70 }, () => ({ x: r(), y: r(), z: 0.4 + r() * 0.8, p: r() * 6.28 }));
+  }
+  ctx.save();
+  ctx.fillStyle = '#fff';
+  for (const f of evFlakes) {
+    const y = ((f.y + T * 0.05 * f.z) % 1) * (Ht + 10) - 5,
+      x = (((f.x + Math.sin(T * 0.8 + f.p) * 0.012 - T * 0.006 * f.z) % 1) + 1) % 1;
+    ctx.globalAlpha = 0.35 + 0.45 * f.z;
+    ctx.beginPath();
+    ctx.arc(x * W, y, 1 + 1.6 * f.z, 0, 6.283);
+    ctx.fill();
+  }
+  ctx.restore();
+}
+/* ---- 도전 창 맨 위 「눈꽃제」 칸 ---- */
+function evChHtml() {
+  const E = Object.values(EVT).find(X => X.boss && evPhase(X) === 'on');
+  if (!E || !evOpen()) return '';
+  const e = evToday(evS(E.id)),
+    xm = evXmas(E),
+    left = evTriesLeft(E);
+  return `<div class="chcard evch"><div class="chh"><span class="chi"><img src="${E.art.icon}" alt="" style="width:26px;height:26px"></span><b>${E.n} · ${xm ? '산타 ' : ''}${E.boss.n}</b><small>오늘 <b>${left}/${evTries(E, e)}</b></small></div>
+  <p class="chp">${e.boss.st}단계 · 최고 ${e.boss.best}단계 · 이기면 ${E.cur.n} ${E.boss.win(e.boss.st) * (xm ? E.boss.santaX : 1)}</p>
+  <div class="btns"><button class="buy pri" id="chEv" ${left > 0 ? '' : 'disabled'}>${left > 0 ? '도전하기' : '오늘 도전 끝'}</button>${evMgOn(E) ? `<button class="buy" id="chMg">🎁 선물 배달 (${evMgLeft(E)})</button>` : `<button class="buy" id="chEvW">이벤트 창</button>`}</div></div>`;
+}
+function evChBind() {
+  const E = Object.values(EVT).find(X => X.boss && evPhase(X) === 'on');
+  if (!E) return;
+  const a = $('chEv'),
+    b = $('chMg'),
+    c = $('chEvW');
+  if (a)
+    a.onclick = () => {
+      closeModal();
+      evBossStart(E.id);
+    };
+  if (b) b.onclick = () => evMgStart(E.id, false);
+  if (c) c.onclick = () => evSheet(E.id);
+}
+/* ---- 시작·끝 장면 ---- */
+function evScenes() {
+  if (!evOpen()) return;
+  for (const E of evList()) {
+    const e = evS(E.id),
+      ph = evPhase(E);
+    if (ph === 'on' && !e.seen.start) {
+      e.seen.start = 1;
+      save();
+      queue(() => {
+        scene('정기 이벤트', E.n + '가 열렸어요', E.lines.start, '이벤트 보기', null, E.art.illust);
+        $('mGo').onclick = () => {
+          sceneQ.unshift(() => evSheet(E.id));
+          closeModal();
+        };
+      });
+    } else if (ph === 'shop' && !e.seen.end) {
+      e.seen.end = 1;
+      e.seen.start = 1;
+      save();
+      queue(() => {
+        scene(E.n, E.n + '가 끝났어요', E.lines.end(owned(E.comp)), E.shopN + ' 가기');
+        $('mGo').onclick = () => {
+          sceneQ.unshift(() => evSheet(E.id, 'shop'));
+          closeModal();
+        };
+      });
+    }
+    evXmasCheck(E);
+    evWarnCheck(E);
+    evMgResult(E);
+  }
+}
+/* ---- 서버 날짜 읽기 (supabase/stage11_minigame.sql 의 kd_event_list · 로그인 없이 읽기만) ---- */
+async function evFetch() {
+  if (!sbOn() || evDemoOn) return;
+  try {
+    const t0 = Date.now(),
+      res = await sbFetch(SB.url + '/rest/v1/rpc/kd_event_list', {
+        method: 'POST',
+        headers: { apikey: SB.key, 'Content-Type': 'application/json' },
+        body: '{}'
+      });
+    if (!res.ok) return;
+    const j = await res.json(),
+      t1 = Date.now();
+    if (!j || !Array.isArray(j.events)) return;
+    const sv = Date.parse(j.now);
+    if (Number.isFinite(sv)) evSkew = sv - (t0 + t1) / 2;
+    evRows = j.events;
+    try {
+      localStorage.setItem('kd-ev', JSON.stringify({ at: t1, rows: evRows }));
+    } catch (e) {}
+    evHudSig = '';
+    evClean();
+    evPassSrc();
+    renderAll();
+    evScenes();
+  } catch (e) {}
+}
+/* ---- 미리보기 (?demo=snow · xmas · mg · mgrank): 저장 안 함 ---- */
+function evDemo() {
+  if (!['snow', 'xmas', 'mg', 'mgrank'].includes(DEMO)) return false;
+  evDemoOn = DEMO;
+  noSave = true;
+  S = p2Demo(40, 60);
+  S.lv = Object.assign(S.lv, { bron: 40, haral: 40, riel: 40, margo: 40 });
+  S.up = { atk: 300, hp: 300, spd: 30, crit: 30 };
+  S.cards = Object.assign(S.cards || {}, { sobok: 20 });
+  S.mgHint = DEMO === 'mg' ? 1 : 0;
+  for (const k in VPOS) S.done['vo_' + k] = 1; /* 미리보기에서는 마을 새 소식 창을 띄우지 않음 */
+  S.workIntro = 1;
+  S.att = Object.assign(S.att || {}, { lw: today(), lm: today(), intro: 1 }); /* 피트의 출석부 창도 띄우지 않음 */
+  const e = evS(EV_MAIN);
+  e.sf = 1200;
+  e.seen.start = DEMO === 'snow' ? 0 : 1;
+  if (DEMO === 'mg' || DEMO === 'mgrank') {
+    e.seen.xmas = 1; /* 바로 미니게임·결과 창이 보이게 크리스마스 인사·선물 창은 건너뜀 */
+    e.xm.gift[evDay()] = 1;
+  }
+  setTimeout(
+    () =>
+      toast(
+        {
+          snow: '눈꽃제 미리보기예요',
+          xmas: '크리스마스 주간 미리보기예요',
+          mg: '선물 배달 미리보기예요',
+          mgrank: '선물 배달 랭킹 결과 미리보기예요'
+        }[DEMO] + ' · 진행은 저장되지 않아요'
+      ),
+    700
+  );
+  return true;
+}
+function evDemoAfter() {
+  if (!evDemoOn) return;
+  const E = EVT[EV_MAIN];
+  if (evDemoOn === 'mg') setTimeout(() => evMgStart(EV_MAIN, false), 900);
+  if (evDemoOn === 'mgrank')
+    setTimeout(() => {
+      evS(EV_MAIN).mg.best = 1480;
+      queue(() => evMgResultSheet(E, 3, 812, 1480));
+    }, 900);
+}
+/* ---- 붙이기: 저장 불러오기·그림 받기보다 먼저 (웹·앱 비교 시험 자료에는 들어가지 않음) ---- */
+function evInstall() {
+  if (COMP.sobok) return;
+  /* 한정 동료 소복이: 영웅 광부 · 눈꽃제 상점·출석 카드로만 (일반 카드 뽑기에 안 나옴) · 수치는 젬젬(영웅 광부)과 같게 */
+  COMP.sobok = {
+    n: '소복이',
+    role: '광부 · 치명타 피해',
+    desc: '첫눈이 올 때만 산에서 내려오는 눈 정령 소녀. 얼음 끌과 망치로 눈꽃·얼음 조각을 깎는 조각가. 말끝마다 「~소복」.',
+    join: '눈꽃제 카드 30장을 모으면 합류',
+    base: { atk: 9, hp: 210, aps: 0.75 },
+    per: { atk: 2.8, hp: 42 }
+  };
+  RECRUITS.sobok = {
+    job: 'miner',
+    title: '눈 정령 조각가 소복이',
+    lines: [
+      'm:소복이|눈송이를 이렇게나 많이…! 감동이에요, 소복.',
+      'm:소복이|저도 원정대에 따라가도 돼요? 얼음이라면 무엇이든 깎을 수 있어요!',
+      'm:브론|오, 그 끌 솜씨면 광부로도 쓸 만하겠구먼.',
+      'k@smile:대신 내 밭에는 눈 너무 많이 쌓지 마.',
+      'm:소복이|노력해 볼게요, 소복!',
+      'sys:광부 자리에서 브론 대신 출전할 수 있어요.'
+    ],
+    ok: '바로 출전',
+    go: () => setMember('miner', 'sobok')
+  };
+  EVCARD.sobok = 1;
+  JOB.sobok = 'miner';
+  GRADE.sobok = 'epic';
+  HEIGHT.sobok = 66;
+  SPRITES.sobok = { idle: 4, walk: 6, attack: 4, hit: 2, h: 66 };
+  SPRITE_ALT.sobok = 'bron';
+  FORM.sobok = FORM.gemgem;
+  DRAW.sobok = DRAW.gemgem;
+  SKILLS.sobok = {
+    n: '눈꽃 조각',
+    d: '8초 동안 원정대 치명타 피해 +40% (★3·★5에서 강화)',
+    line: '눈꽃아, 피어나라 소복!',
+    need: 22,
+    face: 'laugh'
+  };
+  FXDEF.skill_sobok = 4;
+  FXDEF.boss_snowball = 4;
+  NPCID['소복이'] = 'sobok';
+  NPCID['산타 피트'] = 'pete_santa';
+  VTALK.sobok = [
+    '이 바위는 얼음 조각으로 깎으면 예쁘겠어요, 소복!',
+    '브론 아저씨 망치는 너무 뜨거워요…',
+    '눈이 그쳐도 저는 안 녹아요, 소복!'
+  ];
+  WLINE.sobok = '얼음 조각 깎는 중이에요, 소복!';
+  /* 외형 그림 (카엘과 같은 배치) */
+  SPRITES.kael_santa = { idle: 4, walk: 6, attack: 4, hit: 2, h: 70 };
+  /* 프로필: 테두리 「눈꽃 왕관」 · 배지 「눈꽃제」 「메리 크리스마스」 「선물 배달왕」 */
+  PFRAMES.push({ k: 'snow', n: '눈꽃 왕관', d: '눈꽃제 눈꽃 상점', ok: () => false, tall: 1, ev: 1 });
+  BADGES.push({ k: 'snow', n: '눈꽃제', d: '눈꽃제 눈꽃 상점', ok: () => false, ev: 1 });
+  BADGES.push({ k: 'xmas', n: '메리 크리스마스', d: '크리스마스 주간 5일 중 3일 접속', ok: () => evXmasCount() >= 3 });
+  BADGES.push({ k: 'delivery', n: '선물 배달왕', d: '선물 배달 랭킹 1위', ok: () => false, rk: 1 });
+  /* 화면: 상단 버튼 · 미니게임 판 · 장비 탭 「외형」 */
+  const sb = $('shopBtn');
+  if (sb && !$('evBtn')) {
+    sb.insertAdjacentHTML(
+      'afterend',
+      `<button class="mailbtn evfab" id="evBtn" aria-label="눈꽃제" data-l="눈꽃제" hidden><img src="assets/ui/icon_snow.png" alt="" onerror="this.outerHTML='<span>❄️</span>'"><i class="evhat">🎅</i><i class="dot" id="evDot" hidden></i></button>`
+    );
+    $('evBtn').onclick = evBtnTap;
+  }
+  if (!$('mgOv')) {
+    document.body.insertAdjacentHTML(
+      'beforeend',
+      `<div class="mgov" id="mgOv" hidden><div class="mgbox"><canvas id="mgCv" aria-label="선물 배달 미니게임 화면"></canvas><button class="mgx" id="mgX" aria-label="나가기">✕</button><div class="mgpan" id="mgPan" hidden></div></div></div>`
+    );
+    $('mgCv').addEventListener('pointerdown', mgTap);
+    $('mgX').onclick = mgX;
+    document.addEventListener('keydown', ev => {
+      if (MGS && !$('mgOv').hidden && (ev.code === 'Space' || ev.code === 'Enter') && MGS.ph === 'play') mgTap(ev);
+    });
+  }
+  const st = document.querySelector('.eqstage');
+  if (st && !$('skinBtn')) {
+    st.insertAdjacentHTML('beforeend', `<button class="skinbtn" id="skinBtn" aria-label="카엘 외형 바꾸기">👕 외형</button>`);
+    $('skinBtn').onclick = skinSheet;
+  }
+}
+/* 원정 일지 점수: 이벤트 기간에만 「눈사람 대장 도전」 1번 +20 */
+function evPassSrc() {
+  if (Object.values(EVT).some(E => E.boss && evPhase(E) === 'on')) PASS_SRC.snow = [20, 20, '눈사람 대장 도전'];
+  else delete PASS_SRC.snow;
+}
+/* 시작할 때 (저장 불러온 뒤) */
+function evBoot(isNew) {
+  evClean();
+  evPassSrc();
+  for (const E of evList()) evS(E.id);
+  if (!isNew) evScenes();
+  setTimeout(evFetch, 1800);
+  evDemoAfter();
+}
+
 function start(data) {
   p2Install(); /* 2부 1차(엘프 왕국)를 붙임 — 저장 불러오기·그림 받기보다 먼저 */
+  evInstall(); /* 정기 이벤트(눈꽃제): 소복이·외형·버튼 — 저장 불러오기·그림 받기보다 먼저 */
   loadSprites();
   loadMonSprites();
   loadBgs();
@@ -24529,6 +27029,7 @@ function start(data) {
     S = p2Demo(...P2DEMO[DEMO]);
     setTimeout(() => toast('2부 미리보기예요. 영지 ' + P2DEMO[DEMO][0] + ' 장수 바로 앞에서 시작하고, 진행은 저장되지 않아요'), 600);
   }
+  evDemo(); /* ?demo=snow·xmas·mg·mgrank (저장 안 함) */
   $('autoSell').checked = S.autoSell;
   $('autoOpen').checked = S.autoOpen;
   const isNew = !S.started;
@@ -24551,6 +27052,7 @@ function start(data) {
   }
   passS();
   growCheck();
+  evBoot(isNew);
   if (!isNew) queue(passWarn);
   attAutoDay = today();
   attPreload();
