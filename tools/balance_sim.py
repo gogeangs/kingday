@@ -6,6 +6,7 @@
     python3 tools/balance_sim.py pass               # 원정 일지 점수: 하루 2~3번 접속 유저 · 출석만 하는 유저 (docs/content/SHOP.md 8장)
     python3 tools/balance_sim.py bond               # 원정대의 정: 하루 10시간 쌓이는 유저의 ♥3·♥5 도달일 · 같은 직업 짝 (docs/content/BOND.md 8장)
     python3 tools/balance_sim.py p2 4 50 8 '{"hpG2":1.03}' 70 1   # 2부(61~90): 1부 엔딩까지(최대 4시간, 추억 50·은퇴 8 + 1부 끝 무렵 마을 = 60을 겨우 깨는 유저) → 출퇴근 방치러가 61~91에 닿는 날 (PART2.md 8장)
+    python3 tools/balance_sim.py snow 2 10 2 '{}' '{"idleK":0.1}' '{"hpG":1.15}' 500   # 눈꽃제 21일: 처음부터 2시간(추억 10·은퇴 2) 키운 유저 → 매일 오는 유저·하루 1번 유저 눈송이·눈사람 대장 단계 (EVENT_SNOW.md 8장). 마지막 수 = 선물 배달 한 판 점수(가정)
 """
 import asyncio,sys,json
 from playwright.async_api import async_playwright
@@ -24,6 +25,16 @@ async def main():
       print('출퇴근 방치러 (하루 3번 · 5분) 처음 닿은 날:',' '.join(f"{k}:{v}일" for k,v in sorted(r['days'].items(),key=lambda x:int(x[0]))))
       print('은퇴(며칠째, 영지, 추억):',r['retires'],'| 추억',r['memory'][0],'→',r['memory'][1],'| 끝 영지',r['stage'],'최고',r['best'],'세션',r['sessions'],'| 2부 실패(전멸, 시간 초과)',r['fails'])
       print('61 몬스터 체력',r['mon'][0],'· 70 장수 체력',r['mon'][1])
+      await b.close();return
+    if H=='snow':
+      A=sys.argv[2:]
+      hrs=A[0] if len(A)>0 else '2';mem=A[1] if len(A)>1 else '10';ret=A[2] if len(A)>2 else '2';tune=A[3] if len(A)>3 else '{}';evb=A[4] if len(A)>4 else '{}';evbs=A[5] if len(A)>5 else '{}';mg=A[6] if len(A)>6 else '500'
+      js=open(SP+'/event_sim.js').read().replace('HOURS',hrs).replace('TUNE',tune).replace('MEM',mem).replace('RET',ret).replace('EVBAT',evb).replace('EVBOSS',evbs).replace('MGSC',mg)
+      r=await pg.evaluate(js)
+      print('출발: 처음부터',hrs,'시간 · 추억',mem,'은퇴',ret,tune,'| 눈송이',evb,'보스',evbs,'| 선물 배달 한 판',mg,'점')
+      for who,v in r.items():
+        print(f"[{'매일 오는 유저' if who=='daily' else '하루 1번 유저'}] 21일 눈송이 {v['total']} (전투 {v['bat']} · 방치 {v['idle']} · 눈사람 {v['boss']} · 출석 {v['att']}, 출석 {v['attCnt']}칸) + 크리스마스 주간 {v['xmTotal']} {v['xmas']} | 영지 {v['best'][0]}→{v['best'][1]} · 눈사람 최고 {v['bossBest']}단계")
+        for d in v['days']: print('   ',d)
       await b.close();return
     if H=='village':
       r=await pg.evaluate(open(SP+'/village_sim.js').read())
