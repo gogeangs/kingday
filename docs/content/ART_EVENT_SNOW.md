@@ -1,7 +1,7 @@
 # 눈꽃제 그림 프롬프트 (ChatGPT 전용)
 
 작성일: 2026-10-28 · 기획서 `claude/CONTENT_EVENT_SNOW.md` 6장
-- **11장 받음·반영 (2026-10-28)** — 원본 `art/source/event/`, 게임용 `assets/ui/{hd_snow,item_snow,icon_snow}.png`·`assets/illust/illust_snow.jpg`·`assets/monsters/boss_snowman_*`(칸 벌린 `boss_snowman_motion_fix.png`, 배율 0.45)·`assets/fx/fx_boss_snowball.png`(2048×384, 4칸)·`assets/portraits/portrait_sobok_*`·`assets/skills/skill_sobok.png`·`assets/fx/fx_skill_sobok.png`·`assets/profile/frame_snow.png`. 배너는 위아래를 잘라 가운데 사용. **남은 2장: W-8 소복이 동작 시트, W-13 배지**
+- **11장 받음·반영 (2026-10-28)** — 원본 `art/source/event/`, 게임용 `assets/ui/{hd_snow,item_snow,icon_snow}.png`·`assets/illust/illust_snow.jpg`·`assets/monsters/boss_snowman_*`(칸 벌린 `boss_snowman_motion_fix.png`, 배율 0.45)·`assets/fx/fx_boss_snowball.png`(2048×384, 4칸)·`assets/portraits/portrait_sobok_*`·`assets/skills/skill_sobok.png`·`assets/fx/fx_skill_sobok.png`·`assets/profile/frame_snow.png`. 배너는 위아래를 잘라 가운데 사용. W-8 소복이 동작 시트(칸 벌린 `sobok_motion_fix.png`, 공격 넓은 칸 384)·W-13 배지 `badge_snow.png`(160)도 2026-10-29 반영 → **눈꽃제 그림 24장 모두 완료**
 - 13장, 블록 하나 = 그림 한 장. 블록마다 [공통 규칙] 포함 → 그대로 복사해 붙여 넣기.
 - **같은 대화창**: W-7~W-11(소복이) 한 창.
 - 첨부할 기존 그림(원본)은 블록마다 [첨부]에 적음.
