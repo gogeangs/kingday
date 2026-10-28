@@ -1,6 +1,7 @@
 # 신년축제 그림 프롬프트 (ChatGPT 전용)
 
 작성일: 2026-10-29 · 기획서 `claude/CONTENT_EVENT_NEWYEAR.md` 6장
+- **16장 모두 받음·반영 (2026-10-29)** — 원본 `art/source/newyear/`, 게임용 `assets/ui/{hd_newyear,item_lantern,icon_newyear,item_bok}.png`·`assets/illust/illust_newyear.jpg`·`assets/event/{yut_board,yut_front,yut_back,yut_piece,tile_lantern,tile_bok,tile_star,tile_card}.png`·`assets/fx/{fx_yut,fx_bok,fx_skill_mong}.png`·`assets/characters/mong_*`(줄이 어긋나 손으로 자른 `mong_motion_fix.png`)·`portrait_mong_*`·`skill_mong`·`frame_newyear`·`badge_{newyear,firstday,yut}`. 윷판 29칸 확인. **대표님 확인 필요: 「새해 첫날」 배지(바다 위 붉은 해·햇살·파도 무늬)가 일본풍(욱일 연상)으로 보일 수 있음, 꽃이 매화보다 벚꽃에 가까움**
 - 16장, 블록 하나 = 그림 한 장. 블록마다 [공통 규칙] 포함 → 그대로 복사해 붙여 넣기.
 - **같은 대화창**: Y-5~Y-7(윷놀이 3장) 한 창 · Y-9~Y-13(몽글이 5장) 한 창.
 - 눈꽃제 그림을 첨부하면 겨울 이벤트끼리 화풍이 맞음. 첨부 파일은 블록마다 [첨부].

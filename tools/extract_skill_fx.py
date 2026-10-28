@@ -87,3 +87,5 @@ build(load("art/source/fx/fx_skill_saffron.png"), "fx_skill_saffron", 384, 256, 
 build(load("art/source/fx/fx_skill_einar.png"), "fx_skill_einar", 384, 256, bottom=True)
 # 2026-10-28 눈꽃제 한정 동료
 build(load("art/source/fx/fx_skill_sobok.png"), "fx_skill_sobok", 384, 256, bottom=True)
+# 2026-10-29 신년축제 한정 동료
+build(load("art/source/fx/fx_skill_mong.png"), "fx_skill_mong", 384, 256, bottom=True)
