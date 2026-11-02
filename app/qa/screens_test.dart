@@ -38,12 +38,18 @@ Map<String, Object> _late() => {
 /// 2부: 1부를 끝내고 61 「왕궁 뜰」에 있던 예전 저장 (2부 시작 장면 → 큰 제목 → 엘프 왕국 이야기)
 Map<String, Object> _p2() {
   final m = jsonDecode(_late()['acorn-idle-v1'] as String) as Map<String, dynamic>;
-  m.addAll({
-    'stage': 61, 'wave': 3, 'best': 61, 'capClears': 1, 'ending1': 1, 'gold': 9.87e22, 'up': {'atk': 900, 'hp': 900, 'spd': 30, 'crit': 40},
-    'att': {'intro': 1, 'w': 1, 'ym': '', 'm': 0, 'last': '${DateTime.now().year}-${DateTime.now().month}-${DateTime.now().day}'},
-    'mapIntro': 1, 'fogSeen': 61, 'regSeen': {'0': 1, '1': 1, '2': 1, '3': 1, '4': 1, '5': 1}, 'rankSeen': 7, 'gemRank': 7,
-  });
-  (m['done'] as Map).addAll({'capRoad': true, 'cap56': true, 'cap57': true});
+  final now = DateTime.now();
+  final add = <String, dynamic>{
+    'stage': 61, 'wave': 3, 'best': 61, 'capClears': 1, 'ending1': 1, 'gold': 9.87e22,
+    'up': <String, dynamic>{'atk': 900, 'hp': 900, 'spd': 30, 'crit': 40},
+    'att': <String, dynamic>{'intro': 1, 'w': 1, 'ym': '', 'm': 0, 'last': '${now.year}-${now.month}-${now.day}'},
+    'mapIntro': 1, 'fogSeen': 61, 'regSeen': <String, dynamic>{'0': 1, '1': 1, '2': 1, '3': 1, '4': 1, '5': 1}, 'rankSeen': 7, 'gemRank': 7,
+  };
+  add.forEach((k, v) => m[k] = v);
+  final done = m['done'] as Map;
+  for (final k in const ['capRoad', 'cap56', 'cap57']) {
+    done[k] = true;
+  }
   return {'acorn-idle-v1': jsonEncode(m)};
 }
 
@@ -160,12 +166,16 @@ void main() {
         // 출석체크: 방치 보상 다음에 자동으로 뜸 → 출석하기 → 한달 판
         await frames(6);
         await shot('attend');
-        await tester.tap(find.text('출석하기'));
-        await frames(8);
-        await shot('attend_claimed');
-        await tester.tap(find.text('한달'));
-        await frames(4);
-        await shot('attend_month');
+        if (find.text('출석하기').evaluate().isNotEmpty) {
+          await tester.tap(find.text('출석하기'));
+          await frames(8);
+          await shot('attend_claimed');
+        }
+        if (find.text('한달').evaluate().isNotEmpty) {
+          await tester.tap(find.text('한달'));
+          await frames(4);
+          await shot('attend_month');
+        }
         await close();
       }
       // 밀린 이야기 창들을 모두 닫음
