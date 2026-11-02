@@ -46,14 +46,44 @@ class RegionDef {
         col = m['col'],
         mn = m['mn'],
         boss = m['boss'],
+        p2 = m['p2'],
         terr = _ss(m['terr']),
         lore = _ss(m['lore']);
   final String n, hill, hill2, ground, kind, col, mn, boss;
+  /// 2부 나라 키 (elf·desert·north). 1부 지역은 null
+  final String? p2;
   final List<String> sky, terr, lore;
 }
 
 final regions = [for (final x in wRegions) RegionDef._(_m(x))];
+/// 1부 마지막 영지(60 알현실). 왕도 판정(51~60)은 이 값에 고정 — 2부가 붙어도 바뀌지 않음 (웹 MAXLAND)
 const int maxLand = wMaxland;
+
+/// 지금 열린 마지막 영지 (웹 LAND, 2부 3나라까지 90). 그다음 1칸(91)은 보스 없이 사냥하는 「연합군 진영」
+const int land = wLand;
+
+/// 2부가 붙어 있는지 (웹 p2On). 앱 0.0.6부터 항상 true
+const bool p2On = land > maxLand;
+
+/// 사냥터(land+1) 이름 (웹 huntName)
+String huntName() => land >= 90 ? '연합군 진영' : p2On ? '바다 안개' : '왕궁 뜰';
+
+// ── 2부 「흩어진 동맹」 (docs/content/PART2.md) ──
+/// 2부 이야기 동료 id → 직업 (웹 STORY2)
+final Map<String, String> story2 = wStory2.cast<String, String>();
+
+class AllyDef {
+  AllyDef._(Map<String, dynamic> m)
+      : k = m['k'], n = m['n'], boss = _n(m['boss']).toInt(), king = m['king'], face = m['face'], t = m['t'], b = m['b'];
+  final String k, n, king, face, t, b;
+  final int boss;
+}
+
+/// 동맹 3나라 (웹 ALLY)
+final allies = [for (final x in wAlly) AllyDef._(_m(x))];
+
+/// 나라 장수 회차 첫 처치 추억 · 나라 처음 해방 이삭 · 2부 마지막 영지 · 바다 건너 첫 지역 번호
+final int p2Mem = _n(wP2c['mem']).toInt(), p2Gem = _n(wP2c['gem']).toInt(), p2Last = _n(wP2c['last']).toInt(), seaR0 = _n(wP2c['seaR0']).toInt();
 final List<String> bossIds = wBossid.cast<String>();
 
 // ── 동료 ──
@@ -144,6 +174,8 @@ class Balance {
   static final num bossAtk = _n(wBal['bossAtk']), lordAtk = _n(wBal['lordAtk']);
   /// 마왕 발타사르: 체력 ×demHp, 공격 1단계 ×demAtk → 2단계 ×demAtk2, 봉인의 파동 = 공격 ×seal
   static final num demHp = _n(wBal['demHp']), demAtk = _n(wBal['demAtk']), demAtk2 = _n(wBal['demAtk2']), seal = _n(wBal['seal']);
+  /// 2부 구간(61~)만 따로 쓰는 체력 증가율 (웹 BAL.hpG2, p2Install)
+  static final num? hpG2 = wBal['hpG2'] == null ? null : _n(wBal['hpG2']);
 }
 
 const num compGrow = wCompGrow;

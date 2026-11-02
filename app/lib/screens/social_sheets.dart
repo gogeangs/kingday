@@ -501,11 +501,12 @@ class _ProfileState extends State<_Profile> {
               const SizedBox(height: 3),
               Text('${ranks[c.rankIdx()].n} · 전투력 ${fmt(c.power())}', style: _muted()),
               const SizedBox(height: 3),
-              Text('최고 영지 ${math.min(s.best, maxLand)} · 은퇴 ${fmt(s.retires)}번 · 은퇴의 추억 ${fmt(s.memory)}개', style: _muted()),
+              Text('최고 영지 ${math.min(s.best, land)} · 은퇴 ${fmt(s.retires)}번 · 은퇴의 추억 ${fmt(s.memory)}개', style: _muted()),
               if (c.chOpen) ...[const SizedBox(height: 3), Text('시련의 탑 최고 ${c.towerTop()}층', style: _muted())],
             ]),
           ),
         ]),
+        if (c.p2Open()) ..._allyBox(c),
         Text.rich(
             TextSpan(children: dirty
                 ? const [TextSpan(text: '고른 대로 위에 미리 보여요. '), TextSpan(text: '저장', style: TextStyle(fontWeight: FontWeight.w700)), TextSpan(text: '을 눌러야 바뀌어요.')]
@@ -542,6 +543,68 @@ class _ProfileState extends State<_Profile> {
       ),
     );
   }
+}
+
+/// 프로필 「동맹」 칸: 해방한 나라는 왕 얼굴 + 보너스, 아직이면 실루엣 「○○을 해방하면 열려요」 (웹 allyBox)
+List<Widget> _allyBox(GameCalc c) {
+  final all = c.allyAll();
+  return [
+    KdSec('동맹', small: '해방한 나라의 영구 보너스'),
+    Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
+      for (final a in allies) ...[
+        if (a != allies.first) const SizedBox(width: 6),
+        Expanded(child: Builder(builder: (_) {
+          final on = c.allyOn(a.k);
+          final face = SizedBox(
+            width: 48,
+            height: 48,
+            child: ClipOval(
+              child: ColoredBox(
+                color: const Color(0xFF232A40),
+                child: a.face.isEmpty
+                    ? Center(child: Text('?', style: KdText.body(20, color: const Color(0xFF59627F), weight: FontWeight.w700)))
+                    : on
+                        ? kdImg('assets/game/portraits/portrait_${a.face}_idle.png', fit: BoxFit.cover)
+                        : Opacity(opacity: .55, child: ColorFiltered(colorFilter: const ColorFilter.mode(Colors.black, BlendMode.srcIn), child: kdImg('assets/game/portraits/portrait_${a.face}_idle.png', fit: BoxFit.cover))),
+              ),
+            ),
+          );
+          return Container(
+            padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 8),
+            decoration: BoxDecoration(
+              color: KdColors.panel2,
+              borderRadius: BorderRadius.circular(10),
+              border: Border.all(color: on ? const Color(0xB38FD06A) : KdColors.line),
+            ),
+            child: Column(children: [
+              face,
+              const SizedBox(height: 3),
+              Text(a.n, textAlign: TextAlign.center, style: KdText.body(12.5, weight: FontWeight.w700)),
+              Text(on ? a.b : '${a.n}을 해방하면 열려요', textAlign: TextAlign.center,
+                  style: KdText.body(11, color: on ? const Color(0xFF9BE3A8) : KdColors.muted, height: 1.35)),
+            ]),
+          );
+        })),
+      ],
+    ]),
+    const SizedBox(height: 6),
+    Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
+      decoration: BoxDecoration(
+        color: KdColors.panel2,
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(color: all ? const Color(0x99FFC94A) : KdColors.line),
+      ),
+      child: Row(children: [
+        Text('⚔ 연합군 맹주', style: KdText.body(12.5, weight: FontWeight.w700)),
+        const SizedBox(width: 8),
+        Expanded(
+          child: Text(all ? '원정대 공격 +10% · 테두리 「연합의 깃발」' : '세 나라를 모두 해방하면 원정대 공격 +10%',
+              textAlign: TextAlign.right, style: KdText.body(11, color: all ? KdColors.gold : KdColors.muted)),
+        ),
+      ]),
+    ),
+  ];
 }
 
 // ════════════════════ 닉네임 (웹 nickSheet) ════════════════════
@@ -1488,7 +1551,7 @@ Future<void> showCloudPick(BuildContext ctx, GameController g, Map<String, dynam
           Row(children: [
             card('클라우드 기록', asNum(cl['stage']), asNum(cl['power']), asNum(cl['gem']), '${agoText(cl['updated_at'])} 저장'),
             const SizedBox(width: 8),
-            card('이 기기 기록', math.min(s.stage, maxLand + 1), g.calc.power(), s.gem, '지금'),
+            card('이 기기 기록', math.min(s.stage, land + 1), g.calc.power(), s.gem, '지금'),
           ]),
         ],
         acts: KdActs(buttons: [

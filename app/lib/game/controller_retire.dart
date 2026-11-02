@@ -63,7 +63,7 @@ extension GameRetireX on GameController {
           }
           var nrank = 0; // 시작 영지 st 의 칭호 (웹 rankIdx({stage:st}))
           for (var j = 0; j < ranks.length; j++) {
-            if ((st - 1 < maxLand ? st - 1 : maxLand) >= ranks[j].at) nrank = j;
+            if ((st - 1 < land ? st - 1 : land) >= ranks[j].at) nrank = j;
           }
           Widget box(String head, Color col, List<Widget> body, {Color? border}) => Container(
                 padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
@@ -89,7 +89,7 @@ extension GameRetireX on GameController {
               );
           Widget note(String t, [Color col = const Color(0xFF97A2C3)]) =>
               Padding(padding: const EdgeInsets.only(top: 4), child: Text(t, style: KdText.body(12, color: col, height: 1.45)));
-          final land = (s.stage < maxLand + 1 ? s.stage : maxLand + 1) - 1;
+          final land0 = (s.stage < land + 1 ? s.stage : land + 1) - 1;
           const gold = TextStyle(color: Color(0xFFFFD34A), fontWeight: FontWeight.w700);
           return KdSheetBody(
             eyebrow: '은퇴 확인',
@@ -97,7 +97,7 @@ extension GameRetireX on GameController {
             title: '정말 은퇴할까요?',
             children: [
               box('처음으로 돌아가요', const Color(0xFFFF8A7A), border: const Color(0x80FF8A7A), [
-                li('되찾은 영지', '$land곳 → ${st - 1}곳 (${stgName(st)}부터)'),
+                li('되찾은 영지', '$land0곳 → ${st - 1}곳 (${stgName(st)}부터)'),
                 li('골드', '${fmt(s.gold)} → ${fmt(60 + purse)}'),
                 li('착용한 성유물', '$eqN개 → 모두 사라짐'),
                 li('단련 능력치', up > 0 ? '+${fmt(up)}단계 → 0' : '없음'),
