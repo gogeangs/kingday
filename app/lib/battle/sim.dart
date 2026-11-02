@@ -2101,6 +2101,7 @@ class BattleSim {
     clr[a.k] = 1;
     if (first) {
       ally[a.k] = 1;
+      s.raw['last'] = c.now; // 웹 p2Win 의 save(): S.last = Date.now() (긴 플레이 비교와 같게)
       final gl = s.raw['gemLord'] is Map ? s.raw['gemLord'] as Map : (s.raw['gemLord'] = <String, dynamic>{});
       if (!truthy(gl['${a.boss}'])) {
         gl['${a.boss}'] = 1;

@@ -85,7 +85,9 @@ void main() {
     final gem0 = c.s.gem;
     killBoss(sim);
     expect(c.allyOn('elf'), isTrue);
-    expect(c.s.gem - gem0, p2Gem);
+    // 해방 이삭 300 (영지 70에 닿아 칭호가 오르면 칭호 이삭도 함께)
+    expect(c.s.gem - gem0, anyOf(p2Gem, p2Gem + rankGem));
+    expect(truthy(asMap(c.s.raw['gemLord'])!['70']), isTrue);
     expect(c.s.stage, 71);
     expect(sim.events.whereType<P2WinEvent>().single.first, isTrue);
     expect(truthy(asMap(c.s.raw['p2Clr'])!['elf']), isTrue);
