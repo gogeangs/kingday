@@ -84,7 +84,7 @@ TowerInfo towerInfo(int f) {
       face = bossIds[gi];
     }
   }
-  final hp = GameCalc.monHp(s, false) * (gate ? Balance.lordHp : Balance.bossHp) * (rule == 2 ? .8 : 1) * (rule == 1 ? .6 : 1);
+  final hp = GameCalc.monHp(s, false, true) * (gate ? Balance.lordHp : Balance.bossHp) * (rule == 2 ? .8 : 1) * (rule == 1 ? .6 : 1);
   final atk = GameCalc.monAtk(s, false) * (gate ? Balance.lordAtk : Balance.bossAtk) * (rule == 3 ? .5 : 1);
   return TowerInfo(f, s, gate, rule, art, name, face, hp, atk, gate ? towerGateLim : rule == 2 ? towerRushLim : towerLim);
 }

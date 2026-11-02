@@ -194,6 +194,9 @@ class SkillTimers {
   /// 2026-10-27 새 동료: 그룩 스튜(최대 체력↑) · 브루노 도발 · 바오 막기 · 플로라 꽃밭 (웹 SKX.stew·taunt·blk·bloom)
   num stew = 0, stewK = 1, taunt = 0, tauntK = 1, blk = 0, bloom = 0, bloomK = 1, bloomTick = 0;
 
+  /// 사프란 「향신료 한 줌」 원정대 공격 +15% 남은 시간 (2부, 웹 SKX.spice)
+  num spice = 0;
+
   /// 폴리 「따라 해!」가 따라 쓸 마지막 스킬 (웹 SKX.lastSk)
   String lastSk = '';
 
@@ -279,6 +282,14 @@ class DemonWinEvent extends BattleEvent {
   final int bonus;
 }
 
+/// 2부 나라 장수 처치 (웹 p2Win): [first] 처음 해방(장면·동맹 창), [bonus] 재해방 추억
+class P2WinEvent extends BattleEvent {
+  P2WinEvent(this.a, this.first, this.bonus);
+  final AllyDef a;
+  final bool first;
+  final int bonus;
+}
+
 /// 탑 층 돌파: [first] 처음 돌파, [r] 보상, [unlocked] 새로 얻은 배지·테두리 이름
 class TowerWinEvent extends BattleEvent {
   TowerWinEvent(this.f, this.first, this.r, this.unlocked);
@@ -330,6 +341,7 @@ class BattleSim {
     c.bakeProbe = () => skx.bake > 0;
     c.ulProbe = () => skx.ul > 0 ? (a: skx.ulA, s: skx.ulS) : null;
     c.stewProbe = () => skx.stew > 0 ? 1 + .2 * skx.stewK : 1;
+    c.spiceProbe = () => skx.spice > 0;
   }
 
   final GameCalc c;
@@ -386,6 +398,7 @@ class BattleSim {
   void _chPartyReset() {
     skx.shield = skx.honey = skx.feast = skx.guts = skx.sym = skx.lamp = skx.sap = skx.ward = skx.dok = skx.phx = 0;
     skx.stew = skx.taunt = skx.blk = skx.bloom = 0;
+    skx.spice = 0;
     skx.ul = 0;
     for (final id in c.members()) {
       final p = party[id];
@@ -635,7 +648,8 @@ class BattleSim {
   void chargeSkill(String id) {
     final p = party[id];
     if (p == null) return;
-    p.sg = math.min(skills[id]!.need, p.sg + (c.buff('sk') ? 1.2 : 1));
+    // 엘프 동맹: 동료 게이지 +10% (웹 chargeSkill · allySk)
+    p.sg = math.min(skills[id]!.need, p.sg + (c.buff('sk') ? 1.2 : 1) * (id == 'kael' || id == GameCalc.chiefId ? 1 : c.allySk()));
     if (p.sg >= skills[id]!.need && !truthy(s.done['tutSkill'])) {
       s.done['tutSkill'] = true;
       events.add(SkillTutorialEvent());
@@ -701,6 +715,46 @@ class BattleSim {
         skx.honey = 6;
         skx.honeyTick = 0;
         spawnFx('skill_riel', cx, cy - 40 * sc, 150 * sc, .9);
+      case 'solen':
+        // 솔렌 「세계수 꽃가루」: 모든 적에게 공격력 1배 + 3초 느려짐 (2부 이야기 동료, PART2.md 3-5)
+        for (final m in alive) {
+          hitMon(m, t.atk * feast, false, sc);
+          m.slow = math.max(m.slow, 3);
+        }
+        if (fxOk('skill_solen')) {
+          spawnFx('skill_solen', cx, cy - 40 * sc, 160 * sc, .9);
+        } else {
+          for (final m in alive) {
+            spawnFx('bees', m.x, m.y - 30 * sc, 50 * sc, .6);
+          }
+        }
+      case 'saffron':
+        // 사프란 「향신료 한 줌」: 8초 동안 원정대 공격 +15% (2부 이야기 동료)
+        skx.spice = 8;
+        for (final j in c.members()) {
+          final q = party[j];
+          if (q != null && !q.down) addFloat(pos[j]!, py[j]! - (heightOf(j) + 8) * sc, '공격↑', 0xFFFFB35A, 12);
+        }
+        if (fxOk('skill_saffron')) {
+          final ids = c.members();
+          num mx = 0, my = 0;
+          for (final j in ids) {
+            mx = mx + pos[j]!;
+            my = my + py[j]!;
+          }
+          spawnFx('skill_saffron', mx / ids.length, my / ids.length - 60 * sc, 190 * sc, .9);
+        }
+      case 'einar':
+        // 에이나르 「얼음 작살」: 앞의 적 하나 2.5배 + 2초 얼림(멈춤)
+        final tg = alive.first;
+        hitMon(tg, t.atk * 2.5 * feast, true, sc);
+        tg.bind = math.max(tg.bind, 2);
+        addFloat(tg.x, tg.y - 80 * sc, '얼음!', 0xFFBFE6FF, 13);
+        if (fxOk('skill_einar')) {
+          spawnFx('skill_einar', tg.x, tg.y - 40 * sc, 150 * sc, .8);
+        } else {
+          spawnFx('harpoon', tg.x, tg.y - 30 * sc, 60 * sc, .5);
+        }
       case 'margo':
         _healAll(.3, 70 * sc, sc, pos, py);
         skx.feast = 8;
@@ -1250,6 +1304,7 @@ class BattleSim {
   void _stepSkills(num dt, BattleLayout l, List<Mon> alive) {
     skx.shield = math.max(0, skx.shield - dt);
     skx.feast = math.max(0, skx.feast - dt);
+    if (skx.spice > 0) skx.spice = math.max(0, skx.spice - dt); // 사프란 (2부)
     skx.bake = math.max(0, skx.bake - dt);
     skx.mount = math.max(0, skx.mount - dt);
     skx.wall = math.max(0, skx.wall - dt);
@@ -1338,25 +1393,25 @@ class BattleSim {
 
   void spawn() {
     if (ch != null) return _chSpawn();
-    if (s.stage > maxLand && s.wave >= 10) s.wave = 0; // 61 왕궁 뜰: 보스 없이 계속
+    if (s.stage > land && s.wave >= 10) s.wave = 0; // 사냥터(91 연합군 진영): 보스 없이 계속
     final st = c.fightSt();
     if (s.wave >= 10) {
       final mx = GameCalc.monHp(st, true), dem = GameCalc.isDemon(st), gh = GameCalc.isGhost(st), gd = GameCalc.isGuard(st);
-      final lord = GameCalc.isLord(st) && !dem, cm = lord || dem || gh;
+      final lord = GameCalc.isLord(st) && !dem, cm = lord || dem || gh, p2L = lord && GameCalc.region(st).p2 != null;
       mons = [
         Mon(x: w + 70, lane: .55, hp: mx, max: mx, atk: GameCalc.monAtk(st, true), boss: true, lord: lord || dem, cd: .8,
             dem: dem, ghost: gh ? GameCalc.ghostIdx(st) : null, guard: gd)
       ];
       bossT = c.bossLimT(st);
       _stretch();
-      warn = Warn(cm, dem ? '⚠ 마왕 출현! ⚠' : gh ? '⚠ 군단장의 잔영! ⚠' : gd ? '⚠ 근위대장 출현! ⚠' : null);
+      warn = Warn(cm, dem ? '⚠ 마왕 출현! ⚠' : gh ? '⚠ 군단장의 잔영! ⚠' : gd ? '⚠ 근위대장 출현! ⚠' : p2L ? '⚠ 마왕군 장수 출현! ⚠' : null);
       events.add(SoundEvent('boss'));
       shakeT = cm ? .6 : .4;
       mons[0].mv = .55;
       if (dem) {
         talk = BossTalk(balTalkStart);
       } else {
-        say('q', gh ? '쓰러뜨린 군단장의 잔영이다! 다시 한번 베어라, 주인!' : gd ? '마왕 근위대장이다! 왕도를 되찾자, 주인!' : lord ? '군단장이다! 이번엔 도망치지 마라, 주인!' : '성주다! 정신 차려라, 주인!');
+        say('q', gh ? '쓰러뜨린 군단장의 잔영이다! 다시 한번 베어라, 주인!' : gd ? '마왕 근위대장이다! 왕도를 되찾자, 주인!' : p2L ? '마왕군 장수다! 이 나라를 해방하자, 주인!' : lord ? '군단장이다! 이번엔 도망치지 마라, 주인!' : '성주다! 정신 차려라, 주인!');
       }
       return;
     }
@@ -1468,6 +1523,10 @@ class BattleSim {
         s.seeds['wheat'] = asNum(s.seeds['wheat']) + 5;
       case 'margo' || 'haral' || 'riel' || 'bron':
         s.joined[id] = true;
+      // 2부 이야기 동료 (웹 p2Install EVENTS act)
+      case 'solen' || 'saffron' || 'einar':
+        s.joined[id] = true;
+        if (asNum(s.lv[id]) == 0) s.lv[id] = 1;
     }
   }
 
@@ -1476,6 +1535,7 @@ class BattleSim {
     final dem = mons.any((m) => m.dem);
     skx.shield = skx.honey = skx.feast = skx.guts = skx.sym = skx.lamp = skx.sap = skx.ward = skx.dok = skx.phx = 0;
     skx.stew = skx.taunt = skx.blk = skx.bloom = 0;
+    skx.spice = 0;
     skx.ul = 0;
     for (final id in c.members()) {
       party[id]!.hp = c.stats(id).hp;
@@ -1758,11 +1818,11 @@ class BattleSim {
           }
         }
         proj.add(Proj(x: pos[id]! + 10 * sc, y: py[id]! - 46 * sc, tx: tgt.x, ty: tgt.y - 30 * sc, d: .35, kind: 'pollen'));
-      } else if (id == 'riel') {
+      } else if (id == 'riel' || id == 'solen') {
         for (final m in alive) {
           if (m.hp > 0) hitMon(m, d * .7, cr, sc);
         }
-        proj.add(Proj(x: pos['riel']! + 10 * sc, y: py['riel']! - 46 * sc, tx: tgt.x, ty: tgt.y - 30 * sc, d: .35, kind: 'bees'));
+        proj.add(Proj(x: pos[id]! + 10 * sc, y: py[id]! - 46 * sc, tx: tgt.x, ty: tgt.y - 30 * sc, d: .35, kind: 'bees'));
       } else if (id == 'nella') {
         hitMon(tgt, d, cr, sc);
         tgt.slow = 2;
@@ -1775,9 +1835,9 @@ class BattleSim {
       } else if (id == 'makrye') {
         hitMon(tgt, d, cr, sc);
         proj.add(Proj(x: pos[id]! + 12 * sc, y: py[id]! - 40 * sc, tx: tgt.x, ty: tgt.y - 28 * sc, d: .22, kind: 'harpoon'));
-      } else if (id == 'haral') {
+      } else if (id == 'haral' || id == 'einar') {
         hitMon(tgt, d, cr, sc);
-        proj.add(Proj(x: pos['haral']! + 12 * sc, y: py['haral']! - 40 * sc, tx: tgt.x, ty: tgt.y - 28 * sc, d: .2, kind: 'harpoon'));
+        proj.add(Proj(x: pos[id]! + 12 * sc, y: py[id]! - 40 * sc, tx: tgt.x, ty: tgt.y - 28 * sc, d: .2, kind: 'harpoon'));
       } else if (job == 'cook') {
         hitMon(tgt, d, cr, sc);
         proj.add(Proj(x: pos[id]! + 10 * sc, y: py[id]! - 50 * sc, tx: tgt.x, ty: tgt.y - 30 * sc, d: .3, kind: 'soup'));
@@ -1869,7 +1929,7 @@ class BattleSim {
 
   void _kill(Mon m, num sc) {
     spawnFx('coin', m.x, m.y - 26 * sc, 34 * sc, .6, -60 * sc);
-    final g = GameCalc.reward(c.fightSt(), m.boss) * (c.buff('gold') ? 1.5 : 1) * (c.blOn('gold') ? 1.3 : 1) * c.memMul() * (m.boss ? c.vpFeast() : 1) * (skx.dok > 0 ? 1 + .5 * skx.dokK : 1) * c.vpHoard();
+    final g = GameCalc.reward(c.fightSt(), m.boss) * (c.buff('gold') ? 1.5 : 1) * (c.blOn('gold') ? 1.3 : 1) * c.memMul() * (m.boss ? c.vpFeast() : 1) * (skx.dok > 0 ? 1 + .5 * skx.dokK : 1) * c.vpHoard() * c.allyGold();
     s.gold = s.gold + g;
     final d = c.daily();
     d['kill'] = orNum(d['kill'], 0) + 1;
@@ -1896,9 +1956,11 @@ class BattleSim {
     if (m.boss) {
       events.add(HapticEvent(const [40, 30, 60]));
       final cleared = s.stage, bn = GameCalc.bossName(cleared), lord = GameCalc.isLord(cleared), tn = GameCalc.terrName(cleared);
-      final dem = GameCalc.isDemon(cleared), gh = GameCalc.isGhost(cleared);
+      final dem = GameCalc.isDemon(cleared), gh = GameCalc.isGhost(cleared), ally = GameCalc.allyAt(cleared);
       if (dem) {
         _demonWin();
+      } else if (ally != null) {
+        _p2Win(ally); // 2부 나라 장수: 해방·동맹 (첫 처치 이삭은 해방 보상 300으로)
       } else {
         final gl = s.raw['gemLord'] is Map ? s.raw['gemLord'] as Map : (s.raw['gemLord'] = <String, dynamic>{});
         if (lord && !truthy(gl['$cleared'])) {
@@ -1912,16 +1974,16 @@ class BattleSim {
           events.add(GemEvent(ghostGem, '잔영 첫 처치'));
         }
       }
-      s.stage = math.min(maxLand + 1, cleared + 1);
+      s.stage = math.min(land + 1, cleared + 1);
       s.best = math.max(s.best, s.stage);
       onPass?.call('boss');
       onGrow?.call();
       s.wave = 0;
       seal = null;
       events.add(PillEvent('✔ $bn 처치'));
-      banner = StageBanner('$tn 탈환!', dem ? '마왕을 몰아냈다' : lord ? '군단장을 쓰러뜨렸다' : gh ? '잔영을 걷어냈다' : '영지를 되찾았다');
-      say('k', dem ? '…끝났다. 진짜로.' : lord ? '됐다… 이제 진짜 은퇴해도 되지?' : '여기 흙, 다시 살아나겠네.');
-      final chapter = s.stage <= maxLand && (s.stage - 1) % 10 == 0;
+      banner = StageBanner('$tn 탈환!', dem ? '마왕을 몰아냈다' : ally != null ? '${ally.n}을 해방했다' : lord ? '군단장을 쓰러뜨렸다' : gh ? '잔영을 걷어냈다' : '영지를 되찾았다');
+      say('k', dem ? '…끝났다. 진짜로.' : ally != null ? '배멀미 참은 보람이 있네.' : lord ? '됐다… 이제 진짜 은퇴해도 되지?' : '여기 흙, 다시 살아나겠네.');
+      final chapter = s.stage <= land && (s.stage - 1) % 10 == 0;
       // 왕도 이야기 표시 여부는 웹처럼 여기서 정함 (처음 한 번만 장면, 그 뒤는 알림)
       if (chapter && GameCalc.isCap(s.stage)) {
         events.add(CapStoryEvent(truthy(s.done['capRoad']) ? 'roadAgain' : 'road'));
@@ -2024,6 +2086,30 @@ class BattleSim {
     s.raw['capBonus'] = 1;
     c.pfCheck();
     events.add(DemonWinEvent(first, bonus));
+  }
+
+  /// 나라 장수 처치 (웹 p2Win): 처음 → 해방(동맹·이삭 300, 장면은 화면 쪽) / 은퇴 뒤 다시 → 회차마다 처음 1번 추억 +2
+  void _p2Win(AllyDef a) {
+    final ally = s.raw['ally'] is Map ? s.raw['ally'] as Map : (s.raw['ally'] = <String, dynamic>{'elf': 0, 'desert': 0, 'north': 0});
+    final clr = s.raw['p2Clr'] is Map ? s.raw['p2Clr'] as Map : (s.raw['p2Clr'] = <String, dynamic>{'elf': 0, 'desert': 0, 'north': 0});
+    final first = !truthy(ally[a.k]);
+    var bonus = 0;
+    if (!first && !truthy(clr[a.k])) {
+      s.memory = s.memory + p2Mem;
+      bonus = p2Mem;
+    }
+    clr[a.k] = 1;
+    if (first) {
+      ally[a.k] = 1;
+      s.raw['last'] = c.now; // 웹 p2Win 의 save(): S.last = Date.now() (긴 플레이 비교와 같게)
+      final gl = s.raw['gemLord'] is Map ? s.raw['gemLord'] as Map : (s.raw['gemLord'] = <String, dynamic>{});
+      if (!truthy(gl['${a.boss}'])) {
+        gl['${a.boss}'] = 1;
+        s.gem = s.gem + p2Gem;
+      }
+    }
+    c.pfCheck();
+    events.add(P2WinEvent(a, first, bonus));
   }
 
   /// 보스 남은 시간 한도 (성주 30초, 군단장 40초, 마왕 60초)

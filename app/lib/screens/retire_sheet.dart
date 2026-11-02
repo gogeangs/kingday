@@ -221,7 +221,7 @@ class _DiaryState extends State<_Diary> {
             Expanded(child: Text(b, textAlign: TextAlign.right, style: KdText.body(13, weight: FontWeight.w600))),
           ]),
         );
-    final best = (s.best < maxLand + 1 ? s.best : maxLand + 1) - 1;
+    final best = (s.best < land + 1 ? s.best : land + 1) - 1;
     return [
       _panel([
         li('은퇴 횟수', '${s.retires.toInt()}번'),

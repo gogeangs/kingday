@@ -27,8 +27,10 @@ class StageTop extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final s = g.state, st = s.stage, r = GameCalc.region(st), boss = g.sim.boss, h = g.sim.ch;
-    var label = st > maxLand ? '왕궁 뜰' : '${(st - 1) ~/ 10 + 1}-${(st - 1) % 10 + 1} ${r.n}';
-    var sub = st > maxLand ? '보스 없이 사냥 중 · 1부 완결' : '${GameCalc.terrName(st)} 탈환전';
+    var label = st > land ? huntName() : '${(st - 1) ~/ 10 + 1}-${(st - 1) % 10 + 1} ${r.n}';
+    var sub = st > land
+        ? (land >= p2Last ? '보스 없이 사냥 중 · 2부 완결' : p2On ? '보스 없이 사냥 중 · 곧 열려요' : '보스 없이 사냥 중 · 1부 완결')
+        : '${GameCalc.terrName(st)} 탈환전';
     // 성주 처치 같은 소식은 알림 대신 이 줄에 잠깐 금색으로 (웹 pillFlash · UI 점검 10-27 1번)
     final pill = h == null ? g.pillNow : null;
     if (pill != null) sub = pill;
@@ -66,7 +68,7 @@ class StageTop extends StatelessWidget {
                           style: KdText.body(11.5, color: pill != null ? const Color(0xFFFFE08A) : KdColors.muted, height: 1.2, weight: pill != null ? FontWeight.w700 : FontWeight.w400)),
                   ]),
                 ),
-                if (h == null) ...[const SizedBox(width: 8), _pips(s.wave, boss != null, st <= maxLand)],
+                if (h == null) ...[const SizedBox(width: 8), _pips(s.wave, boss != null, st <= land)],
                 if (h != null && h.mode == 'dun') ...[
                   const SizedBox(width: 8),
                   for (final n in dunStars)
@@ -181,7 +183,9 @@ class _BossBar extends StatelessWidget {
     // 시련의 탑: 층 태그·층 이름, 수문장·잔영은 보라 (웹 towerSpawn)
     final cmd = ti != null ? (ti.gate || ti.art.ghost != null) : GameCalc.isLord(st) || b.ghost != null, gold = b.dem && b.ph2;
     final left = math.max(0, g.sim.bossT), hurry = left <= 10;
-    final tag = ti != null ? '${ti.f}층' : b.dem ? '마왕' : b.ghost != null ? '잔영' : b.guard ? '근위대장' : cmd ? '군단장' : '성주';
+    // 2부 나라 장수: 「장수」 태그 · 초상화 대신 지도 얼굴 그림 (웹 spawn p2L)
+    final p2r = ti == null && GameCalc.isLord(st) && !b.dem ? GameCalc.region(st).p2 : null;
+    final tag = ti != null ? '${ti.f}층' : b.dem ? '마왕' : b.ghost != null ? '잔영' : b.guard ? '근위대장' : p2r != null ? '장수' : cmd ? '군단장' : '성주';
     final faceId = ti != null ? (ti.face ?? 'baltasar') : b.dem ? 'baltasar' : b.ghost != null ? bossIds[b.ghost!] : bossIds[GameCalc.regionIndex(st) % bossIds.length];
     final showFace = ti != null ? ti.face != null : cmd;
     // 쌍둥이: 보스 2마리 체력 합
@@ -219,9 +223,11 @@ class _BossBar extends StatelessWidget {
                 width: 38,
                 height: 38,
                 // 잔영은 보랏빛 반투명, 마왕은 1단계 「검은 왕」 → 2단계 「옛 왕」 얼굴
-                child: b.ghost != null
-                    ? Opacity(opacity: .8, child: filtered(FaceImg(faceId, mood: gold ? 'laugh' : 'idle'), sat: 1.6, bright: .9, gray: .4))
-                    : FaceImg(faceId, mood: gold ? 'laugh' : 'idle'),
+                child: p2r != null
+                    ? kdImg('assets/game/map/${p2r}_boss.png', fit: BoxFit.cover)
+                    : b.ghost != null
+                        ? Opacity(opacity: .8, child: filtered(FaceImg(faceId, mood: gold ? 'laugh' : 'idle'), sat: 1.6, bright: .9, gray: .4))
+                        : FaceImg(faceId, mood: gold ? 'laugh' : 'idle'),
               ),
             ),
           ),

@@ -221,9 +221,14 @@ extension GameAdsX on GameController {
         sound('fanfare');
         if (!truthy(state.raw['ending1'])) {
           _ending(0);
-        } else if (bonus > 0) {
-          Timer(const Duration(milliseconds: 2600), () => toast('왕도 재탈환 보너스! 은퇴의 추억 +$bonus'));
+        } else {
+          if (bonus > 0) Timer(const Duration(milliseconds: 2600), () => toast('왕도 재탈환 보너스! 은퇴의 추억 +$bonus'));
+          // 1부를 이미 끝낸 유저가 2부 시작 장면을 아직 못 봤으면 (영지가 61로 바뀐 뒤)
+          Timer.run(p2Check);
         }
+      case P2WinEvent(:final a, :final first, :final bonus):
+        sound('fanfare');
+        _p2Won(a, first, bonus);
       case TowerWinEvent(:final f, :final first, :final r, :final unlocked):
         sound('clear');
         save();

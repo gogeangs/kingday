@@ -2,6 +2,7 @@
 ///
 /// 위에서부터 탐험 막대 → 다음 목표 → 대륙 지도(점령 판 · 이번 회차에 되찾은 곳만 탈환 판 · 어둠 구름) → 랭킹·도전 버튼.
 /// 지역을 누르면 확대 + 아래 창(MapRegionPanel, pages.dart 가 띄움).
+/// 2부: 맨 위 칩 「에르단 · 바다 건너」로 지도 두 장을 바꿔 봄 (웹 #mapSw · wmSea, docs/content/PART2.md 4장).
 library;
 
 import 'dart:math' as math;
@@ -24,7 +25,7 @@ import 'challenge_sheet.dart';
 import 'pass_sheet.dart';
 import 'social_sheets.dart';
 
-const _rNode = ['erdan', 'dusk', 'canyon', 'frost', 'ash', 'capital'];
+const _rNode = ['erdan', 'dusk', 'canyon', 'frost', 'ash', 'capital', 'elf', 'desert', 'north'];
 const _dunSpots = ['field', 'vault', 'mine'];
 
 class MpPage extends StatelessWidget {
@@ -33,12 +34,28 @@ class MpPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final s = g.state, c = g.calc, ex = c.mapExplore(), st = c.mapCur(), r = (st - 1) ~/ 10, j = (st - 1) % 10 + 1;
-    final reg = regions[r];
-    final next = s.stage > maxLand
-        ? '🏰 1부 완결 · 왕궁 뜰에서 사냥 중'
-        : '다음: ${reg.n} ${r + 1}-$j · ${GameCalc.terrName(st)} · ${j == 10 ? (r == 5 ? '마왕 발타사르' : '군단장 ${reg.boss.split(' ').last}') : '마족 성주'}';
+    // 위쪽 탐험 막대 · 다음 목표 (웹 renderMapInfo): 바다 건너를 보면 61~ 기준
+    final s = g.state, c = g.calc, sea = g.mapSea;
+    final ex = sea ? c.seaExplore() : c.mapExplore(),
+        exN = sea ? p2Last - maxLand : maxLand,
+        got = sea ? math.max(0, math.min(land, s.stage - 1) - maxLand) : math.min(maxLand, c.landCount()),
+        st = math.min(s.stage, land),
+        reg = GameCalc.region(st),
+        i = (st - 1) ~/ 10 + 1,
+        j = (st - 1) % 10 + 1;
+    final next = s.stage > land
+        ? land >= p2Last
+            ? '⚔ 2부 완결 · 연합군 진영에서 사냥 중'
+            : p2On
+                ? '🌫 바다 안개가 짙어요 · 곧 열려요'
+                : '🏰 1부 완결 · 왕궁 뜰에서 사냥 중'
+        : '다음: ${reg.n} $i-$j · ${GameCalc.terrName(st)} · ${j == 10 ? (i == 6 ? '마왕 발타사르' : reg.p2 != null ? '장수 ${reg.boss.split(' ').last}' : '군단장 ${reg.boss.split(' ').last}') : reg.p2 != null ? '마왕군 성주' : '마족 성주'}';
     return Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+      // 지도 전환 칩 「에르단 · 바다 건너」 (웹 #mapSw · mapSwRender: 1부를 끝내기 전에는 바다 건너 🔒)
+      if (p2On) ...[
+        _MapSwitch(g),
+        const SizedBox(height: 8),
+      ],
       // 탐험 막대
       Container(
         padding: const EdgeInsets.fromLTRB(12, 8, 10, 8),
@@ -50,15 +67,15 @@ class MpPage extends StatelessWidget {
         child: Row(children: [
           Expanded(
             child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-              Text('대륙 탐험 ${(ex / maxLand * 100).round()}%', style: KdText.display(15, color: const Color(0xFFFFE08A))),
+              Text('${sea ? '바다' : '대륙'} 탐험 ${(ex / exN * 100).round()}%', style: KdText.display(15, color: const Color(0xFFFFE08A))),
               const SizedBox(height: 4),
-              XpBar(ex / maxLand, height: 6, bg: const Color(0x1AFFFFFF)),
+              XpBar(ex / exN, height: 6, bg: const Color(0x1AFFFFFF)),
             ]),
           ),
           const SizedBox(width: 10),
           Column(mainAxisSize: MainAxisSize.min, children: [
             Text('이번 회차', style: KdText.body(11.5, color: const Color(0xFFD8D0EE), height: 1.15)),
-            Text('${c.landCount()}/$maxLand', style: KdText.body(12, color: const Color(0xFF9BE3A8), weight: FontWeight.w700, height: 1.15)),
+            Text('$got/$exN', style: KdText.body(12, color: const Color(0xFF9BE3A8), weight: FontWeight.w700, height: 1.15)),
           ]),
           const SizedBox(width: 8),
           // 원정 일지 ○/20 (누르면 패스 창, docs/content/SHOP.md 4장)
@@ -99,6 +116,7 @@ class MpPage extends StatelessWidget {
       // 다음 목표 (누르면 그 지역으로)
       GestureDetector(
         onTap: () {
+          final r = (math.min(s.stage, land) - 1) ~/ 10;
           if (c.mapEntered(r)) mapZoomTo(g, r, MediaQuery.sizeOf(context).width - 32);
         },
         child: Container(
@@ -143,8 +161,50 @@ class MpPage extends StatelessWidget {
   }
 }
 
-/// 지역 확대 (웹 mzOpen): 배율은 점 사이가 화면에서 34px 이상 되게, 지역은 아래 창 위 보이는 부분에
+/// 지도 전환 칩 (웹 #mapSw .mapsw): 고른 쪽은 금빛, 잠긴 바다 건너는 회색 🔒
+class _MapSwitch extends StatelessWidget {
+  const _MapSwitch(this.g);
+  final GameController g;
+
+  Widget _btn(String t, bool on, bool lock, VoidCallback tap) => Expanded(
+        child: GestureDetector(
+          onTap: tap,
+          child: Container(
+            constraints: const BoxConstraints(minHeight: 36),
+            alignment: Alignment.center,
+            decoration: BoxDecoration(
+              gradient: on ? const LinearGradient(colors: [Color(0xFFFFD977), Color(0xFFE8A92C)], begin: Alignment.topCenter, end: Alignment.bottomCenter) : null,
+              color: on ? null : const Color(0xFF1A1428),
+              border: Border.all(color: on ? const Color(0xFFFFD977) : const Color(0xFF4A3A5A)),
+              borderRadius: BorderRadius.circular(18),
+            ),
+            child: Text(t,
+                style: KdText.body(13.5,
+                    weight: FontWeight.w700,
+                    color: on
+                        ? const Color(0xFF3A2A00)
+                        : lock
+                            ? const Color(0xFF8A84A0)
+                            : const Color(0xFFD8D0EE))),
+          ),
+        ),
+      );
+
+  @override
+  Widget build(BuildContext context) {
+    final sea = g.mapSea, ok = g.calc.p2Open();
+    return Row(children: [
+      _btn('에르단', !sea, false, () => g.mapSetSea(false)),
+      const SizedBox(width: 6),
+      _btn('${ok ? '' : '🔒 '}바다 건너', sea, !ok, () => g.mapSetSea(true)),
+    ]);
+  }
+}
+
+/// 지역 확대 (웹 mzOpen): 배율은 점 사이가 화면에서 34px 이상 되게, 지역은 아래 창 위 보이는 부분에.
+/// 다른 지도의 지역이면 그 지도로 먼저 바꿈
 void mapZoomTo(GameController g, int r, double viewW) {
+  if ((r >= seaR0) != g.mapSea) g.mapSetSea(r >= seaR0, quiet: true);
   final z = mapZoomFor(r, viewW), m = mapRegMid(r), sc = viewW / (mapW / z), mh = viewW * 1.5;
   g.mapZoomR = r;
   g.mapGo(m.$1, m.$2 + (mh * .5 - mh * .36) / sc, z);
@@ -168,10 +228,13 @@ class WorldMap extends StatelessWidget {
   const WorldMap(this.g, {super.key});
   final GameController g;
 
+  /// 누르기: 전체 지도에서는 지역을 눌러 확대, 확대 화면에서만 점을 누름 (웹 wmTap)
   void _tap(Offset p, Size size) {
-    final c = g.calc, v = mapView(g, size), mx = v.x + p.dx / v.s, my = v.y + p.dy / v.s;
+    final c = g.calc, sea = g.mapSea, v = mapView(g, size), mx = v.x + p.dx / v.s, my = v.y + p.dy / v.s;
+    final spots = sea ? seaSpot : mapSpot;
     bool hit(String k) {
-      final sp = mapSpot[k]!;
+      final sp = spots[k];
+      if (sp == null) return false;
       return math.sqrt(math.pow(mx - sp.$1, 2) + math.pow(my - sp.$2, 2)) < math.max(sp.$3, 22 / v.s);
     }
 
@@ -180,7 +243,7 @@ class WorldMap extends StatelessWidget {
       var best = 0;
       var bd = 1e9;
       for (var st = g.mapZoomR * 10 + 1; st <= g.mapZoomR * 10 + 10; st++) {
-        final q = mapPts[st - 1], d = math.sqrt(math.pow(mx - q.$1, 2) + math.pow(my - q.$2, 2));
+        final q = wmPt(sea, st), d = math.sqrt(math.pow(mx - q.$1, 2) + math.pow(my - q.$2, 2));
         if (d < bd) {
           bd = d;
           best = st;
@@ -188,46 +251,61 @@ class WorldMap extends StatelessWidget {
       }
       if (best > 0 && bd * v.s <= 20) {
         if (!c.mapSeen(best)) return g.toast('아직 안개에 덮여 있어요');
-        final i = (best - 1) ~/ 10 + 1, j = (best - 1) % 10 + 1;
-        final st = best == c.mapCur() && g.state.stage <= maxLand
+        final i = (best - 1) ~/ 10 + 1, j = (best - 1) % 10 + 1, p2r = GameCalc.region(best).p2 != null;
+        final st = best == c.mapCur(sea) && g.state.stage <= land
             ? '지금 싸우는 곳'
             : c.mapTaken(best)
                 ? '이번 회차에 되찾음 ✓'
-                : '마족 점령지';
-        return g.toast('$i-$j ${GameCalc.terrName(best)} · $st${best % 10 == 0 ? ' · 군단장' : ''}');
+                : p2r
+                    ? '마왕군 점령지'
+                    : '마족 점령지';
+        return g.toast('$i-$j ${GameCalc.terrName(best)} · $st${best % 10 == 0 ? (p2r ? ' · 장수' : ' · 군단장') : ''}');
       }
     }
-    for (final k in part2Lands.keys) {
-      if (hit(k)) {
-        g.toast('2부 「흩어진 동맹」에서 열려요');
-        Future.delayed(const Duration(milliseconds: 1900), () => g.toast('루미나르: 바다 건너에도 마족에 맞서는 이들이 있다.'));
-        return;
+    if (sea) {
+      for (final a in allies) {
+        if (!GameCalc.allyOpen(a) && hit(a.k)) {
+          g.toast('바다 안개가 짙어요. 곧 열려요');
+          Future.delayed(const Duration(milliseconds: 1900), () => g.toast('루미나르: ${a.n}에도 마왕군에 맞서는 이들이 있다.'));
+          return;
+        }
       }
-    }
-    if (hit('village')) return g.setTab(GameTab.vl);
-    if (hit('tower')) {
-      if (!c.chOpen) return g.toast('영지 $chOpenLand을 되찾으면 열려요');
-      openChallenge(g);
-      return;
-    }
-    for (final k in _dunSpots) {
-      if (c.chOpen && hit(k)) {
+      if (hit('port')) return g.mapSetSea(false);
+    } else {
+      for (final k in part2Lands.keys) {
+        if (hit(k)) {
+          if (c.p2Open()) return g.mapSetSea(true);
+          g.toast(p2On ? '1부를 끝내면 열려요' : '2부 「흩어진 동맹」에서 열려요');
+          Future.delayed(const Duration(milliseconds: 1900), () => g.toast('루미나르: 바다 건너에도 마족에 맞서는 이들이 있다.'));
+          return;
+        }
+      }
+      if (hit('village')) return g.setTab(GameTab.vl);
+      if (hit('tower')) {
+        if (!c.chOpen) return g.toast('영지 $chOpenLand을 되찾으면 열려요');
         openChallenge(g);
         return;
       }
+      for (final k in _dunSpots) {
+        if (c.chOpen && hit(k)) {
+          openChallenge(g);
+          return;
+        }
+      }
+      if (hit('capital') && c.mapEntered(5)) return mapZoomTo(g, 5, size.width);
     }
-    if (hit('capital') && c.mapEntered(5)) return mapZoomTo(g, 5, size.width);
     if (g.mapZoomR >= 0) return mapZoomOut(g);
     var r = -1;
     var bd = 1e9;
-    for (var i = 0; i < mapCtr.length; i++) {
-      final d = math.sqrt(math.pow(mx - mapCtr[i].$1, 2) + math.pow(my - mapCtr[i].$2, 2));
+    for (var i = wmR0(sea); i < wmRN(sea); i++) {
+      final ct = wmCtr(i), d = math.sqrt(math.pow(mx - ct.$1, 2) + math.pow(my - ct.$2, 2));
       if (d < bd) {
         bd = d;
         r = i;
       }
     }
     if (r < 0) return;
+    if (sea && bd > 320) return; // 바다·안 연 나라를 눌렀을 때는 확대하지 않음
     if (!c.mapEntered(r)) return g.toast('아직 안개에 덮여 있어요');
     mapZoomTo(g, r, size.width);
   }
@@ -274,7 +352,7 @@ class WorldMap extends StatelessWidget {
 /// 캐시: 점령 판 + 되찾은 곳만 탈환 판(땅) / 어둠 구름 층 — 영지를 되찾거나 회차가 바뀔 때만 다시 만듦
 class _MapCache {
   static String sig = '';
-  static ui.Image? land, fog;
+  static ui.Image? landImg, fog;
   static List<(double, double, double, double)> embers = [];
 
   static Paint _soft(double x, double y, double r, BlendMode m) => Paint()
@@ -282,19 +360,35 @@ class _MapCache {
     ..shader = ui.Gradient.radial(Offset(x, y), r, const [Color(0xFF000000), Color(0xFF000000), Color(0x00000000)], const [0, .55, 1]);
 
   static bool ensure(GameController g) {
-    final s = g.state, c = g.calc;
-    final dark = ImageStore.get('assets/game/map/world_map_dark.jpg'), lit = ImageStore.get('assets/game/map/world_map.jpg');
+    final s = g.state, c = g.calc, sea = g.mapSea;
+    // 바다 건너는 sea_map(_dark).jpg (웹 WMI.slit·sdark)
+    final dark = ImageStore.get('assets/game/map/${sea ? 'sea' : 'world'}_map_dark.jpg'), lit = ImageStore.get('assets/game/map/${sea ? 'sea' : 'world'}_map.jpg');
     final fogs = [for (var i = 1; i <= 6; i++) ImageStore.get('assets/game/map/fog_$i.png')];
     if (dark == null || lit == null || fogs.any((x) => x == null)) return false;
-    final key = '${s.best}|${s.stage}|${c.chOpen}';
-    if (key == sig && land != null && fog != null) return true;
+    final key = '${s.best}|${s.stage}|${c.chOpen}|$sea';
+    if (key == sig && landImg != null && fog != null) return true;
     sig = key;
     const full = Rect.fromLTWH(0, 0, mapW, mapH);
     // 땅
     {
       final rec = ui.PictureRecorder(), cv = Canvas(rec, full);
       drawImg(cv, dark, full);
-      if (s.stage > maxLand) {
+      if (sea) {
+        // 바다 건너 탈환 판: 항구 + 이번 회차에 되찾은 영지 + 나라를 지나간 회차면 그 나라 전체 (웹 wmBuild)
+        cv.saveLayer(full, Paint());
+        final pt = seaSpot['port']!;
+        cv.drawCircle(Offset(pt.$1, pt.$2), 150, _soft(pt.$1, pt.$2, 150, BlendMode.srcOver));
+        for (var st = maxLand + 1; st < math.min(s.stage, land + 1); st++) {
+          final p = wmPt(true, st);
+          cv.drawCircle(Offset(p.$1, p.$2), landR, _soft(p.$1, p.$2, landR, BlendMode.srcOver));
+        }
+        for (var r = seaR0; r < regions.length; r++) {
+          final ct = wmCtr(r);
+          if (s.stage > 10 * (r + 1)) cv.drawCircle(Offset(ct.$1, ct.$2), 210, _soft(ct.$1, ct.$2, 210, BlendMode.srcOver));
+        }
+        cv.drawImageRect(lit, Rect.fromLTWH(0, 0, lit.width.toDouble(), lit.height.toDouble()), full, Paint()..blendMode = BlendMode.srcIn);
+        cv.restore();
+      } else if (s.stage > maxLand) {
         drawImg(cv, lit, full);
       } else {
         cv.saveLayer(full, Paint());
@@ -310,11 +404,11 @@ class _MapCache {
         cv.drawImageRect(lit, Rect.fromLTWH(0, 0, lit.width.toDouble(), lit.height.toDouble()), full, Paint()..blendMode = BlendMode.srcIn);
         cv.restore();
       }
-      land = rec.endRecording().toImageSync(mapW.toInt(), mapH.toInt());
+      landImg = rec.endRecording().toImageSync(mapW.toInt(), mapH.toInt());
     }
     // 어둠 구름
     {
-      final rec = ui.PictureRecorder(), cv = Canvas(rec, full), holes = c.mapHoles();
+      final rec = ui.PictureRecorder(), cv = Canvas(rec, full), holes = c.mapHoles(sea);
       embers = [];
       if (holes != null) {
         var seed = 7;
@@ -399,7 +493,7 @@ class _WorldPainter extends CustomPainter {
   @override
   void paint(Canvas c, Size size) {
     _w = size.width;
-    final s = g.state, cc = g.calc, t = g.sim.time.toDouble(), now = DateTime.now().millisecondsSinceEpoch;
+    final s = g.state, cc = g.calc, sea = g.mapSea, t = g.sim.time.toDouble(), now = DateTime.now().millisecondsSinceEpoch;
     // 카메라를 목표로 부드럽게
     g.camX += (g.camTx - g.camX) * .19;
     g.camY += (g.camTy - g.camY) * .19;
@@ -412,22 +506,24 @@ class _WorldPainter extends CustomPainter {
     final v = mapView(g, size), sc = v.s, zoom = g.mapZoomR >= 0;
     Offset toS(double x, double y) => Offset((x - v.x) * sc, (y - v.y) * sc);
     final src = Rect.fromLTWH(v.x, v.y, v.w, v.h), dst = Offset.zero & size;
-    c.drawImageRect(_MapCache.land!, src, dst, Paint()..filterQuality = FilterQuality.medium);
-    // 2부 땅: 옅은 회색 바다 안개 (왕도를 깨면 조금 더 또렷)
+    c.drawImageRect(_MapCache.landImg!, src, dst, Paint()..filterQuality = FilterQuality.medium);
+    // 2부 땅: 옅은 회색 바다 안개 (왕도를 깨면 조금 더 또렷) — 에르단 지도만
     final clr = cc.mapAllClear();
-    for (final k in part2Lands.keys) {
-      final sp = mapSpot[k]!, p = toS(sp.$1, sp.$2), r = sp.$3 * 1.7 * sc;
-      c.drawCircle(p, r, Paint()..shader = ui.Gradient.radial(p, r, [Color.fromRGBO(225, 230, 240, clr ? .42 : .62), const Color.fromRGBO(225, 230, 240, 0)]));
+    if (!sea) {
+      for (final k in part2Lands.keys) {
+        final sp = mapSpot[k]!, p = toS(sp.$1, sp.$2), r = sp.$3 * 1.7 * sc;
+        c.drawCircle(p, r, Paint()..shader = ui.Gradient.radial(p, r, [Color.fromRGBO(225, 230, 240, clr ? .42 : .62), const Color.fromRGBO(225, 230, 240, 0)]));
+      }
     }
-    // 영지 점 · 군단장 · 왕도
+    // 영지 점 · 군단장(장수) · 왕도
     final fs = math.max(9.5, math.min(12.0, size.width * .028)).roundToDouble();
-    for (var st = 1; st <= maxLand; st++) {
+    for (var st = wmSt0(sea); st <= wmStN(sea); st++) {
       if (!cc.mapSeen(st)) continue;
-      final q = mapPts[st - 1], p = toS(q.$1, q.$2), taken = cc.mapTaken(st), r = (st - 1) ~/ 10, k = math.max(1.1, math.min(1.7, sc * 1.3));
+      final q = wmPt(sea, st), p = toS(q.$1, q.$2), taken = cc.mapTaken(st), r = (st - 1) ~/ 10, k = math.max(1.1, math.min(1.7, sc * 1.3));
       if (st == maxLand) {
         final z = math.max(44.0, 56 * sc), im = ImageStore.get('assets/game/map/capital_${s.stage > maxLand ? 'open' : 'locked'}.png');
         if (im != null) drawImg(c, im, Rect.fromLTWH(p.dx - z / 2, p.dy - z * .75, z, z));
-        if (s.stage > maxLand) _pill(c, '왕궁 뜰', p.dx, p.dy + fs * 1.3, fs - 1, const Color(0xEBFFC94A), const Color(0xFF3A2A00));
+        if (s.stage > maxLand) _pill(c, p2On ? '되찾은 왕도' : '왕궁 뜰', p.dx, p.dy + fs * 1.3, fs - 1, const Color(0xEBFFC94A), const Color(0xFF3A2A00));
       } else if (st % 10 == 0) {
         final z = math.max(30.0, 40 * sc), im = ImageStore.get('assets/game/map/${_rNode[r]}_boss.png');
         if (im != null) drawImg(c, im, Rect.fromLTWH(p.dx - z / 2, p.dy - z * .72, z, z));
@@ -443,11 +539,30 @@ class _WorldPainter extends CustomPainter {
       final p = toS(x, y), al = .35 + .45 * math.max(0.0, math.sin(t * 1.7 + ph));
       c.drawCircle(p, sz * math.min(1.6, sc), Paint()..color = Color.fromRGBO(255, 80 + (60 * al).floor(), 60, al));
     }
-    // 명소: 시련의 탑(잠김 🔒) · 요일 던전(오늘 반짝)
+    // 바다 건너: 아직 안 연 나라 「곧 열려요」 · 사냥터(바다 안개 / 연합군 진영) · 에르단 항구
+    if (sea) {
+      for (final a in allies) {
+        final sp = seaSpot[a.k];
+        if (GameCalc.allyOpen(a) || sp == null) continue;
+        final p = toS(sp.$1, sp.$2);
+        _pill(c, '🌫 ${a.n} · 곧 열려요', p.dx, p.dy, fs - 1, const Color(0xB80A0812), const Color(0xFFD8D0EE));
+      }
+      if (s.best > land) {
+        final hp = seaHunt(), p = toS(hp.$1, hp.$2);
+        if (land >= p2Last) {
+          _pill(c, '⚔ 연합군 진영', p.dx, p.dy + fs * 1.6, fs - 1, const Color(0xEBFFC94A), const Color(0xFF3A2A00));
+        } else {
+          _pill(c, '바다 안개 · 곧 열려요', p.dx, p.dy + fs * 1.6, fs - 1, const Color(0xE0E1E6F0), const Color(0xFF2A3140));
+        }
+      }
+      final pt = seaSpot['port']!, pp = toS(pt.$1, pt.$2 + 40);
+      _pill(c, '⚓ 에르단 항구', pp.dx, pp.dy, fs - 1, const Color(0x9908060E), Colors.white);
+    }
+    // 명소: 시련의 탑(잠김 🔒) · 요일 던전(오늘 반짝) — 에르단 지도만
     final tw = mapSpot['tower']!, tp = toS(tw.$1, tw.$2);
-    if (!cc.chOpen) {
+    if (!sea && !cc.chOpen) {
       _pill(c, '🔒 시련의 탑', tp.dx, tp.dy - 6, fs - 1, const Color(0xB30A0812), const Color(0xFFD8D0EE));
-    } else {
+    } else if (!sea) {
       final open = cc.dunOpenK();
       for (final k in _dunSpots) {
         final sp = mapSpot[k]!, p = toS(sp.$1, sp.$2), on = open.contains(k), name = duns.firstWhere((d) => d.k == k).n;
@@ -471,7 +586,7 @@ class _WorldPainter extends CustomPainter {
     }
     // 카엘 (지금 위치): 초상화 원 + 금빛 고리, 통통 튐
     {
-      final q = mapPts[cc.mapCur() - 1], p = toS(q.$1, q.$2), rr = math.max(13.0, 17 * math.min(1.5, sc)).toDouble(), by = p.dy - rr - 6 - (math.sin(t * 3)).abs() * 3, ctr = Offset(p.dx, by);
+      final q = wmPt(sea, cc.mapCur(sea)), p = toS(q.$1, q.$2), rr = math.max(13.0, 17 * math.min(1.5, sc)).toDouble(), by = p.dy - rr - 6 - (math.sin(t * 3)).abs() * 3, ctr = Offset(p.dx, by);
       c.drawOval(Rect.fromCenter(center: p, width: rr * 1.6, height: rr * .56), Paint()..color = const Color(0x66000000));
       c.drawCircle(ctr, rr * 2.1, Paint()..shader = ui.Gradient.radial(ctr, rr * 2.1, const [Color(0x8CFFD66E), Color(0x00FFD66E)], const [.28, 1]));
       c.drawCircle(ctr, rr, Paint()..color = const Color(0xFF2A2216));
@@ -499,9 +614,9 @@ class _WorldPainter extends CustomPainter {
     }
     // 지역 이름 (전체 지도)
     if (!zoom) {
-      for (var r = 0; r < 6; r++) {
-        final p = toS(mapCtr[r].$1, mapCtr[r].$2 - (r == 0 ? 150 : r == 5 ? 60 : 110));
-        _pill(c, cc.mapEntered(r) ? regions[r].n : '???', p.dx, p.dy, fs, const Color(0x9908060E), Colors.white);
+      for (var r = wmR0(sea); r < wmRN(sea); r++) {
+        final ct = wmCtr(r), p = toS(ct.$1, ct.$2 - (r == 0 ? 150 : r == 5 ? 60 : r >= seaR0 ? 250 : 110)), p2 = regions[r].p2;
+        _pill(c, cc.mapEntered(r) ? regions[r].n + (r >= seaR0 && p2 != null && cc.allyOn(p2) ? ' 🤝' : '') : '???', p.dx, p.dy, fs, const Color(0x9908060E), Colors.white);
       }
     }
     // 연출: 걷힘(금빛 번쩍 + 흩어지는 구름) · 되찾음(밝은 땅 번짐)
@@ -539,6 +654,8 @@ class MapRegionPanel extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final r = g.mapZoomR, c = g.calc, reg = regions[r], bid = r < 5 ? bossIds[r] : 'baltasar';
+    // 2부 나라: 장수 얼굴은 지도 장수 그림, 동맹 줄 (웹 mzOpen .mzally)
+    final a = reg.p2 == null ? null : allies.where((x) => x.k == reg.p2).firstOrNull, aOn = a != null && c.allyOn(a.k);
     final got = [for (var j = 1; j <= 10; j++) c.mapTaken(r * 10 + j)].where((x) => x).length;
     return Container(
       decoration: const BoxDecoration(
@@ -559,7 +676,14 @@ class MapRegionPanel extends StatelessWidget {
         Expanded(
           child: ListView(padding: const EdgeInsets.fromLTRB(16, 10, 16, 24), children: [
             Row(children: [
-              ClipOval(child: Container(width: 54, height: 54, color: const Color(0xFF2A2216), child: FaceImg(bid))),
+              ClipOval(
+                child: Container(
+                  width: 54,
+                  height: 54,
+                  color: const Color(0xFF2A2216),
+                  child: a != null ? kdImg('assets/game/map/${reg.p2}_boss.png', w: 54, h: 54, fit: BoxFit.cover) : FaceImg(bid),
+                ),
+              ),
               const SizedBox(width: 10),
               Expanded(
                 child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
@@ -570,10 +694,32 @@ class MapRegionPanel extends StatelessWidget {
                 ]),
               ),
             ]),
+            if (a != null) ...[
+              const SizedBox(height: 10),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+                decoration: BoxDecoration(
+                  color: const Color(0x148FD06A),
+                  // 웹 .mzally: 해방 전 점선 · 동맹 후 실선 (앱은 점선 테두리가 없어 옅은 선으로)
+                  border: Border.all(color: aOn ? const Color(0x808FD06A) : const Color(0x4D8FD06A)),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Row(children: [
+                  ClipOval(child: SizedBox(width: 38, height: 38, child: kdImg('assets/game/portraits/portrait_${a.face}_idle.png', w: 38, h: 38, fit: BoxFit.cover))),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+                      Text(aOn ? '동맹 ✓ ${a.t}' : '해방하면 동맹 · ${a.king}', style: KdText.body(12.5, weight: FontWeight.w700)),
+                      Text('${a.b}${aOn ? ' (영구)' : ''}', style: KdText.body(12, color: KdColors.muted)),
+                    ]),
+                  ),
+                ]),
+              ),
+            ],
             const SizedBox(height: 8),
             for (var j = 1; j <= 10; j++)
               () {
-                final st = r * 10 + j, seen = c.mapSeen(st), tk = c.mapTaken(st), cur = st == c.mapCur() && g.state.stage <= maxLand;
+                final st = r * 10 + j, seen = c.mapSeen(st), tk = c.mapTaken(st), cur = st == c.mapCur(g.mapSea) && g.state.stage <= land;
                 return Container(
                   margin: const EdgeInsets.only(bottom: 2),
                   padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
@@ -581,7 +727,7 @@ class MapRegionPanel extends StatelessWidget {
                   child: Row(children: [
                     SizedBox(width: 36, child: Text('${r + 1}-$j', style: KdText.figure(13, color: KdColors.muted, weight: FontWeight.w400))),
                     Expanded(child: Text(seen ? GameCalc.terrName(st) : '???', maxLines: 1, overflow: TextOverflow.ellipsis, style: KdText.body(13))),
-                    Text(j == 10 ? '군단장' : '성주', style: KdText.body(11, color: KdColors.muted)),
+                    Text(j == 10 ? (a != null ? '장수' : '군단장') : '성주', style: KdText.body(11, color: KdColors.muted)),
                     SizedBox(
                       width: 52,
                       child: Text(cur ? '⚔ 지금' : tk ? '✓' : seen ? '' : '🌫',

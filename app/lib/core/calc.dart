@@ -63,11 +63,15 @@ class GameCalc {
   num get _stew => stewProbe?.call() ?? 1;
   num get _ulS => ulProbe?.call()?.s ?? 1;
 
+  /// 사프란 「향신료 한 줌」 공격 +15% 중인지 (웹 SKX.spice>0). 전투 시뮬레이션이 [spiceProbe] 로 알려 준다.
+  bool Function()? spiceProbe;
+  bool get _spice => spiceProbe?.call() ?? false;
+
   // ───────────── 영지 ─────────────
-  /// 61 이상은 왕도에 머묾 (웹 region: % 대신 최댓값)
+  /// 마지막 지역 다음(사냥터)은 마지막 지역에 머묾 (웹 region: % 대신 최댓값)
   static RegionDef region(int st) => regions[regionIndex(st)];
   static int regionIndex(int st) => math.max(0, math.min((st - 1) ~/ 10, regions.length - 1));
-  static String terrName(int st) => st > maxLand ? '왕궁 뜰' : region(st).terr[(st - 1) % 10];
+  static String terrName(int st) => st > land ? huntName() : region(st).terr[(st - 1) % 10];
   static bool isLord(int st) => st % 10 == 0;
 
   // 왕도 (51~60): 홀수 = 군단장 잔영, 짝수 = 마왕 근위대장, 60 = 마왕 발타사르, 61 = 왕궁 뜰
@@ -88,13 +92,13 @@ class GameCalc {
                   : '${terrName(st)}의 마족 성주';
   /// 보스 제한 시간 (성주 30 · 군단장 40 · 마왕 60)
   static int bossLim(int st) => isDemon(st) ? 60 : isLord(st) ? 40 : 30;
-  /// 61 왕궁 뜰은 60단계 몬스터 (웹 fightSt)
-  int fightSt() => math.min(s.stage, maxLand);
-  int landCount() => math.min(maxLand, s.stage - 1);
+  /// 사냥터(land+1)는 마지막 영지 단계 몬스터 (웹 fightSt)
+  int fightSt() => math.min(s.stage, land);
+  int landCount() => math.min(land, s.stage - 1);
 
   /// rankIdx(s): 되찾은 영지 수로 정하는 칭호 단계
   static int rankIdxOf(GameState st) {
-    final c = math.min(maxLand, st.stage - 1);
+    final c = math.min(land, st.stage - 1);
     var i = 0;
     for (var j = 0; j < ranks.length; j++) {
       if (c >= ranks[j].at) i = j;
@@ -105,9 +109,14 @@ class GameCalc {
   int rankIdx() => rankIdxOf(s);
 
   // ───────────── 밸런스 손잡이 (BAL) ─────────────
-  /// monHp(st,b)
-  static num monHp(int st, bool boss) =>
-      20 * math.pow(Balance.hpG, st - 1) * (boss ? (isDemon(st) ? Balance.demHp : isLord(st) ? Balance.lordHp : Balance.bossHp) : 1);
+  /// 체력 증가: 1부(1~60)는 hpG, 2부(61~)는 그 위에 hpG2로 이어서 (웹 hpPow, PART2.md 3-2)
+  static num hpPow(int st) => st <= maxLand || Balance.hpG2 == null
+      ? math.pow(Balance.hpG, st - 1)
+      : math.pow(Balance.hpG, maxLand - 1) * math.pow(Balance.hpG2!, st - maxLand);
+
+  /// monHp(st,b,p1) — p1: 시련의 탑은 층이 높아도 1부 공식 그대로
+  static num monHp(int st, bool boss, [bool p1 = false]) =>
+      20 * (p1 ? math.pow(Balance.hpG, st - 1) : hpPow(st)) * (boss ? (isDemon(st) ? Balance.demHp : isLord(st) ? Balance.lordHp : Balance.bossHp) : 1);
 
   /// monAtk(st,b)
   static num monAtk(int st, bool boss) =>
@@ -149,6 +158,35 @@ class GameCalc {
   bool buff(String k) => orNum(s.buffs[k], 0) > now;
   num memMul() => 1 + .05 * s.memory;
 
+  // ───────────── 2부 동맹 (웹 allyOn·allySk·allyGold·allyHp·allyAll·allyAtk·p2Atk·p2Hp) ─────────────
+  bool allyOn(String k) => truthy(asMap(s.raw['ally'])?[k]);
+  /// 동맹을 맺을 수 있는 나라 (그 나라 장수 영지가 열려 있음)
+  static bool allyOpen(AllyDef a) => a.boss <= land;
+  /// 영지 st 가 나라 장수 영지면 그 나라
+  static AllyDef? allyAt(int st) {
+    if (!p2On) return null;
+    for (final a in allies) {
+      if (a.boss == st && allyOpen(a)) return a;
+    }
+    return null;
+  }
+
+  /// 엘프 동맹: 동료 스킬 게이지 +10%
+  num allySk() => allyOn('elf') ? 1.1 : 1;
+  /// 사막 동맹: 모든 골드 +20%
+  num allyGold() => allyOn('desert') ? 1.2 : 1;
+  /// 북방 동맹: 원정대 체력 +15%
+  num allyHp() => allyOn('north') ? 1.15 : 1;
+  /// 세 나라 모두 동맹 (연합군 맹주)
+  bool allyAll() => allies.every((a) => allyOn(a.k));
+  /// 연합군 맹주: 원정대 공격 +10%
+  num allyAtk() => allyAll() ? 1.1 : 1;
+  /// 2부 공격 배수: 사프란 향신료 +15% · 연합군 맹주 +10%
+  num p2Atk() => (_spice ? 1.15 : 1) * allyAtk();
+  num p2Hp() => allyHp();
+  /// 2부가 열려 있는지(1부 마왕을 한 번이라도 쓰러뜨림) — 지도 「바다 건너」 칩·동맹 칸 (웹 p2Open)
+  bool p2Open() => p2On && asNum(s.raw['capClears']) > 0;
+
   // ───────────── 은퇴 일기 특성 (웹 tl·trAtk… , core/retire.dart) ─────────────
   /// tl(k): 특성 단계 (0 ~ 최대)
   int tl(String k) {
@@ -186,11 +224,11 @@ class GameCalc {
   static bool isRec(String id) => recruits.containsKey(id);
   static CompGrade gr(String id) => compGrades[gradeOf[id] ?? 'common']!;
 
-  /// 웹 CARDIDS(): 이야기 동료 4 + 모집 동료 (카드 뽑기 대상 — 유니크 제외)
-  static List<String> cardIds() => [...storyOf.values, ...recruits.keys.where((id) => gradeOf[id] != 'unique')];
+  /// 웹 CARDIDS(): 이야기 동료 4 + 2부 이야기 동료 + 모집 동료 (카드 뽑기 대상 — 유니크 제외)
+  static List<String> cardIds() => [...storyOf.values, ...story2.keys, ...recruits.keys.where((id) => gradeOf[id] != 'unique')];
 
   /// 웹 COMPIDS(): 동료 전체 (일꾼·마을 이야기)
-  static List<String> compIds() => [...storyOf.values, ...recruits.keys];
+  static List<String> compIds() => [...storyOf.values, ...story2.keys, ...recruits.keys];
 
   int recStar(String id) {
     final r = s.rec;
@@ -268,7 +306,7 @@ class GameCalc {
 
   /// jobMembers(j): 그 직업 자리에 설 수 있는(보유한) 동료
   List<String> jobMembers(String j) =>
-      [storyOf[j]!, ...recruits.values.where((r) => r.job == j).map((r) => r.id)].where(owned).toList();
+      [storyOf[j]!, ...story2.keys.where((id) => story2[id] == j), ...recruits.values.where((r) => r.job == j).map((r) => r.id)].where(owned).toList();
 
   /// members(): 출전 중인 원정대 (자리 순서)
   List<String> members() => [for (final j in jobSlots) slotMember(j)].whereType<String>().toList();
@@ -297,8 +335,8 @@ class GameCalc {
     }
     final fm = 1 + .06 * s.bldLv('mine'), m = allMul();
     return Stats(
-      (10 + s.upLv('atk') * 3 + ga * fm) * (buff('atk') ? 1.2 : 1) * m * trAtk() * this.vBrave() * _ulA,
-      (100 + s.upLv('hp') * 20 + gh * fm) * (1 + .05 * s.bldLv('diner')) * m * trHp() * this.vHp() * _stew,
+      (10 + s.upLv('atk') * 3 + ga * fm) * (buff('atk') ? 1.2 : 1) * m * trAtk() * this.vBrave() * _ulA * p2Atk(),
+      (100 + s.upLv('hp') * 20 + gh * fm) * (1 + .05 * s.bldLv('diner')) * m * trHp() * this.vHp() * _stew * p2Hp(),
       (1 + s.upLv('spd') * .05) * (buff('spd') ? 1.2 : 1) * _ulS,
       (5 + s.upLv('crit')) / 100 + (buff('crit') ? .1 : 0),
     );
@@ -334,8 +372,8 @@ class GameCalc {
     final l = orNum(s.lv[id], 1);
     final m = allMul() * cwMul(id) * starMul(id) * affMul(id) /* 원정대의 정 ♥마다 +2% */, g = math.pow(compGrow, l - 1), gs = gearSum();
     return Stats(
-      (base.atk * g + gs.a * bless) * (1 + .08 * s.bldLv('apiary')) * (buff('atk') ? 1.2 : 1) * m * trAtk() * this.vBrave() * _ulA,
-      (base.hp * g + gs.h * bless) * (1 + .05 * s.bldLv('diner')) * m * trHp() * this.vHp() * _stew,
+      (base.atk * g + gs.a * bless) * (1 + .08 * s.bldLv('apiary')) * (buff('atk') ? 1.2 : 1) * m * trAtk() * this.vBrave() * _ulA * p2Atk(),
+      (base.hp * g + gs.h * bless) * (1 + .05 * s.bldLv('diner')) * m * trHp() * this.vHp() * _stew * p2Hp(),
       base.aps! * (buff('spd') ? 1.2 : 1) * (_bake ? 1.3 : 1) * _ulS,
       .05 + (buff('crit') ? .1 : 0),
     );
@@ -508,7 +546,7 @@ class GameCalc {
   /// goldRate(): 지금 영지에서 1초에 버는 골드(추정)
   num goldRate() {
     final tpk = monHp(s.stage, false) / math.max(1, _dps()) + 1.2;
-    return reward(s.stage, false) / tpk * memMul();
+    return reward(s.stage, false) / tpk * memMul() * allyGold();
   }
 
   /// goldX(x): 황금 이삭 → 골드 바꾸기
@@ -517,7 +555,7 @@ class GameCalc {
   /// 방치 보상: sec초 동안의 골드 (방치 보상·탑 보급·고블린 금고가 같이 씀, 웹 idleGold)
   num idleGold(num sec) {
     final tpk = monHp(fightSt(), false) / _dps() + 1.2;
-    return sec / tpk * reward(fightSt(), false) * .5 * memMul() * (subOn() ? 1.5 : 1) * this.vIdle() * vpDok();
+    return sec / tpk * reward(fightSt(), false) * .5 * memMul() * (subOn() ? 1.5 : 1) * this.vIdle() * vpDok() * allyGold();
   }
 
 
@@ -920,6 +958,13 @@ class GameCalc {
     s.memory = s.memory + p;
     s.retires = s.retires + 1;
     s.raw['capBonus'] = 0; // 왕도 재탈환 보너스: 회차마다 1번
+    // 2부 장수 회차 첫 처치(추억 +2)는 회차마다 다시 (웹 retire)
+    final p2c = asMap(s.raw['p2Clr']);
+    if (p2c != null) {
+      for (final k in p2c.keys.toList()) {
+        p2c[k] = 0;
+      }
+    }
     s.gold = 60 + pg;
     s.stage = st;
     s.raw['runStart'] = st;

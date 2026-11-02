@@ -47,6 +47,9 @@ const TABLES = [
   ['MAPPOS', 'MAPPOS'], ['REG_FOG', 'REG_FOG'], ['P2', 'P2'],
   // ── 2026-10-26 상점·패스 (docs/content/SHOP.md) ──
   ['SEAS0', 'SEAS0'], ['PASS', 'PASS'], ['PASS_SRC', 'PASS_SRC'], ['PASS_REW', 'PASS_REW'], ['GROW', 'GROW'],
+  // ── 2부 「흩어진 동맹」 (docs/content/PART2.md · 웹 p2Install 뒤의 표) ──
+  ['LAND', 'LAND'], ['STORY2', 'STORY2'], ['ALLY', 'ALLY'], ['P2C', '({mem:P2_MEM,gem:P2_GEM,last:P2_LAST,seaR0:SEA_R0})'],
+  ['P2FREE', 'P2FREE'], ['ENDING2', 'ENDING2'], ['SEAPOS', 'SEAPOS'], ['SEA_FOG', 'SEA_FOG'], ['RANKIMG', 'RANKIMG'],
 ];
 
 function dartStr(s) {
