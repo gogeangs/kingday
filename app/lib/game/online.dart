@@ -493,7 +493,11 @@ class Online {
     try {
       await cloudPut(true);
       final r = which == 'apple' ? await Login.apple() : await Login.google();
-      if (r == null) return;
+      if (r == null) {
+        // 아무 반응이 없어 보이지 않게 (2026-11-02 애플 심사 2.1(a))
+        g.toast('$name 로그인을 취소했어요');
+        return;
+      }
       if (!await sv!.signInWithIdToken(r.$1, r.$2, nonce: r.$3)) {
         g.toast('$name 로그인에 실패했어요. 잠시 뒤에 다시 해 주세요');
         return;
@@ -519,7 +523,8 @@ class Online {
       await mailFetch();
       g.toast('$name 계정으로 연결했어요${(acct?.email ?? '').isNotEmpty ? ' · ${acct!.email}' : ''}');
       g.refresh();
-    } catch (_) {
+    } catch (e) {
+      debugPrint('loginWith $which: $e');
       g.toast('$name 로그인에 실패했어요. 잠시 뒤에 다시 해 주세요');
     }
   }
