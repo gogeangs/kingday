@@ -198,7 +198,30 @@ class GameState {
       p2Mig = 71;
     }
     if (asNum(f['stage']) > wLand + 1) f['stage'] = wLand + 1;
+    _saveFix(f);
     return g;
+  }
+
+  /// 망가진 저장 값 바로잡기 (웹 saveFix, 2026-11-02 출시 전 점검):
+  /// 별 수는 0~그 동료 최대 별 정수(최대보다 크면 별 그리기·능력치 표에서 오류), 카드 수는 0 이상 정수
+  static void _saveFix(Map<String, dynamic> f) {
+    final rec = asMap(f['rec']);
+    if (rec != null) {
+      for (final id in rec.keys.toList()) {
+        final v = rec[id], n = v is num && v.isFinite ? v.floor() : num.tryParse('$v')?.floor() ?? 0;
+        final gr = asMap(wGr[wGrade[id] ?? 'common']), mx = gr == null ? null : asNum(gr['max']).toInt();
+        rec[id] = wComp.containsKey(id) && mx != null ? math.max(0, math.min(mx, n)) : math.max(0, n);
+      }
+      f['rec'] = rec;
+    }
+    final cards = asMap(f['cards']);
+    if (cards != null) {
+      for (final id in cards.keys.toList()) {
+        final v = cards[id], n = v is num && v.isFinite ? v.floor() : num.tryParse('$v')?.floor() ?? 0;
+        cards[id] = math.max(0, n);
+      }
+      f['cards'] = cards;
+    }
   }
 
   static bool _okVal(Object? fv, Object? dv) {

@@ -117,4 +117,15 @@ void main() {
     expect(c.s.raw['p2v'], 3);
     expect(c.p2Open(), isFalse);
   });
+
+  test('망가진 저장: 별 수는 최대까지·카드 수는 0 이상 정수 (웹 saveFix)', () {
+    final c = calcFor({'gold': 60, 'joined': {'bron': true}, 'rec': {'bron': 9, 'luka': -3, 'daisy': 'x'}, 'cards': {'luka': 'many', 'daisy': 12.7}});
+    expect(c.s.rec!['bron'], c.starMax('bron'));
+    expect(c.s.rec!['luka'], 0);
+    expect(c.s.rec!['daisy'], 0);
+    expect(c.starMul('bron'), isA<num>(), reason: '별 표를 넘지 않음');
+    final cards = c.s.raw['cards'] as Map;
+    expect(cards['luka'], 0);
+    expect(cards['daisy'], 12);
+  });
 }
