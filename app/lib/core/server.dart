@@ -121,6 +121,29 @@ class Server {
     return true;
   }
 
+  /// 지금 계정에 구글·애플 로그인을 하나 더 붙이기 (애플로 연결한 사람이 구글도 · 그 반대도).
+  /// 성공하면 null, 실패하면 오류 이름 (identity_already_exists = 그 구글/애플이 이미 다른 계정에 연결됨)
+  Future<String?> linkIdToken(String provider, String idToken, {String? nonce}) async {
+    final a = await login();
+    final res = await _http
+        .post(Uri.parse('$sbUrl/auth/v1/token?grant_type=id_token'),
+            headers: {..._h, 'Authorization': 'Bearer ${a.access}'},
+            body: jsonEncode({'provider': provider, 'id_token': idToken, if (nonce != null) 'nonce': nonce, 'link_identity': true}))
+        .timeout(_timeout);
+    if (res.statusCode >= 300) {
+      try {
+        final j = jsonDecode(utf8.decode(res.bodyBytes));
+        if (j is Map) return '${j['error_code'] ?? j['code'] ?? j['error'] ?? res.statusCode}';
+      } catch (_) {}
+      return '${res.statusCode}';
+    }
+    try {
+      final j = jsonDecode(utf8.decode(res.bodyBytes));
+      if (j is Map<String, dynamic> && j['access_token'] is String) await setSession(j);
+    } catch (_) {}
+    return null;
+  }
+
   /// Edge Function 부르기 (인앱결제 확인 kd-iap 등). 응답 JSON 과 상태 코드
   Future<(int, dynamic)> function(String name, Map<String, dynamic> body) async {
     final a = await login();

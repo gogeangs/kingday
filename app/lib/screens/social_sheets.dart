@@ -1458,6 +1458,15 @@ class _AccountBoxState extends State<AccountBox> {
         ]),
         style: _muted(),
       ),
+      // 연결 안 된 로그인 더 붙이기 (같은 게임 기록에 구글·애플 둘 다)
+      if (Login.googleReady && !a.providers.contains('google')) ...[
+        const SizedBox(height: 6),
+        KdBuy(kind: BuyKind.ghost, minWidth: 0, text: '구글 로그인도 연결', onTap: () => o.linkMore('google')),
+      ],
+      if (Login.appleReady && !a.providers.contains('apple')) ...[
+        const SizedBox(height: 6),
+        KdBuy(kind: BuyKind.ghost, minWidth: 0, text: 'Apple 로그인도 연결', onTap: () => o.linkMore('apple')),
+      ],
       const SizedBox(height: 6),
       KdBuy(
         kind: BuyKind.ghost,
@@ -1493,13 +1502,16 @@ String acctEmail(String email) {
 }
 
 // ════════════════════ 계정 연결 완료 창 ════════════════════
-Future<void> showAcctLinked(BuildContext ctx, String provider, String email) => showKdSheet<void>(ctx, builder: (c) => KdSheetBody(
+Future<void> showAcctLinked(BuildContext ctx, String provider, String email, {bool more = false}) => showKdSheet<void>(ctx, builder: (c) => KdSheetBody(
           eyebrow: '계정 연결',
-          title: '${acctKind(provider)} 계정으로 연결했어요'.trim(),
+          title: (more ? '${acctKind(provider)} 로그인도 연결했어요' : '${acctKind(provider)} 계정으로 연결했어요').trim(),
           children: [
             const Text('✅', textAlign: TextAlign.center, style: TextStyle(fontSize: 56, height: 1.1)),
             Text(acctEmail(email), textAlign: TextAlign.center, style: KdText.body(15, color: KdColors.fg, weight: FontWeight.w600)),
-            Text('이제 게임 기록이 이 계정에 저장돼요. 휴대폰을 바꾸거나 앱을 지워도 같은 계정으로 로그인하면 이어서 할 수 있어요.\n연결 상태는 ⚙ 설정 → 계정에서 언제든 볼 수 있어요. 처음 연결했다면 선물(황금 이삭 50)이 우편함으로 가요.',
+            if (more)
+              Text('이제 ${acctKind(provider)} 로그인으로도 같은 게임 기록을 이어서 할 수 있어요.', textAlign: TextAlign.center, style: _muted())
+            else
+              Text('이제 게임 기록이 이 계정에 저장돼요. 휴대폰을 바꾸거나 앱을 지워도 같은 계정으로 로그인하면 이어서 할 수 있어요.\n연결 상태는 ⚙ 설정 → 계정에서 언제든 볼 수 있어요. 처음 연결했다면 선물(황금 이삭 50)이 우편함으로 가요.',
                 textAlign: TextAlign.center, style: _muted()),
           ],
           acts: KdActs(buttons: [KdAct('확인', primary: true, onTap: () => Navigator.of(c).pop())]),

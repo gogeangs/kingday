@@ -538,6 +538,37 @@ class Online {
     }
   }
 
+  /// 이미 연결된 계정에 다른 로그인 하나 더 붙이기 (설정 → 계정 「구글도 연결」·「Apple도 연결」)
+  Future<void> linkMore(String which) async {
+    if (!on) return;
+    final name = which == 'apple' ? 'Apple' : '구글';
+    try {
+      final r = which == 'apple' ? await Login.apple() : await Login.google();
+      if (r == null) {
+        g.toast('$name 연결을 취소했어요');
+        return;
+      }
+      final err = await sv!.linkIdToken(r.$1, r.$2, nonce: r.$3);
+      if (err == 'identity_already_exists') {
+        g.toast('이 $name 계정은 이미 다른 게임 기록에 연결돼 있어요');
+        await acctFetch();
+        return;
+      }
+      if (err != null) {
+        g.toast('$name 연결에 실패했어요. 잠시 뒤에 다시 해 주세요 ($err)');
+        return;
+      }
+      await acctFetch();
+      final email = acct?.email ?? '';
+      g.queue((ctx) => showAcctLinked(ctx, which, email, more: true));
+      g.refresh();
+    } catch (e) {
+      debugPrint('linkMore $which: $e');
+      final code = e is PlatformException ? ' (${e.code})' : '';
+      g.toast('$name 연결에 실패했어요. 잠시 뒤에 다시 해 주세요$code');
+    }
+  }
+
   num cloudAt = 0;
   bool _cloudBusy = false;
 
