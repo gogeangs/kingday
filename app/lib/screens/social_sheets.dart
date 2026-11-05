@@ -1450,8 +1450,10 @@ class _AccountBoxState extends State<AccountBox> {
       Text.rich(
         TextSpan(children: [
           const TextSpan(text: '✅ '),
-          TextSpan(text: '${acctKind(a.provider)} 계정 연결됨'.trim(), style: const TextStyle(fontWeight: FontWeight.w600, color: KdColors.fg)),
+          const TextSpan(text: '계정 연결됨', style: TextStyle(fontWeight: FontWeight.w600, color: KdColors.fg)),
           TextSpan(text: ' · ${acctEmail(a.email)}'),
+          // 연결된 로그인 모두 (같은 이메일이면 서버가 구글·애플을 한 계정으로 묶음)
+          TextSpan(text: '\n연결된 로그인: ${['apple', 'google'].map((p) => '${acctKind(p)} ${a.providers.contains(p) ? '✅' : '—'}').join(' · ')}'),
           TextSpan(text: '\n클라우드 저장: ${agoText(g.state.raw['cloudAt'])} (3분마다 자동 저장)'),
         ]),
         style: _muted(),

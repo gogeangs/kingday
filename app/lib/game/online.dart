@@ -465,14 +465,14 @@ class Online {
   }
 
   // ── 계정·클라우드 저장 ──
-  ({bool anon, String email, String provider})? acct;
+  ({bool anon, String email, List<String> providers})? acct;
 
   /// 계정 칸(설정 창)이 다시 그려지도록 — 로그인·연결 직후 바로 「연결됨」으로 바뀜
   final acctRev = ValueNotifier<int>(0);
   bool _linkGiftAsked = false;
 
   /// 웹 acctFetch(): 계정 확인 (구글로 연결된 계정이면 연결 선물 요청)
-  Future<({bool anon, String email, String provider})?> acctFetch() async {
+  Future<({bool anon, String email, List<String> providers})?> acctFetch() async {
     if (!on) return null;
     try {
       final u = await sv!.user();
