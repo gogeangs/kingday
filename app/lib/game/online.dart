@@ -8,6 +8,7 @@ import 'dart:async';
 import 'dart:math' as math;
 
 import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart';
 
 import '../core/calc.dart';
 import '../core/data.dart';
@@ -525,7 +526,8 @@ class Online {
       g.refresh();
     } catch (e) {
       debugPrint('loginWith $which: $e');
-      g.toast('$name 로그인에 실패했어요. 잠시 뒤에 다시 해 주세요');
+      final code = e is PlatformException ? ' (${e.code})' : '';
+      g.toast('$name 로그인에 실패했어요. 잠시 뒤에 다시 해 주세요$code');
     }
   }
 
