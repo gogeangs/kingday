@@ -162,7 +162,7 @@ class Server {
   }
 
   /// 웹 acctFetch(): 지금 계정 정보 (게스트인지, 연결된 이메일)
-  Future<({bool anon, String email})?> user() async {
+  Future<({bool anon, String email, String provider})?> user() async {
     final a = await login();
     final res = await _http.get(Uri.parse('$sbUrl/auth/v1/user'), headers: {'apikey': sbKey, 'Authorization': 'Bearer ${a.access}'}).timeout(_timeout);
     if (res.statusCode >= 300) return null;
@@ -178,7 +178,19 @@ class Server {
         }
       }
     }
-    return (anon: u['is_anonymous'] == true, email: email);
+    // 연결한 로그인 종류 (apple · google). 게스트는 빈 값
+    var provider = '';
+    final am = u['app_metadata'];
+    if (am is Map) {
+      final ps = am['providers'];
+      if (ps is List) {
+        for (final x in ps) {
+          if (x == 'apple' || x == 'google') provider = provider.isEmpty ? '$x' : provider;
+        }
+      }
+      if (provider.isEmpty && (am['provider'] == 'apple' || am['provider'] == 'google')) provider = am['provider'] as String;
+    }
+    return (anon: u['is_anonymous'] == true, email: email, provider: provider);
   }
 
   void close() => _http.close();

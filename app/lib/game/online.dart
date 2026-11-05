@@ -465,15 +465,19 @@ class Online {
   }
 
   // ── 계정·클라우드 저장 ──
-  ({bool anon, String email})? acct;
+  ({bool anon, String email, String provider})? acct;
+
+  /// 계정 칸(설정 창)이 다시 그려지도록 — 로그인·연결 직후 바로 「연결됨」으로 바뀜
+  final acctRev = ValueNotifier<int>(0);
   bool _linkGiftAsked = false;
 
   /// 웹 acctFetch(): 계정 확인 (구글로 연결된 계정이면 연결 선물 요청)
-  Future<({bool anon, String email})?> acctFetch() async {
+  Future<({bool anon, String email, String provider})?> acctFetch() async {
     if (!on) return null;
     try {
       final u = await sv!.user();
       if (u != null) acct = u;
+      acctRev.value++;
       if (acct != null && !acct!.anon && !_linkGiftAsked) {
         _linkGiftAsked = true;
         rpc('kd_link_reward', {}).then((r) {
@@ -522,7 +526,10 @@ class Online {
         await rpc('kd_link_reward', {});
       } catch (_) {}
       await mailFetch();
-      g.toast('$name 계정으로 연결했어요${(acct?.email ?? '').isNotEmpty ? ' · ${acct!.email}' : ''}');
+      acctRev.value++;
+      // 알림은 금방 사라져 연결됐는지 알기 어려움 → 확인 창 (2026-11-05 대표님)
+      final email = acct?.email ?? '';
+      g.queue((ctx) => showAcctLinked(ctx, which, email));
       g.refresh();
     } catch (e) {
       debugPrint('loginWith $which: $e');
