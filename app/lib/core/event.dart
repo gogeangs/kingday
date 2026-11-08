@@ -286,15 +286,15 @@ extension EventCalc on GameCalc {
     var e = evs[id];
     if (e is! Map) e = evs[id] = <String, dynamic>{};
     final em = e;
-    Map<String, dynamic> d() => {
+    Map<String, dynamic> d() => <String, dynamic>{
           'sf': 0,
-          'day': {'d': '', 'bat': 0, 'kc': 0},
-          'boss': {'d': '', 'n': 0, 'ad': 0, 'st': 1, 'best': 0, 'mile': <String, dynamic>{}, 'ref': 0},
-          'att': {'last': '', 'cnt': 0},
+          'day': <String, dynamic>{'d': '', 'bat': 0, 'kc': 0},
+          'boss': <String, dynamic>{'d': '', 'n': 0, 'ad': 0, 'st': 1, 'best': 0, 'mile': <String, dynamic>{}, 'ref': 0},
+          'att': <String, dynamic>{'last': '', 'cnt': 0},
           'shop': <String, dynamic>{},
-          'seen': {'start': 0, 'end': 0, 'xmas': 0, 'mgEnd': 0, 'warn': ''},
-          'xm': {'gift': <String, dynamic>{}, 'tree': '', 'days': <String, dynamic>{}},
-          'mg': {'d': '', 'n': 0, 'ad': 0, 'best': 0},
+          'seen': <String, dynamic>{'start': 0, 'end': 0, 'xmas': 0, 'mgEnd': 0, 'warn': ''},
+          'xm': <String, dynamic>{'gift': <String, dynamic>{}, 'tree': '', 'days': <String, dynamic>{}},
+          'mg': <String, dynamic>{'d': '', 'n': 0, 'ad': 0, 'best': 0},
           'hi': 0,
         };
     final def = d();
@@ -326,10 +326,14 @@ extension EventCalc on GameCalc {
   Map<String, dynamic> evToday(Map<String, dynamic> e) {
     final t = evDay();
     if ((e['day'] as Map)['d'] != t) e['day'] = <String, dynamic>{'d': t, 'bat': 0, 'kc': 0};
-    final b = e['boss'] as Map;
-    if (b['d'] != t) b.addAll({'d': t, 'n': 0, 'ad': 0});
-    final g = e['mg'] as Map;
-    if (g['d'] != t) g.addAll({'d': t, 'n': 0, 'ad': 0});
+    for (final k in const ['boss', 'mg']) {
+      final b = e[k] as Map;
+      if (b['d'] != t) {
+        b['d'] = t;
+        b['n'] = 0;
+        b['ad'] = 0;
+      }
+    }
     return e;
   }
 
