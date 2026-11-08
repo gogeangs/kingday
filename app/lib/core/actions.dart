@@ -468,6 +468,7 @@ class GameActions {
 
   /// ♡ 희망 동료 (카드가 절반 확률로 이 동료로)
   void toggleWish(String id) {
+    if (evCards.contains(id)) return;
     s.wish = s.wish == id ? null : id;
     _toast(s.wish != null ? '${comps[id]!.n} 카드가 더 잘 나와요 (절반)' : '희망 동료를 해제했어요');
   }

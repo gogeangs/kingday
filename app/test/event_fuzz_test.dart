@@ -188,6 +188,21 @@ void main() {
     }
   });
 
+  test('소복이는 희망 동료가 될 수 없음 · 옛 저장에 희망이 소복이여도 일반 뽑기에 안 나옴', () {
+    final now0 = kst(2026, 12, 15);
+    final c = GameCalc(
+        GameState.hydrate({'gold': 1e9, 'stage': 30, 'best': 31, 'started': true, 'joined': {'bron': true, 'sobok': true}, 'cards': {'sobok': 3}}, now0, GameCalc.rankIdxOf),
+        clock: () => now0);
+    final a = GameActions(c, rng: Mulberry32(1));
+    a.toggleWish('sobok');
+    expect(c.s.wish, isNull);
+    c.s.wish = 'sobok';
+    final r = Mulberry32(9);
+    for (var i = 0; i < 3000; i++) {
+      expect(c.cardPick(r, 'shop'), isNot('sobok'));
+    }
+  });
+
   test('선물 배달: 마구 누르기·아무것도 안 누르기 · 점수·보상 범위', () {
     for (var seed = 1; seed <= 30; seed++) {
       final r = Mulberry32(seed);

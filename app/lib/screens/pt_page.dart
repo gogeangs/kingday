@@ -9,6 +9,7 @@ import '../core/attendance.dart';
 import '../core/bond.dart';
 import '../core/calc.dart';
 import '../core/data.dart';
+import '../core/event.dart' show evCards;
 import '../core/fmt.dart';
 import '../core/js.dart';
 import '../core/village.dart';
@@ -607,6 +608,8 @@ class PtPage extends StatelessWidget {
                   },
                 ),
               ],
+              // 이벤트 동료(소복이)는 희망 버튼 없음 (웹 EVCARD, QA 0.0.7)
+              if (!evCards.contains(id)) ...[
               const SizedBox(height: 6),
               GestureDetector(
                 onTap: () => g.act((a) => a.toggleWish(id)),
@@ -621,6 +624,7 @@ class PtPage extends StatelessWidget {
                       style: KdText.body(12, color: g.state.wish == id ? const Color(0xFFFF8FB1) : KdColors.muted)),
                 ),
               ),
+              ],
             ])),
           ],
         ]),

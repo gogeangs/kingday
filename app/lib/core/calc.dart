@@ -682,7 +682,8 @@ class GameCalc {
     if (open.isEmpty) return null;
     final fx = _fix(src);
     final w0 = s.wish;
-    final wish = (w0 != null && cardCan(w0)) ? w0 : null;
+    // 이벤트 동료(소복이)는 희망으로 뽑기에 나오지 않음 (웹은 희망 버튼을 숨김, QA 0.0.7)
+    final wish = (w0 != null && cardCan(w0) && !evCards.contains(w0)) ? w0 : null;
     final r = rng.next();
     final g = r < fx['legend']! ? 'legend' : r < fx['legend']! + fx['epic']! ? 'epic' : null;
     if (g != null) {
