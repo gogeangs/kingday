@@ -1,7 +1,7 @@
 // ignore_for_file: invalid_use_of_visible_for_testing_member
 // QA 화면 캡처: 실제 글꼴·그림으로 주요 화면을 PNG 로 찍는다 (웹 화면과 나란히 비교용).
 //   flutter test --update-goldens qa/screens_test.dart   → qa/shots/*.png
-// 평소 시험(flutter test)에는 들어가지 않는다.
+// 평소 시험(flutter test)에는 들어가지 않는다. (저장 new·late·p2·snow)
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
