@@ -319,6 +319,28 @@ extension EventCalc on GameCalc {
     final b = em['boss'] as Map;
     b['st'] = math.min(999, math.max(1, fl(b['st']))).toInt();
     b['best'] = math.min(999, math.max(0, fl(b['best']))).toInt();
+    // QA 0.0.7 (2026-11-08): 망가진 저장의 횟수 칸 (음수·소수·글자) — 음수 출석 칸이면 보상 표 밖을 읽어 멈췄고,
+    // 음수 횟수면 하루 한도보다 더 받을 수 있었음. 정상 저장 값은 그대로 (0 이상 정수).
+    int cnt(Object? v) => math.max(0, fl(v)).toInt();
+    b['n'] = cnt(b['n']);
+    final a = em['att'] as Map;
+    final def0 = evts[id];
+    a['cnt'] = def0 == null ? cnt(a['cnt']) : math.min(def0.att.length, cnt(a['cnt']));
+    if (a['last'] is! String) a['last'] = '';
+    final day = em['day'] as Map, mg = em['mg'] as Map;
+    day['bat'] = cnt(day['bat']);
+    if (!(asNum(day['kc']) >= 0)) day['kc'] = 0;
+    mg['n'] = cnt(mg['n']);
+    mg['best'] = cnt(mg['best']);
+    em['hi'] = cnt(em['hi']);
+    final shop = em['shop'] as Map;
+    for (final k in shop.keys.toList()) {
+      var lim = 1 << 30;
+      for (final it in def0?.shop ?? const <EvShopItem>[]) {
+        if (it.k == k) lim = it.lim;
+      }
+      shop[k] = math.min(lim, cnt(shop[k]));
+    }
     return em.cast<String, dynamic>();
   }
 
