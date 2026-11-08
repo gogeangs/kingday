@@ -4,10 +4,13 @@ library;
 import 'package:flutter/material.dart';
 
 import '../core/challenge.dart';
+import '../core/event.dart';
 import '../core/fmt.dart';
+import '../core/js.dart';
 import '../game/controller.dart';
 import '../ui/theme.dart';
 import '../ui/widgets.dart';
+import 'event_sheet.dart';
 
 /// 도전 창 열기 (지도 탭 「⚔ 도전」)
 Future<void> openChallenge(GameController g) async {
@@ -62,6 +65,7 @@ class _ChSheet extends StatelessWidget {
         ]),
       ),
       children: [
+        if (_evCard() case final ev?) ev,
         _memory(c.chPm(), c.pkPow()),
         _card([
           _head('🗼', '시련의 탑', '최고', '$top층'),
@@ -127,6 +131,54 @@ class _ChSheet extends StatelessWidget {
         ]),
       ],
       acts: KdActs(buttons: [KdAct('닫기', primary: true, onTap: () => Navigator.of(sheet).pop())]),
+    );
+  }
+
+  /// 맨 위 「눈꽃제 · 눈사람 대장」 칸 (기간 중·영지 10부터, 웹 evChHtml·evChBind)
+  Widget? _evCard() {
+    final c = g.calc;
+    EventDef? e;
+    for (final x in evts.values) {
+      if (x.boss != null && c.evPhase(x) == 'on') {
+        e = x;
+        break;
+      }
+    }
+    if (e == null || !c.evOpen()) return null;
+    final ev = e, b = ev.boss!, x = c.evToday(c.evS(ev.id)), xm = c.evXmas(ev), left = c.evTriesLeft(ev), bs = x['boss'] as Map, st = asNum(bs['st']).toInt();
+    final win = b.win(st) * (xm ? b.santaX : 1);
+    return Container(
+      key: const ValueKey('chEv'),
+      padding: const EdgeInsets.fromLTRB(12, 10, 12, 10),
+      decoration: BoxDecoration(
+        gradient: const LinearGradient(colors: [Color(0xE62A3C63), Color(0xE61F2B48)], begin: Alignment.topCenter, end: Alignment.bottomCenter),
+        border: Border.all(color: const Color(0xFF3B5385)),
+        borderRadius: BorderRadius.circular(14),
+      ),
+      child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, mainAxisSize: MainAxisSize.min, children: [
+        Row(children: [
+          kdImg((ev.art['icon'] ?? 'assets/ui/icon_snow.png').replaceFirst('assets/', 'assets/game/'), w: 26, h: 26),
+          const SizedBox(width: 6),
+          Expanded(child: Text('${ev.n} · ${xm ? '산타 ' : ''}${b.n}', maxLines: 1, overflow: TextOverflow.ellipsis, style: KdText.display(16, color: const Color(0xFFE9F7FF)))),
+          const SizedBox(width: 6),
+          Text.rich(TextSpan(children: [
+            const TextSpan(text: '오늘 '),
+            TextSpan(text: '$left/${c.evTries(ev, x)}', style: const TextStyle(color: KdColors.gold, fontWeight: FontWeight.w700)),
+          ]), style: KdText.body(12.5, color: const Color(0xFFCFD8EA))),
+        ]),
+        const SizedBox(height: 6),
+        Text('$st단계 · 최고 ${asNum(bs['best']).toInt()}단계 · 이기면 ${ev.curN} ${win == win.roundToDouble() ? win.round() : win}', style: KdText.body(13, height: 1.45)),
+        const SizedBox(height: 6),
+        Row(children: [
+          Expanded(child: KdBuy(text: left > 0 ? '도전하기' : '오늘 도전 끝', minWidth: 0, onTap: left > 0 ? () => g.chainSheet(sheet, () => g.evBossGo(ev.id)) : null)),
+          const SizedBox(width: 6),
+          Expanded(
+            child: c.evMgOn(ev)
+                ? KdBuy(kind: BuyKind.ghost, minWidth: 0, text: '🎁 선물 배달 (${c.evMgLeft(ev)})', onTap: () => g.chainSheet(sheet, () => g.evMgStart(ev.id, false)))
+                : KdBuy(kind: BuyKind.ghost, minWidth: 0, text: '이벤트 창', onTap: () => g.chainSheet(sheet, () => openEventSheet(g, ev.id))),
+          ),
+        ]),
+      ]),
     );
   }
 

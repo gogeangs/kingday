@@ -15,6 +15,11 @@ extension GameReturnX on GameController {
     // 원정대의 정: 방치 시간도 (여관 최대 시간까지 · 웹 offline 처럼 골드 계산보다 먼저 — ♥가 오르면 전투력도 오름)
     final sec = calc.offlineSec();
     if (sec >= 60) act((a) => a.affTick(sec));
+    // 눈꽃제: 방치 처치도 눈송이 (하루 100까지, 웹 offline 의 evIdle)
+    if (sec >= 60) {
+      final sf = calc.evIdle(sec);
+      if (sf > 0) queue((_) async => toast('❄ 쉬는 동안 눈송이 +$sf'));
+    }
     final r = calc.offlineReward();
     if (r.gold <= 0) return;
     state.gold = state.gold + r.gold;

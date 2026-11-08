@@ -1,7 +1,8 @@
 // ignore_for_file: invalid_use_of_visible_for_testing_member
 // QA 화면 캡처: 실제 글꼴·그림으로 주요 화면을 PNG 로 찍는다 (웹 화면과 나란히 비교용).
 //   flutter test --update-goldens qa/screens_test.dart   → qa/shots/*.png
-// 평소 시험(flutter test)에는 들어가지 않는다.
+// 평소 시험(flutter test)에는 들어가지 않는다. (저장 new·late·p2·snow)
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
@@ -9,13 +10,17 @@ import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
+import 'package:kingday/core/event.dart';
 import 'package:kingday/core/save_store.dart';
 import 'package:kingday/core/server.dart';
 import 'package:kingday/game/controller.dart';
 import 'package:kingday/main.dart';
+import 'package:kingday/screens/challenge_sheet.dart';
+import 'package:kingday/screens/event_sheet.dart';
 import 'package:kingday/screens/pt_page.dart';
 import 'package:kingday/screens/settings_sheet.dart';
 import 'package:kingday/screens/social_sheets.dart';
+import 'package:kingday/ui/widgets.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 const _w = 390.0, _h = 844.0;
@@ -38,12 +43,30 @@ Map<String, Object> _late() => {
 /// 2부: 1부를 끝내고 61 「왕궁 뜰」에 있던 예전 저장 (2부 시작 장면 → 큰 제목 → 엘프 왕국 이야기)
 Map<String, Object> _p2() {
   final m = jsonDecode(_late()['acorn-idle-v1'] as String) as Map<String, dynamic>;
+  final now = DateTime.now();
+  final add = <String, dynamic>{
+    'stage': 61, 'wave': 3, 'best': 61, 'capClears': 1, 'ending1': 1, 'gold': 9.87e22,
+    'up': <String, dynamic>{'atk': 900, 'hp': 900, 'spd': 30, 'crit': 40},
+    'att': <String, dynamic>{'intro': 1, 'w': 1, 'ym': '', 'm': 0, 'last': '${now.year}-${now.month}-${now.day}'},
+    'mapIntro': 1, 'fogSeen': 61, 'regSeen': <String, dynamic>{'0': 1, '1': 1, '2': 1, '3': 1, '4': 1, '5': 1}, 'rankSeen': 7, 'gemRank': 7,
+  };
+  add.forEach((k, v) => m[k] = v);
+  final done = m['done'] as Map;
+  for (final k in const ['capRoad', 'cap56', 'cap57']) {
+    done[k] = true;
+  }
+  return {'acorn-idle-v1': jsonEncode(m)};
+}
+
+/// 눈꽃제: 영지 30 (EvClock.demo = 'xmas' 로 이벤트·크리스마스 주간을 켬)
+Map<String, Object> _snow() {
+  final m = jsonDecode(_late()['acorn-idle-v1'] as String) as Map<String, dynamic>;
+  final t = DateTime.now();
   m.addAll({
-    'stage': 61, 'wave': 3, 'best': 61, 'capClears': 1, 'ending1': 1, 'gold': 9.87e22, 'up': {'atk': 900, 'hp': 900, 'spd': 30, 'crit': 40},
-    'att': {'intro': 1, 'w': 1, 'ym': '', 'm': 0, 'last': '${DateTime.now().year}-${DateTime.now().month}-${DateTime.now().day}'},
-    'mapIntro': 1, 'fogSeen': 61, 'regSeen': {'0': 1, '1': 1, '2': 1, '3': 1, '4': 1, '5': 1}, 'rankSeen': 7, 'gemRank': 7,
+    'stage': 30, 'wave': 3, 'best': 30, 'gold': 9.87e12, 'chOpen': 1,
+    'att': {'intro': 1, 'w': 1, 'ym': '', 'm': 0, 'last': '${t.year}-${t.month}-${t.day}'},
   });
-  (m['done'] as Map).addAll({'capRoad': true, 'cap56': true, 'cap57': true});
+  (m['cards'] as Map)['sobok'] = 20;
   return {'acorn-idle-v1': jsonEncode(m)};
 }
 
@@ -87,18 +110,22 @@ Future<void> _fonts() async {
 void main() {
   setUpAll(_fonts);
 
-  for (final save in ['new', 'late', 'p2']) {
+  for (final save in ['new', 'late', 'p2', 'snow']) {
     testWidgets('화면 캡처 · $save', (tester) async {
       tester.view.devicePixelRatio = 2;
       tester.view.physicalSize = const Size(_w * 2, _h * 2);
       addTearDown(tester.view.reset);
-      SharedPreferences.setMockInitialValues(save == 'new' ? {} : save == 'p2' ? _p2() : _late());
+      // 눈꽃제: 기간·크리스마스 주간을 켠 채로 시작 (시계는 못 바꾸므로 미리보기 스위치)
+      EvClock.demo = save == 'snow' ? 'xmas' : null;
+      addTearDown(() => EvClock.demo = null);
+      SharedPreferences.setMockInitialValues(save == 'new' ? {} : save == 'p2' ? _p2() : save == 'snow' ? _snow() : _late());
       final store = await SaveStore.open();
       final g = GameController(
         store: store,
         state: store.load(DateTime.now().millisecondsSinceEpoch),
         server: save == 'late' ? Server(store.prefs, client: MockClient(_fake)) : null,
       );
+      if (save == 'snow') g.calc.evS(evMain)['sf'] = 1200;
       await tester.pumpWidget(RepaintBoundary(child: KingdayApp(g: g)));
 
       Future<void> frames([int n = 6]) async {
@@ -140,12 +167,12 @@ void main() {
       await shot('title');
       await tester.tap(find.text('게임 시작'));
       await frames(8);
-      if (save == 'p2') {
+      if (save == 'p2' || save == 'snow') {
         // 2부 시작 장면 → 큰 제목 → 엘프 왕국 이야기 (방치 보상·출석 창이 사이에 끼면 그것도 찍음)
         for (var i = 0; i < 6; i++) {
           await frames(6);
           if (!g.navKey.currentState!.canPop()) break;
-          await shot('p2_pop$i');
+          await shot(save == 'p2' ? 'p2_pop$i' : 'pop$i');
           await close();
         }
       } else if (save == 'new') {
@@ -160,12 +187,16 @@ void main() {
         // 출석체크: 방치 보상 다음에 자동으로 뜸 → 출석하기 → 한달 판
         await frames(6);
         await shot('attend');
-        await tester.tap(find.text('출석하기'));
-        await frames(8);
-        await shot('attend_claimed');
-        await tester.tap(find.text('한달'));
-        await frames(4);
-        await shot('attend_month');
+        if (find.text('출석하기').evaluate().isNotEmpty) {
+          await tester.tap(find.text('출석하기'));
+          await frames(8);
+          await shot('attend_claimed');
+        }
+        if (find.text('한달').evaluate().isNotEmpty) {
+          await tester.tap(find.text('한달'));
+          await frames(4);
+          await shot('attend_month');
+        }
         await close();
       }
       // 밀린 이야기 창들을 모두 닫음
@@ -176,6 +207,102 @@ void main() {
       }
       await frames(30);
       await shot('battle');
+      if (save == 'snow') {
+        // 눈꽃제: 이벤트 창 탭마다 · 출석 받기 · 산타 피트 선물 · 도전 창 칸 · 마을 트리 · 눈사람 대장 전투·결과 · 폭 320~430
+        for (final t in ['att', 'boss', 'shop', 'mg']) {
+          openEventSheet(g, evMain, t);
+          await frames();
+          await shot('ev_$t');
+          if (t == 'att') {
+            await tester.tap(find.byKey(const ValueKey('evAtt')));
+            await frames();
+            await shot('ev_att_claimed');
+          }
+          await close();
+        }
+        ((g.calc.evS(evMain)['xm'] as Map)['gift'] as Map).clear();
+        g.evGiftQueue(evMain);
+        await frames();
+        await shot('xmas_gift');
+        await close();
+        openChallenge(g);
+        await frames();
+        await shot('challenge_ev');
+        await close();
+        g.setTab(GameTab.vl);
+        await frames(6);
+        await shot('vl_tree');
+        g.setTab(null);
+        await frames(2);
+        final r = g.acts.evBossBegin(evMain);
+        g.sim.evBossStart(evMain, r.stg, r.santa, r.ref);
+        await frames(30);
+        await shot('snow_boss');
+        g.sim.chExit();
+        await frames(2);
+        final rows = g.acts.evGive(evMain, [{'k': 'gem', 'n': 30}]);
+        g.queue((ctx) => showKdSheet<void>(ctx, builder: (c) => evBossResultBody(g, c, id: evMain, won: true, stg: 5, santa: true, sf: 60, rows: rows)));
+        await frames();
+        await shot('snow_boss_result');
+        await close();
+        // QA 0.0.7 (11-08): 선물 배달 처음 안내·준비·하는 중 · 외형 창·장비 탭 산타 카엘 · 랭킹 결과 창 · 랭킹 탭 · 끝 장면
+        g.state.raw.remove('mgHint');
+        unawaited(g.evMgStart(evMain, true));
+        await frames();
+        await shot('mg_hint');
+        await tester.tap(find.text('시작!'));
+        await frames(4);
+        await shot('mg_ready');
+        await frames(40);
+        for (var i = 0; i < 12; i++) {
+          await tester.tapAt(const Offset(_w / 2, _h / 2));
+          await frames(5);
+        }
+        await shot('mg_play');
+        await close();
+        await frames(4);
+        g.calc.skinGive('santa', 2026);
+        g.openSkinSheet();
+        await frames();
+        await shot('skin_sheet');
+        await close();
+        g.setTab(GameTab.eq);
+        await frames(4);
+        await shot('tab_eq_santa');
+        g.setTab(null);
+        await frames(20);
+        await shot('battle_santa');
+        final ev = evts[evMain]!;
+        g.queue((ctx) => showKdSheet<void>(ctx,
+            builder: (c) => MgResultBody(e: ev, rank: 3, total: 87, score: 1520, rw: mgEvs[ev.mg]!.rew[1].$2, top: true, nw: true, onRank: () {}, onMail: () {})));
+        await frames();
+        await shot('mg_result');
+        await close();
+        unawaited(openRanking(g, 'mg'));
+        await frames(8);
+        await shot('rank_mg');
+        await close();
+        g.scene(ev.n, '${ev.n}가 끝났어요', ev.endLines(true), '${ev.shopN} 가기');
+        await frames();
+        await shot('end_scene');
+        await close();
+        for (final w in [320.0, 360.0, 390.0, 430.0]) {
+          tester.view.physicalSize = Size(w * 2, _h * 2);
+          await frames(2);
+          for (final t in ['att', 'boss', 'shop', 'mg']) {
+            openEventSheet(g, evMain, t);
+            await frames();
+            await shot('ev_${t}_w${w.round()}');
+            await close();
+          }
+        }
+        tester.view.physicalSize = const Size(_w * 2, _h * 2);
+        await tester.pumpWidget(const SizedBox());
+        g.dispose();
+        EvClock.demo = null;
+        await tester.pump(const Duration(seconds: 3));
+        return;
+      }
       if (save == 'p2') {
         // 사막 제국 75 · 엘프 동맹 · 솔렌·사프란 합류 → 전투 · 지도(바다 건너) · 프로필 동맹 칸 · 동맹 창
         g.state.stage = 75;

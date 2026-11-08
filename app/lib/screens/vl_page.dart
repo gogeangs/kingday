@@ -12,6 +12,7 @@ import '../battle/battle_data.dart';
 import '../core/bond.dart';
 import '../core/calc.dart';
 import '../core/data.dart';
+import '../core/event.dart';
 import '../core/fmt.dart';
 import '../core/js.dart';
 import '../core/village.dart';
@@ -239,6 +240,8 @@ class VillageMap extends StatelessWidget {
                   );
                   return;
                 }
+                // 크리스마스 주간: 광장 트리 선물 (웹 evTreeHit — 그림이 들어온 뒤에만)
+                if (ImageStore.get('assets/game/village/xmas_tree.png') != null && g.evTreeTap(mx, my)) return;
                 final b = vHit(mx, my);
                 if (b != null) g.vlSelect(b);
               },
@@ -284,6 +287,22 @@ class _MapPainter extends CustomPainter {
     return Size(w, h);
   }
 
+  /// 크리스마스 주간: 광장 트리 (웹 evTreeDraw, 지도 좌표 evTreePos = [x, 바닥 y, 너비]) · 오늘 선물이 남았으면 「🎁 선물」
+  void _tree(Canvas c, double k, double vw, double t) {
+    final e = g.calc.evTreeE();
+    if (e == null) return;
+    final im = ImageStore.get('assets/game/village/xmas_tree.png');
+    if (im == null) return;
+    final x = evTreePos[0].toDouble(), y = evTreePos[1].toDouble(), w = evTreePos[2].toDouble();
+    c.drawOval(Rect.fromCenter(center: Offset(x * k, (y - 4) * k), width: w * .64 * k, height: w * .16 * k), Paint()..color = const Color(0x4D000000));
+    drawImg(c, im, Rect.fromLTWH((x - w / 2) * k, (y - w * .98) * k, w * k, w * k));
+    final xs = g.calc.evS(e.id);
+    if ((xs['xm'] as Map)['tree'] != g.calc.evDay() && !g.calc.evBack(xs)) {
+      final fs = math.min(12.0, math.max(9.5, vw * .029)).roundToDouble();
+      _pill(c, '🎁 선물', x * k, (y - w * 1.02 + math.sin(t * 3) * 3) * k, fs, const Color(0xFFD93A4A), Colors.white);
+    }
+  }
+
   void _building(Canvas c, String b, double k) {
     final p = vPos(b), lv = g.state.bldLv(b), open = lv > 0 || g.calc.bldOpen(b);
     if (!open) return;
@@ -319,6 +338,7 @@ class _MapPainter extends CustomPainter {
         );
       }
     }
+    _tree(c, k, vw, t);
     final hr = DateTime.now().hour;
     if (hr >= 19 || hr < 6) {
       c.drawRect(Offset.zero & size, Paint()..color = const Color(0x700A1030));
@@ -342,7 +362,9 @@ class _MapPainter extends CustomPainter {
     for (final p in ws) {
       final px = p.x * k, py = p.y * k + math.sin(t * 2 + p.x) * 1.2;
       c.drawOval(Rect.fromCenter(center: Offset(px, py), width: 48 * k, height: 15 * k), Paint()..color = const Color(0x47000000));
-      final sheet = charSheets[p.id], spr = p.ppl ? null : ImageStore.get('assets/game/characters/${p.id}_idle.png');
+      // 카엘 외형 (산타 카엘 등, 웹 drawSprite(skinSpr(p.id), …)) — 외형 그림이 아직 없으면 기본 그림
+      final sk = p.ppl ? p.id : g.calc.skinSpr(p.id), skIm = sk != p.id ? ImageStore.get('assets/game/characters/${sk}_idle.png') : null;
+      final sheet = charSheets[skIm != null ? sk : p.id], spr = p.ppl ? null : skIm ?? ImageStore.get('assets/game/characters/${p.id}_idle.png');
       if (sheet != null && spr != null) {
         // 일꾼은 조금 작게 (웹 마을 화면 정리)
         final s0 = math.max(.32, vw / 760) * (p.wk != null ? .82 : 1), kk = (66 * s0 / sprFig).toDouble(), n = sheet.frames('idle'), cw = spr.width / n;

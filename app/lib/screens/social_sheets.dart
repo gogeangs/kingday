@@ -11,6 +11,7 @@ import 'package:flutter/material.dart';
 import '../core/calc.dart';
 import '../core/challenge.dart';
 import '../core/data.dart';
+import '../core/event.dart' show EventCalc, EventDef, evT, evts, kstDate, mgEvs;
 import '../core/fmt.dart';
 import '../core/js.dart';
 import '../core/profile_data.dart';
@@ -24,6 +25,10 @@ import '../ui/theme.dart';
 import '../ui/widgets.dart';
 import 'attend_sheet.dart';
 import 'settings_sheet.dart';
+import 'stage_overlay.dart' show EventFab, eventFabOn;
+
+// 선물 배달 화면·결과 창·외형 창: game/controller_mg.dart(controller.dart 의 part)가 쓰도록 여기서 내보냄
+export 'minigame_screen.dart' show MgEnd, MgHost, MgPlan, MgResultBody, MinigameScreen, SkinSheetBody;
 
 // ════════════════════ 공통 ════════════════════
 
@@ -177,6 +182,7 @@ class SocialFabs extends StatelessWidget {
       return Column(mainAxisSize: MainAxisSize.min, children: [
         if (lm > 0) ...[_btn('icon_mail', () => openMail(g), Positioned(top: -5, right: -5, child: CountDot(lm)), '우편'), const SizedBox(height: 4)],
         shop,
+        if (eventFabOn(g)) ...[const SizedBox(height: 4), EventFab(g)],
         if (att != null) ...[const SizedBox(height: 4), att],
       ]);
     }
@@ -208,6 +214,7 @@ class SocialFabs extends StatelessWidget {
           ),
           const SizedBox(height: 4),
           shop,
+          if (eventFabOn(g)) ...[const SizedBox(height: 4), EventFab(g)],
           if (att != null) ...[const SizedBox(height: 4), att],
         ]);
       },
@@ -306,7 +313,7 @@ class _ProfileState extends State<_Profile> {
     final c = g.calc;
     final has = frame ? c.pfHas(d.k) : c.bdHas(d.k);
     if (!has) {
-      g.toast(passFrameNo(d.k) != null ? '${d.d} 보상이에요' : d.rk ? '${d.d}로 우편함에 도착해요' : d.rare ? '황금 고블린을 잡으면 아주 드물게 얻어요' : '${d.d} 달성 시 얻어요');
+      g.toast(passFrameNo(d.k) != null ? '${d.d} 보상이에요' : d.ev ? '${d.d}에서 받아요' : d.rk ? '${d.d}로 우편함에 도착해요' : d.rare ? '황금 고블린을 잡으면 아주 드물게 얻어요' : '${d.d} 달성 시 얻어요');
       return;
     }
     setState(() {
@@ -461,7 +468,7 @@ class _ProfileState extends State<_Profile> {
       titleWidget: const HdBanner('hd_profile', '프로필'),
       children: [
         Row(children: [
-          FramedFace(frame: cur, size: 104, faceId: _face, photo: _photo ? g.photoBytes : null),
+          FramedFace(frame: cur, size: 104, faceId: g.calc.skinFace(_face), photo: _photo ? g.photoBytes : null),
           const SizedBox(width: 12),
           Expanded(
             child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
@@ -701,9 +708,18 @@ const _rkRew = [('1위', '이삭 500 · 시즌 왕관 테두리 · 전용 배지
 /// 마지막으로 본 탭 (웹 rkTab)
 String _rkTab = 'season';
 
+/// 「선물 배달」 탭을 보일 이벤트 (미니게임이 있고 기록 기간·판을 할 수 있는 때, 웹 rankSheet 의 mgE)
+EventDef? rankMgEvent(GameCalc c) {
+  for (final e in evts.values) {
+    if (e.mg != null && (c.evMgShow(e) || c.evMgOn(e))) return e;
+  }
+  return null;
+}
+
 Future<void> openRanking(GameController g, [String? tab]) async {
   final o = g.online;
   if (tab != null) _rkTab = tab;
+  if (_rkTab == 'mg' && rankMgEvent(g.calc) == null) _rkTab = 'season';
   if (!o.on) {
     g.scene('랭킹', '준비 중이에요', ['랭킹 서버를 연결하고 있어요. 곧 다른 영주들과 겨룰 수 있어요!', 'q@proud:흥, 주인이 1등인 건 정해진 일이다.'], '기대할게요', closable: true);
     return;
@@ -748,7 +764,15 @@ class _RankState extends State<_Rank> {
       return;
     }
     try {
-      final rows = await o.ranking(_rkTab);
+      final mgE = rankMgEvent(g.calc);
+      if (_rkTab == 'mg' && mgE == null) _rkTab = 'season';
+      final List<Map<String, dynamic>> rows;
+      if (_rkTab == 'mg') {
+        final r = g.noSave ? const [] : await o.rpc('kd_mg_ranking', {'p_game': mgE!.mg});
+        rows = r is List ? [for (final x in r) if (x is Map) x.cast<String, dynamic>()] : const [];
+      } else {
+        rows = await o.ranking(_rkTab);
+      }
       if (!mounted || my != _req) return;
       setState(() => _rows = rows);
     } catch (e) {
@@ -761,6 +785,7 @@ class _RankState extends State<_Rank> {
   String _score(Map<String, dynamic> x) => switch (_rkTab) {
         'goblin' => '${fmt(asNum(x['kills']))}마리',
         'tower' => '${fmt(asNum(x['top']))}층',
+        'mg' => '🎁${fmt(asNum(x['score']))}점',
         _ => stgName(asNum(x['stage'])),
       };
 
@@ -812,7 +837,13 @@ class _RankState extends State<_Rank> {
       );
 
   Widget _tabs() => Row(children: [
-        for (final (k, n) in const [('season', '시즌'), ('hall', '명예의 전당'), ('goblin', '고블린'), ('tower', '탑')])
+        for (final (k, n) in [
+          ('season', '시즌'),
+          ('hall', '명예의 전당'),
+          ('goblin', '고블린'),
+          ('tower', '탑'),
+          if (rankMgEvent(g.calc) != null) ('mg', '선물 배달'),
+        ])
           Expanded(
             child: GestureDetector(
               onTap: () {
@@ -865,6 +896,20 @@ class _RankState extends State<_Rank> {
         TextSpan(text: ' · ${fmt(tot)}명\n$w주차 정산까지 ${_left(end)} · 이번 주에 게임한 영주끼리 순위대로 보상\n내 최고 ${fmt(g.online.towerTop)}층'),
       ];
       rew = _towerRew;
+    } else if (_rkTab == 'mg') {
+      final e = rankMgEvent(g.calc);
+      final mm = e == null ? null : mgEvs[e.mg];
+      if (e == null || mm == null) return const SizedBox.shrink();
+      final settle = evT(mm.settle) ?? 0;
+      final st = rows.isNotEmpty ? rows[0]['settled'] == true : g.calc.evNow >= settle;
+      head = [
+        const TextSpan(text: '🎁 선물 배달', style: TextStyle(color: KdColors.gold, fontWeight: FontWeight.w600)),
+        TextSpan(
+            text: ' · 크리스마스 주간 한 판 최고 점수 · ${fmt(tot)}명\n'
+                '${st ? '정산이 끝났어요 · 보상은 우편함으로' : '${kstDate(settle - 1)} 하루 끝에 정산 → 우편 보상'}\n'
+                '내 최고 ${fmt(asNum((g.calc.evS(e.id)['mg'] as Map)['best']))}점'),
+      ];
+      rew = mm.rew;
     } else {
       final w = rows.isNotEmpty ? asNum(rows[0]['week']).toInt() : g.sim.curWeek();
       final end = (rows.isNotEmpty ? DateTime.tryParse('${rows[0]['week_end']}')?.millisecondsSinceEpoch : null) ?? seasonZero + w * 604800000;
@@ -881,7 +926,7 @@ class _RankState extends State<_Rank> {
           onTap: () => setState(() => _rewOpen = !_rewOpen),
           child: Padding(
             padding: const EdgeInsets.only(top: 4),
-            child: Text('${_rewOpen ? '▾' : '▸'} ${_rkTab == 'season' ? '시즌' : '주간'} 보상 보기', style: KdText.body(13, color: KdColors.gold)),
+            child: Text('${_rewOpen ? '▾' : '▸'} ${_rkTab == 'season' ? '시즌' : _rkTab == 'mg' ? '순위' : '주간'} 보상 보기', style: KdText.body(13, color: KdColors.gold)),
           ),
         ),
         if (_rewOpen) for (final (a, b) in rew) KdKv(a, b),
@@ -960,6 +1005,7 @@ class _RankState extends State<_Rank> {
                 switch (_rkTab) {
                   'goblin' => '이번 주에 황금 고블린을 잡은 영주가 아직 없어요. 1-3 영지부터 나타나요!',
                   'tower' => '아직 탑 기록이 없어요. 영지 20을 되찾으면 지도의 「도전」에서 시련의 탑이 열려요!',
+                  'mg' => g.noSave ? '미리보기에서는 랭킹을 불러오지 않아요' : '아직 기록이 없어요. 크리스마스 주간에 선물 배달 보상 판으로 첫 1위가 되어 보세요!',
                   _ => '아직 기록이 없어요. 첫 1위가 되어 보세요!',
                 },
                 textAlign: TextAlign.center, style: _muted())

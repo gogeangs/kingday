@@ -13,6 +13,7 @@ import '../core/bond.dart';
 import '../core/calc.dart';
 import '../core/challenge.dart';
 import '../core/data.dart';
+import '../core/event.dart';
 import '../core/fmt.dart';
 import '../core/js.dart';
 import '../core/profile_data.dart';
@@ -27,6 +28,9 @@ class Member {
   num hp, cd;
   num swing = 0, hit = 0, sg = 0;
   bool down = false;
+
+  /// 눈사람 대장 「눈덩이 굴리기」: 느려짐 남은 시간 (웹 P[id].slow)
+  num slow = 0;
 
   /// 덕배 「보양 수라상」: 쓰러질 피해를 한 번 버팀 (웹 P[id].guts)
   bool guts = false;
@@ -50,8 +54,12 @@ class Mon {
     required this.x, required this.lane, required this.hp, required this.max, required this.atk,
     this.boss = false, this.lord = false, required this.cd, this.alt = false, this.gob = false,
     this.mv, this.cdm, this.life, this.dem = false, this.ghost, this.guard = false,
-    this.ri, this.balt = false, this.shell = false,
+    this.ri, this.balt = false, this.shell = false, this.snow, this.santa = false,
   });
+
+  /// 눈사람 대장: 이벤트 id · 크리스마스 주간 산타 눈사람 (웹 m.snow·m.santa)
+  final String? snow;
+  final bool santa;
   num x, lane, hp, max, atk, cd;
   bool boss, lord, alt, gob;
   /// 왕도: dem = 마왕 발타사르, ghost = 군단장 잔영(지역 번호 0~4), guard = 마왕 근위대장
@@ -87,6 +95,17 @@ class ChState {
     lim = 30;
     t = dunT;
   }
+
+  /// 눈사람 대장 (웹 CH.mode 'ev': ev·stg·santa·ref·skT·warned)
+  ChState.ev(this.ev, this.stg, this.santa, this.ref) : mode = 'ev', f = 0, info = null, k = '', l = 0, ms = 0, gobAt = 1e9 {
+    final b = evts[ev]!.boss!;
+    lim = b.lim;
+    skT = b.sk.every;
+  }
+  String ev = '';
+  int stg = 0, ref = 0;
+  bool santa = false, warned = false;
+  num skT = 0;
   final String mode;
   final int f;
   final TowerInfo? info;
@@ -127,6 +146,9 @@ class Fx {
   final String k;
   final num x, y, size, d, vy;
   num t = 0;
+
+  /// 옆으로 날아가는 빠르기 (눈덩이, 웹 fx.vx)
+  num vx = 0;
 }
 
 /// 한마디 말풍선
@@ -196,6 +218,9 @@ class SkillTimers {
 
   /// 사프란 「향신료 한 줌」 원정대 공격 +15% 남은 시간 (2부, 웹 SKX.spice)
   num spice = 0;
+
+  /// 소복이 「눈꽃 조각」 원정대 치명타 피해 +40% 남은 시간·강화 (눈꽃제, 웹 SKX.flake·flakeK)
+  num flake = 0, flakeK = 1;
 
   /// 폴리 「따라 해!」가 따라 쓸 마지막 스킬 (웹 SKX.lastSk)
   String lastSk = '';
@@ -280,6 +305,14 @@ class DemonWinEvent extends BattleEvent {
   DemonWinEvent(this.first, this.bonus);
   final bool first;
   final int bonus;
+}
+
+/// 눈사람 대장 끝 (웹 evBossWin·evBossLose): 보상·결과 창은 화면 쪽 (GameActions.evBossResult)
+class EvBossEndEvent extends BattleEvent {
+  EvBossEndEvent(this.ev, this.won, this.stg, this.santa);
+  final String ev;
+  final bool won, santa;
+  final int stg;
 }
 
 /// 2부 나라 장수 처치 (웹 p2Win): [first] 처음 해방(장면·동맹 창), [bonus] 재해방 추억
@@ -393,12 +426,13 @@ class BattleSim {
   bool healOk() => !(ch != null && ch!.mode == 'tower' && ch!.info!.rule == 0);
 
   /// 그릴 배경 지역: 탑은 그림이 없으면 서리 무덤(3)을 어둡게 (웹 chRi)
-  int chRi() => ch == null ? 0 : ch!.mode == 'tower' ? 3 : dunDef(ch!.k).ri;
+  int chRi() => ch == null ? 0 : ch!.mode == 'tower' ? 3 : ch!.mode == 'ev' ? evts[ch!.ev]!.boss!.ri : dunDef(ch!.k).ri;
 
   void _chPartyReset() {
     skx.shield = skx.honey = skx.feast = skx.guts = skx.sym = skx.lamp = skx.sap = skx.ward = skx.dok = skx.phx = 0;
     skx.stew = skx.taunt = skx.blk = skx.bloom = 0;
     skx.spice = 0;
+    skx.flake = 0;
     skx.ul = 0;
     for (final id in c.members()) {
       final p = party[id];
@@ -442,6 +476,7 @@ class BattleSim {
     final h = ch!;
     if (h.st != 'fight') return;
     if (h.mode == 'tower') return _towerSpawn();
+    if (h.mode == 'ev') return _evBossSpawn();
     _dunSpawn();
   }
 
@@ -506,6 +541,10 @@ class BattleSim {
   /// 전멸·시간 초과 (웹 chLose)
   void _chLose() {
     final h = ch!;
+    if (h.mode == 'ev') {
+      if (h.st == 'fight') _evBossLose();
+      return;
+    }
     if (h.mode == 'tower') {
       if (h.st == 'fight') _towerLose();
       return;
@@ -554,6 +593,10 @@ class BattleSim {
   void _chKill(Mon m, num sc) {
     spawnFx('coin', m.x, m.y - 26 * sc, 34 * sc, .6, -60 * sc);
     final h = ch!;
+    if (h.mode == 'ev') {
+      if (h.st == 'fight' && m.boss && !mons.any((o) => o.boss && o.hp > 0 && o.dead == 0)) _evBossWin();
+      return;
+    }
     if (h.mode == 'tower') {
       if (h.st == 'fight' && m.boss && !mons.any((o) => o.boss && o.hp > 0 && o.dead == 0)) _towerWin();
       return;
@@ -715,6 +758,23 @@ class BattleSim {
         skx.honey = 6;
         skx.honeyTick = 0;
         spawnFx('skill_riel', cx, cy - 40 * sc, 150 * sc, .9);
+      case 'sobok':
+        // 소복이 「눈꽃 조각」: 8초 동안 원정대 치명타 피해 +40% (★3·★5 강화)
+        skx.flake = 8;
+        skx.flakeK = c.skPow(id);
+        for (final j in c.members()) {
+          final q = party[j];
+          if (q != null && !q.down) addFloat(pos[j]!, py[j]! - (heightOf(j) + 8) * sc, '치명 피해↑', 0xFFBFE8FF, 12);
+        }
+        if (fxOk('skill_sobok')) {
+          final ids = c.members();
+          num mx = 0, my = 0;
+          for (final j in ids) {
+            mx = mx + pos[j]!;
+            my = my + py[j]!;
+          }
+          spawnFx('skill_sobok', mx / ids.length, my / ids.length - 40 * sc, 170 * sc, .9);
+        }
       case 'solen':
         // 솔렌 「세계수 꽃가루」: 모든 적에게 공격력 1배 + 3초 느려짐 (2부 이야기 동료, PART2.md 3-5)
         for (final m in alive) {
@@ -1305,6 +1365,7 @@ class BattleSim {
     skx.shield = math.max(0, skx.shield - dt);
     skx.feast = math.max(0, skx.feast - dt);
     if (skx.spice > 0) skx.spice = math.max(0, skx.spice - dt); // 사프란 (2부)
+    if (skx.flake > 0) skx.flake = math.max(0, skx.flake - dt); // 소복이 (눈꽃제)
     skx.bake = math.max(0, skx.bake - dt);
     skx.mount = math.max(0, skx.mount - dt);
     skx.wall = math.max(0, skx.wall - dt);
@@ -1536,6 +1597,7 @@ class BattleSim {
     skx.shield = skx.honey = skx.feast = skx.guts = skx.sym = skx.lamp = skx.sap = skx.ward = skx.dok = skx.phx = 0;
     skx.stew = skx.taunt = skx.blk = skx.bloom = 0;
     skx.spice = 0;
+    skx.flake = 0;
     skx.ul = 0;
     for (final id in c.members()) {
       party[id]!.hp = c.stats(id).hp;
@@ -1734,6 +1796,7 @@ class BattleSim {
       }
       if (mons.any((m) => m.boss && m.hp > 0 && m.dead == 0) && engaged) {
         _demStep(dt, l);
+        if (ch != null && ch!.mode == 'ev') _evBossStep(dt, l);
         bossT -= dt;
         if (bossT <= 0) return resetFight('마족이 버텼어요. 더 강해진 뒤 다시 도전해요');
       }
@@ -1759,7 +1822,8 @@ class BattleSim {
       final p = party[id]!;
       if (p.down) continue;
       final t = c.stats(id);
-      p.cd -= dt;
+      if (p.slow > 0) p.slow -= dt; // 눈사람 대장 「눈덩이 굴리기」: 느려짐
+      p.cd -= dt * (p.slow > 0 ? .5 : 1);
       if (p.cd > 0) continue;
       p.cd = 1 / t.aps;
       chargeSkill(id);
@@ -1804,7 +1868,7 @@ class BattleSim {
       }
       if (tgt == null) continue;
       final cr = rng.next() < t.crit + (skx.lamp > 0 ? .2 * skx.lampK : 0);
-      final d = t.atk * (cr ? c.crX() : 1) * (.9 + rng.next() * .2) * (skx.feast > 0 ? 1.2 : 1);
+      final d = t.atk * (cr ? c.crX() * (skx.flake > 0 ? 1 + .4 * skx.flakeK : 1) : 1) * (.9 + rng.next() * .2) * (skx.feast > 0 ? 1.2 : 1);
       p.swing = .22;
       if (id == 'daisy') {
         for (final m in alive) {
@@ -1931,6 +1995,12 @@ class BattleSim {
     spawnFx('coin', m.x, m.y - 26 * sc, 34 * sc, .6, -60 * sc);
     final g = GameCalc.reward(c.fightSt(), m.boss) * (c.buff('gold') ? 1.5 : 1) * (c.blOn('gold') ? 1.3 : 1) * c.memMul() * (m.boss ? c.vpFeast() : 1) * (skx.dok > 0 ? 1 + .5 * skx.dokK : 1) * c.vpHoard() * c.allyGold();
     s.gold = s.gold + g;
+    // 눈꽃제: 처치 25마리마다 눈송이 1 (하루 100, 웹 evKill)
+    if (c.evKill() > 0 && time - _flakeT >= .4) {
+      _flakeT = time;
+      final l = layout();
+      addFloat(l.front + 40 * l.s, l.top + 10 * l.s, '❄ +1', 0xFFCFEFFF, 12);
+    }
     final d = c.daily();
     d['kill'] = orNum(d['kill'], 0) + 1;
     onKill?.call();
@@ -2086,6 +2156,92 @@ class BattleSim {
     s.raw['capBonus'] = 1;
     c.pfCheck();
     events.add(DemonWinEvent(first, bonus));
+  }
+
+  num _flakeT = -1;
+
+  /// 눈사람 대장 도전 시작 (확인·기록은 GameActions.evBossBegin, 웹 evBossStart 의 chBegin)
+  void evBossStart(String ev, int stg, bool santa, int ref) => _chBegin(ChState.ev(ev, stg, santa, ref));
+
+  void _evBossSpawn() {
+    final h = ch!, b = evts[h.ev]!.boss!, hp = EventCalc.evBossHp(b, h.stg, h.ref);
+    h.st = 'fight';
+    mons = [
+      Mon(x: w + 70, lane: .55, hp: hp, max: hp, atk: EventCalc.evBossAtk(b, h.stg, h.ref), boss: true, snow: h.ev, santa: h.santa, ri: b.ri, cd: .8, mv: .55)
+    ];
+    bossT = h.lim;
+    h.skT = b.sk.every;
+    h.warned = false;
+    final ln = b.sayStart[(rng.next() * b.sayStart.length).floor()];
+    banner = StageBanner('${h.santa ? '산타 ' : ''}${b.n}', '「$ln」')..t = 2.2;
+    shakeT = .3;
+    events.add(SoundEvent('boss'));
+  }
+
+  /// 「눈덩이 굴리기」: 앞줄 동료에게 공격의 3배 + 2초 느려짐 (막기·보호막 스킬로 줄일 수 있음, 웹 evBossStep)
+  void _evBossStep(num dt, BattleLayout l) {
+    Mon? bm;
+    for (final m in mons) {
+      if (m.snow != null && m.hp > 0 && m.dead == 0) {
+        bm = m;
+        break;
+      }
+    }
+    final h = ch;
+    if (bm == null || h == null || h.mode != 'ev') return;
+    final sk = evts[h.ev]!.boss!.sk;
+    h.skT -= dt;
+    if (h.skT <= sk.warn && !h.warned) {
+      h.warned = true;
+      warn = Warn(false, '⚠ ${sk.n}! ⚠')..t = 1.2;
+    }
+    if (h.skT > 0) return;
+    h.skT = sk.every;
+    h.warned = false;
+    final ids = l.ids, pos = l.pos, py = l.py, sc = l.s;
+    final alive = ids.where((i) => party[i] != null && !party[i]!.down).toList();
+    if (alive.isEmpty) return;
+    final fx = alive.map((i) => pos[i]!).reduce(math.max), front = alive.where((i) => pos[i]! >= fx - 34 * sc).toList();
+    shakeT = .5;
+    events.add(HapticEvent(const [60]));
+    final b = evts[h.ev]!.boss!;
+    if (fxOk(b.fx)) fxs.add(Fx(b.fx, bm.x - 30 * sc, bm.y - 30 * sc, 90 * sc, .7, 0)..vx = (fx - bm.x + 30 * sc) / .7);
+    for (final id in front) {
+      final q = party[id]!;
+      final dm = bm.atk * b.sk.dmg * (skx.shield > 0 ? .5 : 1) * (skx.mount > 0 ? .3 : 1) * (q.bsh > 0 ? 1 - .4 * q.bshK : 1) * (bm.weak > 0 ? 1 - bm.weakK : 1) / _pmNow;
+      final dd = _blkEat(q, dm);
+      q.hp -= dd;
+      q.hit = .25;
+      q.slow = sk.slow;
+      addFloat(pos[id]!, py[id]! - (heightOf(id) + 8) * sc, dd > 0 ? '-${fmt(dd)}' : '막음!', 0xFFBFE8FF, 14);
+      if (q.hp <= 0) {
+        if (skx.guts > 0 && q.guts) {
+          q.guts = false;
+          q.hp = 1;
+        } else {
+          q.hp = 0;
+          q.down = true;
+        }
+      }
+    }
+  }
+
+  void _evBossWin() {
+    final h = ch!, b = evts[h.ev]!.boss!;
+    h.st = 'win';
+    mons = mons.where((m) => m.dead > 0).toList();
+    events.add(HapticEvent(const [40, 30, 60]));
+    banner = StageBanner('${h.stg}단계 돌파!', '「${b.sayWin}」');
+    say('k', '눈사람은 역시 녹아야 제맛이지.');
+    events.add(EvBossEndEvent(h.ev, true, h.stg, h.santa));
+  }
+
+  void _evBossLose() {
+    final h = ch!;
+    h.st = 'lose';
+    mons = [];
+    _chPartyReset();
+    events.add(EvBossEndEvent(h.ev, false, h.stg, h.santa));
   }
 
   /// 나라 장수 처치 (웹 p2Win): 처음 → 해방(동맹·이삭 300, 장면은 화면 쪽) / 은퇴 뒤 다시 → 회차마다 처음 1번 추억 +2

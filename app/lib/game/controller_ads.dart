@@ -238,6 +238,8 @@ extension GameAdsX on GameController {
       case final DunEndEvent de:
         save();
         queue((ctx) => _dunEndSheet(ctx, de));
+      case final EvBossEndEvent ee:
+        _evBossEnd(ee);
       case FightResetEvent():
         break;
     }

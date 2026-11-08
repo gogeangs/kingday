@@ -9,6 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../core/data.dart';
+import '../core/event.dart' show EventCalc;
 import '../core/profile_data.dart';
 import '../game/controller.dart';
 import '../ui/fx.dart';
@@ -94,7 +95,7 @@ class _Hud extends StatelessWidget {
                   borderRadius: BorderRadius.circular(52 * .78 * .16),
                   child: DecoratedBox(
                     decoration: const BoxDecoration(gradient: RadialGradient(center: Alignment(0, -.3), colors: [Color(0xFF3B5A8A), Color(0xFF1A2440)])),
-                    child: g.photoOn ? Image.memory(g.photoBytes!, fit: BoxFit.cover, gaplessPlayback: true) : FaceImg(g.calc.pubFace()),
+                    child: g.photoOn ? Image.memory(g.photoBytes!, fit: BoxFit.cover, gaplessPlayback: true) : FaceImg(g.calc.skinFace(g.calc.pubFace())),
                   ),
                 ),
               ),

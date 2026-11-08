@@ -439,11 +439,12 @@ void main() {
       await tester.tap(find.byKey(const ValueKey('set-vib')));
       await frames();
       expect(g.state.raw['vib'], false);
-      expect(find.text('꺼짐'), findsOneWidget);
+      // 「효과 줄이기」(0.0.7) 스위치는 처음에 꺼짐 → 꺼짐 글자 하나 더
+      expect(find.text('꺼짐'), findsNWidgets(2));
       await tester.tap(find.byKey(const ValueKey('set-snd')));
       await frames();
       expect(g.state.raw['snd'], false);
-      expect(find.text('꺼짐'), findsNWidgets(2));
+      expect(find.text('꺼짐'), findsNWidgets(3));
       await tester.tap(find.byKey(const ValueKey('set-snd')));
       await frames();
       expect(g.state.raw['snd'], true);

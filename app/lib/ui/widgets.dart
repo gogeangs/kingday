@@ -360,6 +360,8 @@ class Para extends StatelessWidget {
     '루카': 'luka', '브론': 'bron', '하랄': 'haral', '리엘': 'riel', '솔렌': 'solen', '사프란': 'saffron', '에이나르': 'einar', '미르': 'mir',
     '토르븐': 'torben', '에일라': 'aila', '마고': 'margo', '마르타': 'marta', '피트': 'pete', '티모': 'timo', '모르바스': 'morbas', '세릴': 'seril',
     '그로마크': 'gromak', '알도르': 'aldor', '이그니스': 'ignis', '발타사르': 'baltasar',
+    // 눈꽃제 (웹 evInstall)
+    '소복이': 'sobok', '산타 피트': 'pete_santa',
   };
 
   /// 이름 → 초상화 id (없으면 null)

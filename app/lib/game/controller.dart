@@ -22,6 +22,7 @@ import '../core/bond.dart';
 import '../core/calc.dart';
 import '../core/challenge.dart';
 import '../core/data.dart';
+import '../core/event.dart';
 import '../core/fmt.dart';
 import '../core/js.dart';
 import '../core/profile_data.dart';
@@ -34,6 +35,7 @@ import '../core/web_data.g.dart' show wEnding2, wP2free, wRankimg;
 import '../core/worldmap.dart';
 import '../screens/attend_sheet.dart';
 import '../screens/challenge_sheet.dart';
+import '../screens/event_sheet.dart';
 import '../screens/retire_sheet.dart';
 import '../screens/social_sheets.dart';
 import '../ui/fx.dart';
@@ -51,7 +53,9 @@ part 'controller_bond.dart';
 part 'controller_capital.dart';
 part 'controller_challenge.dart';
 part 'controller_dots.dart';
+part 'controller_event.dart';
 part 'controller_map.dart';
+part 'controller_mg.dart';
 part 'controller_part2.dart';
 part 'controller_retire.dart';
 part 'controller_return.dart';
@@ -129,6 +133,7 @@ class GameController extends ChangeNotifier {
     _saveTimer = Timer.periodic(const Duration(seconds: 5), (_) => save());
     // 8단계: 계정·랭킹·우편·클라우드 (서버가 없으면 꺼짐)
     online = Online(this, server)..start();
+    _evBoot(isNew); // 정기 이벤트(눈꽃제): 지난 이벤트 정리·시작 장면·서버 날짜 (웹 evBoot)
     // 인앱결제 (스토어 상품을 등록하기 전에는 꺼져 있음 → 시험용 바로 지급)
     iap = IapStore(this);
     if (Feel.live) iap.init();
@@ -552,6 +557,7 @@ class GameController extends ChangeNotifier {
       _vlTick();
       calc.pfCheck();
       chCheck();
+      _evTick(); // 정기 이벤트: 날이 바뀌면 크리스마스 선물·눈송이 사라짐 알림 (웹 evHud)
       _nwFlush();
       // 하루가 바뀌면 원정 일지 시즌·마감 알림 확인 (웹 attHud 의 날짜 바뀜)
       final t = calc.today();
@@ -692,7 +698,9 @@ class GameController extends ChangeNotifier {
           ], '일구기 ($cost)', altLabel: '다음에', onGo: () => act((a) => a.buyGemPlot(n, cost)));
         case ActRecruitScene(:final id):
           final rc = recruits[id]!;
-          scene('동료 합류', rc.title, rc.lines, rc.ok, illust: 'join', illustFace: id);
+          // 소복이(이벤트 한정)는 「바로 출전」 (웹 RECRUITS.sobok.go)
+          scene('동료 합류', rc.title, rc.lines, rc.ok, illust: 'join', illustFace: id,
+              onGo: evCards.contains(id) ? () => act((a) => a.setMember(rc.job, id)) : null);
         case ActUqScene(:final id):
           final rc = recruits[id]!;
           scene('유니크 동료', rc.title, rc.lines, rc.ok, altLabel: '나중에', illust: 'join', illustFace: id, onGo: () => act((a) => a.setMember(rc.job, id)));
@@ -763,8 +771,19 @@ class GameController extends ChangeNotifier {
       toast('오늘은 다 봤어요. 내일 다시 받을 수 있어요');
       return;
     }
+    if (!await playAd()) return;
+    final ad = asMap(calc.daily()['ad'])!;
+    ad[k] = orNum(ad[k], 0) + 1;
+    give();
+    save();
+    refresh();
+    pump();
+  }
+
+  /// 광고 한 편 보기 (횟수 기록 없이 — 이벤트 광고처럼 저장 칸이 따로인 것, 웹 playAd). 끝까지 봤으면 true
+  Future<bool> playAd() async {
     final ctx = navKey.currentContext;
-    if (ctx == null || modalOpen) return;
+    if (ctx == null || modalOpen) return false;
     modalOpen = true;
     notifyListeners();
     bool? watched;
@@ -787,14 +806,9 @@ class GameController extends ChangeNotifier {
     if (watched != true) {
       toast('광고를 끝까지 보면 받을 수 있어요');
       pump();
-      return;
+      return false;
     }
-    final ad = asMap(calc.daily()['ad'])!;
-    ad[k] = orNum(ad[k], 0) + 1;
-    give();
-    save();
-    refresh();
-    pump();
+    return true;
   }
 
   // ── 도전: 시련의 탑 · 요일 던전 (docs/content/CHALLENGE.md) ──

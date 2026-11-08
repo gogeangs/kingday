@@ -11,6 +11,7 @@ import 'package:flutter/foundation.dart';
 
 import '../core/calc.dart';
 import '../core/data.dart';
+import '../core/event.dart' show EventCalc, evts, skinDefs;
 import '../core/fmt.dart';
 import '../core/js.dart';
 import '../core/profile_data.dart';
@@ -362,6 +363,22 @@ class Online {
       // 상점·패스 (docs/content/SHOP.md): 원정 일지 {pass: 시즌} · 영주의 첫걸음 {grow: 1}
       if (truthy(r['pass'])) g.act((a) => a.passOpen(asNum(r['pass']).toInt()));
       if (truthy(r['grow'])) g.act((a) => a.growGive());
+      // 정기 이벤트 (docs/content/EVENT_SNOW.md 3-11·8-1): 외형 {skin, skin_year} · 이벤트 재화 {evc: {이벤트 id: 개수}}
+      final sk = r['skin'];
+      if (sk is String && skinDefs[sk] != null) {
+        final y = num.tryParse('${r['skin_year'] ?? 0}') ?? 0;
+        c.skinGive(sk, y.isFinite ? y.floor() : 0);
+        items.add('외형 「${skinDefs[sk]!.n}」');
+      }
+      final evc = r['evc'];
+      if (evc is Map) {
+        for (final e in evc.entries) {
+          final k = '${e.key}';
+          final v = num.tryParse('${e.value ?? 0}') ?? 0;
+          final n = c.evAdd(k, v.isFinite ? math.min(v.floor(), 100000) : 0);
+          if (n > 0) items.add('${evts[k]!.curN} +${fmt(n)}');
+        }
+      }
       if (asNum(r['ucard']) > 0) {
         final u = math.min(asNum(r['ucard']).floor(), 1000);
         s.raw['ucard'] = c.ucard + u;

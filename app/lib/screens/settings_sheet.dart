@@ -110,7 +110,14 @@ class _SettingsState extends State<_Settings> {
           if (on) g.sound('gem');
           setState(() {});
         }),
-        const KdSec('문의', small: '결제·버그·계정 · 답은 우편함으로'),
+        // 웹 setFx: 눈 내리기 같은 화면 효과 끄기 (S.lowFx)
+        const KdSec('화면'),
+        _toggle('fx', '효과 줄이기', '눈 내리기 같은 화면 효과를 끄기', g.state.raw['lowFx'] == true, (on) {
+          g.state.raw['lowFx'] = on;
+          g.save();
+          setState(() {});
+        }),
+        const KdSec('문의',small: '결제·버그·계정 · 답은 우편함으로'),
         Row(children: [
           Expanded(child: KdBuy(kind: BuyKind.ghost, minWidth: 0, text: '문의하기', onTap: () => g.chainSheet(widget.sheetCtx, () => openInquiry(g)))),
           const SizedBox(width: 8),

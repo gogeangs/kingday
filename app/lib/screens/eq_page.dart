@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 
 import '../battle/battle_data.dart';
 import '../core/data.dart';
+import '../core/event.dart' show EventCalc;
 import '../core/fmt.dart';
 import '../core/js.dart';
 import '../core/village.dart';
@@ -246,8 +247,36 @@ class _Hero extends StatelessWidget {
             top: y - sprFoot * k,
             child: ValueListenableBuilder<int>(
               valueListenable: g.frame,
-              builder: (_, __, ___) => SpriteFrame('assets/game/characters/kael_idle.png',
-                  frames: charSheets['kael']!.idle, index: (g.sim.time * 5).floor() % charSheets['kael']!.idle, size: size),
+              builder: (_, __, ___) {
+                // 외형을 입었으면 그 그림 (웹 skinSpr)
+                final id = charSheets[g.calc.skinSpr('kael')] != null ? g.calc.skinSpr('kael') : 'kael', n = charSheets[id]!.idle;
+                return SpriteFrame('assets/game/characters/${id}_idle.png', frames: n, index: (g.sim.time * 5).floor() % n, size: size);
+              },
+            ),
+          ),
+          // 외형 고르기 (웹 #skinBtn, .eqstage 아래 가운데)
+          Positioned(
+            left: 0,
+            right: 0,
+            bottom: 0,
+            child: Center(
+              child: GestureDetector(
+                key: const ValueKey('skinBtn'),
+                behavior: HitTestBehavior.opaque,
+                onTap: () {
+                  g.haptic();
+                  g.openSkinSheet();
+                },
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 3),
+                  decoration: BoxDecoration(
+                    color: const Color(0xD91E160C),
+                    border: Border.all(color: const Color(0xFF6A5634)),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Text('👕 외형', style: KdText.body(12, color: const Color(0xFFFFE7A6), weight: FontWeight.w700, height: 1.2)),
+                ),
+              ),
             ),
           ),
         ]);

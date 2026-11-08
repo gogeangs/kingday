@@ -208,7 +208,7 @@ extension Attendance on GameActions {
     }
     final rows = <AttRow>[], got = <dynamic>[];
     for (final r in rs) {
-      final g = _attGive(r);
+      final g = attGive(r);
       got.add(g.$1);
       rows.add(g.$2);
     }
@@ -240,7 +240,7 @@ extension Attendance on GameActions {
     for (final r in (a[b == 'w' ? 'gw' : 'gm'] as List)) {
       final m = asMap(r)!;
       if (m['k'] == 'badge') continue;
-      rows.add(_attGive(m, again: true).$2);
+      rows.add(attGive(m, again: true).$2);
     }
     a[k] = t;
     a['ad'] = t;
@@ -298,7 +298,7 @@ extension Attendance on GameActions {
   }
 
   /// 보상 하나 지급 → (저장용 항목, 보여 줄 한 줄)
-  (Map<String, dynamic>, AttRow) _attGive(Map r, {bool again = false}) {
+  (Map<String, dynamic>, AttRow) attGive(Map r, {bool again = false}) {
     var it = Map<String, dynamic>.from(r);
     final k = r['k'] as String;
     switch (k) {

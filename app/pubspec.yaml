@@ -3,7 +3,7 @@ description: "왕이 되는 그날까지 — 은퇴만 꿈꾸는 농부 카엘�
 publish_to: "none"
 
 # 스토어 버전: 이름(사람이 보는 버전)+빌드 번호(올릴 때마다 1씩 증가)
-version: 0.0.6+6
+version: 0.0.7+7
 
 environment:
   sdk: ">=3.5.0 <4.0.0"
@@ -59,6 +59,7 @@ flutter:
     - assets/game/village/
     - assets/game/crops/
     - assets/game/map/
+    - assets/game/mini/
     # 효과음 (tools/make_sfx.py 로 합성, 앱에만 있음)
     - assets/audio/
   # 글꼴: 웹과 같은 Hahmlet(제목)·IBM Plex Sans KR(본문). woff2 → ttf 는 tools/sync_app_assets.py 가 만듦
