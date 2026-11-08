@@ -306,7 +306,7 @@ class _ProfileState extends State<_Profile> {
     final c = g.calc;
     final has = frame ? c.pfHas(d.k) : c.bdHas(d.k);
     if (!has) {
-      g.toast(passFrameNo(d.k) != null ? '${d.d} 보상이에요' : d.rk ? '${d.d}로 우편함에 도착해요' : d.rare ? '황금 고블린을 잡으면 아주 드물게 얻어요' : '${d.d} 달성 시 얻어요');
+      g.toast(passFrameNo(d.k) != null ? '${d.d} 보상이에요' : d.ev ? '${d.d}에서 받아요' : d.rk ? '${d.d}로 우편함에 도착해요' : d.rare ? '황금 고블린을 잡으면 아주 드물게 얻어요' : '${d.d} 달성 시 얻어요');
       return;
     }
     setState(() {

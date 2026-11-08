@@ -9,6 +9,7 @@ import 'dart:math' as math;
 
 import 'calc.dart';
 import 'data.dart';
+import 'event.dart';
 import 'fmt.dart';
 import 'js.dart';
 import 'rng.dart';
@@ -1308,7 +1309,8 @@ class GameActions {
   /// 점수 얻기: 하루 한도 안에서만 (웹 passAdd)
   num passAdd(String src, [num? n]) {
     if (!truthy(s.raw['started'])) return 0;
-    final cfg = wPassSrc[src];
+    // 눈사람 대장 도전은 이벤트 기간에만 (웹 evPassSrc 가 PASS_SRC.snow 를 붙였다 뗐다 함)
+    final List<Object>? cfg = src == 'snow' ? (c.evBossOn() ? const <Object>[20, 20, '눈사람 대장 도전'] : null) : wPassSrc[src];
     if (cfg == null) return 0;
     final p = passS(), d = _passDay(), m = d['src'] as Map, used = orNum(m[src], 0);
     final add = math.min(n ?? asNum(cfg[0]), asNum(cfg[1]) - used);

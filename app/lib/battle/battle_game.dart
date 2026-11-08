@@ -675,7 +675,7 @@ class BattleGame extends FlameGame {
     for (final f in sim.fxs) {
       final n = fxFrames[f.k]!, i = math.min(n - 1, (f.t / f.d * n).floor());
       final a = f.t > f.d * .7 ? math.max(0, 1 - (f.t - f.d * .7) / (f.d * .3)) : 1;
-      _fxFrame(f.k, i, f.x, f.y + f.vy * f.t, f.size, alpha: a);
+      _fxFrame(f.k, i, f.x + f.vx * f.t, f.y + f.vy * f.t, f.size, alpha: a);
     }
   }
 

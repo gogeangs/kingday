@@ -110,6 +110,16 @@ class Server {
     return jsonDecode(utf8.decode(res.bodyBytes));
   }
 
+  /// 로그인 없이 읽기만 하는 함수 (이벤트 날짜 kd_event_list — 웹 evFetch 처럼 apikey 만).
+  /// (응답, 보낸 때 ms, 받은 때 ms)
+  Future<(dynamic, int, int)> rpcAnon(String fn) async {
+    final t0 = _now();
+    final res = await _http.post(Uri.parse('$sbUrl/rest/v1/rpc/$fn'), headers: _h, body: '{}').timeout(_timeout);
+    final t1 = _now();
+    if (res.statusCode >= 300) throw ServerError('$fn ${res.statusCode}');
+    return (res.bodyBytes.isEmpty ? null : jsonDecode(utf8.decode(res.bodyBytes)), t0, t1);
+  }
+
   /// 구글·애플에서 받은 ID 토큰으로 로그인 (웹의 OAuth 로그인과 같은 계정이 됨)
   Future<bool> signInWithIdToken(String provider, String idToken, {String? nonce}) async {
     final res = await _http

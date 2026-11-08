@@ -337,7 +337,7 @@ class PtPage extends StatelessWidget {
     final c = g.calc;
     // 별 올리기 찾기 (대표님 결정 10-27 ①②③, 웹 cupBar·cmax): 올릴 수 있는 동료 맨 위 · 별을 다 모은 동료는 맨 아래 작은 줄
     final ready = c.cardReady();
-    final sorted = stableSorted(stableSorted(GameCalc.cardIds(), (a, b) {
+    final sorted = stableSorted(stableSorted(c.cardList(), (a, b) {
       int key(String x) => (c.cardOpen(x) ? 2 : 0) + (c.owned(x) ? 1 : 0);
       final d = key(b) - key(a);
       return d != 0 ? d : (GameCalc.gr(a).w - GameCalc.gr(b).w).sign.toInt();

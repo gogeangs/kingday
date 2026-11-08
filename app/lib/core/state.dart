@@ -222,6 +222,22 @@ class GameState {
       }
       f['cards'] = cards;
     }
+    // 외형: 아는 외형·받은 해 목록만, 입은 외형이 없으면 기본 (웹 saveFix)
+    if (f.containsKey('skins') && f['skins'] != null) {
+      final k = f['skins'] is Map ? (f['skins'] as Map) : const {}, o = <String, dynamic>{};
+      for (final id in k.keys) {
+        final v = k[id];
+        if (wSkins.containsKey(id) && v is List) {
+          o['$id'] = [
+            for (final y in v)
+              if ((y is num && y.isFinite ? y.floor() : num.tryParse('$y')?.floor() ?? 0) >= 0) (y is num && y.isFinite ? y.floor() : num.tryParse('$y')?.floor() ?? 0)
+          ];
+        }
+      }
+      f['skins'] = o;
+    }
+    final sk = f['skin'];
+    if (sk != null && sk != '' && !(wSkins.containsKey(sk) && f['skins'] is Map && (f['skins'] as Map)[sk] != null)) f['skin'] = '';
   }
 
   static bool _okVal(Object? fv, Object? dv) {

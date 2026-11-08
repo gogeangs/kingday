@@ -4,17 +4,18 @@ library;
 import 'attendance.dart';
 import 'calc.dart';
 import 'data.dart';
+import 'event.dart';
 import 'js.dart';
 
 class Deco {
-  const Deco(this.k, this.n, this.d, this.ok, {this.rare = false, this.rk = false, this.tall = false});
+  const Deco(this.k, this.n, this.d, this.ok, {this.rare = false, this.rk = false, this.tall = false, this.ev = false});
   final String k, n, d;
 
   /// 얻는 조건
   final bool Function(GameCalc c) ok;
 
-  /// 황금 고블린 희귀 전리품 / 랭킹 보상 / 위로 솟은 큰 테두리
-  final bool rare, rk, tall;
+  /// 황금 고블린 희귀 전리품 / 랭킹 보상 / 위로 솟은 큰 테두리 / 이벤트 상점 (웹 ev:1)
+  final bool rare, rk, tall, ev;
 }
 
 num _st(GameCalc c, String k) => orNum(asMap(c.s.raw['stat'])?[k], 0);
@@ -38,6 +39,8 @@ final List<Deco> pframes = [
   Deco('village', '에르단 마을', '마을 Lv.10', (c) => orNum(c.s.raw['vlv'], 1) >= 10, tall: true),
   // 2부 (웹 p2Install)
   Deco('alliance', '연합의 깃발', '세 나라 모두 해방 (2부)', (c) => c.allyAll(), tall: true),
+  // 정기 이벤트 (웹 evInstall)
+  const Deco('snow', '눈꽃 왕관', '눈꽃제 눈꽃 상점', _no, tall: true, ev: true),
 ];
 
 /// 시련의 탑 최고 층 (S.tower.top)
@@ -68,6 +71,10 @@ final List<Deco> badges = [
   const Deco('crown3', '전당의 동관', '명예의 전당 3위 보상', _no, rk: true),
   // 2부 (웹 p2Install)
   Deco('part2', '2부 완결', '세 나라 모두 해방 (2부 완결)', (c) => c.allyAll()),
+  // 정기 이벤트 (웹 evInstall)
+  const Deco('snow', '눈꽃제', '눈꽃제 눈꽃 상점', _no, ev: true),
+  Deco('xmas', '메리 크리스마스', '크리스마스 주간 5일 중 3일 접속', (c) => c.evXmasCount() >= 3),
+  const Deco('delivery', '선물 배달왕', '선물 배달 랭킹 1위', _no, rk: true),
 ];
 
 /// 원정 일지 시즌 테두리 pass_시즌번호 (시즌마다 따로 저장, 그림은 시즌 번호 % 6 색) — 웹 pfPass · pfSrc

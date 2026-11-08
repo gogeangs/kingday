@@ -22,6 +22,7 @@ import '../core/bond.dart';
 import '../core/calc.dart';
 import '../core/challenge.dart';
 import '../core/data.dart';
+import '../core/event.dart';
 import '../core/fmt.dart';
 import '../core/js.dart';
 import '../core/profile_data.dart';
@@ -692,7 +693,9 @@ class GameController extends ChangeNotifier {
           ], '일구기 ($cost)', altLabel: '다음에', onGo: () => act((a) => a.buyGemPlot(n, cost)));
         case ActRecruitScene(:final id):
           final rc = recruits[id]!;
-          scene('동료 합류', rc.title, rc.lines, rc.ok, illust: 'join', illustFace: id);
+          // 소복이(이벤트 한정)는 「바로 출전」 (웹 RECRUITS.sobok.go)
+          scene('동료 합류', rc.title, rc.lines, rc.ok, illust: 'join', illustFace: id,
+              onGo: evCards.contains(id) ? () => act((a) => a.setMember(rc.job, id)) : null);
         case ActUqScene(:final id):
           final rc = recruits[id]!;
           scene('유니크 동료', rc.title, rc.lines, rc.ok, altLabel: '나중에', illust: 'join', illustFace: id, onGo: () => act((a) => a.setMember(rc.job, id)));

@@ -76,8 +76,9 @@ function loadWeb(opts = {}) {
   vm.createContext(ctx);
   vm.runInContext(code, ctx, { filename: 'index.html' });
   // 웹은 게임을 시작할 때 2부 표를 붙임(p2Install). 앱 0.0.6부터 2부가 들어가므로 정답 값도 2부를 붙인 상태로 만든다.
-  // 정기 이벤트(evInstall)는 앱에 이벤트를 옮길 때(0.0.7) 함께 붙인다.
   vm.runInContext('p2Install()', ctx);
+  // 정기 이벤트(눈꽃제): 소복이·외형 표를 붙임 (앱 0.7부터 이벤트가 들어가므로 정답 값도 붙인 상태로)
+  vm.runInContext('evInstall()', ctx);
 
   const api = {
     ctx,

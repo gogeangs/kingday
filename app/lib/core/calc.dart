@@ -11,6 +11,7 @@ import 'dart:math' as math;
 
 import 'bond.dart';
 import 'data.dart';
+import 'event.dart';
 import 'fmt.dart';
 import 'js.dart';
 import 'retire.dart';
@@ -225,7 +226,10 @@ class GameCalc {
   static CompGrade gr(String id) => compGrades[gradeOf[id] ?? 'common']!;
 
   /// 웹 CARDIDS(): 이야기 동료 4 + 2부 이야기 동료 + 모집 동료 (카드 뽑기 대상 — 유니크 제외)
-  static List<String> cardIds() => [...storyOf.values, ...story2.keys, ...recruits.keys.where((id) => gradeOf[id] != 'unique')];
+  static List<String> cardIds() => [...storyOf.values, ...story2.keys, ...recruits.keys.where((id) => gradeOf[id] != 'unique' && !evCards.contains(id))];
+
+  /// 웹 CARDLIST(): 카드 목록·★ 올리기 (이벤트 한정 동료는 가졌거나 카드가 있을 때만)
+  List<String> cardList() => [...cardIds(), ...evCards.where((id) => owned(id) || orNum(s.cards?[id], 0) > 0)];
 
   /// 웹 COMPIDS(): 동료 전체 (일꾼·마을 이야기)
   static List<String> compIds() => [...storyOf.values, ...story2.keys, ...recruits.keys];
@@ -604,7 +608,7 @@ class GameCalc {
 
   // ───────────── 카드·목표 ─────────────
   /// cardReady(): 별을 올릴 수 있는 동료
-  List<String> cardReady() => cardIds()
+  List<String> cardReady() => cardList()
       .where((id) => cardOpen(id) && recStar(id) < starMax(id) && orNum(s.cards?[id], 0) >= (starNeed(id) ?? double.nan))
       .toList();
 
