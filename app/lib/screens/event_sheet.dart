@@ -368,7 +368,10 @@ class _EventSheetState extends State<EventSheet> {
             border: Border.all(color: const Color(0xFF3B5385)),
             borderRadius: BorderRadius.circular(12),
           ),
-          child: Wrap(alignment: WrapAlignment.spaceBetween, crossAxisAlignment: WrapCrossAlignment.center, spacing: 10, runSpacing: 6, children: [
+          // D-n 은 늘 오른쪽 (웹 .evdd margin-left:auto — 줄이 넘쳐도 왼쪽으로 떨어지지 않게, QA 0.0.7)
+          child: Row(children: [
+            Expanded(
+                child: Wrap(alignment: WrapAlignment.spaceBetween, crossAxisAlignment: WrapCrossAlignment.center, spacing: 10, runSpacing: 6, children: [
             Row(mainAxisSize: MainAxisSize.min, children: [
               kdImg(e.curImg, w: 28, h: 28),
               const SizedBox(width: 5),
@@ -384,6 +387,8 @@ class _EventSheetState extends State<EventSheet> {
                 ]),
                 style: KdText.body(12.5, color: KdColors.muted),
               ),
+            ])),
+            const SizedBox(width: 10),
             Text('${ph == 'shop' ? '상점 ' : ''}${left > 0 ? 'D-$left' : 'D-DAY'}', style: KdText.body(12.5, color: const Color(0xFFFFD34A), weight: FontWeight.w800)),
           ]),
         ),
