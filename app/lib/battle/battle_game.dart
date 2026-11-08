@@ -15,6 +15,8 @@ import 'package:flutter/services.dart';
 import '../core/calc.dart';
 import '../core/challenge.dart';
 import '../core/data.dart';
+import '../core/event.dart';
+import '../core/rng.dart';
 import 'battle_data.dart';
 import 'sim.dart';
 
@@ -170,10 +172,14 @@ class BattleGame extends FlameGame {
   void _ensureCh() {
     final h = sim.ch;
     if (h == null) return;
-    final key = h.mode == 'tower' ? 'tower' : h.k;
+    final key = h.mode == 'tower' ? 'tower' : h.mode == 'ev' ? 'ev:${h.ev}' : h.k;
     if (_chLoaded == key) return;
     _chLoaded = key;
-    if (h.mode == 'tower') {
+    if (h.mode == 'ev') {
+      // 눈사람 대장: 하른 설원 배경 + 눈사람 그림 (웹 evBossSprite · sprOk)
+      _ensureRegion(sim.chRi());
+      _loadEvBoss(h.ev);
+    } else if (h.mode == 'tower') {
       for (var r = 0; r < regions.length; r += 2) {
         _ensureRegion(r);
       }
@@ -182,6 +188,22 @@ class BattleGame extends FlameGame {
       final d = dunDef(h.k);
       _ensureRegion(d.ri);
       _ensureRegion(d.mri);
+    }
+  }
+
+  /// 눈사람 대장 동작 시트 (보통·산타) 받기 — 앱에 들어 있는 그림만
+  Future<void> _loadEvBoss(String ev) async {
+    final sh = evBossSheets[ev];
+    if (sh == null) return;
+    final have = await _assetList();
+    for (final m in [sh.$1, sh.$2]) {
+      for (final a in ['walk', 'attack', 'hit']) {
+        final p = 'monsters/${m.id}_$a.png';
+        if (_img[p] != null || (have != null && !have.contains('assets/game/$p'))) continue;
+        try {
+          _img[p] = await images.load(p);
+        } catch (_) {}
+      }
     }
   }
 
@@ -263,6 +285,7 @@ class BattleGame extends FlameGame {
       _drawProj(p, l.s.toDouble());
     }
     _drawFxs();
+    _drawSnow();
     for (final f in sim.floats) {
       _text(f.txt, f.x.toDouble(), f.y.toDouble(), (f.size * math.max(.9, l.s)).toDouble(), ui.Color(f.col),
           alpha0: 1 - f.t / .9, serif: true, stroke: const ui.Color(0xA6000000), strokeW: 3.5);
@@ -479,7 +502,9 @@ class BattleGame extends FlameGame {
     if (p == null) return;
     _ell(x, y, 16 * s, 4.5 * s, const ui.Color(0x47000000));
     final (a, i) = _spriteFrame(id, p, walk && !p.down);
-    _drawSprite(id, x, y, s, a, i, alpha: p.down ? .35 : 1.0);
+    // 카엘 외형 (산타 카엘 등, 웹 drawSprite(skinSpr(id), …)) — 외형 그림이 없으면 기본 그림
+    final sk = sim.c.skinSpr(id), sid = sk != id && _img['characters/${sk}_$a.png'] != null ? sk : id;
+    _drawSprite(sid, x, y, s, a, i, alpha: p.down ? .35 : 1.0);
     final mx = sim.c.stats(id).hp;
     _bar(x, y - (heightOf(id) - 2) * s, 26 * s, p.hp / mx, p.down ? const ui.Color(0xFF666666) : const ui.Color(0xFF7BE08F));
     // 버치 「벌통 방패」 표시
@@ -494,6 +519,13 @@ class BattleGame extends FlameGame {
   /// 그릴 시트 + 물들이기 (웹 monSprite/tintSet). 왕도 그림이 오기 전엔 기존 그림을 색만 바꿔 씀
   ({MonSheet sheet, ui.ColorFilter? tint, double alpha, double scale, bool lordArt})? _monArt(int ri, Mon m) {
     if (m.gob) return (sheet: goblinSheet, tint: null, alpha: 1.0, scale: 1.0, lordArt: false);
+    // 눈사람 대장 (산타 모자는 크리스마스 주간, 웹 evBossSprite)
+    if (m.snow != null) {
+      final sh = evBossSheets[m.snow];
+      if (sh == null) return null;
+      final sd = m.santa && _has(sh.$2) ? sh.$2 : sh.$1;
+      return _has(sd) ? (sheet: sd, tint: null, alpha: 1.0, scale: 1.0, lordArt: true) : null;
+    }
     if (m.dem || m.balt) {
       final own = baltasarSheets[m.ph2 ? 1 : 0];
       if (_has(own)) return (sheet: own, tint: null, alpha: 1.0, scale: 1.3, lordArt: true);
@@ -652,6 +684,30 @@ class BattleGame extends FlameGame {
     } else {
       m.barY = top - 12 * s;
       _bar(x, m.barY!, 32 * s, m.hp / m.max, const ui.Color(0xFFFF6B7D));
+    }
+  }
+
+  // ── 눈 내리기 (웹 evSnowDraw · evSnowOn): 이벤트 기간 동안, 효과 줄이기·움직임 줄이기면 끔 ──
+  /// 고정 번호로 만든 눈송이 70개 (x, y, 깊이, 흔들림 시작)
+  static final List<(double, double, double, double)> _flakes = () {
+    final r = Mulberry32(20261211);
+    return [for (var i = 0; i < 70; i++) (r.next(), r.next(), .4 + r.next() * .8, r.next() * 6.28)];
+  }();
+
+  bool _snowOn() {
+    final c = sim.c;
+    if (c.s.raw['lowFx'] == true || ui.PlatformDispatcher.instance.accessibilityFeatures.disableAnimations || !c.evOpen()) return false;
+    return evts.values.any((e) => e.bat != null && c.evPhase(e) == 'on');
+  }
+
+  void _drawSnow() {
+    if (!_snowOn()) return;
+    final t = _t, p = ui.Paint()..color = const ui.Color(0xFFFFFFFF);
+    for (final (fx, fy, z, ph) in _flakes) {
+      final y = ((fy + t * .05 * z) % 1) * (_ht + 10) - 5;
+      final x = (((fx + math.sin(t * .8 + ph) * .012 - t * .006 * z) % 1) + 1) % 1;
+      p.color = ui.Color.fromRGBO(255, 255, 255, .35 + .45 * z);
+      _c.drawCircle(ui.Offset(x * _w, y), 1 + 1.6 * z, p);
     }
   }
 

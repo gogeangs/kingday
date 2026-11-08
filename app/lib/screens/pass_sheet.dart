@@ -6,6 +6,7 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 
 import '../core/actions.dart';
+import '../core/event.dart';
 import '../core/fmt.dart';
 import '../core/js.dart';
 import '../core/profile_data.dart';
@@ -247,7 +248,8 @@ class _PassSheetState extends State<_PassSheet> {
                   onTap: () => _buy(g, 'pass', (x) => x.buyPass()),
                 ),
               const KdSec('오늘 얻은 점수', small: '할 일마다 하루 한도'),
-              for (final e in wPassSrc.entries)
+              // 눈사람 대장 도전은 이벤트 기간에만 (웹 evPassSrc 의 PASS_SRC.snow · 맨 뒤에 붙음)
+              for (final e in [...wPassSrc.entries, if (g.calc.evBossOn()) const MapEntry<String, List<Object>>('snow', [20, 20, '눈사람 대장 도전'])])
                 Builder(builder: (_) {
                   final got = a.passToday(e.key), mx = asNum(e.value[1]);
                   return Container(

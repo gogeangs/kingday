@@ -9,6 +9,7 @@ import '../battle/sim.dart';
 import '../core/calc.dart';
 import '../core/challenge.dart';
 import '../core/data.dart';
+import '../core/event.dart';
 import '../core/fmt.dart';
 import '../core/js.dart';
 import '../core/village.dart';
@@ -39,6 +40,11 @@ class StageTop extends StatelessWidget {
       final i = h.info!;
       label = '시련의 탑 ${i.f}층';
       sub = (i.gate ? '수문장' : i.rule >= 0 ? '시련 · ${towerRules[i.rule].n}' : '최고 ${g.calc.towerTop()}층') + (h.pm >= pkShow ? ' · 추억 ×${pmText(h.pm)}' : '');
+    } else if (h != null && h.mode == 'ev') {
+      // 눈사람 대장 (웹 chHud 'ev'): 「눈꽃제 · (산타 )눈사람 대장」 / 「N단계 · 오늘 n/m」
+      final e = evts[h.ev]!, x = g.calc.evS(h.ev);
+      label = '${e.n} · ${h.santa ? '산타 ' : ''}${e.boss!.n}';
+      sub = '${h.stg}단계 · 오늘 ${asNum((x['boss'] as Map)['n']).toInt()}/${g.calc.evTries(e, x)}${h.pm >= pkShow ? ' · 추억 ×${pmText(h.pm)}' : ''}';
     } else if (h != null) {
       label = '${dunDef(h.k).n} · 단계 ${h.l}';
       sub = '⏱ ${mmss(math.max(0, h.t))} · ${h.kills}마리${h.pm >= pkShow ? ' · 추억 ×${pmText(h.pm)}' : ''}';
@@ -180,14 +186,16 @@ class _BossBar extends StatelessWidget {
   Widget build(BuildContext context) {
     // 왕도: 잔영은 군단장처럼 보라, 마왕은 1단계 보라 → 2단계 금 (웹 .bossbar.cmd/.dem/.gold)
     final st = g.calc.fightSt(), h = g.sim.ch, ti = h?.info;
+    // 눈사람 대장: 태그 「N단계」 · 이름 「(산타 )눈사람 대장」 · 얼굴 없음 · 보통 색 (웹 evBossSpawn)
+    final ev = h != null && h.mode == 'ev' && b.snow != null ? h : null;
     // 시련의 탑: 층 태그·층 이름, 수문장·잔영은 보라 (웹 towerSpawn)
-    final cmd = ti != null ? (ti.gate || ti.art.ghost != null) : GameCalc.isLord(st) || b.ghost != null, gold = b.dem && b.ph2;
+    final cmd = ev != null ? false : ti != null ? (ti.gate || ti.art.ghost != null) : GameCalc.isLord(st) || b.ghost != null, gold = b.dem && b.ph2;
     final left = math.max(0, g.sim.bossT), hurry = left <= 10;
     // 2부 나라 장수: 「장수」 태그 · 초상화 대신 지도 얼굴 그림 (웹 spawn p2L)
-    final p2r = ti == null && GameCalc.isLord(st) && !b.dem ? GameCalc.region(st).p2 : null;
-    final tag = ti != null ? '${ti.f}층' : b.dem ? '마왕' : b.ghost != null ? '잔영' : b.guard ? '근위대장' : p2r != null ? '장수' : cmd ? '군단장' : '성주';
+    final p2r = ev == null && ti == null && GameCalc.isLord(st) && !b.dem ? GameCalc.region(st).p2 : null;
+    final tag = ev != null ? '${ev.stg}단계' : ti != null ? '${ti.f}층' : b.dem ? '마왕' : b.ghost != null ? '잔영' : b.guard ? '근위대장' : p2r != null ? '장수' : cmd ? '군단장' : '성주';
     final faceId = ti != null ? (ti.face ?? 'baltasar') : b.dem ? 'baltasar' : b.ghost != null ? bossIds[b.ghost!] : bossIds[GameCalc.regionIndex(st) % bossIds.length];
-    final showFace = ti != null ? ti.face != null : cmd;
+    final showFace = ev != null ? false : ti != null ? ti.face != null : cmd;
     // 쌍둥이: 보스 2마리 체력 합
     num bhp = 0, bmax = 0;
     for (final m in g.sim.mons) {
@@ -248,7 +256,9 @@ class _BossBar extends StatelessWidget {
                 child: Text(tag, style: KdText.body(10, color: gold ? const Color(0xFF2A1A00) : Colors.white, weight: FontWeight.w600, height: 1.3)),
               ),
               const SizedBox(width: 6),
-              Expanded(child: Text(ti != null ? ti.name : GameCalc.bossName(st), overflow: TextOverflow.ellipsis, style: KdText.display(12))),
+              Expanded(
+                  child: Text(ev != null ? '${ev.santa ? '산타 ' : ''}${evts[ev.ev]!.boss!.n}' : ti != null ? ti.name : GameCalc.bossName(st),
+                      overflow: TextOverflow.ellipsis, style: KdText.display(12))),
               Opacity(
                 opacity: blink ? .35 : 1,
                 child: Text('${left.ceil()}초', style: KdText.figure(12, color: hurry ? const Color(0xFFFF4D63) : const Color(0xFFFFD6DC))),
@@ -612,5 +622,83 @@ class _MemberCard extends StatelessWidget {
           ],
           acts: KdActs(buttons: [KdAct('닫기', primary: true, onTap: () => Navigator.of(c).pop())]),
         ));
+  }
+}
+
+// ════════════════════ 오른쪽 위: 정기 이벤트 버튼 (웹 #evBtn · evHud — 상점 버튼 아래) ════════════════════
+/// 이벤트가 화면에 보일 때만 (기간 중·상점만 열림)
+bool eventFabOn(GameController g) => g.calc.evCur() != null;
+
+/// 눈꽃제 버튼: 아이콘 + 아래 「영지 10」(잠김) · 「D-n」 · 「상점 D-n」 · 「D-DAY」, 받을 것이 있으면 노란 점, 크리스마스 주간엔 🎅
+class EventFab extends StatelessWidget {
+  const EventFab(this.g, {super.key});
+  final GameController g;
+
+  @override
+  Widget build(BuildContext context) {
+    final c = g.calc, e = c.evCur();
+    if (e == null) return const SizedBox.shrink();
+    final ph = c.evPhase(e), d = c.evDates(e), lock = !c.evOpen();
+    final dl = ((ph == 'on' ? d.end : d.shop) - c.evNow) / 864e5, left = dl.isFinite ? math.max(0, dl.floor()) : 0;
+    final lb = lock ? '영지 $evOpenLand' : '${ph == 'shop' ? '상점 ' : ''}${left > 0 ? 'D-$left' : 'D-DAY'}';
+    final xm = c.evXmas(e), dot = !lock && c.evDot(e);
+    Widget ic = kdImg(e.art['icon'] != null ? e.art['icon']!.replaceFirst('assets/', 'assets/game/') : 'assets/game/ui/icon_snow.png', w: 34, h: 34);
+    if (lock) ic = filtered(ic, gray: .7, bright: .8);
+    return Semantics(
+      button: true,
+      label: '${e.n} $lb',
+      child: GestureDetector(
+        key: const ValueKey('evBtn'),
+        onTap: g.evBtnTap,
+        behavior: HitTestBehavior.opaque,
+        child: Column(mainAxisSize: MainAxisSize.min, children: [
+          Stack(clipBehavior: Clip.none, children: [
+            Container(
+              width: 42,
+              height: 42,
+              alignment: Alignment.center,
+              decoration: BoxDecoration(
+                color: const Color(0xC70A0E1A),
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: const Color(0x8CFFC94A)),
+                boxShadow: lock ? null : const [BoxShadow(color: Color(0x4096D2FF), blurRadius: 6)],
+              ),
+              child: ic,
+            ),
+            if (xm)
+              Positioned(
+                top: -9,
+                left: -5,
+                child: Transform.rotate(angle: -18 * math.pi / 180, child: const Text('🎅', style: TextStyle(fontSize: 16, height: 1))),
+              ),
+            if (dot)
+              Positioned(
+                top: -3,
+                right: -3,
+                child: Container(
+                  width: 11,
+                  height: 11,
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFFFD23A),
+                    shape: BoxShape.circle,
+                    border: Border.all(color: Colors.white, width: 1.5),
+                    boxShadow: const [BoxShadow(color: Color(0xFFFFD23A), blurRadius: 6)],
+                  ),
+                ),
+              ),
+          ]),
+          SizedBox(
+            height: 15,
+            child: Padding(
+              padding: const EdgeInsets.only(top: 3),
+              child: Text(lb,
+                  maxLines: 1,
+                  style: KdText.body(11, color: const Color(0xFFF3E6C4), weight: FontWeight.w700, height: 1)
+                      .copyWith(shadows: const [Shadow(blurRadius: 2, color: Colors.black), Shadow(blurRadius: 3, color: Colors.black)])),
+            ),
+          ),
+        ]),
+      ),
+    );
   }
 }

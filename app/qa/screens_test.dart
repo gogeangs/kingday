@@ -9,13 +9,17 @@ import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
+import 'package:kingday/core/event.dart';
 import 'package:kingday/core/save_store.dart';
 import 'package:kingday/core/server.dart';
 import 'package:kingday/game/controller.dart';
 import 'package:kingday/main.dart';
+import 'package:kingday/screens/challenge_sheet.dart';
+import 'package:kingday/screens/event_sheet.dart';
 import 'package:kingday/screens/pt_page.dart';
 import 'package:kingday/screens/settings_sheet.dart';
 import 'package:kingday/screens/social_sheets.dart';
+import 'package:kingday/ui/widgets.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 const _w = 390.0, _h = 844.0;
@@ -44,6 +48,18 @@ Map<String, Object> _p2() {
     'mapIntro': 1, 'fogSeen': 61, 'regSeen': {'0': 1, '1': 1, '2': 1, '3': 1, '4': 1, '5': 1}, 'rankSeen': 7, 'gemRank': 7,
   });
   (m['done'] as Map).addAll({'capRoad': true, 'cap56': true, 'cap57': true});
+  return {'acorn-idle-v1': jsonEncode(m)};
+}
+
+/// 눈꽃제: 영지 30 (EvClock.demo = 'xmas' 로 이벤트·크리스마스 주간을 켬)
+Map<String, Object> _snow() {
+  final m = jsonDecode(_late()['acorn-idle-v1'] as String) as Map<String, dynamic>;
+  final t = DateTime.now();
+  m.addAll({
+    'stage': 30, 'wave': 3, 'best': 30, 'gold': 9.87e12, 'chOpen': 1,
+    'att': {'intro': 1, 'w': 1, 'ym': '', 'm': 0, 'last': '${t.year}-${t.month}-${t.day}'},
+  });
+  (m['cards'] as Map)['sobok'] = 20;
   return {'acorn-idle-v1': jsonEncode(m)};
 }
 
@@ -87,18 +103,22 @@ Future<void> _fonts() async {
 void main() {
   setUpAll(_fonts);
 
-  for (final save in ['new', 'late', 'p2']) {
+  for (final save in ['new', 'late', 'p2', 'snow']) {
     testWidgets('화면 캡처 · $save', (tester) async {
       tester.view.devicePixelRatio = 2;
       tester.view.physicalSize = const Size(_w * 2, _h * 2);
       addTearDown(tester.view.reset);
-      SharedPreferences.setMockInitialValues(save == 'new' ? {} : save == 'p2' ? _p2() : _late());
+      // 눈꽃제: 기간·크리스마스 주간을 켠 채로 시작 (시계는 못 바꾸므로 미리보기 스위치)
+      EvClock.demo = save == 'snow' ? 'xmas' : null;
+      addTearDown(() => EvClock.demo = null);
+      SharedPreferences.setMockInitialValues(save == 'new' ? {} : save == 'p2' ? _p2() : save == 'snow' ? _snow() : _late());
       final store = await SaveStore.open();
       final g = GameController(
         store: store,
         state: store.load(DateTime.now().millisecondsSinceEpoch),
         server: save == 'late' ? Server(store.prefs, client: MockClient(_fake)) : null,
       );
+      if (save == 'snow') g.calc.evS(evMain)['sf'] = 1200;
       await tester.pumpWidget(RepaintBoundary(child: KingdayApp(g: g)));
 
       Future<void> frames([int n = 6]) async {
@@ -140,12 +160,12 @@ void main() {
       await shot('title');
       await tester.tap(find.text('게임 시작'));
       await frames(8);
-      if (save == 'p2') {
+      if (save == 'p2' || save == 'snow') {
         // 2부 시작 장면 → 큰 제목 → 엘프 왕국 이야기 (방치 보상·출석 창이 사이에 끼면 그것도 찍음)
         for (var i = 0; i < 6; i++) {
           await frames(6);
           if (!g.navKey.currentState!.canPop()) break;
-          await shot('p2_pop$i');
+          await shot(save == 'p2' ? 'p2_pop$i' : 'pop$i');
           await close();
         }
       } else if (save == 'new') {
@@ -176,6 +196,61 @@ void main() {
       }
       await frames(30);
       await shot('battle');
+      if (save == 'snow') {
+        // 눈꽃제: 이벤트 창 탭마다 · 출석 받기 · 산타 피트 선물 · 도전 창 칸 · 마을 트리 · 눈사람 대장 전투·결과 · 폭 320~430
+        for (final t in ['att', 'boss', 'shop', 'mg']) {
+          openEventSheet(g, evMain, t);
+          await frames();
+          await shot('ev_$t');
+          if (t == 'att') {
+            await tester.tap(find.byKey(const ValueKey('evAtt')));
+            await frames();
+            await shot('ev_att_claimed');
+          }
+          await close();
+        }
+        ((g.calc.evS(evMain)['xm'] as Map)['gift'] as Map).clear();
+        g.evGiftQueue(evMain);
+        await frames();
+        await shot('xmas_gift');
+        await close();
+        openChallenge(g);
+        await frames();
+        await shot('challenge_ev');
+        await close();
+        g.setTab(GameTab.vl);
+        await frames(6);
+        await shot('vl_tree');
+        g.setTab(null);
+        await frames(2);
+        final r = g.acts.evBossBegin(evMain);
+        g.sim.evBossStart(evMain, r.stg, r.santa, r.ref);
+        await frames(30);
+        await shot('snow_boss');
+        g.sim.chExit();
+        await frames(2);
+        final rows = g.acts.evGive(evMain, [{'k': 'gem', 'n': 30}]);
+        g.queue((ctx) => showKdSheet<void>(ctx, builder: (c) => evBossResultBody(g, c, id: evMain, won: true, stg: 5, santa: true, sf: 60, rows: rows)));
+        await frames();
+        await shot('snow_boss_result');
+        await close();
+        for (final w in [320.0, 360.0, 390.0, 430.0]) {
+          tester.view.physicalSize = Size(w * 2, _h * 2);
+          await frames(2);
+          for (final t in ['att', 'shop']) {
+            openEventSheet(g, evMain, t);
+            await frames();
+            await shot('ev_${t}_w${w.round()}');
+            await close();
+          }
+        }
+        tester.view.physicalSize = const Size(_w * 2, _h * 2);
+        await tester.pumpWidget(const SizedBox());
+        g.dispose();
+        EvClock.demo = null;
+        await tester.pump(const Duration(seconds: 3));
+        return;
+      }
       if (save == 'p2') {
         // 사막 제국 75 · 엘프 동맹 · 솔렌·사프란 합류 → 전투 · 지도(바다 건너) · 프로필 동맹 칸 · 동맹 창
         g.state.stage = 75;

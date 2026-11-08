@@ -3,6 +3,7 @@ library;
 
 import 'dart:ui' as ui;
 
+import '../core/event.dart';
 import '../core/web_data.g.dart';
 
 Map<String, dynamic> _m(Object? v) => (v as Map).cast<String, dynamic>();
@@ -50,6 +51,12 @@ final List<MonSheet> baltasarSheets = [
 
 /// 발타사르 시전 동작 프레임 수 (assets/monsters/boss_baltasar{,2}_cast.png, 봉인의 파동 예고 동안)
 const int baltasarCast = 4;
+
+/// 눈사람 대장 그림 (웹 evBossSprite: EVT[id].boss.spr · 크리스마스 주간 산타 모자 sprX) — 이벤트 id → (보통, 산타)
+final Map<String, (MonSheet, MonSheet)> evBossSheets = {
+  for (final e in evts.values)
+    if (e.boss != null) e.id: (MonSheet._(e.boss!.spr), MonSheet._(e.boss!.sprX)),
+};
 
 /// 봉인의 파동 위치 (웹 sealGeo). 효과 그림 fx_boss_seal 은 512x384 칸, 바닥 y=372
 ({double cx, double cy, double rx, double ry}) sealGeo(List<String> ids, Map<String, num> pos, num front, num top, num bot, num s) {

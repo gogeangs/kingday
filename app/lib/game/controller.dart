@@ -35,6 +35,7 @@ import '../core/web_data.g.dart' show wEnding2, wP2free, wRankimg;
 import '../core/worldmap.dart';
 import '../screens/attend_sheet.dart';
 import '../screens/challenge_sheet.dart';
+import '../screens/event_sheet.dart';
 import '../screens/retire_sheet.dart';
 import '../screens/social_sheets.dart';
 import '../ui/fx.dart';
@@ -132,6 +133,7 @@ class GameController extends ChangeNotifier {
     _saveTimer = Timer.periodic(const Duration(seconds: 5), (_) => save());
     // 8단계: 계정·랭킹·우편·클라우드 (서버가 없으면 꺼짐)
     online = Online(this, server)..start();
+    _evBoot(isNew); // 정기 이벤트(눈꽃제): 지난 이벤트 정리·시작 장면·서버 날짜 (웹 evBoot)
     // 인앱결제 (스토어 상품을 등록하기 전에는 꺼져 있음 → 시험용 바로 지급)
     iap = IapStore(this);
     if (Feel.live) iap.init();
@@ -555,6 +557,7 @@ class GameController extends ChangeNotifier {
       _vlTick();
       calc.pfCheck();
       chCheck();
+      _evTick(); // 정기 이벤트: 날이 바뀌면 크리스마스 선물·눈송이 사라짐 알림 (웹 evHud)
       _nwFlush();
       // 하루가 바뀌면 원정 일지 시즌·마감 알림 확인 (웹 attHud 의 날짜 바뀜)
       final t = calc.today();
