@@ -768,8 +768,19 @@ class GameController extends ChangeNotifier {
       toast('오늘은 다 봤어요. 내일 다시 받을 수 있어요');
       return;
     }
+    if (!await playAd()) return;
+    final ad = asMap(calc.daily()['ad'])!;
+    ad[k] = orNum(ad[k], 0) + 1;
+    give();
+    save();
+    refresh();
+    pump();
+  }
+
+  /// 광고 한 편 보기 (횟수 기록 없이 — 이벤트 광고처럼 저장 칸이 따로인 것, 웹 playAd). 끝까지 봤으면 true
+  Future<bool> playAd() async {
     final ctx = navKey.currentContext;
-    if (ctx == null || modalOpen) return;
+    if (ctx == null || modalOpen) return false;
     modalOpen = true;
     notifyListeners();
     bool? watched;
@@ -792,14 +803,9 @@ class GameController extends ChangeNotifier {
     if (watched != true) {
       toast('광고를 끝까지 보면 받을 수 있어요');
       pump();
-      return;
+      return false;
     }
-    final ad = asMap(calc.daily()['ad'])!;
-    ad[k] = orNum(ad[k], 0) + 1;
-    give();
-    save();
-    refresh();
-    pump();
+    return true;
   }
 
   // ── 도전: 시련의 탑 · 요일 던전 (docs/content/CHALLENGE.md) ──
