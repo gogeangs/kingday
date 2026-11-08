@@ -573,7 +573,7 @@ extension EventAct on GameActions {
         c.stat('card', n);
         final left = c.evJoinLeft(cid);
         rows.add(EvRow('evcard', '${comps[cid]!.n} 카드 +$n',
-            sub: left > 0 ? '합류까지 $left장' : c.owned(cid) ? '★ 올리기에 써요' : '원정대 카드 탭에서 맞이해요', img: 'assets/game/portraits/portrait_${cid}_idle.png'));
+            sub: left > 0 ? '합류까지 $left장' : c.owned(cid) ? '★ 올리기에 써요' : '원정대 → 카드 탭에서 맞이해요', img: 'assets/game/portraits/portrait_${cid}_idle.png'));
       } else if (k == 'frame') {
         final fid = r['id'] as String;
         final u = asMap(s.raw['pfUnl']) ?? (s.raw['pfUnl'] = <String, dynamic>{});
