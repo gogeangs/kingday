@@ -62,18 +62,29 @@ extension GameCapitalX on GameController {
                 row(kdImg(gemIcon), '황금 이삭', '+$demonGem'),
                 row(kdImg('assets/game/profile/frame_capital.png'), '프로필 테두리', '왕도의 별'),
                 row(kdImg('assets/game/profile/badge_part1.png'), '배지', '1부 완결'),
-                row(kdImg('assets/game/ui/${rankImg.last}.png'), '칭호', '왕도 탈환자 (+4%)'),
+                row(kdImg('assets/game/ui/${rankImg[7]}.png'), '칭호', '왕도 탈환자 (+4%)'),
               ]),
             ),
-            const Para('sys:이제 「왕궁 뜰」에서 보스 없이 사냥이 이어져요. 은퇴하고 다시 왕도를 되찾으면 회차마다 한 번 은퇴의 추억 +$capMem을 더 받아요.'),
-            Text('2부 「흩어진 동맹」 — 엘프 왕국, 사막 제국, 북방 부족. 준비 중이에요.', textAlign: TextAlign.center, style: KdText.body(12, color: KdColors.muted)),
+            const Para('sys:은퇴하고 다시 왕도를 되찾으면 회차마다 한 번 은퇴의 추억 +$capMem을 더 받아요.'),
+            Text.rich(
+              TextSpan(children: [
+                const TextSpan(text: '2부 「흩어진 동맹」 — 바다 건너 엘프 왕국부터 '),
+                TextSpan(text: '지금 이어서 할 수 있어요.', style: KdText.body(12, color: KdColors.fg, weight: FontWeight.w700)),
+              ]),
+              textAlign: TextAlign.center,
+              style: KdText.body(12, color: KdColors.muted),
+            ),
           ],
           acts: KdActs(buttons: [
-            KdAct('은퇴 계획 보기', onTap: () {
+            KdAct('은퇴 계획', onTap: () {
               Navigator.of(c).pop();
-              setTab(GameTab.up);
+              retGo();
+              p2Check();
             }),
-            KdAct('계속 사냥하기', primary: true, onTap: () => Navigator.of(c).pop()),
+            KdAct('2부로', primary: true, onTap: () {
+              Navigator.of(c).pop();
+              p2Check();
+            }),
           ]),
         )));
   }
@@ -81,6 +92,7 @@ extension GameCapitalX on GameController {
   /// 웹 chapter(): 새 지역에 들어설 때 군단 소개
   void _chapter() {
     final st = state.stage, r = GameCalc.region(st), i = GameCalc.regionIndex(st);
+    if (r.p2 != null) return _p2Chapter(st);
     if (GameCalc.isCap(st)) {
       final k = truthy(state.done['capRoad']) ? 'roadAgain' : 'road';
       state.done['capRoad'] = true;

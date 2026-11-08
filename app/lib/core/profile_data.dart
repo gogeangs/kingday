@@ -36,6 +36,8 @@ final List<Deco> pframes = [
   Deco('tower', '시련의 탑', '시련의 탑 50층', (c) => _top(c) >= 50, tall: true),
   Deco('retire', '은퇴의 정원', '은퇴 10번', (c) => c.s.retires >= 10, tall: true),
   Deco('village', '에르단 마을', '마을 Lv.10', (c) => orNum(c.s.raw['vlv'], 1) >= 10, tall: true),
+  // 2부 (웹 p2Install)
+  Deco('alliance', '연합의 깃발', '세 나라 모두 해방 (2부)', (c) => c.allyAll(), tall: true),
 ];
 
 /// 시련의 탑 최고 층 (S.tower.top)
@@ -64,6 +66,8 @@ final List<Deco> badges = [
   const Deco('crown1', '전당의 금관', '명예의 전당 1위 보상', _no, rk: true),
   const Deco('crown2', '전당의 은관', '명예의 전당 2위 보상', _no, rk: true),
   const Deco('crown3', '전당의 동관', '명예의 전당 3위 보상', _no, rk: true),
+  // 2부 (웹 p2Install)
+  Deco('part2', '2부 완결', '세 나라 모두 해방 (2부 완결)', (c) => c.allyAll()),
 ];
 
 /// 원정 일지 시즌 테두리 pass_시즌번호 (시즌마다 따로 저장, 그림은 시즌 번호 % 6 색) — 웹 pfPass · pfSrc

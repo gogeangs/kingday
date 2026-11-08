@@ -27,7 +27,7 @@ const int seasonZero = 1792335600000;
 int seasonEndAt(int now) => seasonZero + (((now - seasonZero) / 12096e5).floor() + 1) * 1209600000;
 
 /// 영지 번호 → 「3-7」 (웹 stgName)
-String stgName(num st) => st > maxLand ? '왕궁 뜰' : '${((st - 1) / 10).floor() + 1}-${((st - 1) % 10).toInt() + 1}';
+String stgName(num st) => st > land ? huntName() : '${((st - 1) / 10).floor() + 1}-${((st - 1) % 10).toInt() + 1}';
 
 /// 닉네임 오류 (웹 NICKERR)
 const nickErr = {
@@ -151,14 +151,38 @@ class Online {
   int rkSent = 0;
   bool _rkBusy = false;
 
-  /// 웹 rankSubmit(force): 더 멀리 갔을 때만 기록 제출
+  /// 2부(62 이상)를 받는 서버 함수 kd_submit2 가 없으면(404) true → 61까지 kd_submit 으로 (웹 rk2Off)
+  bool rk2Off = false;
+
+  /// 웹 rankSubmit(force): 더 멀리 갔을 때만 기록 제출.
+  /// 2부(62 이상)는 새 서버 함수 kd_submit2(supabase/stage12·13, 상한 kd_stage_max() = 91)로
   Future<void> rankSubmit(bool force) async {
     if (!on || nick == null || _rkBusy) return;
-    final st = math.min(s.stage, maxLand + 1).toInt();
-    if (!force && st <= rkSent) return;
+    final st = math.min(s.stage, land + 1).toInt();
+    if (!force && (rk2Off ? math.min(st, maxLand + 1) : st) <= rkSent) return;
     _rkBusy = true;
     try {
-      final r = await rpc('kd_submit', {'p_stage': st, 'p_power': jsRound(c.power()).toInt(), ...meta()});
+      final args = {'p_power': jsRound(c.power()).toInt(), ...meta()};
+      Object? r;
+      if (st > maxLand + 1 && !rk2Off) {
+        try {
+          r = await rpc('kd_submit2', {'p_stage': st, ...args});
+        } on ServerError catch (e) {
+          if (e.what.endsWith(' 404')) {
+            rk2Off = true;
+          } else {
+            rethrow;
+          }
+        }
+      }
+      if (r == null) {
+        final s1 = math.min(st, maxLand + 1);
+        r = await rpc('kd_submit', {'p_stage': s1, ...args});
+        if (r == 'ok' && s1 < st) {
+          r = 'part';
+          rkSent = s1;
+        }
+      }
       if (r == 'ok') rkSent = st;
     } catch (_) {
     } finally {

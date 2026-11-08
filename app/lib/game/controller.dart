@@ -30,11 +30,13 @@ import '../core/save_store.dart';
 import '../core/server.dart';
 import '../core/state.dart';
 import '../core/village.dart';
+import '../core/web_data.g.dart' show wEnding2, wP2free, wRankimg;
 import '../core/worldmap.dart';
 import '../screens/attend_sheet.dart';
 import '../screens/challenge_sheet.dart';
 import '../screens/retire_sheet.dart';
 import '../screens/social_sheets.dart';
+import '../ui/fx.dart';
 import '../ui/game_widgets.dart';
 import '../ui/report_sheet.dart';
 import '../ui/theme.dart';
@@ -50,6 +52,7 @@ part 'controller_capital.dart';
 part 'controller_challenge.dart';
 part 'controller_dots.dart';
 part 'controller_map.dart';
+part 'controller_part2.dart';
 part 'controller_retire.dart';
 part 'controller_return.dart';
 part 'controller_story.dart';
@@ -114,6 +117,7 @@ class GameController extends ChangeNotifier {
       final rw = calc.retRwCheck();
       if (rw != null) queue((_) async => toast(retRwText(rw)));
       act((a) => a.chiefCheck());
+      _p2Boot(); // 2부: 61 「왕궁 뜰」에 있던 예전 세이브 → 2부 시작 장면
     }
     acts.passS();
     act((a) => a.growCheck());
@@ -428,6 +432,12 @@ class GameController extends ChangeNotifier {
     pump();
   }
 
+  /// 대기열 맨 앞에 (웹 sceneQ.unshift — 이어지는 창이 다른 알림보다 먼저)
+  void queueFirst(Future<void> Function(BuildContext ctx) fn) {
+    _q.insert(0, fn);
+    pump();
+  }
+
   void pump() {
     final ctx = navKey.currentContext;
     if (titleOpen || modalOpen || _q.isEmpty || ctx == null) return;
@@ -481,8 +491,8 @@ class GameController extends ChangeNotifier {
 
   /// 웹 scene(eyebrow,title,paras,btn,alt,illust): 이야기 창. 대기열에 넣는다.
   void scene(String eyebrow, String title, List<String> paras, String btn,
-      {String? altLabel, VoidCallback? onGo, VoidCallback? onAlt, String? illust, String? illustFace, Widget? titleWidget, bool closable = false}) {
-    queue((ctx) async {
+      {String? altLabel, VoidCallback? onGo, VoidCallback? onAlt, String? illust, String? illustFace, Widget? titleWidget, bool closable = false, bool first = false}) {
+    (first ? queueFirst : queue)((ctx) async {
       sceneOn = true;
       try {
         await showKdSheet<void>(ctx, closable: closable, builder: (c) {
@@ -812,7 +822,7 @@ class GameController extends ChangeNotifier {
 }
 
 /// 칭호 그림 (웹 RANKIMG)
-const rankImg = ['rank_farmer', 'rank_guard', 'rank_knight', 'rank_lord', 'rank_count', 'rank_duke', 'rank_king', 'rank_king'];
+final List<String> rankImg = wRankimg.cast<String>();
 
 /// 테스트 광고 화면: 3, 2, 1 뒤 보상 (웹 #adOv)
 class _AdCountdown extends StatefulWidget {

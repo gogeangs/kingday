@@ -35,6 +35,18 @@ Map<String, Object> _late() => {
       }),
     };
 
+/// 2부: 1부를 끝내고 61 「왕궁 뜰」에 있던 예전 저장 (2부 시작 장면 → 큰 제목 → 엘프 왕국 이야기)
+Map<String, Object> _p2() {
+  final m = jsonDecode(_late()['acorn-idle-v1'] as String) as Map<String, dynamic>;
+  m.addAll({
+    'stage': 61, 'wave': 3, 'best': 61, 'capClears': 1, 'ending1': 1, 'gold': 9.87e22, 'up': {'atk': 900, 'hp': 900, 'spd': 30, 'crit': 40},
+    'att': {'intro': 1, 'w': 1, 'ym': '', 'm': 0, 'last': '${DateTime.now().year}-${DateTime.now().month}-${DateTime.now().day}'},
+    'mapIntro': 1, 'fogSeen': 61, 'regSeen': {'0': 1, '1': 1, '2': 1, '3': 1, '4': 1, '5': 1}, 'rankSeen': 7, 'gemRank': 7,
+  });
+  (m['done'] as Map).addAll({'capRoad': true, 'cap56': true, 'cap57': true});
+  return {'acorn-idle-v1': jsonEncode(m)};
+}
+
 http.Response _j(Object? v) => http.Response.bytes(utf8.encode(jsonEncode(v)), 200, headers: {'content-type': 'application/json'});
 
 Future<http.Response> _fake(http.Request r) async {
@@ -75,12 +87,12 @@ Future<void> _fonts() async {
 void main() {
   setUpAll(_fonts);
 
-  for (final save in ['new', 'late']) {
+  for (final save in ['new', 'late', 'p2']) {
     testWidgets('화면 캡처 · $save', (tester) async {
       tester.view.devicePixelRatio = 2;
       tester.view.physicalSize = const Size(_w * 2, _h * 2);
       addTearDown(tester.view.reset);
-      SharedPreferences.setMockInitialValues(save == 'new' ? {} : _late());
+      SharedPreferences.setMockInitialValues(save == 'new' ? {} : save == 'p2' ? _p2() : _late());
       final store = await SaveStore.open();
       final g = GameController(
         store: store,
@@ -128,7 +140,15 @@ void main() {
       await shot('title');
       await tester.tap(find.text('게임 시작'));
       await frames(8);
-      if (save == 'new') {
+      if (save == 'p2') {
+        // 2부 시작 장면 → 큰 제목 → 엘프 왕국 이야기 (방치 보상·출석 창이 사이에 끼면 그것도 찍음)
+        for (var i = 0; i < 6; i++) {
+          await frames(6);
+          if (!g.navKey.currentState!.canPop()) break;
+          await shot('p2_pop$i');
+          await close();
+        }
+      } else if (save == 'new') {
         await shot('prologue');
         await close();
         await frames(4);
@@ -156,6 +176,34 @@ void main() {
       }
       await frames(30);
       await shot('battle');
+      if (save == 'p2') {
+        // 사막 제국 75 · 엘프 동맹 · 솔렌·사프란 합류 → 전투 · 지도(바다 건너) · 프로필 동맹 칸 · 동맹 창
+        g.state.stage = 75;
+        g.state.best = 75;
+        g.state.wave = 2;
+        g.state.raw['ally'] = {'elf': 1, 'desert': 0, 'north': 0};
+        g.state.raw['p2Intro'] = 1;
+        g.sim.runStoryEvents();
+        for (var i = 0; i < 25; i++) {
+          final nav = g.navKey.currentState!;
+          if (nav.canPop()) nav.pop();
+          await frames(3);
+        }
+        g.state.raw['party'] = {'keeper': 'solen', 'cook': 'saffron'};
+        await frames(40);
+        await shot('p2_battle75');
+        g.state.raw['pgFull'] = true;
+        g.setTab(GameTab.mp);
+        await frames(6);
+        await shot('p2_map_sea');
+        g.setTab(null);
+        await frames(2);
+        g.state.raw['pgFull'] = false;
+        g.state.wave = 10;
+        g.state.stage = 80;
+        await frames(30);
+        await shot('p2_boss80');
+      }
 
       g.state.raw['pgFull'] = false;
       for (final t in [GameTab.eq, GameTab.up, GameTab.vl, GameTab.mp, GameTab.sh]) {

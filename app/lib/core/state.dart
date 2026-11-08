@@ -62,11 +62,16 @@ class GameState {
         'aff': <String, dynamic>{},
         'affTalk': {'d': '', 'ids': <String, dynamic>{}},
         'bond': {'seen': <String, dynamic>{}, 'intro': 0, 'five': <String, dynamic>{}},
+        // 2부 (docs/content/PART2.md 7장, 웹 p2Fresh): 동맹(영구) · 이번 회차 장수 처치 · 2부 시작 장면 · 2부 엔딩 · 저장 판
+        'ally': {'elf': 0, 'desert': 0, 'north': 0}, 'p2Clr': {'elf': 0, 'desert': 0, 'north': 0}, 'p2Intro': 0, 'ending2': 0, 'p2v': 3,
         'v': 3,
       };
 
   /// index.html hydrate(d): 저장된 값을 기본값 위에 얹는다.
   /// [rankIdx] 는 옛 저장(v<3)의 칭호 기록을 맞출 때 쓴다(공식 쪽에서 넘겨줌).
+  /// 이번 불러오기에서 웹 2부 1차 저장의 71 바다 안개 → 71 사막으로 옮겼으면 71 (게임을 열 때 사막 이야기 창, 웹 p2Mig)
+  static int p2Mig = 0;
+
   static GameState hydrate(Map<String, dynamic> d, int now, int Function(GameState) rankIdx) {
     final src = deepCopy(d) as Map<String, dynamic>;
     final f = freshMap(now);
@@ -106,7 +111,7 @@ class GameState {
     final g = GameState(f);
     if (asNum(src['v']) < 3) f['rankSeen'] = rankIdx(g);
     // 왕도 이전 저장: 예전 「왕도 진격로」(51 이상)에 있던 기록은 51(남쪽 성문)부터, 최고 기록도 51까지
-    const cap1 = wMaxland - 9, last = wMaxland + 1;
+    const cap1 = wMaxland - 9;
     if (src['capClears'] == null) {
       if (asNum(f['stage']) > cap1) {
         f['stage'] = cap1;
@@ -181,8 +186,42 @@ class GameState {
       }
     }
     if (f['regSeen'] is! Map) f['regSeen'] = <String, dynamic>{};
-    if (asNum(f['stage']) > last) f['stage'] = last;
+    // 2부 이전 저장: 61 「왕궁 뜰」에 있던 기록은 61(엘프 왕국 첫 영지) 웨이브 0부터, 2부 시작 장면은 게임을 열 때 (best 61은 그대로)
+    p2Mig = 0;
+    if (src['p2Intro'] == null && asNum(f['stage']) > wMaxland) {
+      f['stage'] = wMaxland + 1;
+      f['wave'] = 0;
+    }
+    // 웹 2부 1차 저장(p2v 없음)에서 71 「바다 안개」에 있던 기록은 71 사막 첫 영지 웨이브 0 (게임을 열 때 사막 이야기 창)
+    if (wLand >= 80 && src['p2Intro'] != null && src['p2v'] == null && asNum(f['stage']) == 71) {
+      f['wave'] = 0;
+      p2Mig = 71;
+    }
+    if (asNum(f['stage']) > wLand + 1) f['stage'] = wLand + 1;
+    _saveFix(f);
     return g;
+  }
+
+  /// 망가진 저장 값 바로잡기 (웹 saveFix, 2026-11-02 출시 전 점검):
+  /// 별 수는 0~그 동료 최대 별 정수(최대보다 크면 별 그리기·능력치 표에서 오류), 카드 수는 0 이상 정수
+  static void _saveFix(Map<String, dynamic> f) {
+    final rec = asMap(f['rec']);
+    if (rec != null) {
+      for (final id in rec.keys.toList()) {
+        final v = rec[id], n = v is num && v.isFinite ? v.floor() : num.tryParse('$v')?.floor() ?? 0;
+        final gr = asMap(wGr[wGrade[id] ?? 'common']), mx = gr == null ? null : asNum(gr['max']).toInt();
+        rec[id] = wComp.containsKey(id) && mx != null ? math.max(0, math.min(mx, n)) : math.max(0, n);
+      }
+      f['rec'] = rec;
+    }
+    final cards = asMap(f['cards']);
+    if (cards != null) {
+      for (final id in cards.keys.toList()) {
+        final v = cards[id], n = v is num && v.isFinite ? v.floor() : num.tryParse('$v')?.floor() ?? 0;
+        cards[id] = math.max(0, n);
+      }
+      f['cards'] = cards;
+    }
   }
 
   static bool _okVal(Object? fv, Object? dv) {
