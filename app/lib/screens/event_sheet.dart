@@ -734,7 +734,7 @@ Widget evBossResultBody(GameController g, BuildContext c, {required String id, r
     eyebrow: '${e.n} · ${santa ? '산타 ' : ''}${b.n}',
     title: won ? '$stg단계 돌파!' : '$stg단계 실패',
     children: [
-      Text('「${won ? b.sayWin : b.sayLose}」', textAlign: TextAlign.center, style: KdText.display(15, color: const Color(0xFFCFE8FF), weight: FontWeight.w500)),
+      Text('「${won ? b.sayWin : b.sayLose}」', textAlign: TextAlign.center, style: KdText.body(15, color: const Color(0xFFCFE8FF), weight: FontWeight.w600)),
       Row(mainAxisAlignment: MainAxisAlignment.center, children: [
         kdImg(e.curImg, w: 36, h: 36),
         const SizedBox(width: 6),
