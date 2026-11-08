@@ -1,7 +1,8 @@
 // ignore_for_file: invalid_use_of_visible_for_testing_member
 // QA 화면 캡처: 실제 글꼴·그림으로 주요 화면을 PNG 로 찍는다 (웹 화면과 나란히 비교용).
 //   flutter test --update-goldens qa/screens_test.dart   → qa/shots/*.png
-// 평소 시험(flutter test)에는 들어가지 않는다.
+// 평소 시험(flutter test)에는 들어가지 않는다. (저장 new·late·p2·snow)
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
@@ -244,10 +245,51 @@ void main() {
         await frames();
         await shot('snow_boss_result');
         await close();
+        // QA 0.0.7 (11-08): 선물 배달 처음 안내·준비·하는 중 · 외형 창·장비 탭 산타 카엘 · 랭킹 결과 창 · 랭킹 탭 · 끝 장면
+        g.state.raw.remove('mgHint');
+        unawaited(g.evMgStart(evMain, true));
+        await frames();
+        await shot('mg_hint');
+        await tester.tap(find.text('시작!'));
+        await frames(4);
+        await shot('mg_ready');
+        await frames(40);
+        for (var i = 0; i < 12; i++) {
+          await tester.tapAt(const Offset(_w / 2, _h / 2));
+          await frames(5);
+        }
+        await shot('mg_play');
+        await close();
+        await frames(4);
+        g.calc.skinGive('santa', 2026);
+        g.openSkinSheet();
+        await frames();
+        await shot('skin_sheet');
+        await close();
+        g.setTab(GameTab.eq);
+        await frames(4);
+        await shot('tab_eq_santa');
+        g.setTab(null);
+        await frames(20);
+        await shot('battle_santa');
+        final ev = evts[evMain]!;
+        g.queue((ctx) => showKdSheet<void>(ctx,
+            builder: (c) => MgResultBody(e: ev, rank: 3, total: 87, score: 1520, rw: mgEvs[ev.mg]!.rew[1].$2, top: true, nw: true, onRank: () {}, onMail: () {})));
+        await frames();
+        await shot('mg_result');
+        await close();
+        unawaited(openRanking(g, 'mg'));
+        await frames(8);
+        await shot('rank_mg');
+        await close();
+        g.scene(ev.n, '${ev.n}가 끝났어요', ev.endLines(true), '${ev.shopN} 가기');
+        await frames();
+        await shot('end_scene');
+        await close();
         for (final w in [320.0, 360.0, 390.0, 430.0]) {
           tester.view.physicalSize = Size(w * 2, _h * 2);
           await frames(2);
-          for (final t in ['att', 'shop']) {
+          for (final t in ['att', 'boss', 'shop', 'mg']) {
             openEventSheet(g, evMain, t);
             await frames();
             await shot('ev_${t}_w${w.round()}');
