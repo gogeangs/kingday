@@ -51,7 +51,7 @@ const TABLES = [
   ['LAND', 'LAND'], ['STORY2', 'STORY2'], ['ALLY', 'ALLY'], ['P2C', '({mem:P2_MEM,gem:P2_GEM,last:P2_LAST,seaR0:SEA_R0})'],
   ['P2FREE', 'P2FREE'], ['ENDING2', 'ENDING2'], ['SEAPOS', 'SEAPOS'], ['SEA_FOG', 'SEA_FOG'], ['RANKIMG', 'RANKIMG'],
   // ── 정기 이벤트 (docs/content/EVENT_SNOW.md · 웹 evInstall 뒤의 표). 표 안의 함수(보스 보상·끝 장면 대사·외형 꼬리표)는 빠지므로 앱 core/event.dart 에서 옮김 ──
-  ['EVT', 'EVT'], ['MGEV', 'MGEV'], ['SKINS', 'SKINS'], ['EVCARD', 'EVCARD'], ['MGC', 'MGC'],
+  ['EVT', '({snow2026: EVT.snow2026})' /* 신년축제(newyear2027)는 웹 먼저 — 앱 0.0.8 에서 옮길 때 EVT 전체로 */], ['MGEV', 'MGEV'], ['SKINS', 'SKINS'], ['EVCARD', 'EVCARD'], ['MGC', 'MGC'],
   ['EVC', '({open:EV_OPEN,main:EV_MAIN,tree:EV_TREE})'],
 ];
 

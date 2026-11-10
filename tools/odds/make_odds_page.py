@@ -12,7 +12,9 @@ LV = list(range(1, 31)) + [31, 32, 33, 35, 40, 45, 50, 60, 75, 100]
 
 JS = """(LV)=>({grades:GRADES.map(g=>[g.n,g.c]), box:LV.map(L=>[L,odds(L,true)]), end:odds(99999,true),
   fix:CARD_FIX, w:CARD_W, gn:Object.fromEntries(Object.entries(GR).map(([k,v])=>[k,[v.n,v.c]])),
-  comps:CARDIDS().map(id=>[COMP[id].n, GRADE[id]])})"""
+  comps:CARDIDS().map(id=>[COMP[id].n, GRADE[id]]),
+  ny:{n:EVT.newyear2027.n, bok:EVT.newyear2027.bok.map(([p,r])=>[p, r.map(x=>evRwTxt('newyear2027',x)).join(' · ')]),
+      yut:[1,2,3,4,0].map(i=>YUTR[i]).map(x=>[x.n,x.m,x.p,!!x.more])}})"""
 
 
 def pct(v):
@@ -42,6 +44,9 @@ async def main():
     comp_rows = ''.join(
         f'<tr><td style="color:{gn[g][1]}">{gn[g][0]}</td><td>{html.escape(", ".join(by.get(g, [])))}</td></tr>'
         for g in ['legend', 'epic', 'rare', 'common'])
+    ny = d['ny']
+    ny_bok = ''.join(f'<tr><td>{pct(pp)}</td><td>{html.escape(t)}</td></tr>' for pp, t in ny['bok'])
+    ny_yut = ''.join(f'<tr><td>{html.escape(n)}{" (한 번 더)" if more else ""}</td><td>{m}칸</td><td>{pct(pp)}</td></tr>' for n, m, pp, more in ny['yut'])
     page = f'''<!doctype html>
 <html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>확률 안내 · 왕이 되는 그날까지</title>
@@ -71,7 +76,7 @@ th:first-child,td:first-child{{text-align:left}}th{{position:sticky;top:0;backgr
 <li>별을 모두 채운 동료의 몫이나, 모을 동료가 없는 등급의 몫은 골드로 바뀝니다.</li>
 <li>동료는 게임을 진행하면서 차례로 열리므로 동료 한 명당 확률은 이용자마다 다릅니다. 지금 내 확률은 게임 안 「피트의 상점 → 동료 카드 → 확률 보기」에서 동료별로 볼 수 있습니다.</li>
 <li>유니크 동료(카엘 촌장·뚝딱이·루시안·골디)는 카드 뽑기에 나오지 않고, 상점에서 확정으로 맞이합니다.</li>
-<li>기간 한정 이벤트 동료(눈꽃제 소복이)는 카드 뽑기에 나오지 않고, 이벤트 출석·이벤트 상점에서만 정해진 수만큼 얻습니다(확률 없음).</li></ul>
+<li>기간 한정 이벤트 동료(눈꽃제 소복이·신년축제 몽글이)는 카드 뽑기에 나오지 않고, 이벤트 출석·이벤트 상점·윷놀이 바퀴 보상에서 정해진 수만큼 얻습니다. 몽글이 카드는 신년축제 복주머니에서도 아래 3장의 확률로 나옵니다.</li></ul>
 <div class="tw"><table class="names"><tr><th>등급</th><th>동료</th></tr>{comp_rows}</table></div>
 
 <h2>2. 성유물 상자</h2>
@@ -80,6 +85,12 @@ th:first-child,td:first-child{{text-align:left}}th{{position:sticky;top:0;backgr
 <ul class="muted">
 <li>「{html.escape(G[-1][0])}」 등급은 첫 은퇴를 한 뒤 상자 Lv.31부터 나옵니다. 그 전에는 「{html.escape(G[-1][0])}」 칸의 몫이 다른 등급에 같은 비율로 나뉩니다.</li>
 <li>성유물의 부위(무기·갑옷 등)는 같은 확률로 정해집니다. 지금 내 상자 레벨의 확률은 게임 안 「장비 탭 → 성유물 상자 → 레벨별 확률표」에서 볼 수 있습니다.</li></ul>
+
+<h2>3. 신년축제 복주머니·윷 (기간 한정)</h2>
+<p>신년축제(2027년 1월 1일 ~ 21일) 동안 복주머니를 하나 열 때마다 아래 확률로 하나가 나옵니다. 복주머니는 매일 무료 1개·윷판 복 칸·이벤트 출석·새해 첫날 선물로만 얻고, 돈으로는 팔지 않습니다.</p>
+<div class="tw"><table class="names"><tr><th>확률</th><th>내용</th></tr>{ny_bok}</table></div>
+<p>윷은 윷가락 4개를 던져 평평한 면이 1개면 도, 2개 개, 3개 걸, 4개 윷, 0개 모입니다(실제 윷과 같은 확률, 빽도 없음). 윷·모가 나오면 윷을 쓰지 않고 한 번 더 던집니다.</p>
+<div class="tw"><table><tr><th>결과</th><th>칸</th><th>확률</th></tr>{ny_yut}</table></div>
 
 <h2>문의</h2>
 <p>확률에 대한 문의는 게임 안 「⚙ 설정 → 문의하기」 또는 <a href="mailto:biz@project30s.co.kr">biz@project30s.co.kr</a> 로 보내 주세요. 확률이 바뀌면 바뀌기 전에 게임 안과 이 페이지로 알립니다.</p>
