@@ -1499,6 +1499,17 @@ class _AccountBoxState extends State<AccountBox> {
         if (mounted) setState(() => _loading = false);
       });
     }
+    widget.g.online.acctRev.addListener(_redraw);
+  }
+
+  void _redraw() {
+    if (mounted) setState(() {});
+  }
+
+  @override
+  void dispose() {
+    widget.g.online.acctRev.removeListener(_redraw);
+    super.dispose();
   }
 
   @override
@@ -1549,11 +1560,22 @@ class _AccountBoxState extends State<AccountBox> {
         TextSpan(children: [
           const TextSpan(text: '✅ '),
           const TextSpan(text: '계정 연결됨', style: TextStyle(fontWeight: FontWeight.w600, color: KdColors.fg)),
-          if (a.email.isNotEmpty) TextSpan(text: ' · ${a.email}'),
+          TextSpan(text: ' · ${acctEmail(a.email)}'),
+          // 연결된 로그인 모두 (같은 이메일이면 서버가 구글·애플을 한 계정으로 묶음)
+          TextSpan(text: '\n연결된 로그인: ${['apple', 'google'].map((p) => '${acctKind(p)} ${a.providers.contains(p) ? '✅' : '—'}').join(' · ')}'),
           TextSpan(text: '\n클라우드 저장: ${agoText(g.state.raw['cloudAt'])} (3분마다 자동 저장)'),
         ]),
         style: _muted(),
       ),
+      // 연결 안 된 로그인 더 붙이기 (같은 게임 기록에 구글·애플 둘 다)
+      if (Login.googleReady && !a.providers.contains('google')) ...[
+        const SizedBox(height: 6),
+        KdBuy(kind: BuyKind.ghost, minWidth: 0, text: '구글 로그인도 연결', onTap: () => o.linkMore('google')),
+      ],
+      if (Login.appleReady && !a.providers.contains('apple')) ...[
+        const SizedBox(height: 6),
+        KdBuy(kind: BuyKind.ghost, minWidth: 0, text: 'Apple 로그인도 연결', onTap: () => o.linkMore('apple')),
+      ],
       const SizedBox(height: 6),
       KdBuy(
         kind: BuyKind.ghost,
@@ -1573,6 +1595,36 @@ class _AccountBoxState extends State<AccountBox> {
   }
 }
 
+
+/// 연결한 로그인 이름 (계정 칸·연결 완료 창)
+String acctKind(String provider) => switch (provider) {
+      'apple' => 'Apple',
+      'google' => '구글',
+      _ => '',
+    };
+
+/// 애플이 이메일을 가리면 「…@privaterelay.appleid.com」 → 「이메일 숨김」
+String acctEmail(String email) {
+  if (email.isEmpty) return '이메일 없음';
+  if (email.endsWith('@privaterelay.appleid.com')) return '이메일 숨김 (Apple)';
+  return email;
+}
+
+// ════════════════════ 계정 연결 완료 창 ════════════════════
+Future<void> showAcctLinked(BuildContext ctx, String provider, String email, {bool more = false}) => showKdSheet<void>(ctx, builder: (c) => KdSheetBody(
+          eyebrow: '계정 연결',
+          title: (more ? '${acctKind(provider)} 로그인도 연결했어요' : '${acctKind(provider)} 계정으로 연결했어요').trim(),
+          children: [
+            const Text('✅', textAlign: TextAlign.center, style: TextStyle(fontSize: 56, height: 1.1)),
+            Text(acctEmail(email), textAlign: TextAlign.center, style: KdText.body(15, color: KdColors.fg, weight: FontWeight.w600)),
+            if (more)
+              Text('이제 ${acctKind(provider)} 로그인으로도 같은 게임 기록을 이어서 할 수 있어요.', textAlign: TextAlign.center, style: _muted())
+            else
+              Text('이제 게임 기록이 이 계정에 저장돼요. 휴대폰을 바꾸거나 앱을 지워도 같은 계정으로 로그인하면 이어서 할 수 있어요.\n연결 상태는 ⚙ 설정 → 계정에서 언제든 볼 수 있어요. 처음 연결했다면 선물(황금 이삭 50)이 우편함으로 가요.',
+                textAlign: TextAlign.center, style: _muted()),
+          ],
+          acts: KdActs(buttons: [KdAct('확인', primary: true, onTap: () => Navigator.of(c).pop())]),
+        ));
 
 // ════════════════════ 어느 기록으로 할까요? (웹 cloudPick) ════════════════════
 Future<void> showCloudPick(BuildContext ctx, GameController g, Map<String, dynamic> cl) => showKdSheet<void>(ctx, closable: false, builder: (c) {
