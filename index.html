@@ -7530,6 +7530,202 @@ input:focus-visible {
   border: 1.5px solid #fff;
   box-shadow: 0 0 6px #ffd23a;
 }
+/* ---------- 신년축제 (윷놀이·복주머니) ---------- */
+.fabcol .evfab.ny img {
+  filter: drop-shadow(0 0 5px rgba(255, 190, 90, 0.75));
+}
+.fabcol .evfab.shopon:not(.ny) img {
+  opacity: 0.85;
+}
+.hdban.evban.ny span {
+  color: #fff4d8;
+  text-shadow:
+    0 2px 3px rgba(80, 10, 10, 0.85),
+    0 0 8px rgba(255, 170, 80, 0.6);
+}
+.evtop.ny {
+  background: linear-gradient(180deg, #5a1d22, #3f1519);
+  border-color: #8a3a2c;
+}
+.yutbd {
+  position: relative;
+  width: 100%;
+  max-width: 340px;
+  margin: 6px auto 4px;
+  aspect-ratio: 1;
+}
+.yutimg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+.yutc {
+  position: absolute;
+  width: 8%;
+  height: 8%;
+  transform: translate(-50%, -50%);
+  display: grid;
+  place-items: center;
+  pointer-events: none;
+}
+.yutc img {
+  width: 80%;
+  height: 80%;
+  object-fit: contain;
+}
+.yutc.cn,
+.yutc.mid,
+.yutc.st {
+  width: 10%;
+  height: 10%;
+}
+.yutc em {
+  font-style: normal;
+  font-size: 10px;
+  font-weight: 800;
+  color: #6b1018;
+  letter-spacing: -0.04em;
+}
+.yutpc {
+  position: absolute;
+  z-index: 2;
+  width: 10.5%;
+  transform: translate(-50%, -66%);
+  filter: drop-shadow(0 3px 3px rgba(0, 0, 0, 0.55));
+  transition:
+    left 0.17s ease-out,
+    top 0.17s ease-out;
+  pointer-events: none;
+}
+.yutpc.hop {
+  animation: yuthop 0.19s ease-out;
+}
+@keyframes yuthop {
+  50% {
+    transform: translate(-50%, -88%);
+  }
+}
+.yutinfo {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: 4px 10px;
+  font-size: 12.5px;
+  color: var(--muted);
+  margin-bottom: 6px;
+}
+.yutinfo b {
+  color: #ffe7a8;
+}
+img.evyutic,
+.attrw img.evyutic,
+.evac img.evyutic {
+  width: 14px;
+  height: 26px;
+  object-fit: contain;
+  vertical-align: middle;
+}
+.yutjust .yutres {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+}
+.yutsk {
+  display: inline-flex;
+  gap: 3px;
+}
+.yutsk img {
+  width: 15px;
+  height: 42px;
+  object-fit: contain;
+  transform: rotate(var(--r));
+}
+.yutnm {
+  font-family: var(--f-display);
+  font-size: 22px;
+  color: #ffd34a;
+}
+.yutnm.more {
+  color: #ff9a5a;
+}
+.yutsay {
+  display: block;
+  text-align: center;
+  color: #ffe7a8;
+}
+.bokc {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  padding: 8px;
+  margin: 8px 0 6px;
+  border-radius: 12px;
+  background: linear-gradient(180deg, #5a1d22, #3f1519);
+  border: 1px solid #8a3a2c;
+}
+.bokc > div {
+  display: grid;
+  gap: 2px;
+}
+.bokc small {
+  color: var(--muted);
+  font-size: 11.5px;
+}
+.bokimg {
+  width: 56px;
+  height: 56px;
+  flex: 0 0 auto;
+}
+.bokimg.wob {
+  animation: bokwob 1.6s ease-in-out infinite;
+  transform-origin: 50% 85%;
+}
+@keyframes bokwob {
+  0%,
+  70%,
+  100% {
+    transform: rotate(0);
+  }
+  78% {
+    transform: rotate(-9deg);
+  }
+  86% {
+    transform: rotate(8deg);
+  }
+  93% {
+    transform: rotate(-4deg);
+  }
+}
+.bokfx {
+  justify-self: center;
+  width: 96px;
+  height: 96px;
+  background: url(assets/fx/fx_bok.png) 0 0 / 400% 100% no-repeat;
+  animation: bokfx 0.7s steps(3) forwards;
+}
+.bokfx.rm {
+  display: none;
+}
+@keyframes bokfx {
+  to {
+    background-position: 100% 0;
+  }
+}
+.buff.sl img.seolic {
+  filter: hue-rotate(-25deg) saturate(1.4);
+}
+@media (prefers-reduced-motion: reduce) {
+  .bokimg.wob,
+  .yutpc.hop,
+  .bokfx {
+    animation: none;
+  }
+  .yutpc {
+    transition: none;
+  }
+}
 .hdban.evban span {
   color: #f2fbff;
   text-shadow:
@@ -11730,7 +11926,12 @@ function cStats(id) {
   return {
     atk: (c.base.atk * g + gs.a * BLESS) * (1 + 0.08 * S.bld.apiary) * (buff('atk') ? 1.2 : 1) * m * trAtk() * vBrave() * ulA() * p2Atk(),
     hp: (c.base.hp * g + gs.h * BLESS) * (1 + 0.05 * S.bld.diner) * m * trHp() * vHp() * stewM() * p2Hp(),
-    aps: c.base.aps * (buff('spd') ? 1.2 : 1) * (SKX.bake > 0 ? 1.3 : 1) * ulS(),
+    aps:
+      c.base.aps *
+      (buff('spd') ? 1.2 : 1) *
+      (SKX.bake > 0 ? 1.3 : 1) *
+      ulS() *
+      (SKX.wool > 0 ? 1 + 0.3 * SKX.woolK : 1) /* 몽글이 (신년축제) */,
     crit: 0.05 + (buff('crit') ? 0.1 : 0)
   };
 }
@@ -14871,6 +15072,16 @@ function renderAll() {
             ]
           ]
         : []),
+      ...(seolOn()
+        ? [
+            [
+              ' sl',
+              `<img src="assets/ui/buff_gold.png" alt="" class="seolic" onerror="this.remove()">`,
+              '떡국',
+              hms((seolDates().end - evNow()) / 1000)
+            ]
+          ]
+        : []) /* 설날: 마르타의 떡국 골드 +30% */,
       ...[
         ['shield', 'bron'],
         ['honey', 'riel'],
@@ -15862,6 +16073,17 @@ function castSkill(id, cp) {
         my = ids.reduce((a, j) => a + py[j], 0) / ids.length;
       spawnFx('skill_sobok', mx, my - 40 * s, 170 * s, 0.9);
     }
+  } else if (id === 'mong') {
+    /* 몽글이 「포근한 양털 구름」: 8초 동안 원정대 공격 속도 +30% (★3·★5 강화, 신년축제) */
+    SKX.wool = 8;
+    SKX.woolK = skPow(id);
+    for (const j of members()) if (P[j] && !P[j].down) addFloat(pos[j], py[j] - (HEIGHT[j] + 8) * s, '공격 속도↑', '#ffe7a8', 12);
+    if (fxOk('skill_mong')) {
+      const ids = members(),
+        mx = ids.reduce((a, j) => a + pos[j], 0) / ids.length,
+        my = ids.reduce((a, j) => a + py[j], 0) / ids.length;
+      spawnFx('skill_mong', mx, my - 40 * s, 170 * s, 0.9);
+    }
   } else if (id === 'saffron') {
     /* 사프란 「향신료 한 줌」: 8초 동안 원정대 공격 +15% (2부 이야기 동료) */
     SKX.spice = 8;
@@ -16357,6 +16579,7 @@ function stepSkills(dt, L, alive) {
   for (const k of ['shield', 'feast', 'bake', 'mount', 'wall', 'guts', 'lamp', 'sap', 'ward', 'dok', 'phx', 'taunt', 'blk']) SKX[k] = Math.max(0, SKX[k] - dt);
   if (SKX.spice > 0) SKX.spice = Math.max(0, SKX.spice - dt); /* 사프란 (2부) */
   if (SKX.flake > 0) SKX.flake = Math.max(0, SKX.flake - dt); /* 소복이 (눈꽃제) */
+  if (SKX.wool > 0) SKX.wool = Math.max(0, SKX.wool - dt); /* 몽글이 (신년축제) */
   if (SKX.stew > 0) {
     SKX.stew = Math.max(0, SKX.stew - dt);
     /* 스튜가 끝나면 늘었던 체력만큼 다시 줄임 */
@@ -16808,6 +17031,7 @@ function resetFight(msg) {
   SKX.stew = SKX.taunt = SKX.blk = SKX.bloom = 0;
   if (SKX.spice) SKX.spice = 0;
   if (SKX.flake) SKX.flake = 0;
+  if (SKX.wool) SKX.wool = 0;
   ULB.t = 0;
   for (const id of members()) {
     P[id].hp = stats(id).hp;
@@ -17849,7 +18073,7 @@ function step(dt) {
       if (m.hp <= 0 && !m.dead && !m.gob) {
         m.dead = 0.35;
         spawnFx('coin', m.x, m.y - 26 * s, 34 * s, 0.6, -60 * s);
-        const g = reward(fightSt(), m.boss) * (buff('gold') ? 1.5 : 1) * (blOn('gold') ? 1.3 : 1) * memMul() * (m.boss ? vpFeast() : 1) * (SKX.dok > 0 ? 1 + 0.5 * SKX.dokK : 1) * vpHoard() * allyGold();
+        const g = reward(fightSt(), m.boss) * (buff('gold') ? 1.5 : 1) * (blOn('gold') ? 1.3 : 1) * memMul() * (m.boss ? vpFeast() : 1) * (SKX.dok > 0 ? 1 + 0.5 * SKX.dokK : 1) * vpHoard() * allyGold() * evGoldMul();
         S.gold += g;
         dailyAdd('kill', 1);
         passKill();
@@ -18134,6 +18358,7 @@ function chPartyReset() {
   SKX.stew = SKX.taunt = SKX.blk = SKX.bloom = 0;
   if (SKX.spice) SKX.spice = 0;
   if (SKX.flake) SKX.flake = 0;
+  if (SKX.wool) SKX.wool = 0;
   ULB.t = 0;
   for (const id of members()) {
     if (!P[id]) continue;
@@ -24517,7 +24742,7 @@ function goldRate() {
       return a + t.atk * t.aps * critE(t);
     }, 0),
     tpk = monHp(S.stage, false) / Math.max(1, dps) + 1.2;
-  return (reward(S.stage, false) / tpk) * memMul() * allyGold();
+  return (reward(S.stage, false) / tpk) * memMul() * allyGold() * evGoldMul();
 }
 const goldX = x => Math.max(100, Math.floor(goldRate() * 3600 * x.h));
 function buyGoldX(k) {
@@ -24536,7 +24761,7 @@ function idleGold(sec) {
       return a + t.atk * t.aps * critE(t);
     }, 0),
     tpk = monHp(fightSt(), false) / dps + 1.2;
-  return (sec / tpk) * reward(fightSt(), false) * 0.5 * memMul() * (subOn() ? 1.5 : 1) * vIdle() * vpDok() * allyGold();
+  return (sec / tpk) * reward(fightSt(), false) * 0.5 * memMul() * (subOn() ? 1.5 : 1) * vIdle() * vpDok() * allyGold() * evGoldMul();
 }
 function offline() {
   const cap = offCapH() * 3600,
@@ -24544,8 +24769,9 @@ function offline() {
   if (sec < 60) return;
   affTick(sec); /* 원정대의 정: 방치 시간도 (여관 최대 시간까지) */
   {
-    const sf = evIdle(sec); /* 눈꽃제: 방치 처치도 눈송이 (하루 100까지) */
-    if (sf) queue(() => toast('❄ 쉬는 동안 눈송이 +' + sf));
+    const sf = evIdle(sec) /* 정기 이벤트: 방치 처치도 이벤트 재화 (하루 100까지) */,
+      E = evList().find(X => X.bat && evPhase(X) === 'on');
+    if (sf && E) queue(() => toast((E.sym || '❄') + ' 쉬는 동안 ' + E.cur.n + ' +' + sf));
   }
   const g = Math.floor(idleGold(sec));
   if (g <= 0) return;
@@ -25272,7 +25498,199 @@ const EVT = {
       big: ['m:산타 피트|메리 크리스마스! 올 한 해 고생 많았어, 영주님!'],
       mg: ['q:주인, 굴뚝이 오기 조금 전에 떨어뜨려라. 내 검술보다 쉬울 것이다.', 'k:검술이 그렇게 쉬웠어?']
     }
+  },
+  /* 신년축제 (docs/content/EVENT_NEWYEAR.md · 8-1 시뮬레이터로 윷 개수·칸 보상을 목표 등불 4,000/2,000에 맞춤) */
+  newyear2027: {
+    id: 'newyear2027',
+    n: '신년축제',
+    start: '2027-01-01T00:00:00+09:00',
+    end: '2027-01-22T00:00:00+09:00' /* 1/21 23:59까지 */,
+    shopEnd: '2027-01-29T00:00:00+09:00' /* 상점만 1/28 23:59까지 */,
+    cur: { n: '소원 등불', s: '등불', img: 'assets/ui/item_lantern.png' },
+    sym: '🏮',
+    col: '#ffc46b',
+    shopN: '등불 상점',
+    art: { hd: 'assets/ui/hd_newyear.png', icon: 'assets/ui/icon_newyear.png', illust: 'newyear', badge: 'newyear', frame: 'newyear' },
+    sky: 'lantern' /* 전투 화면 하늘로 소원 등불이 떠오름 (효과 줄이기면 끔) */,
+    bat: { per: 25, cap: 100, idleK: 0.03 } /* 눈꽃제와 같음 */,
+    /* 이벤트 출석 14칸: 홀수 칸 등불 20 · 짝수 칸 등불 20 + 윷 1 + 복주머니 1 · 7칸 동료 카드 · 14칸 몽글이 카드 */
+    att: [
+      ...[1, 2, 3, 4, 5, 6].map(i =>
+        i % 2
+          ? [{ k: 'sf', n: 20 }]
+          : [
+              { k: 'sf', n: 20 },
+              { k: 'yut', n: 1 },
+              { k: 'bok', n: 1 }
+            ]
+      ),
+      [
+        { k: 'sf', n: 100 },
+        { k: 'card', n: 10, alt: 100 }
+      ],
+      ...[8, 9, 10, 11, 12, 13].map(i =>
+        i % 2
+          ? [{ k: 'sf', n: 20 }]
+          : [
+              { k: 'sf', n: 20 },
+              { k: 'yut', n: 1 },
+              { k: 'bok', n: 1 }
+            ]
+      ),
+      [
+        { k: 'sf', n: 100 },
+        { k: 'evcard', id: 'mong', n: 10 }
+      ]
+    ],
+    /* 윷놀이 판 (기획서 3-3 · 8-1): 윷은 매일 접속 1 · 전투(켜 둔 사냥) 마물 100마리마다 1(하루 2) · 출석 짝수 칸 · 모서리 칸 · 상점 */
+    yut: {
+      login: 1,
+      per: 100,
+      cap: 2,
+      lap: [{ k: 'sf', n: 50 }] /* 한 바퀴마다 */,
+      laps: {
+        1: [{ k: 'evcard', id: 'mong', n: 5 }],
+        3: [{ k: 'lcard', n: 3, alt: 90 }],
+        5: [{ k: 'evcard', id: 'mong', n: 5 }],
+        7: [{ k: 'gem', n: 100 }],
+        10: [{ k: 'evcard', id: 'mong', n: 10 }],
+        12: [{ k: 'badge', id: 'yut' }]
+      }
+    },
+    /* 복주머니 (기획서 3-4, 확률 공개 · 판매 안 함): 매일 무료 1개 */
+    bok: [
+      [40, [{ k: 'sf', n: 30 }]],
+      [20, [{ k: 'gold', h: 2 }]],
+      [15, [{ k: 'ore', n: 50 }]],
+      [12, [{ k: 'gem', n: 30 }]],
+      [8, [{ k: 'card', n: 5, alt: 50 }]],
+      [4, [{ k: 'lcard', n: 2, alt: 60 }]],
+      [1, [{ k: 'evcard', id: 'mong', n: 5 }]]
+    ],
+    /* 새해 첫날 (1/1 하루): 큰 선물 + 배지 「2027 첫날」 */
+    first: {
+      day: '2027-1-1',
+      year: 2027,
+      r: [
+        { k: 'bok', n: 5 },
+        { k: 'yut', n: 5 },
+        { k: 'gem', n: 100 }
+      ]
+    },
+    /* 등불 상점 (기획서 3-5) */
+    shop: [
+      { k: 'mong', r: [{ k: 'evcard', id: 'mong', n: 10 }], p: 400, lim: 2, hot: 1 },
+      { k: 'frame', r: [{ k: 'frame', id: 'newyear' }], p: 600, lim: 1 },
+      { k: 'badge', r: [{ k: 'badge', id: 'newyear' }], p: 200, lim: 1 },
+      { k: 'yut', r: [{ k: 'yut', n: 1 }], p: 60, lim: 5, day: 1 } /* 하루 5번 */,
+      { k: 'lcard', r: [{ k: 'lcard', n: 5, alt: 150 }], p: 500, lim: 2 },
+      { k: 'gem', r: [{ k: 'gem', n: 50 }], p: 150, lim: 5 },
+      { k: 'tbox', r: [{ k: 'tbox', n: 5 }], p: 100, lim: 5 },
+      { k: 'ore', r: [{ k: 'ore', n: 50 }], p: 50, lim: 10 }
+    ],
+    comp: 'mong',
+    lines: {
+      start: [
+        'sys:해가 바뀌는 밤, 에르단 하늘에 수많은 소원 등불이 떠올랐다.',
+        'm:마르타|새해 복 많이 받으렴, 카엘! 떡국 한 그릇 더 먹고 가.',
+        'k@smile:한 살 더 먹었으니 올해는 진짜 은퇴하는 걸로.',
+        'q:주인, 그 소원은 작년에도 빌었다.',
+        'm:몽글이|메에… 여기가 소원 등불이 제일 많이 뜨는 마을인가요?',
+        'm:몽글이|등불을 모아 주시면, 제 양털 속 벌들이 복을 나눠 드릴게요, 메에.',
+        'sys:정기 이벤트 「신년축제」 · 1/1 ~ 1/21'
+      ],
+      end: own => [
+        own
+          ? 'm:몽글이|신년축제가 끝났어요. 저는 원정대에 남을게요… 졸리지만요, 메에.'
+          : 'm:몽글이|신년축제가 끝났어요. 내년 새해에 또 만나요, 메에.',
+        'sys:등불 상점은 1월 28일까지 열려 있어요. 남은 소원 등불은 그 뒤에 사라져요'
+      ]
+    }
   }
+};
+/* 윷판 (기획서 3-3): 실제 윷판처럼 바깥 20칸(o0 출발점·오른쪽 아래, 시계 반대 방향) + 두 대각선(a: 오른쪽 위→가운데→왼쪽 아래, b: 왼쪽 위→가운데→출발점).
+   모서리 o5·o10 또는 가운데 c 에 「딱 멈춘」 다음 번에만 지름길로 들어감(지나가기만 하면 그대로). o15(왼쪽 아래)는 실제 윷놀이처럼 지름길 없음.
+   xy = assets/event/yut_board.png(1024) 위 칸 가운데 · r = 칸 보상 */
+const YUTB = {
+  o0: { xy: [901, 882] },
+  o1: { xy: [907, 716], r: [{ k: 'sf', n: 10 }] },
+  o2: { xy: [907, 591], r: [{ k: 'sf', n: 20 }] },
+  o3: { xy: [907, 411], r: [{ k: 'bok', n: 1 }] },
+  o4: { xy: [907, 285], r: [{ k: 'sf', n: 10 }] },
+  o5: {
+    xy: [901, 114],
+    r: [
+      { k: 'sf', n: 50 },
+      { k: 'yut', n: 1 }
+    ],
+    corner: 1
+  },
+  o6: { xy: [728, 112], r: [{ k: 'gold', h: 1 }] },
+  o7: { xy: [585, 112], r: [{ k: 'sf', n: 20 }] },
+  o8: { xy: [439, 112], r: [{ k: 'bok', n: 1 }] },
+  o9: { xy: [299, 112], r: [{ k: 'sf', n: 30 }] },
+  o10: {
+    xy: [122, 112],
+    r: [
+      { k: 'sf', n: 50 },
+      { k: 'yut', n: 1 }
+    ],
+    corner: 1
+  },
+  o11: { xy: [116, 285], r: [{ k: 'sf', n: 10 }] },
+  o12: { xy: [116, 412], r: [{ k: 'card', n: 3, alt: 30 }] },
+  o13: { xy: [116, 591], r: [{ k: 'bok', n: 1 }] },
+  o14: { xy: [116, 716], r: [{ k: 'sf', n: 20 }] },
+  o15: {
+    xy: [122, 880],
+    r: [
+      { k: 'sf', n: 50 },
+      { k: 'yut', n: 1 }
+    ],
+    corner: 1
+  },
+  o16: { xy: [292, 891], r: [{ k: 'ore', n: 30 }] },
+  o17: { xy: [435, 891], r: [{ k: 'sf', n: 10 }] },
+  o18: { xy: [586, 892], r: [{ k: 'bok', n: 1 }] },
+  o19: { xy: [730, 891], r: [{ k: 'sf', n: 30 }] },
+  a1: { xy: [754, 275], r: [{ k: 'sf', n: 20 }] },
+  a2: { xy: [644, 374], r: [{ k: 'tbox', n: 2 }] },
+  c: { xy: [512, 500], r: [{ k: 'gem', n: 30 }], mid: 1 },
+  a3: { xy: [377, 630], r: [{ k: 'sf', n: 20 }] },
+  a4: { xy: [266, 735], r: [{ k: 'card', n: 3, alt: 30 }] },
+  b1: { xy: [266, 273], r: [{ k: 'sf', n: 30 }] },
+  b2: { xy: [378, 374], r: [{ k: 'sf', n: 20 }] },
+  b3: { xy: [644, 630], r: [{ k: 'tbox', n: 2 }] },
+  b4: { xy: [754, 735], r: [{ k: 'sf', n: 30 }] }
+};
+/* 다음 칸: 바깥 o0→o19→도착 · 대각선 a1→a2→c→a3→a4→o15 · b1→b2→c→b3→b4→도착 */
+const YUTN = (() => {
+  const n = {};
+  for (let i = 0; i < 19; i++) n['o' + i] = 'o' + (i + 1);
+  return Object.assign(n, { o19: 'END', a1: 'a2', a2: 'c', a3: 'a4', a4: 'o15', b1: 'b2', b2: 'c', b3: 'b4', b4: 'END' });
+})();
+const YUT_SHORT = { o5: 'a1', o10: 'b1', c: 'b3' };
+/* 윷 결과: 윷가락 4개 중 평평한 면 수 (1 도 · 2 개 · 3 걸 · 4 윷 · 0 모) — 실제 윷과 같은 확률 25 · 37.5 · 25 · 6.25 · 6.25% */
+const YUTR = [
+  { n: '모', m: 5, p: 6.25, more: 1 },
+  { n: '도', m: 1, p: 25 },
+  { n: '개', m: 2, p: 37.5 },
+  { n: '걸', m: 3, p: 25 },
+  { n: '윷', m: 4, p: 6.25, more: 1 }
+];
+/* 설날 보너스 (기획서 3-8, 그림 없음): 3일 동안 매일 접속 선물 + 마르타의 떡국(골드 +30%) */
+const SEOL = {
+  id: 'seol2027',
+  n: '설날',
+  start: '2027-02-06T00:00:00+09:00',
+  end: '2027-02-09T00:00:00+09:00',
+  r: [
+    { k: 'gem', n: 50 },
+    { k: 'lcard', n: 2, alt: 60 },
+    { k: 'gold', h: 4 }
+  ],
+  gold: 0.3,
+  lines: ['m:마르타|설날엔 떡국이지! 사흘 동안은 내가 끓여 줄게.', 'k@smile:떡국 먹으면 또 한 살… 은퇴 나이가 다가온다.']
 };
 /* 미니게임 랭킹 (기획서 3-10): 서버 kd_minigames 와 같은 값. 기록은 크리스마스 주간, 정산 12/26 00:00 */
 const MGEV = {
@@ -25366,9 +25784,9 @@ function evDates(E) {
     xs: E.xmas ? pick(x.xmas && x.xmas[0], E.xmas[0]) : NaN,
     xe: E.xmas ? pick(x.xmas && x.xmas[1], E.xmas[1]) : NaN
   };
-  if (evDemoOn && E.id === EV_MAIN) {
+  if (evDemoOn && E.id === evDemoId()) {
     const n = evNow();
-    d.start = n - 3 * 864e5;
+    d.start = n - (evDemoOn === 'newyear1st' ? 0 : 3) * 864e5;
     d.end = n + 12.5 * 864e5;
     d.shop = d.end + 7 * 864e5;
     if (evDemoOn !== 'snow') {
@@ -25382,6 +25800,7 @@ function evDates(E) {
   return d;
 }
 const EV_MAIN = 'snow2026'; /* 미리보기(?demo=)로 켜는 이벤트 */
+const evDemoId = () => (/^newyear/.test(evDemoOn || '') ? 'newyear2027' : evDemoOn === 'seol' ? '' : EV_MAIN);
 /* 'pre' 열리기 전 · 'on' 기간 중 · 'shop' 상점만 · 'off' 끝 */
 function evPhase(E) {
   const t = evNow(),
@@ -25415,14 +25834,35 @@ function evS(id) {
     seen: { start: 0, end: 0, xmas: 0, mgEnd: 0, warn: '' },
     xm: { gift: {}, tree: '', days: {} },
     mg: { d: '', n: 0, ad: 0, best: 0 },
-    hi: 0
+    hi: 0,
+    /* 신년축제: 윷(n 가진 개수 · pos 말 칸 · rt 들어간 대각선 · laps 바퀴 · d 오늘 · dl 오늘 접속 윷 · bat 오늘 전투 윷 · kc 처치 · shop 오늘 상점 윷) · 복주머니(n · free 무료 받은 날) · 첫날 선물 */
+    yut: { n: 0, pos: 'o0', rt: '', laps: 0, d: '', dl: '', bat: 0, kc: 0, shop: 0 },
+    bok: { n: 0, free: '' },
+    first: 0
   };
   for (const k in d) if (e[k] == null || typeof e[k] !== typeof d[k] || Array.isArray(e[k])) e[k] = d[k];
-  for (const k of ['day', 'boss', 'seen', 'xm', 'mg'])
+  for (const k of ['day', 'boss', 'seen', 'xm', 'mg', 'yut', 'bok'])
     for (const j in d[k]) if (e[k][j] == null || typeof e[k][j] !== typeof d[k][j]) e[k][j] = d[k][j];
   e.sf = Math.min(1e7, Math.max(0, Math.floor(+e.sf || 0)));
   e.boss.st = Math.min(999, Math.max(1, Math.floor(+e.boss.st || 1)));
   e.boss.best = Math.min(999, Math.max(0, Math.floor(+e.boss.best || 0)));
+  /* 망가진 저장 (QA 11-08, 앱과 같게): 횟수 칸은 0 이상 정수 · 출석은 14칸까지 · 윷 말은 판 위 칸만 */
+  const cnt = v => Math.max(0, Math.floor(+v || 0));
+  e.att.cnt = Math.min(EVT[id] && EVT[id].att ? EVT[id].att.length : 99, cnt(e.att.cnt));
+  e.boss.n = cnt(e.boss.n);
+  e.day.bat = cnt(e.day.bat);
+  e.mg.n = cnt(e.mg.n);
+  e.yut.n = Math.min(9999, cnt(e.yut.n));
+  e.yut.laps = Math.min(9999, cnt(e.yut.laps));
+  e.yut.bat = cnt(e.yut.bat);
+  e.yut.shop = cnt(e.yut.shop);
+  if (!YUTB[e.yut.pos]) e.yut.pos = 'o0';
+  if (!['', 'a', 'b'].includes(e.yut.rt)) e.yut.rt = '';
+  e.bok.n = Math.min(9999, cnt(e.bok.n));
+  for (const k in e.shop) {
+    const it = EVT[id] && EVT[id].shop && EVT[id].shop.find(x => x.k === k);
+    e.shop[k] = it ? Math.min(it.lim, cnt(e.shop[k])) : cnt(e.shop[k]);
+  }
   return e;
 }
 /* 하루가 바뀌면 오늘 칸을 새로 */
@@ -25431,6 +25871,7 @@ function evToday(e) {
   if (e.day.d !== t) e.day = { d: t, bat: 0, kc: 0 };
   if (e.boss.d !== t) Object.assign(e.boss, { d: t, n: 0, ad: 0 });
   if (e.mg.d !== t) Object.assign(e.mg, { d: t, n: 0, ad: 0 });
+  if (e.yut.d !== t) Object.assign(e.yut, { d: t, bat: 0, kc: 0, shop: 0 });
   return e;
 }
 /* 시계 되돌림: 이 이벤트에서 본 가장 늦은 날보다 앞이면 true (그날 보상 없음) */
@@ -25465,6 +25906,18 @@ function evGive(id, list) {
       const e = evS(id);
       e.sf += r.n;
       rows.push(`<div class="attrw"><img src="${EVIMG(id)}" alt=""><span><b>${EVT[id].cur.n} +${fmt(r.n)}</b></span></div>`);
+    } else if (r.k === 'yut') {
+      const e = evS(id);
+      e.yut.n += r.n;
+      rows.push(
+        `<div class="attrw"><img src="assets/event/yut_front.png" alt="" class="evyutic"><span><b>윷 +${r.n}</b><small>윷놀이 탭에서 던져요</small></span></div>`
+      );
+    } else if (r.k === 'bok') {
+      const e = evS(id);
+      e.bok.n += r.n;
+      rows.push(
+        `<div class="attrw"><img src="assets/ui/item_bok.png" alt=""><span><b>복주머니 +${r.n}</b><small>복주머니 탭에서 열어요</small></span></div>`
+      );
     } else if (r.k === 'evcard') {
       if (!S.cards) S.cards = {};
       S.cards[r.id] = (S.cards[r.id] || 0) + r.n;
@@ -25503,10 +25956,10 @@ function evGive(id, list) {
   return rows.join('');
 }
 /* 보상 미리보기 칸 (아이콘 + 짧은 글) */
-function evRwTxt(id, r) {
+function evRwTxt(id, r, short) {
   switch (r.k) {
     case 'sf':
-      return EVT[id].cur.n + ' ' + r.n;
+      return ((short && EVT[id].cur.s) || EVT[id].cur.n) + ' ' + r.n;
     case 'gold':
       return '골드 ' + r.h + '시간';
     case 'gem':
@@ -25521,6 +25974,10 @@ function evRwTxt(id, r) {
       return '전설 만능 ' + r.n;
     case 'evcard':
       return COMP[r.id].n + ' 카드 ' + r.n;
+    case 'yut':
+      return '윷 ' + r.n;
+    case 'bok':
+      return '복주머니 ' + r.n;
     case 'frame':
       return '테두리 「' + PFN(r.id) + '」';
     case 'badge':
@@ -25531,6 +25988,8 @@ function evRwTxt(id, r) {
 function evRwIc(id, r) {
   if (r.k === 'sf') return `<img src="${EVIMG(id)}" alt="">`;
   if (r.k === 'evcard') return `<img src="assets/portraits/portrait_${r.id}_idle.png" alt="" class="evpic">`;
+  if (r.k === 'yut') return `<img src="assets/event/yut_front.png" alt="" class="evyutic">`;
+  if (r.k === 'bok') return `<img src="assets/ui/item_bok.png" alt="">`;
   if (r.k === 'frame') return `<img src="assets/profile/frame_${r.id}.png" alt="">`;
   if (r.k === 'badge') return `<img src="${bdSrc(r.id)}" alt="">`;
   return attIc(r);
@@ -25541,14 +26000,25 @@ function evKill(n) {
   for (const E of evList()) {
     if (!E.bat || evPhase(E) !== 'on') continue;
     const e = evToday(evS(E.id));
-    if (e.day.bat >= E.bat.cap || evBack(e)) continue;
+    if (evBack(e)) continue;
+    /* 신년축제 윷: 켜 둔 사냥 마물 100마리마다 1 (하루 2) — 방치 처치는 세지 않음 */
+    if (E.yut && e.yut.bat < E.yut.cap) {
+      e.yut.kc += n || 1;
+      while (e.yut.kc >= E.yut.per && e.yut.bat < E.yut.cap) {
+        e.yut.kc -= E.yut.per;
+        e.yut.bat++;
+        e.yut.n++;
+        if (n == null) evFlakeFx(E, '🎲 윷 +1');
+      }
+    }
+    if (e.day.bat >= E.bat.cap) continue;
     evTouch(e);
     e.day.kc += n || 1;
     while (e.day.kc >= E.bat.per && e.day.bat < E.bat.cap) {
       e.day.kc -= E.bat.per;
       e.day.bat++;
       e.sf++;
-      if (n == null) evFlakeFx();
+      if (n == null) evFlakeFx(E);
     }
   }
 }
@@ -25582,11 +26052,11 @@ function evIdle(sec) {
   return got;
 }
 let evFlakeT = 0;
-function evFlakeFx() {
-  if (T - evFlakeT < 0.4) return;
+function evFlakeFx(E, txt) {
+  if (T - evFlakeT < 0.4 && !txt) return;
   evFlakeT = T;
   const L = layout();
-  addFloat(L.front + 40 * L.s, L.top + 10 * L.s, '❄ +1', '#cfefff', 12);
+  addFloat(L.front + 40 * L.s, L.top + (txt ? 26 : 10) * L.s, txt || ((E && E.sym) || '❄') + ' +1', (E && E.col) || '#cfefff', 12);
 }
 
 /* ---- 눈사람 대장 (기간 한정 보스, 도전 모드 CH.mode = 'ev') ----
@@ -25802,7 +26272,7 @@ function evAttClaim(id) {
   evSheet(id, 'att', `<div class="evjust"><b>${i + 1}번째 출석!</b>${rows}</div>`);
 }
 /* ---- 눈꽃 상점 ---- */
-const evShopLeft = (E, it) => it.lim - ((evS(E.id).shop || {})[it.k] || 0);
+const evShopLeft = (E, it) => it.lim - (it.day ? evToday(evS(E.id)).yut.shop : (evS(E.id).shop || {})[it.k] || 0);
 /* 테두리·배지는 이미 가진 사람에게는 「받음」(다음 겨울에 못 받은 사람만) */
 const evShopOwned = it => it.r.some(r => (r.k === 'frame' && pfHas(r.id)) || (r.k === 'badge' && bdHas(r.id)));
 const evJoinLeft = id => (owned(id) ? 0 : Math.max(0, 30 - ((S.cards && S.cards[id]) || 0)));
@@ -25816,12 +26286,351 @@ function evBuy(id, k) {
   if (it.r.some(r => r.k === 'evcard' && recStar(r.id) >= starMax(r.id))) return toast('별을 모두 모았어요');
   if (e.sf < it.p) return toast(E.cur.n + '이(가) 부족해요');
   e.sf -= it.p;
-  e.shop[k] = (e.shop[k] || 0) + 1;
+  if (it.day) evToday(e).yut.shop++;
+  else e.shop[k] = (e.shop[k] || 0) + 1;
   const rows = evGive(id, it.r);
   haptic(25);
   save();
   renderAll();
   evSheet(id, 'shop', `<div class="evjust">${rows}</div>`);
+}
+/* ---- 신년축제: 윷놀이 판 · 복주머니 · 새해 첫날 · 설날 (docs/content/EVENT_NEWYEAR.md) ---- */
+/* 같은 보상끼리 합치기 (모두 던지기·모두 열기 결과를 한 줄씩) */
+function evSum(list) {
+  const o = [];
+  for (const r of list) {
+    const k = r.k + '|' + (r.id || ''),
+      x = o.find(y => y._k === k);
+    if (x && r.n != null) x.n += r.n;
+    else if (x && r.h != null) x.h += r.h;
+    else if (!x) o.push(Object.assign({ _k: k }, r));
+  }
+  return o.map(({ _k, ...r }) => r);
+}
+/* 말 옮기기 (판 위 칸 이름만 계산, 저장은 안 건드림) → { path: 지나간 칸들, rt: 들어간 대각선 } */
+function yutMove(pos, rt, m) {
+  let cur = YUTB[pos] ? pos : 'o0';
+  if (cur === 'o5') rt = 'a';
+  else if (cur === 'o10' || cur === 'c') rt = 'b';
+  else if (cur[0] === 'o') rt = '';
+  const path = [];
+  for (let k = 0; k < m; k++) {
+    if (k === 0 && YUT_SHORT[cur]) cur = YUT_SHORT[cur];
+    else if (cur === 'c') cur = rt === 'b' ? 'b3' : 'a3';
+    else cur = YUTN[cur];
+    path.push(cur);
+    if (cur === 'END') break;
+  }
+  return { path, rt };
+}
+const yutCan = E => !!E.yut && evPhase(E) === 'on' && evOpen();
+/* 윷 하나 던지기 → { res 결과, flat 평평한 면 수, path, cell 멈춘 칸, lap 바퀴 완주, got 받은 보상 목록 } (보상은 아직 안 줌) */
+function yutThrow(id, rnd) {
+  const E = EVT[id],
+    e = evToday(evS(id));
+  if (!yutCan(E) || evBack(e) || e.yut.n <= 0) return null;
+  rnd = rnd || Math.random;
+  let flat = 0;
+  for (let i = 0; i < 4; i++) if (rnd() < 0.5) flat++;
+  const res = YUTR[flat],
+    from = e.yut.pos,
+    mv = yutMove(from, e.yut.rt, res.m),
+    end = mv.path[mv.path.length - 1];
+  e.yut.n--;
+  const got = [];
+  let lap = 0;
+  if (end === 'END') {
+    e.yut.laps++;
+    lap = e.yut.laps;
+    e.yut.pos = 'o0';
+    e.yut.rt = '';
+    got.push(...E.yut.lap, ...(E.yut.laps[lap] || []));
+  } else {
+    e.yut.pos = end;
+    e.yut.rt = mv.rt;
+    got.push(...(YUTB[end].r || []));
+  }
+  if (res.more) e.yut.n++; /* 윷·모: 한 번 더 */
+  evTouch(e);
+  return { res, flat, from, path: mv.path, cell: end, lap, got };
+}
+/* 다음 바퀴 보상 (바퀴 보상 줄) */
+const yutNextLap = (E, e) =>
+  Object.keys(E.yut.laps)
+    .map(Number)
+    .find(n => n > e.yut.laps);
+let yutAnim = null;
+function yutGo(id, all) {
+  const E = EVT[id],
+    e = evToday(evS(id));
+  if (evBack(e)) return toast(EV_BACK_MSG);
+  if (!yutCan(E)) return toast('윷놀이는 ' + E.n + ' 기간에만 던질 수 있어요');
+  if (e.yut.n <= 0) return toast('윷이 없어요. 매일 접속·사냥·출석·' + E.shopN + '에서 얻어요');
+  if (!all) {
+    const r = yutThrow(id);
+    if (!r) return;
+    const rows = evGive(id, r.got);
+    haptic(r.res.more ? [30, 40, 70] : 25);
+    save();
+    renderAll();
+    yutAnim = { from: r.from, path: r.path };
+    const say = r.lap
+      ? '한 바퀴 완주! 복이 쌓여요'
+      : r.res.n === '모'
+        ? '모! 메에— 대박이에요!'
+        : r.res.n === '윷'
+          ? '윷이다! 한 번 더!'
+          : YUT_SHORT[r.cell] && r.cell !== 'o0'
+            ? '지름길 칸! 다음엔 가운데로 질러가요'
+            : '';
+    evSheet(
+      id,
+      'yut',
+      `<div class="evjust yutjust"><div class="yutres">${yutSticks(r.flat)}<b class="yutnm${r.res.more ? ' more' : ''}">${r.res.n}${r.res.more ? ' · 한 번 더!' : ''}</b></div>${say ? `<small class="yutsay">${say}</small>` : ''}${r.lap ? `<b>${r.lap}바퀴 완주!</b>` : ''}${rows}</div>`
+    );
+    return;
+  }
+  /* 모두 던지기: 가진 윷(한 번 더 포함)을 한꺼번에 → 받은 보상을 합쳐서 보여 줌 */
+  const got = [],
+    cnt = {};
+  let n = 0,
+    laps = 0,
+    yg = 0,
+    from = e.yut.pos;
+  for (let k = 0; k < 2000; k++) {
+    const r = yutThrow(id);
+    if (!r) break;
+    n++;
+    cnt[r.res.n] = (cnt[r.res.n] || 0) + 1;
+    if (r.lap) laps++;
+    /* 모서리 칸 윷은 바로 넣어서 이어서 던짐 */
+    for (const x of r.got) {
+      if (x.k === 'yut') {
+        e.yut.n += x.n;
+        yg += x.n;
+      } else got.push(x);
+    }
+  }
+  const rows =
+    (yg
+      ? `<div class="attrw"><img src="assets/event/yut_front.png" alt="" class="evyutic"><span><b>모서리 칸 윷 +${yg}</b><small>받은 윷도 이어서 모두 던졌어요</small></span></div>`
+      : '') + evGive(id, evSum(got));
+  haptic([30, 40, 70]);
+  save();
+  renderAll();
+  yutAnim = { from, path: [e.yut.pos], jump: 1 };
+  evSheet(
+    id,
+    'yut',
+    `<div class="evjust yutjust"><b>${n}번 던졌어요${laps ? ' · ' + laps + '바퀴 완주!' : ''}</b><small class="yutsay">${YUTR.filter(
+      x => cnt[x.n]
+    )
+      .map(x => x.n + ' ' + cnt[x.n])
+      .join(' · ')}</small>${rows}</div>`
+  );
+}
+/* 윷가락 4개 그림 (평평한 면 flat 개) */
+const yutSticks = flat =>
+  `<span class="yutsk">${[0, 1, 2, 3].map(i => `<img src="assets/event/yut_${i < flat ? 'front' : 'back'}.png" alt="" style="--r:${(i - 1.5) * 9}deg">`).join('')}</span>`;
+function evYutHtml(E, e) {
+  const can = yutCan(E),
+    back = evBack(e),
+    nl = yutNextLap(E, e),
+    pos = (YUTB[e.yut.pos] || YUTB.o0).xy,
+    ic = r => {
+      if (!r) return '';
+      const k =
+        r[r.length - 1].k === 'yut' ? 'star' : r[0].k === 'sf' ? 'lantern' : r[0].k === 'bok' ? 'bok' : r[0].k === 'card' ? 'card' : '';
+      return k ? `<img src="assets/event/tile_${k}.png" alt="">` : evRwIc(E.id, r[0]);
+    };
+  const cells = Object.keys(YUTB)
+    .map(k => {
+      const c = YUTB[k];
+      return `<i class="yutc${c.corner ? ' cn' : ''}${c.mid ? ' mid' : ''}${k === 'o0' ? ' st' : ''}" style="left:${(c.xy[0] / 10.24).toFixed(2)}%;top:${(c.xy[1] / 10.24).toFixed(2)}%" title="${c.r ? c.r.map(x => evRwTxt(E.id, x)).join(' · ') : '출발'}">${k === 'o0' ? '<em>출발</em>' : ic(c.r)}</i>`;
+    })
+    .join('');
+  return `<div class="yutbd" id="yutBd"><img src="assets/event/yut_board.png" alt="윷판" class="yutimg">${cells}<img src="assets/event/yut_piece.png" alt="말" class="yutpc" id="yutPc" style="left:${(pos[0] / 10.24).toFixed(2)}%;top:${(pos[1] / 10.24).toFixed(2)}%"></div>
+ <div class="yutinfo"><span><img src="assets/event/yut_front.png" alt="" class="evyutic"> 윷 <b>${e.yut.n}</b>개</span><span>${e.yut.laps}바퀴${nl ? ` · <b>${nl}바퀴</b> ${E.yut.laps[nl].map(r => evRwTxt(E.id, r)).join(' · ')}` : ' · 바퀴 보상 다 받음'}</span></div>
+ <div class="btns"><button class="buy pri evbig" id="yutGo" ${can && e.yut.n > 0 && !back ? '' : 'disabled'}>${back ? '휴대폰 시간을 확인해 주세요' : e.yut.n > 0 ? '던지기' : '윷이 없어요'}</button><button class="buy" id="yutAll" ${can && e.yut.n > 1 && !back ? '' : 'disabled'}>모두 던지기</button></div>
+ <p class="note">오늘 윷: 접속 ${e.yut.dl === evDay() ? '✓' : '·'} · 사냥 ${e.yut.bat}/${E.yut.cap} (마물 ${E.yut.per}마리마다) · 출석 짝수 칸 · 모서리 칸 · ${E.shopN} · 모서리(★)나 가운데에 딱 멈추면 다음엔 지름길 · 한 바퀴마다 ${E.cur.n} ${E.yut.lap[0].n} <button class="lnk" id="yutOdds">확률 보기</button></p>`;
+}
+function evYutBind(E) {
+  const q = s => $('sheet').querySelector(s);
+  if (q('#yutGo')) q('#yutGo').onclick = () => yutGo(E.id, false);
+  if (q('#yutAll')) q('#yutAll').onclick = () => yutGo(E.id, true);
+  if (q('#yutOdds')) q('#yutOdds').onclick = () => evOdds(E.id, 'yut');
+  /* 말이 칸을 하나씩 건너감 (움직임 줄이기면 바로) */
+  const pc = q('#yutPc'),
+    a = yutAnim;
+  yutAnim = null;
+  if (!pc || !a) return;
+  const at = k => {
+    const c = (YUTB[k === 'END' ? 'o0' : k] || YUTB.o0).xy;
+    pc.style.left = (c[0] / 10.24).toFixed(2) + '%';
+    pc.style.top = (c[1] / 10.24).toFixed(2) + '%';
+  };
+  if (RM || a.jump) return;
+  at(a.from);
+  a.path.forEach((k, i) =>
+    setTimeout(
+      () => {
+        if (pc.isConnected) {
+          at(k);
+          pc.classList.remove('hop');
+          void pc.offsetWidth;
+          pc.classList.add('hop');
+        }
+      },
+      140 + i * 190
+    )
+  );
+}
+/* ---- 복주머니 ---- */
+const bokFreeCan = (E, e) => !!E.bok && evPhase(E) === 'on' && evOpen() && e.bok.free !== evDay() && !evBack(e);
+function bokPick(E, rnd) {
+  let x = (rnd || Math.random)() * 100;
+  for (const [p, r] of E.bok) {
+    if (x < p) return r;
+    x -= p;
+  }
+  return E.bok[0][1];
+}
+function bokGo(id, k) {
+  const E = EVT[id],
+    e = evToday(evS(id));
+  if (evBack(e)) return toast(EV_BACK_MSG);
+  if (k === 'free') {
+    if (!bokFreeCan(E, e)) return toast('오늘 무료 복주머니는 받았어요. 내일 또 생겨요');
+    e.bok.free = evDay();
+    e.bok.n++;
+    evTouch(e);
+    save();
+    renderAll();
+    return evSheet(id, 'bok', `<div class="evjust"><b>오늘의 무료 복주머니 +1</b></div>`);
+  }
+  if (!['on', 'shop'].includes(evPhase(E))) return;
+  if (e.bok.n <= 0) return toast('복주머니가 없어요');
+  const n = k === 'all' ? e.bok.n : 1,
+    got = [];
+  for (let i = 0; i < n; i++) got.push(...bokPick(E));
+  e.bok.n -= n;
+  const rows = evGive(id, evSum(got));
+  haptic([30, 40, 70]);
+  save();
+  renderAll();
+  evSheet(
+    id,
+    'bok',
+    `<div class="evjust bokjust"><span class="bokfx${RM ? ' rm' : ''}"></span><b>복주머니 ${n}개를 열었어요!</b>${rows}</div>`
+  );
+}
+function evBokHtml(E, e) {
+  const free = bokFreeCan(E, e),
+    back = evBack(e),
+    on = ['on', 'shop'].includes(evPhase(E));
+  return `<div class="bokc"><img src="assets/ui/item_bok.png" alt="" class="bokimg${e.bok.n > 0 ? ' wob' : ''}"><div><b>복주머니 ${e.bok.n}개</b><small>무엇이 나올지 모르는 주머니 · 돈으로는 팔지 않아요</small><small>얻는 곳: 매일 무료 1개 · 윷판 복 칸 · 출석 짝수 칸 · 새해 첫날 선물</small></div></div>
+ ${free ? `<button class="buy pri claim evbig" id="bokFree">오늘의 무료 복주머니 받기</button>` : evPhase(E) === 'on' ? `<p class="note" style="text-align:center">${back ? '휴대폰 시간을 확인해 주세요' : '오늘 무료 복주머니는 받았어요 · 내일 또 생겨요'}</p>` : ''}
+ <div class="btns"><button class="buy${e.bok.n > 0 && !free ? ' pri' : ''}" id="bokOne" ${on && e.bok.n > 0 && !back ? '' : 'disabled'}>열기</button><button class="buy" id="bokAll" ${on && e.bok.n > 1 && !back ? '' : 'disabled'}>모두 열기</button></div>
+ <p class="note">${E.bok.map(([p, r]) => r.map(x => evRwTxt(E.id, x)).join(' · ') + ' ' + p + '%').join(' · ')} <button class="lnk" id="bokOdds">확률 보기</button></p>`;
+}
+function evBokBind(E) {
+  const q = s => $('sheet').querySelector(s);
+  if (q('#bokFree')) q('#bokFree').onclick = () => bokGo(E.id, 'free');
+  if (q('#bokOne')) q('#bokOne').onclick = () => bokGo(E.id, 'one');
+  if (q('#bokAll')) q('#bokAll').onclick = () => bokGo(E.id, 'all');
+  if (q('#bokOdds')) q('#bokOdds').onclick = () => evOdds(E.id, 'bok');
+}
+/* 확률 보기 (윷·복주머니) — 닫으면 이벤트 창으로 */
+function evOdds(id, k) {
+  const E = EVT[id];
+  const rows =
+    k === 'yut'
+      ? YUTR.slice(1)
+          .concat(YUTR[0])
+          .map(x => `<tr><td>${x.n}${x.more ? ' (한 번 더)' : ''}</td><td>${x.m}칸</td><td>${x.p}%</td></tr>`)
+          .join('')
+      : E.bok.map(([p, r]) => `<tr><td>${r.map(x => evRwTxt(id, x)).join(' · ')}</td><td></td><td>${p}%</td></tr>`).join('');
+  $('sheet').innerHTML =
+    `<div class="eyebrow">${E.n}</div><h2>${k === 'yut' ? '윷 던지기 확률' : '복주머니 확률'}</h2><div class="oddtbl"><table><tbody>${rows}</tbody></table></div><p class="note">${
+      k === 'yut'
+        ? '윷가락 4개를 던져 평평한 면이 1개면 도, 2개 개, 3개 걸, 4개 윷, 0개 모예요 (실제 윷과 같은 확률). 빽도는 없어요. 윷·모가 나오면 윷을 쓰지 않고 한 번 더 던져요'
+        : '복주머니 하나를 열 때마다 위 확률로 하나가 나와요. 돈으로는 팔지 않아요'
+    }</p><div class="acts one"><button class="pri" id="mGo">돌아가기</button></div>`;
+  $('modal').hidden = false;
+  $('mGo').onclick = () => evSheet(id, k);
+}
+/* 매일 접속 윷 (기간 중 그날 처음) */
+function yutDaily(E) {
+  if (!E.yut || !yutCan(E)) return;
+  const e = evToday(evS(E.id)),
+    t = evDay();
+  if (evBack(e) || e.yut.dl === t) return;
+  e.yut.dl = t;
+  e.yut.n += E.yut.login;
+  evTouch(e);
+  save();
+  queue(() => toast('🎲 오늘의 윷 +' + E.yut.login + ' · ' + E.n + ' 윷놀이에서 던져요'));
+}
+/* 새해 첫날 선물 (1/1 하루, 처음 접속) */
+const evFirstCan = E =>
+  !!E.first &&
+  evPhase(E) === 'on' &&
+  evOpen() &&
+  evDay() === (evDemoOn === 'newyear1st' ? evDay() : E.first.day) &&
+  !evS(E.id).first &&
+  !evBack(evS(E.id));
+function evFirstSheet(id) {
+  const E = EVT[id],
+    e = evS(id);
+  if (!evFirstCan(E)) return pump();
+  e.first = 1;
+  evTouch(e);
+  const rows = evGive(id, [...E.first.r, { k: 'badge', id: 'firstday' }]);
+  save();
+  renderAll();
+  $('sheet').innerHTML =
+    `<div class="hdban evban ny" style="--hb:url(${E.art.hd})"><span>새해 첫날</span></div><p class="note" style="text-align:center">${E.first.year}년 새해 복 많이 받으세요! 오늘만 받는 큰 선물이에요</p><div class="attrws">${rows}</div><div class="acts one"><button class="pri claim" id="mGo">받기</button></div>`;
+  $('modal').hidden = false;
+  haptic([30, 40, 70]);
+  $('mGo').onclick = closeModal;
+}
+/* ---- 설날 보너스 (2/6~2/8): 매일 접속 선물 + 떡국 골드 +30% (재화·상점 없음) ---- */
+function seolDates() {
+  const r = evRows && evRows.find(x => x && x.id === SEOL.id),
+    pick = (a, b) => (Number.isFinite(evT(a)) ? evT(a) : evT(b)),
+    d = { start: pick(r && r.start_at, SEOL.start), end: pick(r && r.end_at, SEOL.end) };
+  if (evDemoOn === 'seol') {
+    const n = evNow();
+    d.start = n - 864e5;
+    d.end = n + 2 * 864e5;
+  }
+  return d;
+}
+const seolOn = () => {
+  if (!S || !evOpen()) return false;
+  const d = seolDates(),
+    t = evNow();
+  return t >= d.start && t < d.end;
+};
+const evGoldMul = () => (seolOn() ? 1 + SEOL.gold : 1);
+function seolCheck() {
+  if (!seolOn()) return;
+  if (!S.seol || typeof S.seol !== 'object' || Array.isArray(S.seol)) S.seol = { d: {}, hi: 0 };
+  if (!S.seol.d || typeof S.seol.d !== 'object') S.seol.d = {};
+  const t = evDay();
+  if (S.seol.d[t] || dnum(t) < (S.seol.hi || 0)) return;
+  S.seol.d[t] = 1;
+  S.seol.hi = Math.max(S.seol.hi || 0, dnum(t));
+  const first = Object.keys(S.seol.d).length === 1,
+    rows = evGive(SEOL.id, SEOL.r);
+  save();
+  queue(() => {
+    $('sheet').innerHTML =
+      `<div class="eyebrow">설날 · ${kstDate(evNow())}</div><h2>🧧 설날 선물</h2>${first ? SEOL.lines.map(para).join('') : ''}<div class="attrws">${rows}</div><p class="note" style="text-align:center">설날 사흘 동안 매일 선물 · 마르타의 떡국으로 <b>골드 +${Math.round(SEOL.gold * 100)}%</b> (${kstDate(seolDates().end - 1)}까지)</p><div class="acts one"><button class="pri claim" id="mGo">받기</button></div>`;
+    $('modal').hidden = false;
+    haptic([30, 40, 70]);
+    $('mGo').onclick = closeModal;
+  });
 }
 /* ---- 크리스마스 주간: 산타 피트 선물 · 트리 · 배지 ---- */
 const evXmDay = () => +evDay().split('-')[2];
@@ -25925,14 +26734,34 @@ function evTreeHit(mx, my) {
   return true;
 }
 /* ---- 상단 버튼 (상점 버튼 아래) ---- */
-let evHudSig = '',
+let evHudSig = '' /* 서버 날짜를 다시 읽으면 '' 로 → 버튼 다시 그림 */,
   evHudDay = '';
 function evHud() {
-  const b = $('evBtn');
-  if (!b || !S) return;
-  const E = evCur();
+  if (!S) return;
+  /* 버튼 두 개: 기간 중인 이벤트(없으면 상점만인 것) · 겹치는 주(1/1~1/7)에는 상점만 열린 이벤트가 아래에 하나 더 */
+  const l = evList(),
+    E1 = evCur(),
+    E2 = E1 ? l.find(X => X !== E1) : null;
+  evHudBtn($('evBtn'), $('evDot'), E1, 1);
+  evHudBtn($('evBtn2'), $('evDot2'), E2, 2);
+  /* 날이 바뀌면 크리스마스 선물·재화 사라짐 알림·오늘의 윷·설날 선물 */
+  const t = evDay();
+  if (t !== evHudDay && S.started && !titleOpen) {
+    evHudDay = t;
+    for (const X of l) {
+      evXmasCheck(X);
+      evWarnCheck(X);
+      yutDaily(X);
+    }
+    seolCheck();
+  }
+}
+const evHudSigs = {};
+function evHudBtn(b, dt, E, k) {
+  if (!b) return;
   if (!E) {
     if (!b.hidden) b.hidden = true;
+    evHudSigs[k] = '';
     return;
   }
   const ph = evPhase(E),
@@ -25943,30 +26772,31 @@ function evHud() {
     xm = evXmas(E),
     dot = !lock && evDot(E),
     sig = E.id + ph + lb + xm + dot + lock;
-  if (sig !== evHudSig) {
-    evHudSig = sig;
-    b.hidden = false;
-    b.dataset.l = lb;
-    b.setAttribute('aria-label', E.n + ' ' + lb);
-    b.classList.toggle('lock', lock);
-    b.classList.toggle('xm', xm);
-    $('evDot').hidden = !dot;
-  }
-  /* 날이 바뀌면 크리스마스 선물·눈송이 사라짐 알림 */
-  const t = evDay();
-  if (t !== evHudDay && S.started && !titleOpen) {
-    evHudDay = t;
-    for (const X of evList()) {
-      evXmasCheck(X);
-      evWarnCheck(X);
-    }
-  }
+  if (sig === evHudSigs[k]) return;
+  evHudSigs[k] = sig;
+  b.hidden = false;
+  b.dataset.l = lb;
+  b.dataset.ev = E.id;
+  b.setAttribute('aria-label', E.n + ' ' + lb);
+  b.classList.toggle('lock', lock);
+  b.classList.toggle('xm', xm);
+  b.classList.toggle('ny', !!E.yut);
+  b.classList.toggle('shopon', ph === 'shop');
+  const im = b.querySelector('img');
+  if (im && im.getAttribute('src') !== E.art.icon) im.src = E.art.icon;
+  if (dt) dt.hidden = !dot;
 }
 const evDot = E => {
   if (evPhase(E) !== 'on') return false;
   const e = evToday(evS(E.id));
   if (evBack(e)) return false;
-  return evAttCan(E) || evTriesLeft(E) > 0 || (evXmas(E) && (!e.xm.gift[evDay()] || e.xm.tree !== evDay() || evMgLeft(E) > 0));
+  return (
+    evAttCan(E) ||
+    (!!E.boss && evTriesLeft(E) > 0) ||
+    (evXmas(E) && (!e.xm.gift[evDay()] || e.xm.tree !== evDay() || evMgLeft(E) > 0)) ||
+    (!!E.yut && e.yut.n > 0) ||
+    (!!E.bok && bokFreeCan(E, e))
+  );
 };
 /* 상점이 닫히기 3일 전부터 하루 한 번 「눈송이를 써 주세요」 */
 function evWarnCheck(E) {
@@ -25977,10 +26807,13 @@ function evWarnCheck(E) {
   if (left > 3 || e.sf <= 0 || e.seen.warn === evDay()) return;
   e.seen.warn = evDay();
   save();
-  queue(() => toast('❄ ' + E.cur.n + '이(가) ' + Math.max(1, Math.ceil(left)) + '일 뒤 사라져요. ' + E.shopN + '에서 써 주세요'));
+  queue(() =>
+    toast((E.sym || '❄') + ' ' + E.cur.n + '이(가) ' + Math.max(1, Math.ceil(left)) + '일 뒤 사라져요. ' + E.shopN + '에서 써 주세요')
+  );
 }
-function evBtnTap() {
-  const E = evCur();
+function evBtnTap(ev) {
+  const b = ev && ev.currentTarget,
+    E = (b && EVT[b.dataset.ev]) || evCur();
   if (!E) return;
   if (!evOpen()) {
     $('sheet').innerHTML =
@@ -26002,31 +26835,58 @@ function evSheet(id, tab, just) {
   const e = evToday(evS(id)),
     xm = evXmas(E),
     d = evDates(E),
-    tabs = [
-      ['att', '출석', !!E.att],
-      ['boss', E.boss ? E.boss.n : '', !!E.boss],
-      ['shop', E.shopN, !!E.shop],
-      ['mg', '선물 배달', !!E.mg && (xm || evMgShow(E))]
-    ].filter(x => x[2]);
+    tabs = (
+      E.yut
+        ? [
+            ['yut', '윷놀이', true],
+            ['bok', '복주머니', !!E.bok],
+            ['att', '출석', !!E.att],
+            ['shop', E.shopN, !!E.shop]
+          ]
+        : [
+            ['att', '출석', !!E.att],
+            ['boss', E.boss ? E.boss.n : '', !!E.boss],
+            ['shop', E.shopN, !!E.shop],
+            ['mg', '선물 배달', !!E.mg && (xm || evMgShow(E))]
+          ]
+    ).filter(x => x[2]);
   if (tab) evTab[id] = tab;
-  let cur = evTab[id] || (ph === 'shop' ? 'shop' : evAttCan(E) ? 'att' : xm ? 'mg' : 'boss');
+  let cur =
+    evTab[id] ||
+    (ph === 'shop'
+      ? 'shop'
+      : E.yut
+        ? e.yut.n > 0
+          ? 'yut'
+          : bokFreeCan(E, e)
+            ? 'bok'
+            : evAttCan(E)
+              ? 'att'
+              : 'yut'
+        : evAttCan(E)
+          ? 'att'
+          : xm
+            ? 'mg'
+            : 'boss');
   if (!tabs.some(x => x[0] === cur)) cur = tabs[0][0];
   evTab[id] = cur;
   const left = Math.max(0, Math.floor(((ph === 'on' ? d.end : d.shop) - evNow()) / 864e5)),
     others = evList().filter(X => X.id !== id),
-    shut = ph === 'shop' && (cur === 'att' || cur === 'boss');
+    shut = ph === 'shop' && (cur === 'att' || cur === 'boss' || cur === 'yut');
   let body = '';
   if (shut) body = `<p class="note evshut">이벤트 기간이 끝났어요. <b>${E.shopN}</b>은(는) ${kstDate(d.shop - 1)}까지 열려 있어요</p>`;
   else if (cur === 'att') body = evAttHtml(E, e);
   else if (cur === 'boss') body = evBossHtml(E, e);
+  else if (cur === 'yut') body = evYutHtml(E, e);
+  else if (cur === 'bok') body = evBokHtml(E, e);
   else if (cur === 'shop') body = evShopHtml(E, e);
   else body = evMgHtml(E, e);
-  $('sheet').innerHTML = `<div class="hdban evban" style="--hb:url(${E.art.hd})"><span>${E.n}</span></div>
+  $('sheet').innerHTML = `<div class="hdban evban${E.yut ? ' ny' : ''}" style="--hb:url(${E.art.hd})"><span>${E.n}</span></div>
  ${xm ? `<div class="evxm">🎄 크리스마스 주간 · ${kstDate(d.xe - 1)}까지 <small>산타 피트 선물 · 산타 눈사람 2배 · 마을 트리 · 선물 배달</small></div>` : ''}
  ${others.length ? `<div class="evsw">${[E, ...others].map(X => `<button data-evsw="${X.id}" class="${X.id === id ? 'on' : ''}">${X.n}${evPhase(X) === 'shop' ? ' · 상점' : ''}</button>`).join('')}</div>` : ''}
- <div class="evtop"><span class="evcur"><img src="${E.cur.img}" alt=""><b>${fmt(e.sf)}</b><small>${E.cur.n}</small></span>${ph === 'on' && E.bat ? `<span class="evbat">오늘 전투 ${E.cur.n} <b>${e.day.bat}/${E.bat.cap}</b></span>` : ''}<span class="evdd">${ph === 'shop' ? '상점 ' : ''}${left ? 'D-' + left : 'D-DAY'}</span></div>
+ <div class="evtop${E.yut ? ' ny' : ''}"><span class="evcur"><img src="${E.cur.img}" alt=""><b>${fmt(e.sf)}</b><small>${E.cur.n}</small></span>${ph === 'on' && E.bat ? `<span class="evbat">오늘 전투 ${E.cur.n} <b>${e.day.bat}/${E.bat.cap}</b></span>` : ''}<span class="evdd">${ph === 'shop' ? '상점 ' : ''}${left ? 'D-' + left : 'D-DAY'}</span></div>
  ${ph === 'shop' && e.sf > 0 ? `<p class="note evwarn">${E.cur.n}은(는) ${kstDate(d.shop - 1)}이 지나면 사라져요</p>` : ''}
- <div class="subtabs evtabs">${tabs.map(([k, n]) => `<button data-evt="${k}" class="${k === cur ? 'on' : ''}">${n}${(k === 'att' && evAttCan(E)) || (k === 'boss' && ph === 'on' && evTriesLeft(E) > 0 && !evBack(e)) || (k === 'mg' && evMgLeft(E) > 0 && !evBack(e)) ? '<i class="dot"></i>' : ''}</button>`).join('')}</div>
+ <div class="subtabs evtabs">${tabs.map(([k, n]) => `<button data-evt="${k}" class="${k === cur ? 'on' : ''}">${n}${(k === 'att' && evAttCan(E)) || (k === 'boss' && ph === 'on' && evTriesLeft(E) > 0 && !evBack(e)) || (k === 'mg' && evMgLeft(E) > 0 && !evBack(e)) || (k === 'yut' && yutCan(E) && e.yut.n > 0 && !evBack(e)) || (k === 'bok' && (bokFreeCan(E, e) || (e.bok.n > 0 && !evBack(e)))) ? '<i class="dot"></i>' : ''}</button>`).join('')}</div>
  ${just || ''}${body}
  <div class="acts one"><button class="pri" id="mGo">닫기</button></div>`;
   $('modal').hidden = false;
@@ -26048,7 +26908,9 @@ function evSheet(id, tab, just) {
         evSheet(id, 'boss');
       });
   document.querySelectorAll('[data-evbuy]').forEach(b => (b.onclick = () => evBuy(id, b.dataset.evbuy)));
-  evMgBind(E);
+  if (E.mg) evMgBind(E);
+  if (cur === 'yut') evYutBind(E);
+  if (cur === 'bok') evBokBind(E);
 }
 /* 광고 +1 (이벤트마다 하루 1번, 기존 광고 표 ADS 를 건드리지 않고 이벤트 저장에 기록) */
 function evAdWatch(id, k, give) {
@@ -26068,7 +26930,7 @@ function evAttHtml(E, e) {
       const got = i < e.att.cnt,
         big = r.some(x => x.k === 'evcard' || x.k === 'card'),
         nxt = i === e.att.cnt && can;
-      return `<div class="evac${got ? ' got' : ''}${big ? ' big' : ''}${nxt ? ' nxt' : ''}"><i>${i + 1}</i>${evRwIc(E.id, r[r.length > 1 && r[1].k !== 'gold' ? 1 : 0])}<small>${r.map(x => evRwTxt(E.id, x)).join('<br>')}</small>${got ? '<b class="evst">✔</b>' : ''}</div>`;
+      return `<div class="evac${got ? ' got' : ''}${big ? ' big' : ''}${nxt ? ' nxt' : ''}"><i>${i + 1}</i>${evRwIc(E.id, r[r.length > 1 && r[1].k !== 'gold' ? 1 : 0])}<small>${r.map(x => evRwTxt(E.id, x, 1)).join('<br>')}</small>${got ? '<b class="evst">✔</b>' : ''}</div>`;
     })
     .join('')}</div>
  <p class="note">${E.n} 기간(${kstDate(evDates(E).start)}~${kstDate(evDates(E).end - 1)}) 중 하루 1칸 · 14칸을 채우면 끝 · <b>14칸째 ${COMP[E.comp].n} 카드 10장</b></p>
@@ -26110,7 +26972,7 @@ function evShopHtml(E, e) {
       const nm = sob ? COMP[sob.id].n + ' 카드 ' + sob.n + '장' : it.r.map(r => evRwTxt(E.id, r)).join(' · ');
       const sub = sob
         ? evJoinLeft(sob.id) > 0
-          ? `합류까지 <b>${evJoinLeft(sob.id)}장</b> · ${GR[GRADE[sob.id]].n} 광부 · 일반 카드 뽑기에 안 나와요`
+          ? `합류까지 <b>${evJoinLeft(sob.id)}장</b> · ${GR[GRADE[sob.id]].n} ${JOBN[JOB[sob.id]]} · 일반 카드 뽑기에 안 나와요`
           : mx
             ? '별을 모두 모았어요'
             : '합류했어요 · ★ 올리기 카드'
@@ -26119,11 +26981,11 @@ function evShopHtml(E, e) {
           : lc
             ? '전설 동료 카드가 나오기 시작하면 살 수 있어요'
             : '';
-      return `<div class="evsr${it.hot ? ' hot' : ''}${left <= 0 || own ? ' out' : ''}">${evRwIc(E.id, it.r[0])}<div class="evsn"><b>${nm}</b><small>${sub ? sub + ' · ' : ''}남은 ${Math.max(0, left)}/${it.lim}</small></div><button class="buy${ok ? ' pri' : ''}" data-evbuy="${it.k}" ${left > 0 && !own ? '' : 'disabled'}><img src="${E.cur.img}" alt="">${it.p}</button></div>`;
+      return `<div class="evsr${it.hot ? ' hot' : ''}${left <= 0 || own ? ' out' : ''}">${evRwIc(E.id, it.r[0])}<div class="evsn"><b>${nm}</b><small>${sub ? sub + ' · ' : ''}${it.day ? '오늘 ' : ''}남은 ${Math.max(0, left)}/${it.lim}</small></div><button class="buy${ok ? ' pri' : ''}" data-evbuy="${it.k}" ${left > 0 && !own ? '' : 'disabled'}><img src="${E.cur.img}" alt="">${it.p}</button></div>`;
     })
     .join(
       ''
-    )}</div><p class="note">전부 사면 ${fmt(E.shop.reduce((a, x) => a + x.p * x.lim, 0))} · 매일 오면 ${COMP[E.comp].n}·테두리·배지는 확실히 받을 수 있어요. 다음 겨울에도 같은 상점이 다시 열려요</p>`;
+    )}</div><p class="note">전부 사면 ${fmt(E.shop.filter(x => !x.day).reduce((a, x) => a + x.p * x.lim, 0))}${E.shop.some(x => x.day) ? ' (윷 빼고)' : ''} · 매일 오면 ${COMP[E.comp].n}·테두리·배지는 확실히 받을 수 있어요. ${E.yut ? '내년 새해' : '다음 겨울'}에도 같은 상점이 다시 열려요</p>`;
 }
 
 /* ---- 미니게임 「선물 배달」 (기획서 3-9, 크리스마스 주간) ----
@@ -26468,7 +27330,7 @@ function mgLoop(ts) {
   mgDraw();
   MGS.raf = requestAnimationFrame(mgLoop);
 }
-const evMgOn = E => !!E.mg && MGEV[E.mg] && (evXmas(E) || (evDemoOn && evDemoOn !== 'snow' && E.id === EV_MAIN));
+const evMgOn = E => !!E.mg && MGEV[E.mg] && (evXmas(E) || (['xmas', 'mg', 'mgrank'].includes(evDemoOn) && E.id === EV_MAIN));
 const evMgShow = E => !!E.mg && MGEV[E.mg] && evNow() >= evT(MGEV[E.mg].from) && ['on', 'shop'].includes(evPhase(E));
 const evMgLeft = E => {
   if (!evMgOn(E)) return 0;
@@ -26755,9 +27617,46 @@ function skinSheet() {
   );
 }
 /* ---- 전투 화면 눈 내리기 (효과 줄이기·움직임 줄이기면 끔) ---- */
-const evSnowOn = () => !S.lowFx && !RM && evOpen() && Object.values(EVT).some(E => E.bat && evPhase(E) === 'on');
-let evFlakes = null;
+const evSnowOn = () => !S.lowFx && !RM && evOpen() && Object.values(EVT).some(E => E.bat && !E.sky && evPhase(E) === 'on');
+const evSkyE = () => (!S.lowFx && !RM && evOpen() ? Object.values(EVT).find(E => E.sky && evPhase(E) === 'on') : null);
+let evFlakes = null,
+  evLants = null;
+/* 신년축제: 전투 화면 하늘로 작은 소원 등불이 천천히 떠오름 (1/1 은 더 많이) */
+function evLanternDraw(E) {
+  if (!evLants) {
+    const r = mgRng(20270101);
+    evLants = Array.from({ length: 22 }, () => ({ x: r(), y: r(), z: 0.5 + r() * 0.7, p: r() * 6.28 }));
+  }
+  const many = evFirstDayNow(E),
+    n = many ? 22 : 11,
+    H = Ht * 0.62;
+  ctx.save();
+  for (let i = 0; i < n; i++) {
+    const f = evLants[i],
+      y = H - ((f.y + T * 0.018 * f.z) % 1) * (H + 30),
+      x = (((f.x + Math.sin(T * 0.5 + f.p) * 0.01) % 1) + 1) % 1,
+      sz = (3 + 3.5 * f.z) * Math.min(1.4, W / 390);
+    ctx.globalAlpha = Math.min(1, (y + 30) / 60) * (0.45 + 0.4 * f.z);
+    const g = ctx.createRadialGradient(x * W, y, 0, x * W, y, sz * 2.6);
+    g.addColorStop(0, 'rgba(255,214,120,.55)');
+    g.addColorStop(1, 'rgba(255,140,40,0)');
+    ctx.fillStyle = g;
+    ctx.beginPath();
+    ctx.arc(x * W, y, sz * 2.6, 0, 6.283);
+    ctx.fill();
+    ctx.fillStyle = '#ffb347';
+    ctx.beginPath();
+    ctx.ellipse(x * W, y, sz * 0.75, sz, 0, 0, 6.283);
+    ctx.fill();
+    ctx.fillStyle = '#fff1c4';
+    ctx.fillRect(x * W - sz * 0.25, y - sz * 0.35, sz * 0.5, sz * 0.7);
+  }
+  ctx.restore();
+}
+const evFirstDayNow = E => !!(E && E.first) && evDay() === (evDemoOn === 'newyear1st' ? evDay() : E.first.day);
 function evSnowDraw() {
+  const L = evSkyE();
+  if (L) evLanternDraw(L);
   if (!evSnowOn()) return;
   if (!evFlakes) {
     const r = mgRng(20261211);
@@ -26813,8 +27712,15 @@ function evScenes() {
         scene('정기 이벤트', E.n + '가 열렸어요', E.lines.start, '이벤트 보기', null, E.art.illust);
         $('mGo').onclick = () => {
           sceneQ.unshift(() => evSheet(E.id));
+          if (evFirstCan(E)) sceneQ.unshift(() => evFirstSheet(E.id)); /* 1/1: 새해 첫날 선물 → 이벤트 창 */
           closeModal();
         };
+      });
+    } else if (ph === 'on' && evFirstCan(E) && !evFirstQ) {
+      evFirstQ = 1;
+      queue(() => {
+        evFirstQ = 0;
+        evFirstSheet(E.id);
       });
     } else if (ph === 'shop' && !e.seen.end) {
       e.seen.end = 1;
@@ -26830,9 +27736,12 @@ function evScenes() {
     }
     evXmasCheck(E);
     evWarnCheck(E);
-    evMgResult(E);
+    yutDaily(E);
+    if (E.mg) evMgResult(E);
   }
+  seolCheck();
 }
+let evFirstQ = 0;
 /* ---- 서버 날짜 읽기 (supabase/stage11_minigame.sql 의 kd_event_list · 로그인 없이 읽기만) ---- */
 async function evFetch() {
   if (!sbOn() || evDemoOn) return;
@@ -26854,6 +27763,7 @@ async function evFetch() {
       localStorage.setItem('kd-ev', JSON.stringify({ at: t1, rows: evRows }));
     } catch (e) {}
     evHudSig = '';
+    for (const k in evHudSigs) evHudSigs[k] = '';
     evClean();
     evPassSrc();
     renderAll();
@@ -26862,7 +27772,7 @@ async function evFetch() {
 }
 /* ---- 미리보기 (?demo=snow · xmas · mg · mgrank): 저장 안 함 ---- */
 function evDemo() {
-  if (!['snow', 'xmas', 'mg', 'mgrank'].includes(DEMO)) return false;
+  if (!['snow', 'xmas', 'mg', 'mgrank', 'newyear', 'newyear1st', 'seol'].includes(DEMO)) return false;
   evDemoOn = DEMO;
   noSave = true;
   S = p2Demo(40, 60);
@@ -26873,6 +27783,26 @@ function evDemo() {
   for (const k in VPOS) S.done['vo_' + k] = 1; /* 미리보기에서는 마을 새 소식 창을 띄우지 않음 */
   S.workIntro = 1;
   S.att = Object.assign(S.att || {}, { lw: today(), lm: today(), intro: 1 }); /* 피트의 출석부 창도 띄우지 않음 */
+  if (/^newyear|^seol/.test(DEMO)) {
+    /* 신년축제: 등불 1,200 · 윷 8 · 복주머니 3 · 몽글이 카드 20 (?demo=newyear1st 는 새해 첫날 장면·선물부터) */
+    S.cards = Object.assign(S.cards || {}, { mong: 20 });
+    if (DEMO !== 'seol') {
+      const n = evS('newyear2027');
+      n.sf = 1200;
+      n.yut.n = 8;
+      n.bok.n = 3;
+      n.seen.start = DEMO === 'newyear1st' ? 0 : 1;
+    }
+    setTimeout(
+      () =>
+        toast(
+          { newyear: '신년축제 미리보기예요', newyear1st: '신년축제 새해 첫날 미리보기예요', seol: '설날 보너스 미리보기예요' }[DEMO] +
+            ' · 진행은 저장되지 않아요'
+        ),
+      700
+    );
+    return true;
+  }
   const e = evS(EV_MAIN);
   e.sf = 1200;
   e.seen.start = DEMO === 'snow' ? 0 : 1;
@@ -26988,6 +27918,66 @@ function evInstall() {
     $('skinBtn').onclick = skinSheet;
   }
 }
+/* ---- 신년축제 붙이기 (몽글이·테두리·배지·두 번째 버튼): evInstall 다음에. 앱 0.0.8 에서 옮기기 전까지 웹·앱 비교 자료(load_web)에는 넣지 않음 ---- */
+function nyInstall() {
+  if (COMP.mong) return;
+  /* 한정 동료 몽글이: 영웅 양봉가 (양의 해 양 수인) · 신년축제 카드로만 · 수치는 오스카(영웅 양봉가)와 같게 */
+  COMP.mong = {
+    n: '몽글이',
+    role: '양봉가 · 공격 속도',
+    desc: '양의 해에만 나타난다는 양 수인 소녀. 복슬복슬한 양털 속에서 꿀벌들이 겨울잠을 자고, 벌들과 함께 꿀을 나누며 새해 복을 빌어 준다. 말끝마다 「~메에」, 졸리면 아무 데서나 잔다.',
+    join: '신년축제 카드 30장을 모으면 합류',
+    base: { atk: 8, hp: 92, aps: 0.75 },
+    per: { atk: 2.8, hp: 18.5 }
+  };
+  RECRUITS.mong = {
+    job: 'keeper',
+    title: '양털 꿀벌 소녀 몽글이',
+    lines: [
+      'm:몽글이|이렇게 많은 소원을 모아 주시다니… 올해 복은 다 원정대 거예요, 메에.',
+      'm:리엘|양털 속에 벌집이라니, 좋은 생각이구나.',
+      'm:몽글이|리엘 님! 저도 벌들이랑 같이 싸울게요… 졸리지만 않으면요, 메에.',
+      'k:졸리면?',
+      'm:몽글이|…쿨.',
+      'sys:양봉가 자리에서 리엘 대신 출전할 수 있어요.'
+    ],
+    ok: '바로 출전',
+    go: () => setMember('keeper', 'mong')
+  };
+  EVCARD.mong = 1;
+  JOB.mong = 'keeper';
+  GRADE.mong = 'epic';
+  HEIGHT.mong = 60;
+  SPRITES.mong = { idle: 4, walk: 6, attack: 4, hit: 2, h: 60 };
+  SPRITE_ALT.mong = 'riel';
+  FORM.mong = FORM.oscar;
+  DRAW.mong = DRAW.oscar;
+  SKILLS.mong = {
+    n: '포근한 양털 구름',
+    d: '8초 동안 원정대 공격 속도 +30% (★3·★5에서 강화)',
+    line: '벌들아, 일어날 시간이야 메에!',
+    need: 22,
+    face: 'laugh'
+  };
+  FXDEF.skill_mong = 4;
+  NPCID['몽글이'] = 'mong';
+  VTALK.mong = ['메에… 여기 햇볕이 따뜻해서 졸려요…', '양털 속 벌들이 꿀을 나눠 준대요, 메에!', '소원 등불, 하나 더 띄워 볼까요?'];
+  WLINE.mong = '벌들이랑 꿀 모으는 중이에요, 메에!';
+  /* 프로필: 테두리 「복 등불」 · 배지 「신년축제」 「2027 첫날」 「윷놀이 달인」 */
+  PFRAMES.push({ k: 'newyear', n: '복 등불', d: '신년축제 등불 상점', ok: () => false, tall: 1, ev: 1 });
+  BADGES.push({ k: 'newyear', n: '신년축제', d: '신년축제 등불 상점', ok: () => false, ev: 1 });
+  BADGES.push({ k: 'firstday', n: '2027 첫날', d: '1월 1일(새해 첫날)에 접속', ok: () => false, ev: 1 });
+  BADGES.push({ k: 'yut', n: '윷놀이 달인', d: '신년축제 윷놀이 12바퀴', ok: () => false, ev: 1 });
+  /* 상단 버튼 하나 더 (1/1~1/7: 신년축제 + 눈꽃 상점) */
+  const b = $('evBtn');
+  if (b && !$('evBtn2')) {
+    b.insertAdjacentHTML(
+      'afterend',
+      `<button class="mailbtn evfab" id="evBtn2" aria-label="이벤트" data-l="이벤트" hidden><img src="assets/ui/icon_newyear.png" alt="" onerror="this.outerHTML='<span>🏮</span>'"><i class="evhat">🎅</i><i class="dot" id="evDot2" hidden></i></button>`
+    );
+    $('evBtn2').onclick = evBtnTap;
+  }
+}
 /* 원정 일지 점수: 이벤트 기간에만 「눈사람 대장 도전」 1번 +20 */
 function evPassSrc() {
   if (Object.values(EVT).some(E => E.boss && evPhase(E) === 'on')) PASS_SRC.snow = [20, 20, '눈사람 대장 도전'];
@@ -27022,6 +28012,7 @@ function evBoot(isNew) {
 function start(data) {
   p2Install(); /* 2부 1차(엘프 왕국)를 붙임 — 저장 불러오기·그림 받기보다 먼저 */
   evInstall(); /* 정기 이벤트(눈꽃제): 소복이·외형·버튼 — 저장 불러오기·그림 받기보다 먼저 */
+  nyInstall(); /* 신년축제: 몽글이·테두리·배지·두 번째 이벤트 버튼 */
   loadSprites();
   loadMonSprites();
   loadBgs();

@@ -6,6 +6,7 @@
     python3 tools/balance_sim.py pass               # 원정 일지 점수: 하루 2~3번 접속 유저 · 출석만 하는 유저 (docs/content/SHOP.md 8장)
     python3 tools/balance_sim.py bond               # 원정대의 정: 하루 10시간 쌓이는 유저의 ♥3·♥5 도달일 · 같은 직업 짝 (docs/content/BOND.md 8장)
     python3 tools/balance_sim.py p2 4 50 8 '{"hpG2":1.03}' 70 1   # 2부(61~90): 1부 엔딩까지(최대 4시간, 추억 50·은퇴 8 + 1부 끝 무렵 마을 = 60을 겨우 깨는 유저) → 출퇴근 방치러가 61~91에 닿는 날 (PART2.md 8장)
+    python3 tools/balance_sim.py newyear 2 10 2 '{}' '{}' '{}'   # 신년축제 21일: 같은 출발점 → 매일 오는 유저·하루 1번 유저 소원 등불·윷판 바퀴·복주머니·몽글이 카드 (EVENT_NEWYEAR.md 8-1)
     python3 tools/balance_sim.py snow 2 10 2 '{}' '{"idleK":0.1}' '{"hpG":1.15}' 500   # 눈꽃제 21일: 처음부터 2시간(추억 10·은퇴 2) 키운 유저 → 매일 오는 유저·하루 1번 유저 눈송이·눈사람 대장 단계 (EVENT_SNOW.md 8장). 마지막 수 = 선물 배달 한 판 점수(가정)
 """
 import asyncio,sys,json
@@ -34,6 +35,17 @@ async def main():
       print('출발: 처음부터',hrs,'시간 · 추억',mem,'은퇴',ret,tune,'| 눈송이',evb,'보스',evbs,'| 선물 배달 한 판',mg,'점')
       for who,v in r.items():
         print(f"[{'매일 오는 유저' if who=='daily' else '하루 1번 유저'}] 21일 눈송이 {v['total']} (전투 {v['bat']} · 방치 {v['idle']} · 눈사람 {v['boss']} · 출석 {v['att']}, 출석 {v['attCnt']}칸) + 크리스마스 주간 {v['xmTotal']} {v['xmas']} | 영지 {v['best'][0]}→{v['best'][1]} · 눈사람 최고 {v['bossBest']}단계")
+        for d in v['days']: print('   ',d)
+      await b.close();return
+    if H=='newyear':
+      A=sys.argv[2:]
+      hrs=A[0] if len(A)>0 else '2';mem=A[1] if len(A)>1 else '10';ret=A[2] if len(A)>2 else '2';tune=A[3] if len(A)>3 else '{}';evb=A[4] if len(A)>4 else '{}';evy=A[5] if len(A)>5 else '{}'
+      js=open(SP+'/newyear_sim.js').read().replace('HOURS',hrs).replace('TUNE',tune).replace('MEM',mem).replace('RET',ret).replace('EVBAT',evb).replace('EVYUT',evy)
+      r=await pg.evaluate(js)
+      print('출발: 처음부터',hrs,'시간 · 추억',mem,'은퇴',ret,tune,'| 등불',evb,'윷',evy)
+      for who,v in r.items():
+        s=v['src']
+        print(f"[{'매일 오는 유저' if who=='daily' else '하루 1번 유저'}] 21일 소원 등불 {v['total']} (전투 {s['bat']} · 방치 {s['idle']} · 출석 {s['att']} · 윷판 {s['board']} · 복주머니 {s['bok']} · 첫날 {s['first']}) | 윷판 {v['laps']}바퀴 · 복주머니 {v['boks']}개 · 이벤트 이삭 +{v['gem']} · 몽글이 카드 +{v['mong']} · 전설 만능 +{v['lcard']} · 윷놀이 달인 {'O' if v['badgeYut'] else 'X'} | 영지 {v['best'][0]}→{v['best'][1]}")
         for d in v['days']: print('   ',d)
       await b.close();return
     if H=='village':
