@@ -2699,7 +2699,7 @@ const wWjob = {
   'ranch': 'cook',
 };
 
-const wWbase = {'common': 0.1, 'rare': 0.15, 'epic': 0.2, 'legend': 0.3};
+const wWbase = {'common': 0.1, 'rare': 0.15, 'epic': 0.2, 'legend': 0.3, 'unique': 0.3};
 
 const wWeff = {
   'mine': '광석 생산',

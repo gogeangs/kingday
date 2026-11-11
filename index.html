@@ -10361,7 +10361,7 @@ const WJOB = {
   diner: 'cook',
   ranch: 'cook'
 };
-const WBASE = { common: 0.1, rare: 0.15, epic: 0.2, legend: 0.3 };
+const WBASE = { common: 0.1, rare: 0.15, epic: 0.2, legend: 0.3, unique: 0.3 }; /* 유니크(뚝딱이·루시안·골디)는 전설과 같게 (11-12 대표님 — 표에 없어 일꾼 효과가 NaN → 여관이면 방치 골드가 NaN 이던 오류) */
 const WEFF = {
   mine: '광석 생산',
   forge: '강화 광석 비용 감소',
@@ -10379,7 +10379,7 @@ const wkSlots = k => {
   return l <= 0 ? 0 : l >= 5 ? 2 : 1;
 };
 const wkMatch = (k, id) => !!WJOB[k] && JOB[id] === WJOB[k];
-const wkOne = (k, id) => (WBASE[GRADE[id] || 'common'] + 0.02 * recStar(id)) * (wkMatch(k, id) ? 2 : 1);
+const wkOne = (k, id) => ((WBASE[GRADE[id] || 'common'] || 0) + 0.02 * recStar(id)) * (wkMatch(k, id) ? 2 : 1);
 const wkReal = (k, v) =>
   k === 'inn' || k === 'forge' || k === 'market' ? v / 2 : v; /* 여관 방치 골드·대장간 비용 감소·시장 주문 골드는 효과의 절반 */
 const wkIds = k => {
@@ -21914,6 +21914,7 @@ function wkAuto(all) {
           best = [h, p];
         }
       }
+    if (!best) break; /* 맡길 수 있는 동료가 없음 (점수가 숫자가 아닐 때 멈추던 오류) */
     const k = holes.splice(best[0], 1)[0],
       id = pool.splice(best[1], 1)[0];
     (S.work[k] = wkIds(k)).push(id);
@@ -23852,13 +23853,15 @@ async function mailSheet(cached) {
   if (!cached && mailOn()) {
     $('sheet').innerHTML =
       head +
-      `<p class="note" style="text-align:center">우편을 확인하는 중…</p><div class="acts one"><button class="pri" id="mGo">닫기</button></div>`;
+      `<p class="note" id="mWait" style="text-align:center">우편을 확인하는 중…</p><div class="acts one"><button class="pri" id="mGo">닫기</button></div>`;
     $('modal').hidden = false;
     $('mGo').onclick = closeModal;
     if (!S.nick) await sbEnsure();
     else await mailFetch();
+    /* 기다리는 사이 창을 닫았거나 다른 창을 열었으면 그대로 둠 (QA 0.0.8: 다른 창을 우편함이 덮어쓰던 문제) */
+    if (!$('mWait') || $('modal').hidden) return;
     if (!S.nick && !passMails().length) {
-      $('sheet').querySelector('.note').textContent = '인터넷에 연결되면 우편을 받을 수 있어요.';
+      $('mWait').textContent = '인터넷에 연결되면 우편을 받을 수 있어요.';
       return;
     }
   }

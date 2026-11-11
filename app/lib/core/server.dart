@@ -131,6 +131,29 @@ class Server {
     return true;
   }
 
+  /// 지금 계정에 구글·애플 로그인을 하나 더 붙이기 (애플로 연결한 사람이 구글도 · 그 반대도).
+  /// 성공하면 null, 실패하면 오류 이름 (identity_already_exists = 그 구글/애플이 이미 다른 계정에 연결됨)
+  Future<String?> linkIdToken(String provider, String idToken, {String? nonce}) async {
+    final a = await login();
+    final res = await _http
+        .post(Uri.parse('$sbUrl/auth/v1/token?grant_type=id_token'),
+            headers: {..._h, 'Authorization': 'Bearer ${a.access}'},
+            body: jsonEncode({'provider': provider, 'id_token': idToken, if (nonce != null) 'nonce': nonce, 'link_identity': true}))
+        .timeout(_timeout);
+    if (res.statusCode >= 300) {
+      try {
+        final j = jsonDecode(utf8.decode(res.bodyBytes));
+        if (j is Map) return '${j['error_code'] ?? j['code'] ?? j['error'] ?? res.statusCode}';
+      } catch (_) {}
+      return '${res.statusCode}';
+    }
+    try {
+      final j = jsonDecode(utf8.decode(res.bodyBytes));
+      if (j is Map<String, dynamic> && j['access_token'] is String) await setSession(j);
+    } catch (_) {}
+    return null;
+  }
+
   /// Edge Function 부르기 (인앱결제 확인 kd-iap 등). 응답 JSON 과 상태 코드
   Future<(int, dynamic)> function(String name, Map<String, dynamic> body) async {
     final a = await login();
@@ -172,7 +195,7 @@ class Server {
   }
 
   /// 웹 acctFetch(): 지금 계정 정보 (게스트인지, 연결된 이메일)
-  Future<({bool anon, String email})?> user() async {
+  Future<({bool anon, String email, List<String> providers})?> user() async {
     final a = await login();
     final res = await _http.get(Uri.parse('$sbUrl/auth/v1/user'), headers: {'apikey': sbKey, 'Authorization': 'Bearer ${a.access}'}).timeout(_timeout);
     if (res.statusCode >= 300) return null;
@@ -188,7 +211,22 @@ class Server {
         }
       }
     }
-    return (anon: u['is_anonymous'] == true, email: email);
+    // 연결한 로그인 종류 (apple · google), 연결한 것 모두. 게스트는 빈 목록
+    final providers = <String>[];
+    void add(Object? x) {
+      if ((x == 'apple' || x == 'google') && !providers.contains(x)) providers.add(x as String);
+    }
+    final am = u['app_metadata'];
+    if (am is Map) {
+      if (am['providers'] is List) (am['providers'] as List).forEach(add);
+      add(am['provider']);
+    }
+    if (u['identities'] is List) {
+      for (final i in u['identities'] as List) {
+        if (i is Map) add(i['provider']);
+      }
+    }
+    return (anon: u['is_anonymous'] == true, email: email, providers: providers);
   }
 
   void close() => _http.close();

@@ -835,6 +835,7 @@ class GameActions {
           }
         }
       }
+      if (bv < 0) break; // 맡길 수 있는 동료가 없음 (웹 wkAuto)
       final k = holes.removeAt(bh), id = pool.removeAt(bp);
       w[k] = [...c.wkIds(k), id];
       n++;
