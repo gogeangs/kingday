@@ -76,7 +76,7 @@ extension VillageCalc on GameCalc {
   }
 
   bool wkMatch(String k, String id) => workJob[k] != null && jobOf[id] == workJob[k];
-  num wkOne(String k, String id) => (wBase[gradeOf[id] ?? 'common']! + .02 * recStar(id)) * (wkMatch(k, id) ? 2 : 1);
+  num wkOne(String k, String id) => ((wBase[gradeOf[id] ?? 'common'] ?? 0) + .02 * recStar(id)) * (wkMatch(k, id) ? 2 : 1);
 
   /// 그 건물 일꾼 (가진 동료만, 칸 수까지)
   List<String> wkIds(String k) {
