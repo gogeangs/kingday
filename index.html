@@ -23628,13 +23628,15 @@ async function mailSheet(cached) {
   if (!cached && mailOn()) {
     $('sheet').innerHTML =
       head +
-      `<p class="note" style="text-align:center">우편을 확인하는 중…</p><div class="acts one"><button class="pri" id="mGo">닫기</button></div>`;
+      `<p class="note" id="mWait" style="text-align:center">우편을 확인하는 중…</p><div class="acts one"><button class="pri" id="mGo">닫기</button></div>`;
     $('modal').hidden = false;
     $('mGo').onclick = closeModal;
     if (!S.nick) await sbEnsure();
     else await mailFetch();
+    /* 기다리는 사이 창을 닫았거나 다른 창을 열었으면 그대로 둠 (QA 0.0.8: 다른 창을 우편함이 덮어쓰던 문제) */
+    if (!$('mWait') || $('modal').hidden) return;
     if (!S.nick && !passMails().length) {
-      $('sheet').querySelector('.note').textContent = '인터넷에 연결되면 우편을 받을 수 있어요.';
+      $('mWait').textContent = '인터넷에 연결되면 우편을 받을 수 있어요.';
       return;
     }
   }
