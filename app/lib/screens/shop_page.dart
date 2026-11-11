@@ -473,7 +473,7 @@ class _ShopPageState extends State<ShopPage> {
       const SizedBox(height: 10),
       const KdNote('· 산 상품은 우편함으로 와요. 산 날부터 7일 안이고 우편함에서 아직 받지 않았다면 구매를 취소할 수 있어요. '
           '받으면 바로 게임에 반영되어 취소가 제한돼요(황금 이삭은 그만큼 쓰지 않았으면 취소 가능).\n'
-          '· 취소·환불은 구글 플레이·앱 스토어 환불 요청 또는 ⚙ 설정 → 문의하기(결제)로 해 주세요. 미성년자는 보호자 동의를 받고 사 주세요.'),
+          '· 취소·환불은 앱을 내려받은 스토어의 환불 요청 또는 ⚙ 설정 → 문의하기(결제)로 해 주세요. 미성년자는 보호자 동의를 받고 사 주세요.'),
       Row(children: [
         KdBuy(kind: BuyKind.ghost, minWidth: 0, small: true, text: '이용약관', onTap: () => openSitePage(g, 'terms.html')),
         const SizedBox(width: 6),

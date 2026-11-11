@@ -10165,7 +10165,7 @@ const WJOB = {
   diner: 'cook',
   ranch: 'cook'
 };
-const WBASE = { common: 0.1, rare: 0.15, epic: 0.2, legend: 0.3 };
+const WBASE = { common: 0.1, rare: 0.15, epic: 0.2, legend: 0.3, unique: 0.3 }; /* 유니크(뚝딱이·루시안·골디)는 전설과 같게 (11-12 대표님 — 표에 없어 일꾼 효과가 NaN → 여관이면 방치 골드가 NaN 이던 오류) */
 const WEFF = {
   mine: '광석 생산',
   forge: '강화 광석 비용 감소',
@@ -10183,7 +10183,7 @@ const wkSlots = k => {
   return l <= 0 ? 0 : l >= 5 ? 2 : 1;
 };
 const wkMatch = (k, id) => !!WJOB[k] && JOB[id] === WJOB[k];
-const wkOne = (k, id) => (WBASE[GRADE[id] || 'common'] + 0.02 * recStar(id)) * (wkMatch(k, id) ? 2 : 1);
+const wkOne = (k, id) => ((WBASE[GRADE[id] || 'common'] || 0) + 0.02 * recStar(id)) * (wkMatch(k, id) ? 2 : 1);
 const wkReal = (k, v) =>
   k === 'inn' || k === 'forge' || k === 'market' ? v / 2 : v; /* 여관 방치 골드·대장간 비용 감소·시장 주문 골드는 효과의 절반 */
 const wkIds = k => {
@@ -21689,6 +21689,7 @@ function wkAuto(all) {
           best = [h, p];
         }
       }
+    if (!best) break; /* 맡길 수 있는 동료가 없음 (점수가 숫자가 아닐 때 멈추던 오류) */
     const k = holes.splice(best[0], 1)[0],
       id = pool.splice(best[1], 1)[0];
     (S.work[k] = wkIds(k)).push(id);

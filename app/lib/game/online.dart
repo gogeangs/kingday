@@ -8,6 +8,7 @@ import 'dart:async';
 import 'dart:math' as math;
 
 import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart';
 
 import '../core/calc.dart';
 import '../core/data.dart';
@@ -505,15 +506,19 @@ class Online {
   }
 
   // ── 계정·클라우드 저장 ──
-  ({bool anon, String email})? acct;
+  ({bool anon, String email, List<String> providers})? acct;
+
+  /// 계정 칸(설정 창)이 다시 그려지도록 — 로그인·연결 직후 바로 「연결됨」으로 바뀜
+  final acctRev = ValueNotifier<int>(0);
   bool _linkGiftAsked = false;
 
   /// 웹 acctFetch(): 계정 확인 (구글로 연결된 계정이면 연결 선물 요청)
-  Future<({bool anon, String email})?> acctFetch() async {
+  Future<({bool anon, String email, List<String> providers})?> acctFetch() async {
     if (!on) return null;
     try {
       final u = await sv!.user();
       if (u != null) acct = u;
+      acctRev.value++;
       if (acct != null && !acct!.anon && !_linkGiftAsked) {
         _linkGiftAsked = true;
         rpc('kd_link_reward', {}).then((r) {
@@ -534,7 +539,11 @@ class Online {
     try {
       await cloudPut(true);
       final r = which == 'apple' ? await Login.apple() : await Login.google();
-      if (r == null) return;
+      if (r == null) {
+        // 아무 반응이 없어 보이지 않게 (2026-11-02 애플 심사 2.1(a))
+        g.toast('$name 로그인을 취소했어요');
+        return;
+      }
       if (!await sv!.signInWithIdToken(r.$1, r.$2, nonce: r.$3)) {
         g.toast('$name 로그인에 실패했어요. 잠시 뒤에 다시 해 주세요');
         return;
@@ -558,10 +567,46 @@ class Online {
         await rpc('kd_link_reward', {});
       } catch (_) {}
       await mailFetch();
-      g.toast('$name 계정으로 연결했어요${(acct?.email ?? '').isNotEmpty ? ' · ${acct!.email}' : ''}');
+      acctRev.value++;
+      // 알림은 금방 사라져 연결됐는지 알기 어려움 → 확인 창 (2026-11-05 대표님)
+      final email = acct?.email ?? '';
+      g.queue((ctx) => showAcctLinked(ctx, which, email));
       g.refresh();
-    } catch (_) {
-      g.toast('$name 로그인에 실패했어요. 잠시 뒤에 다시 해 주세요');
+    } catch (e) {
+      debugPrint('loginWith $which: $e');
+      final code = e is PlatformException ? ' (${e.code})' : '';
+      g.toast('$name 로그인에 실패했어요. 잠시 뒤에 다시 해 주세요$code');
+    }
+  }
+
+  /// 이미 연결된 계정에 다른 로그인 하나 더 붙이기 (설정 → 계정 「구글도 연결」·「Apple도 연결」)
+  Future<void> linkMore(String which) async {
+    if (!on) return;
+    final name = which == 'apple' ? 'Apple' : '구글';
+    try {
+      final r = which == 'apple' ? await Login.apple() : await Login.google();
+      if (r == null) {
+        g.toast('$name 연결을 취소했어요');
+        return;
+      }
+      final err = await sv!.linkIdToken(r.$1, r.$2, nonce: r.$3);
+      if (err == 'identity_already_exists') {
+        g.toast('이 $name 계정은 이미 다른 게임 기록에 연결돼 있어요');
+        await acctFetch();
+        return;
+      }
+      if (err != null) {
+        g.toast('$name 연결에 실패했어요. 잠시 뒤에 다시 해 주세요 ($err)');
+        return;
+      }
+      await acctFetch();
+      final email = acct?.email ?? '';
+      g.queue((ctx) => showAcctLinked(ctx, which, email, more: true));
+      g.refresh();
+    } catch (e) {
+      debugPrint('linkMore $which: $e');
+      final code = e is PlatformException ? ' (${e.code})' : '';
+      g.toast('$name 연결에 실패했어요. 잠시 뒤에 다시 해 주세요$code');
     }
   }
 
