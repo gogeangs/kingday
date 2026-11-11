@@ -5,6 +5,7 @@ import 'package:kingday/core/actions.dart';
 import 'package:kingday/core/calc.dart';
 import 'package:kingday/core/rng.dart';
 import 'package:kingday/core/state.dart';
+import 'package:kingday/core/village.dart';
 
 void main() {
   final now = DateTime.utc(2026, 11, 12).millisecondsSinceEpoch;
