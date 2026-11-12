@@ -158,7 +158,15 @@ def main(mode, ver, num):
             'appStoreVersion': {'data': {'type': 'appStoreVersions', 'id': vid}}}}})
         print('  제출에 버전 넣음')
 
-    iaps, subs = products(aid)
+    # 0.0.5 와 함께 대기하던 인앱·구독이 「제출 준비」로 돌아올 때까지
+    def settled():
+        a, b = products(aid)
+        return (a, b) if all(x['attributes'].get('state') != 'WAITING_FOR_REVIEW' for x in a + b) else None
+    iaps, subs = wait('인앱·구독 상태 돌아오기', settled, tries=20)
+    bad = [x['attributes']['productId'] + ' ' + str(x['attributes'].get('state')) for x in iaps + subs
+           if x['attributes'].get('state') not in ('READY_TO_SUBMIT', 'APPROVED')]
+    if bad:
+        sys.exit('::error::인앱·구독 상태가 예상과 달라 제출 직전에 멈춤 (버전·빌드는 준비됨): ' + ', '.join(bad))
     for p in iaps:
         if p['attributes'].get('state') == 'READY_TO_SUBMIT':
             call('POST', '/inAppPurchaseSubmissions', {'data': {'type': 'inAppPurchaseSubmissions', 'relationships': {
