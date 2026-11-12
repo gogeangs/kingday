@@ -25,4 +25,4 @@ jobs:
           APPSTORE_KEY_ID: ${{ secrets.APPSTORE_KEY_ID }}
           APPSTORE_ISSUER_ID: ${{ secrets.APPSTORE_ISSUER_ID }}
           APPSTORE_KEY_P8: ${{ secrets.APPSTORE_KEY_P8 }}
-        run: python3 -u appstore_swap.py $(cat appstore_swap.args) 2>&1 | tee up.log; st=${PIPESTATUS[0]}; grep -v '^::' up.log | tail -80 | sed 's/^/::notice::/'; exit $st
+        run: python3 -u $(cat appstore_swap.args) 2>&1 | tee up.log; st=${PIPESTATUS[0]}; grep -v '^::' up.log | tail -80 | sed 's/^/::notice::/'; exit $st
