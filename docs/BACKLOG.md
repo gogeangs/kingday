@@ -1,6 +1,6 @@
 # 남은 업무 (BACKLOG)
 
-마지막 정리: 2026-10-20
+마지막 정리: 2026-11-16
 
 ## 그림 다시 그리기 (ChatGPT)
 
@@ -35,6 +35,9 @@
 - [ ] 동료 추가: 희귀(어부·요리사) · 영웅(광부·양봉가) · 전설(어부·양봉가·요리사, 마을 스킬 1개씩)
 
 ## 결정·외부 작업
-- [ ] 결제(PG)·실제 광고 연동
+- [x] ~~결제(PG)~~ → 2026-11-16 결제 없앰, 보상형 광고만 (docs/PLAN_MONETIZATION_REMOVAL.md) · 실제 광고(AdMob) 연동 완료
+- [ ] (대표님) 스토어 상품 판매 중지 · `stage16_iap_off.sql` · `kd-iap` 삭제 — 순서는 docs/RELEASE_NATIVE.md §5
+- [ ] 출시 3달 뒤 행동 기록(`play_log`)으로 재방문·광고·이삭을 보고 재유료화 검토 — 그때도 지금 무료인 것은 무료, 「더하는 상품」(광고 제거·꾸미기·편의)만
+- [ ] 미디에이션(AppLovin·Unity) — 하루 접속자가 늘면
 - [x] 출시 방식: Flutter + Flame 네이티브 앱으로 새로 작성 (docs/HANDOFF_NATIVE.md), 웹은 병행 운영
 - [ ] GitHub 병합 끝난 브랜치 삭제 + 「Automatically delete head branches」 켜기 (직접)
