@@ -238,7 +238,7 @@ void main() {
         g.state.raw['ptTab'] = 'card';
         g.refresh();
         await frames(2);
-        expect(find.textContaining('유니크 카드 30 / 10'), findsOneWidget); // ★2 10장 (2026-11-16)
+        expect(find.textContaining('유니크 카드 30 / 10'), findsWidgets); // ★2 10장 (2026-11-16) · 영지 50 넘은 저장은 뚝딱이도 같이 보임
         chiefSheet(g);
         await frames();
         expect(find.text('다 함께 울력'), findsOneWidget);
