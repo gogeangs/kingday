@@ -228,11 +228,13 @@
 - **검증**: Playwright 휴대폰 4종(320·360·390·430) — 마을 「피트의 가게」 버튼·점, 피트의 가게(원정 일지 배너가 맨 위), 닫기 → 마을, 원정 일지·출석·도전·방치 창·예배당·밭, 오류 0 · 예전 저장(광고 x3 켜짐·광고 횟수·결제 칸) 불러오기 → 칸이 지워지고 속도 x1, 오류 없음(결제·광고 칭호·배지는 원래 없음) · 28일 시뮬레이터(광고 없음, 방치 ×1.5): 이삭 **4,803**(광고 있던 1단계 4,807과 같은 수준), 원정 일지 그대로.
 - **서버**: `supabase/stage17_play_log_off.sql` — `kd_log_day`·`kd_log_clean`·`play_log` 삭제(여러 번 실행해도 안전, 로컬 Postgres 16 으로 stage15 → stage17 두 번 실행 확인).
 - **문서**: 이벤트 기획서(눈꽃제 광고 +1 두 곳·유료 패키지 미정 삭제, 보상 숫자는 그대로 — 처음부터 광고 없이 잰 값) · 출석 `ATTENDANCE_2.md` 0-1 · 신년축제·2부·그림 프롬프트는 결제·광고 없음(바꿀 것 없음) · RELEASE_NATIVE §4·§5 · SHOP · BACKLOG · VILLAGE · CHALLENGE · CONTENT/PLAYER_PLANNING · HANDOFF_NATIVE.
-- **스토어·방침 초안**: `docs/STORE_LISTING.md` 「2단계 완전 무료 새 설명」 · 스크린샷 `store/playstore_free/`(1080×1920 ×8) · `store/appstore_free/`(1320×2868 ×8, `tools/store_shots.py`) · 개인정보처리방침 `docs/drafts/privacy_next.html`(10-26 방침에서 결제 항목만 뺌, 이용 기록·광고 식별자 없음) · 이용약관 `docs/drafts/terms_next.html` · 공지 문구 `docs/PRIVACY_POLICY.md` 맨 위.
+- **스토어·방침 초안**: `docs/STORE_LISTING.md` 「2단계 완전 무료 새 설명」 · 스크린샷 `store/playstore_free/`(1080×1920 ×8) · `store/appstore_free/`(1320×2868 ×8, `tools/store_shots.py`) · 개인정보처리방침(10-26 방침에서 결제 항목만 뺌, 이용 기록·광고 식별자 없음)·이용약관 → 11-17 공지·11-24 시행으로 `privacy.html`·`terms.html` 교체(이전 방침 `privacy_20261026.html`) · 공지 우편 `supabase/stage18_policy_notice.sql` · 공지 문구 `docs/PRIVACY_POLICY.md` 맨 위.
 
 ### 대표님 할 일 (순서대로)
 1. **0.0.10 올리기** — Play Console 0.0.9 프로덕션 초안 삭제 → GitHub Actions `kingday-aab`(0.0.10) 올리기
 2. **광고 포함·데이터 보안 수정** — 앱 콘텐츠 「광고: 없음」, 광고 ID 「사용 안 함」, 데이터 보안에서 광고 ID·앱 상호작용·구매 내역 등 빼기(`docs/PRIVACY_POLICY.md` 끝), 스토어 설명·스크린샷 교체
 3. **결제 상품 판매 중지** — 상품 13개 + `kd_sub_monthly` 비활성화(삭제 X)
 4. **SQL 실행** — `stage16_iap_off.sql` → `stage17_play_log_off.sql`, 그다음 `kd-iap` 함수·결제 Secrets 삭제
-5. 개인정보처리방침·약관 변경 공지(공지일 + 7일 = 시행일) → 날짜를 알려 주면 초안을 `privacy.html`·`terms.html` 로 교체
+5. 개인정보처리방침·약관 변경 공지 — 2026-11-17 공지, 11-24 시행. `privacy.html`·`terms.html` 교체 완료, 공지 우편 `stage18_policy_notice.sql` 실행
+
+> 진행(2026-11-17): 1~4 끝(0.0.10 심사 중, 결제 상품 13개 삭제 — `kd_sub_monthly` 는 화면에서 관리 불가, `kd-iap` 함수·결제 Secrets 4개 삭제). 남은 것: Google Cloud `kingday-iap` 서비스 계정 키·Play 사용자 권한 정리, 아이폰 0.0.5 심사 뒤 무료 버전.

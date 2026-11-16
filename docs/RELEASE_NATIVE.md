@@ -88,7 +88,7 @@
 > 3. **결제 상품 판매 중지**: Play Console → 수익 창출 → 상품 13개 + 정기 결제 `kd_sub_monthly` **판매 중지(비활성화)** — 지우지 말 것(같은 ID를 다시 못 씀). 아이폰은 0.0.5 심사가 끝나고 결제·광고 없는 버전을 낸 뒤 App Store Connect 인앱 구매 「판매 가능」 해제 + 앱 개인정보(추적·광고 데이터) 수정
 > 4. **SQL 실행**: Supabase SQL Editor 에서 `supabase/stage16_iap_off.sql` → `supabase/stage17_play_log_off.sql` 차례로 실행 → Edge Functions 에서 `kd-iap` 삭제 → Secrets 에서 `GOOGLE_SERVICE_ACCOUNT_JSON`·`APPLE_ISSUER_ID`·`APPLE_KEY_ID`·`APPLE_PRIVATE_KEY` 삭제
 > 5. Google Cloud 서비스 계정 `kingday-iap@…` 키 삭제(또는 계정 비활성화), Play Console 사용자 목록에서 그 계정 권한 해제
-> 6. 개인정보처리방침 변경 공지(docs/PRIVACY_POLICY.md 맨 위 공지 문구) — 시행일은 공지 7일 뒤
+> 6. 개인정보처리방침 변경 공지(docs/PRIVACY_POLICY.md 맨 위 공지 문구) — 2026-11-17 공지(`supabase/stage18_policy_notice.sql`), 11-24 시행
 > - 행동 기록 테이블 `supabase/stage15_play_log.sql` 은 2026-11-16 실행했고, 4번의 `stage17_play_log_off.sql` 로 지움
 >
 > 아래는 기록으로만 남김.
