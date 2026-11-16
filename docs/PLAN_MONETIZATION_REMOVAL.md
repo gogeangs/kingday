@@ -237,4 +237,4 @@
 4. **SQL 실행** — `stage16_iap_off.sql` → `stage17_play_log_off.sql`, 그다음 `kd-iap` 함수·결제 Secrets 삭제
 5. 개인정보처리방침·약관 변경 공지 — 2026-11-17 공지, 11-24 시행. `privacy.html`·`terms.html` 교체 완료, 공지 우편 `stage18_policy_notice.sql` 실행
 
-> 진행(2026-11-17): 1~4 끝(0.0.10 심사 중, 결제 상품 13개 삭제 — `kd_sub_monthly` 는 화면에서 관리 불가, `kd-iap` 함수·결제 Secrets 4개 삭제). 아이폰: 심사 대기 0.0.8(결제·광고 포함) 취소 → 0.0.10(빌드 406) 2026-11-17 심사 제출(인앱 상품 없이, Actions `appstore-release` 로 글·스크린샷·빌드, 앱 개인정보 14종 → 7종·추적 없음). App Store 인앱 13개·구독 `kd_sub_monthly` 는 한 번 심사에 냈던 상품이라 애플이 삭제를 막음(`IAP_DELETE_NOT_ALLOWED`) → 「개발자가 취소함」 상태로 남김, 다시 내지 않는 한 판매 불가. 남은 것: Google Cloud `kingday-iap` 서비스 계정 키·Play 사용자 권한 정리.
+> 진행(2026-11-17): 1~4 끝(0.0.10 심사 중, 결제 상품 13개 삭제 — `kd_sub_monthly` 는 화면에서 관리 불가, `kd-iap` 함수·결제 Secrets 4개 삭제). 아이폰: 심사 대기 0.0.8(결제·광고 포함) 취소 → 0.0.10(빌드 406) 2026-11-17 심사 제출(인앱 상품 없이, Actions `appstore-release` 로 글·스크린샷·빌드, 앱 개인정보 14종 → 7종·추적 없음). App Store 인앱 13개·구독 `kd_sub_monthly` 는 한 번 심사에 냈던 상품이라 애플이 삭제를 막음(`IAP_DELETE_NOT_ALLOWED`) → 「개발자가 취소함」 상태로 남김, 다시 내지 않는 한 판매 불가. Google Cloud 서비스 계정 `kingday-iap`(키 포함) 삭제·Play 사용자에서 제거(2026-11-17). Play 0.0.10 게시 완료(2026-11-17). 남은 것: 아이폰 0.0.10 심사 결과.
