@@ -21160,7 +21160,7 @@ function dotOn(t) {
   const g = dotSig(t);
   if (!g) return false;
   if (!S.dotSeen2) S.dotSeen2 = {};
-  if (curTab === t) {
+  if (curTab === t || (t === 'vl' && curTab === 'sh')) {
     S.dotSeen2[t] = g;
     return false;
   }
@@ -24910,7 +24910,7 @@ function attSheet(tab) {
       now = !done && n === mc + 1;
     return `<div class="attc${big ? ' big' : ''}${n % 5 === 0 ? ' lc' : ''}${now ? ' now' : ''}${got ? ' got' : ''}" title="${n}회 · ${rs.map(attNm).join(' + ')}"><em>${n}</em>${attIc(rs[0])}${n % 5 === 0 ? '<i class="lct">전설</i>' : ''}${got ? stp(n === jm) : ''}</div>`;
   }).join('')}</div>
-  <p class="note">큰 보상 · 7회 동료 카드 10장 · 14회 이삭 100 · 21회 영웅 이상 카드 10장 · 28회 이삭 100 + ${mo}월 출석 배지. <b style="color:#ffc23a">5·10·15·20·25·30회</b>엔 <b style="color:#ffc23a">전설 만능 카드 10장</b>을 더 줘요(원하는 전설 동료에게 넣어요). 매달 1일에 새로 시작해요.</p>`;
+  <p class="note">큰 보상 · 7회 동료 카드 10장 · 14회 이삭 250 · 21회 영웅 이상 카드 10장 · 28회 이삭 250 + ${mo}월 출석 배지. 광석 칸엔 이삭 20도 함께. <b style="color:#ffc23a">5·10·15·20·25·30회</b>엔 <b style="color:#ffc23a">전설 만능 카드 10장</b>을 더 줘요(원하는 전설 동료에게 넣어요). 매달 1일에 새로 시작해요.</p>`;
   }
   const bg = tb === 'w' ? a.gw : a.gm;
   const gotHtml =

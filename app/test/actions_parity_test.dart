@@ -81,30 +81,18 @@ void main() {
             s.raw['ucard'] = num.parse(o[1]);
           case 'retires':
             s.raw['retires'] = num.parse(o[1]);
-          case 'adbox':
-            a.adBoxGive();
-          case 'adgem':
-            s.gem = s.gem + 10;
-          case 'passad':
-            a.passAdGive();
           case 'uqchk':
             a.uqCheck();
           case 'stat':
             c.stat(o[1], num.parse(o[2]) - c.st(o[1]));
-          case 'adcard':
-            a.adCardGive();
           case 'att':
             a.attDo(o[1]);
-          case 'attad':
-            a.attAdDo(o[1]);
           case 'attm':
             a.attA()['ym'] = o[1];
             a.attA()['m'] = int.parse(o[2]);
           // 판마다 따로 받기 · 전설 만능 카드 (CONTENT_ATTENDANCE_2.md)
           case 'attb':
             a.attDo(o[1], o[2]);
-          case 'attadb':
-            a.attAdDo(o[1], o[2]);
           case 'attlegacy':
             s.raw['att'] = {'last': o[1], 'w': int.parse(o[2]), 'ym': '2026-10', 'm': int.parse(o[3]), 'ad': o[1], 'got': [{'k': 'gem', 'n': 10}], 'intro': 1, 'tab': 'w'};
           case 'lcard':
@@ -232,8 +220,6 @@ void main() {
           case 'blessfirst':
             final opts = c.blessOpts(a.rng);
             if (opts.isNotEmpty) a.blessPick(opts.first);
-          case 'blessad':
-            a.blessAdGrant();
           case 'wkput':
             a.wkPut(o[1], int.parse(o[2]), o[3]);
           case 'wkout':

@@ -311,7 +311,7 @@ extension VillageCalc on GameCalc {
   }
 
   // ───────────── 별빛 예배당 — 축복 ─────────────
-  Map<String, dynamic> get bless => asMap(s.raw['bless']) ?? (s.raw['bless'] = <String, dynamic>{'d': '', 'used': 0, 'ad': 0, 'k': '', 'until': 0, 'opts': <dynamic>[]});
+  Map<String, dynamic> get bless => asMap(s.raw['bless']) ?? (s.raw['bless'] = <String, dynamic>{'d': '', 'used': 0, 'k': '', 'until': 0, 'opts': <dynamic>[]});
 
   String blessK() {
     final b = asMap(s.raw['bless']);
@@ -328,7 +328,6 @@ extension VillageCalc on GameCalc {
     if (b['d'] != today()) {
       b['d'] = today();
       b['used'] = 0;
-      b['ad'] = 0;
       b['opts'] = <dynamic>[];
     }
     return b;
@@ -337,7 +336,7 @@ extension VillageCalc on GameCalc {
   int blessLeft() {
     if (!truthy(s.bld['chapel'])) return 0;
     final b = blessDay();
-    return math.max(0, 1 + (truthy(b['ad']) ? 1 : 0) - orNum(b['used'], 0)).toInt();
+    return math.max(0, 1 - orNum(b['used'], 0)).toInt();
   }
 
   List<String> blessOpts(KdRandom r) {

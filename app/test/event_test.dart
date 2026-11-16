@@ -143,7 +143,7 @@ void main() {
     expect(c.cardOpen('sobok'), isTrue, reason: '브론이 있으면 카드 탭에 열림');
   });
 
-  test('눈사람 대장: 하루 3번(+광고 1) · 기준 영지 고정 · 단계·첫 돌파 보상', () {
+  test('눈사람 대장: 하루 3번 · 기준 영지 고정 · 단계·첫 돌파 보상', () {
     final c = calcFor(base({'best': 31})), a = GameActions(c, rng: Mulberry32(1));
     final r1 = a.evBossBegin('snow2026');
     expect(r1.err, isNull);
@@ -167,7 +167,7 @@ void main() {
     expect(a.evBossBegin('snow2026').err, isNull);
     expect(a.evBossBegin('snow2026').err, contains('오늘 도전'));
     (c.evS('snow2026')['boss'] as Map)['ad'] = 1;
-    expect(c.evTriesLeft(e), 1);
+    expect(c.evTriesLeft(e), 0, reason: '옛 저장의 광고 +1 칸은 무시 (2026-11-16 광고 없앰)');
   });
 
   test('눈사람 대장 전투: 이기면 끝 사건 · 지면 끝 사건 (영지는 그대로)', () {
@@ -214,7 +214,7 @@ void main() {
     expect(c.bdHas('xmas'), isTrue);
   });
 
-  test('선물 배달: 크리스마스 주간에만 · 하루 3판(+광고 1)', () {
+  test('선물 배달: 크리스마스 주간에만 · 하루 3판', () {
     final c = calcFor(base());
     expect(c.evMgOn(e), isFalse);
     now = kst(2026, 12, 22);
@@ -223,7 +223,7 @@ void main() {
     (c.evS('snow2026')['mg'] as Map)['n'] = 3;
     expect(c.evMgLeft(e), 0);
     (c.evS('snow2026')['mg'] as Map)['ad'] = 1;
-    expect(c.evMgLeft(e), 1);
+    expect(c.evMgLeft(e), 0, reason: '옛 저장의 광고 +1 칸은 무시');
   });
 
   test('외형: 받으면 바로 입음 · 카엘만 · 해 꼬리표', () {

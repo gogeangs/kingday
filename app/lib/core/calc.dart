@@ -185,11 +185,6 @@ class GameCalc {
   /// 2부 공격 배수: 사프란 향신료 +15% · 연합군 맹주 +10%
   num p2Atk() => (_spice ? 1.15 : 1) * allyAtk();
 
-  /// 보스 「광고 보고 다시 도전」 중인 영지 (0 이면 없음, 저장 안 함 — 웹 adRetry)
-  int adRetry = 0;
-
-  /// 다시 도전 중이면 원정대 공격력 ×1.3 (웹 retryAtk)
-  num retryAtk() => adRetry != 0 && adRetry == s.stage ? retryAtkMul : 1;
   num p2Hp() => allyHp();
   /// 2부가 열려 있는지(1부 마왕을 한 번이라도 쓰러뜨림) — 지도 「바다 건너」 칩·동맹 칸 (웹 p2Open)
   bool p2Open() => p2On && asNum(s.raw['capClears']) > 0;
@@ -341,7 +336,7 @@ class GameCalc {
     }
     final fm = 1 + .06 * s.bldLv('mine'), m = allMul();
     return Stats(
-      (10 + s.upLv('atk') * 3 + ga * fm) * (buff('atk') ? 1.2 : 1) * m * trAtk() * this.vBrave() * _ulA * p2Atk() * retryAtk(),
+      (10 + s.upLv('atk') * 3 + ga * fm) * (buff('atk') ? 1.2 : 1) * m * trAtk() * this.vBrave() * _ulA * p2Atk(),
       (100 + s.upLv('hp') * 20 + gh * fm) * (1 + .05 * s.bldLv('diner')) * m * trHp() * this.vHp() * _stew * p2Hp(),
       (1 + s.upLv('spd') * .05) * (buff('spd') ? 1.2 : 1) * _ulS,
       (5 + s.upLv('crit')) / 100 + (buff('crit') ? .1 : 0),
@@ -378,7 +373,7 @@ class GameCalc {
     final l = orNum(s.lv[id], 1);
     final m = allMul() * cwMul(id) * starMul(id) * affMul(id) /* 원정대의 정 ♥마다 +2% */, g = math.pow(compGrow, l - 1), gs = gearSum();
     return Stats(
-      (base.atk * g + gs.a * bless) * (1 + .08 * s.bldLv('apiary')) * (buff('atk') ? 1.2 : 1) * m * trAtk() * this.vBrave() * _ulA * p2Atk() * retryAtk(),
+      (base.atk * g + gs.a * bless) * (1 + .08 * s.bldLv('apiary')) * (buff('atk') ? 1.2 : 1) * m * trAtk() * this.vBrave() * _ulA * p2Atk(),
       (base.hp * g + gs.h * bless) * (1 + .05 * s.bldLv('diner')) * m * trHp() * this.vHp() * _stew * p2Hp(),
       base.aps! * (buff('spd') ? 1.2 : 1) * (_bake ? 1.3 : 1) * _ulS,
       .05 + (buff('crit') ? .1 : 0),
@@ -577,11 +572,11 @@ class GameCalc {
     final cap = offCapH() * 3600;
     final sec = offlineSec();
     if (sec < 60) return (sec: sec, cap: cap, gold: 0);
-    final g = jsFloor(idleGold(sec));
+    final g = jsFloor(idleGold(sec) * offMul); // 2026-11-16 광고 2배를 없애며 ×1.5 (웹 OFF_MUL)
     return (sec: sec, cap: cap, gold: g > 0 ? g : 0);
   }
 
-  // ───────────── 오늘의 할 일·광고 ─────────────
+  // ───────────── 오늘의 할 일 ─────────────
   /// today(): 기기 현지 날짜 'Y-M-D' (월·일 앞자리 0 없음, 웹과 같음)
   String today() {
     final t = DateTime.fromMillisecondsSinceEpoch(now);
@@ -602,15 +597,11 @@ class GameCalc {
     final d = asMap(s.raw['daily']);
     if (d == null || d['d'] != today()) {
       s.raw['daily'] = <String, dynamic>{
-        'd': today(), 'kill': 0, 'box': 0, 'harv': 0, 'claim': <String, dynamic>{}, 'ad': <String, dynamic>{}
+        'd': today(), 'kill': 0, 'box': 0, 'harv': 0, 'claim': <String, dynamic>{}
       };
     }
-    final cur = s.raw['daily'] as Map<String, dynamic>;
-    if (!truthy(cur['ad'])) cur['ad'] = <String, dynamic>{};
-    return cur;
+    return s.raw['daily'] as Map<String, dynamic>;
   }
-
-  int adLeft(String k) => math.max(0, ads[k]!.n - orNum(asMap(daily()['ad'])![k], 0).toInt());
 
   // ───────────── 카드·목표 ─────────────
   /// cardReady(): 별을 올릴 수 있는 동료

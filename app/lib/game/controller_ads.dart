@@ -1,48 +1,13 @@
-// 광고 보상 · 장비 창 · 전투가 보낸 일 처리
+// 전투 속도 · 장비 창 · 전투가 보낸 일 처리 (2026-11-16 광고 보상은 모두 없앰)
 // (game/controller.dart 의 GameController 에서 옮겨 옴 — 상태(필드)는 클래스에 그대로)
 part of 'controller.dart';
 
 extension GameAdsX on GameController {
-  /// 보스에게 졌을 때 「광고 보고 다시 도전」 (하루 5번, 「괜찮아요」 누른 영지는 영지가 바뀔 때까지 다시 묻지 않음 — 웹 retryAsk)
-  void _retryAsk(int st) {
-    if (calc.adLeft('retry') <= 0 || st > land || retrySkip == st) return;
-    scene('보스 다시 도전', '한 번 더 해 볼까요?', [
-      'm:피트|형씨, 응원단 불러올까? 광고 한 편이면 다들 기운이 펄펄 날 거야.',
-      'sys:광고를 보면 바로 보스부터 다시 싸워요. 이번 도전 동안 원정대 공격력 +30% · 오늘 ${calc.adLeft('retry')} / ${ads['retry']!.n}회 남음',
-    ], '▶ 광고 보고 다시 도전', altLabel: '괜찮아요', onAlt: () => retrySkip = st, onGo: () {
-      if (state.stage != st) return;
-      watchAd('retry', () {
-        sim.retryBoss(st);
-        toast('다시 도전! 이번 보스전 동안 공격력 +30%');
-      });
-    });
-  }
-
-  /// 전투 속도 x3 광고 (30분, 하루 4번) — 무료 x2 에서 한 번 더 누르면 (웹 spdAsk)
+  /// 전투 속도 x1↔x2 (무료, 웹 speedBtn)
   void speedTap() {
-    final left = spdAdLeft;
-    if (left > 0) {
-      toast('속도 x3 · ${(left / 60000).ceil()}분 남았어요');
-      return;
-    }
-    if (state.raw['speed'] == 2 && calc.adLeft('spd') > 0) {
-      scene('전투 속도', '더 빠르게 사냥할까요?', [
-        'sys:광고를 보면 30분 동안 x3. 남은 시간은 속도 버튼에 보여요 · 오늘 ${calc.adLeft('spd')} / ${ads['spd']!.n}회 남음',
-      ], '▶ 광고 보고 x3', altLabel: 'x1로', onAlt: () {
-        state.raw['speed'] = 1;
-        refresh();
-      }, onGo: () => watchAd('spd', () {
-            state.raw['adSpd'] = DateTime.now().millisecondsSinceEpoch + adSpdMs;
-            toast('30분 동안 전투 속도 x3!');
-          }));
-      return;
-    }
     state.raw['speed'] = state.raw['speed'] == 2 ? 1 : 2;
     refresh();
   }
-
-  /// 광고 속도 x3 남은 시간(ms)
-  int get spdAdLeft => math.max(0, orNum(state.raw['adSpd'], 0).toInt() - DateTime.now().millisecondsSinceEpoch);
 
   /// 상자 열기 (빠른 버튼·장비 탭)
   void openBox({bool auto = false}) {
@@ -283,8 +248,6 @@ extension GameAdsX on GameController {
         _evBossEnd(ee);
       case FightResetEvent():
         break;
-      case BossLossEvent(:final st):
-        _retryAsk(st);
     }
   }
 }

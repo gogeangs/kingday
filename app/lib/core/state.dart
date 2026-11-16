@@ -30,12 +30,12 @@ class GameState {
         'plots': <dynamic>[], 'seeds': {'wheat': 0, 'carrot': 0, 'pumpkin': 0},
         'items': {'wheat': 0, 'carrot': 0, 'pumpkin': 0, 'fish': 0, 'honey': 0, 'ore': 0, 'egg': 0, 'milk': 0},
         'prod': <String, dynamic>{}, 'buffs': <String, dynamic>{}, 'rankSeen': 0, 'memory': 0, 'retires': 0,
-        // 2026-11-16 결제 없앰: buys·sub·grow 칸 없음. uq2 = 유니크 별 장수(10·15·30·45)로 바뀐 뒤 저장 · adSpd = 광고 속도 x3 끝나는 시각
-        'ucard': 0, 'uq2': 1, 'adSpd': 0, 'gem': 0, 'gemRank': 0,
+        // 2026-11-16 결제·광고 없앰: buys·sub·grow·adSpd 칸 없음. uq2 = 유니크 별 장수(10·15·30·45)로 바뀐 뒤 저장
+        'ucard': 0, 'uq2': 1, 'gem': 0, 'gemRank': 0,
         'gemLord': <String, dynamic>{},
         'daily': {'d': '', 'kill': 0, 'box': 0, 'harv': 0, 'claim': <String, dynamic>{}},
         // 출석체크 (docs/content/ATTENDANCE.md) — 웹과 같은 필드명
-        'att': {'last': '', 'w': 0, 'ym': '', 'm': 0, 'ad': '', 'got': <dynamic>[], 'intro': 0, 'tab': 'w', 'lw': '', 'lm': '', 'gw': <dynamic>[], 'gm': <dynamic>[], 'adw': '', 'adm': ''},
+        'att': {'last': '', 'w': 0, 'ym': '', 'm': 0, 'got': <dynamic>[], 'intro': 0, 'tab': 'w', 'lw': '', 'lm': '', 'gw': <dynamic>[], 'gm': <dynamic>[]},
         'lcard': 0,
         'tickets': {'box': 0, 'box10': 0},
         // 왕도·1부 엔딩 (docs/content/CAPITAL.md 7장)
@@ -43,14 +43,14 @@ class GameState {
         // 도전: 시련의 탑·요일 던전 (docs/content/CHALLENGE.md 7장) — chOpen·tower·dun.star 는 은퇴해도 유지
         'chOpen': 0,
         'tower': {'top': 0, 'day': '', 'pk': 0},
-        'dun': {'d': '', 'used': 0, 'ad': 0, 'star': {'mine': <String, dynamic>{}, 'field': <String, dynamic>{}, 'vault': <String, dynamic>{}}, 'seen': <String, dynamic>{}},
+        'dun': {'d': '', 'used': 0, 'star': {'mine': <String, dynamic>{}, 'field': <String, dynamic>{}, 'vault': <String, dynamic>{}}, 'seen': <String, dynamic>{}},
         // 대륙 지도 (docs/content/WORLDMAP.md 7장)
         'mapIntro': 0, 'fogSeen': 1, 'regSeen': <String, dynamic>{},
         // 은퇴 일기 (docs/content/RETIRE.md 7장) — trait·trReset·retRw 는 은퇴해도 유지, runStart 는 이번 회차 시작 영지
         'trait': <String, dynamic>{}, 'trReset': 0, 'runStart': 1, 'retRw': <String, dynamic>{}, 'diaryIntro': 0,
         // 마을 확장 (docs/content/VILLAGE.md 7장) — 은퇴해도 모두 유지
         'orders': <dynamic>[], 'ordDay': {'d': '', 'gem': 0, 'skip': <String, dynamic>{}},
-        'bless': {'d': '', 'used': 0, 'ad': 0, 'k': '', 'until': 0, 'opts': <dynamic>[]},
+        'bless': {'d': '', 'used': 0, 'k': '', 'until': 0, 'opts': <dynamic>[]},
         'vlv': 1, 'ep': <String, dynamic>{}, 'walkers': {'d': '', 'ids': <dynamic>[]}, 'keepOrder': 1,
         'work': <String, dynamic>{}, 'workIntro': 0, 'workDot': '',
         // 상점·패스 (docs/content/SHOP.md 7장): 원정 일지(시즌 패스, 무료 줄 하나) — 웹과 같은 필드
@@ -155,7 +155,25 @@ class GameState {
     f.remove('buys');
     f.remove('sub');
     f.remove('grow');
-    if (f['adSpd'] is! num || !(f['adSpd'] as num).isFinite) f['adSpd'] = 0;
+    // 광고 흔적 정리 (2026-11-16 광고 없앰, 웹 hydrate): 광고 버프·광고 횟수 칸
+    f.remove('adSpd');
+    asMap(f['daily'])?.remove('ad');
+    asMap(f['dun'])?.remove('ad');
+    asMap(f['bless'])?.remove('ad');
+    final att0 = asMap(f['att']);
+    if (att0 != null) {
+      for (final k in const ['ad', 'adw', 'adm']) {
+        att0.remove(k);
+      }
+    }
+    final evs0 = asMap(f['evs']);
+    if (evs0 != null) {
+      for (final e in evs0.values) {
+        if (e is! Map) continue;
+        if (e['boss'] is Map) (e['boss'] as Map).remove('ad');
+        if (e['mg'] is Map) (e['mg'] as Map).remove('ad');
+      }
+    }
     // 유니크 별 장수가 290장 → 100장으로 줄어든 뒤 처음 읽는 저장: 이미 쓴 카드로 새 기준 별까지 올림 (남은 카드는 그대로, 웹 hydrate)
     if (!truthy(src['uq2'])) {
       f['uq2'] = 1;

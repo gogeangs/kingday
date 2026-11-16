@@ -168,7 +168,6 @@ for (const name of Object.keys(SAVES)) {
     bldEff:Object.fromEntries(BLD.map(b=>[b.k,Array.from({length:b.max+1},(_,l)=>b.eff(l))])),
     price:Object.fromEntries([...CROPS,...GOODS].map(c=>[c.k,itemPrice(c.k)])),
     timeGem:[0,1,179,180,181,3600,43200].map(timeGem),
-    adLeft:Object.fromEntries(Object.keys(ADS).map(k=>[k,adLeft(k)])),
     cardReady:cardReady(),nextGoal:nextGoal()})`);
   // 마을 확장 공식 (부르는 순서도 앱과 같게: blessLeft 는 날짜가 바뀌면 S.bless 를 새로 씀)
   sc.village = run(`({enMax:enMax(),forgeCut:forgeCut(),bldSum:bldSum(),vLv:vLv(),vlRw:vlRw(),

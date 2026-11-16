@@ -288,7 +288,7 @@ class _Tabs extends StatelessWidget {
   }
 
   Widget _tab(GameTab t, bool dot, int n) {
-    final on = g.tab == t;
+    final on = g.tab == t || (t == GameTab.vl && g.tab == GameTab.sh); // 피트의 가게는 마을 안
     Widget icon = kdImg('assets/game/ui/${t.icon}.png', w: 38, h: 38);
     icon = on ? Transform.scale(scale: 1.08, child: icon) : filtered(icon, sat: .75, bright: .9);
     // 칸 전체를 누를 수 있고, 아이콘·글자는 칸 가운데 (2026-10-26 「하단 메뉴가 왼쪽으로 치우침」)

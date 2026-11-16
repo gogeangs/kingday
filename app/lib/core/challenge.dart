@@ -33,7 +33,7 @@ const num pkShow = 1.1;
 /// 배수 글자 (웹 pmTag: 10 미만은 소수 한 자리)
 String pmText(num pm) => pm < 10 ? pm.toStringAsFixed(1) : fmt(pm);
 
-const int towerLim = 30, towerGateLim = 40, towerRushLim = 20, towerGem = 30;
+const int towerLim = 30, towerGateLim = 40, towerRushLim = 20, towerGem = 60; // 2026-11-16 탑 이삭 30 → 60
 
 /// 탑 보스 그림: 지역 번호(ri) + 군단장(lord)/발타사르(balt)/근위대장(guard)/잔영(ghost)
 class TowerArt {
@@ -169,14 +169,13 @@ extension ChallengeCalc on GameCalc {
     if (d['d'] != today()) {
       d['d'] = today();
       d['used'] = 0;
-      d['ad'] = 0;
     }
     return d;
   }
 
   int dunLeft() {
     final d = dunDay();
-    return math.max(0, dunTk + (truthy(d['ad']) ? 1 : 0) - orNum(d['used'], 0).toInt());
+    return math.max(0, dunTk - orNum(d['used'], 0).toInt());
   }
 
   List<String> dunOpenK([int? wd]) {

@@ -1,4 +1,4 @@
-// 피트의 상점 화면: 할 일 보상·무료 선물(광고)·골드 바꾸기·카드 묶음 (결제 상품 없음, 2026-11-16)
+// 마을 「피트의 가게」: 원정 일지 배너·할 일 보상·골드 바꾸기·카드 묶음 (2026-11-16 결제·광고 없음, 상점 탭을 마을로)
 // 폰 폭 320·390 에서 넘침 없이 눌러지고, 웹과 같은 결과(조작 비교는 actions_parity_test)가 나오는지.
 import 'dart:convert';
 
@@ -11,7 +11,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
   for (final w in [320.0, 390.0]) {
-    testWidgets('피트의 상점 · 폭 ${w.toInt()}', (tester) async {
+    testWidgets('피트의 가게 · 폭 ${w.toInt()}', (tester) async {
       tester.view.devicePixelRatio = 3;
       tester.view.physicalSize = Size(w * 3, 760 * 3);
       addTearDown(tester.view.reset);
@@ -53,11 +53,18 @@ void main() {
       }
       expect(g.gemDot, isTrue, reason: '받을 할 일 보상이 있으면 이삭 옆 빨간 점');
 
-      // 상단 이삭을 누르면 상점 (크게 보기로 열어 둠)
+      // 오른쪽 세로 버튼 줄에 상점 버튼은 없음 · 마을 탭 「피트의 가게」 버튼으로 열기 (크게 보기로 열어 둠)
+      expect(find.text('상점'), findsNothing);
       g.state.raw['pgFull'] = true;
-      g.setTab(GameTab.sh);
+      g.setTab(GameTab.vl);
       await frames(3);
-      expect(find.text('피트의 상점'), findsWidgets);
+      await tester.ensureVisible(find.byKey(const ValueKey('vShop')));
+      await frames(1);
+      await tester.tap(find.byKey(const ValueKey('vShop')));
+      await frames(3);
+      expect(g.tab, GameTab.sh);
+      expect(find.text('피트의 가게'), findsWidgets);
+      expect(find.text('원정 일지'), findsWidgets, reason: '원정 일지 배너가 맨 위');
 
       // 할 일: 마물 100마리 · 상자 10번 받기, 작물은 아직
       final gem0 = g.state.gem;
@@ -68,7 +75,7 @@ void main() {
       expect(find.text('+20'), findsOneWidget, reason: '모두 끝내기는 아직');
 
       // 바로 가기 → 골드 바꾸기
-      await press('🌾 이삭 상점');
+      await press('🌾 이삭으로');
       final gold0 = g.state.gold;
       await press('골드 주머니');
       expect(g.state.gold, greaterThan(gold0));
@@ -91,16 +98,11 @@ void main() {
       expect(find.textContaining('₩'), findsNothing);
       expect(find.text('💳 충전·패키지'), findsNothing);
 
-      // 무료 선물: 이삭 +10 (3초 광고, 2026-11-16 +5 → +10)
-      final gem2 = g.state.gem;
-      await tester.ensureVisible(find.text('황금 이삭 +10'));
-      await frames(1);
-      await tester.tap(find.descendant(of: find.ancestor(of: find.text('황금 이삭 +10'), matching: find.byType(Row)).first, matching: find.text('▶ 받기')));
-      for (var i = 0; i < 40; i++) {
-        await tester.pump(const Duration(milliseconds: 100));
-      }
-      expect(g.state.gem, gem2 + 10);
-      expect(find.text('오늘 2 / 3회 남음'), findsWidgets);
+      // 광고는 없음 (2026-11-16 완전 무료)
+      expect(find.textContaining('광고'), findsNothing);
+      expect(find.text('▶ 받기'), findsNothing);
+      // 옛 저장의 광고 횟수 칸은 조용히 지워짐
+      expect((g.state.raw['daily'] as Map).containsKey('ad'), isFalse);
 
       await tester.pumpWidget(const SizedBox());
       g.dispose();

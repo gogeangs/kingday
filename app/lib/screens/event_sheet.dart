@@ -1,6 +1,6 @@
 /// 정기 이벤트 창 (docs/content/EVENT_SNOW.md 4장) — 웹 evSheet·evAttHtml·evBossHtml·evShopHtml·evMgHtml·evBtnTap(잠김)·
 /// evBossEnd(결과 창)·evGiftSheet(산타 피트 선물)·evTreeHit(트리 선물) 의 화면 부분.
-/// 규칙·저장은 core/event.dart (EventCalc·EventAct), 흐름(대기열·광고·도전 시작)은 game/controller_event.dart.
+/// 규칙·저장은 core/event.dart (EventCalc·EventAct), 흐름(대기열·도전 시작)은 game/controller_event.dart.
 library;
 
 import 'dart:math' as math;
@@ -504,7 +504,7 @@ class _EventSheetState extends State<EventSheet> {
   // ── 눈사람 대장 (웹 evBossHtml) ──
   Widget _boss(EventDef e, Map<String, dynamic> x, bool back) {
     final c = g.calc, b = e.boss!, left = c.evTriesLeft(e), xm = c.evXmas(e), bs = x['boss'] as Map, st = asNum(bs['st']).toInt();
-    final mile = asMap(bs['mile']) ?? const <String, dynamic>{}, ad = truthy(bs['ad']);
+    final mile = asMap(bs['mile']) ?? const <String, dynamic>{};
     int? nxtM;
     for (var s = st; s < st + 10; s++) {
       if (b.mile(s) != null && !truthy(mile['$s'])) {
@@ -568,10 +568,6 @@ class _EventSheetState extends State<EventSheet> {
             onTap: left > 0 && !back ? () => g.chainSheet(widget.sheet, () => g.evBossGo(id)) : null,
           ),
         ),
-        if (!ad && !back) ...[
-          const SizedBox(width: 6),
-          KdBuy(kind: BuyKind.ad, minWidth: 0, text: '▶ 광고 보고 +1', onTap: () => g.chainSheet(widget.sheet, () => g.evAdWatch(id, 'boss'))),
-        ],
       ]),
     ]);
   }
@@ -653,7 +649,7 @@ class _EventSheetState extends State<EventSheet> {
   Widget _mg(EventDef e, Map<String, dynamic> x, bool back) {
     final c = g.calc, m = mgEvs[e.mg];
     if (m == null) return const SizedBox.shrink();
-    final on = c.evMgOn(e), left = c.evMgLeft(e), gm = x['mg'] as Map, ad = truthy(gm['ad']);
+    final on = c.evMgOn(e), left = c.evMgLeft(e), gm = x['mg'] as Map;
     final settle = evT(m.settle) ?? 0, settled = c.evNow >= settle;
     return Column(crossAxisAlignment: CrossAxisAlignment.stretch, mainAxisSize: MainAxisSize.min, children: [
       Container(
@@ -672,7 +668,7 @@ class _EventSheetState extends State<EventSheet> {
               _small(on
                   ? [
                       const TextSpan(text: '오늘 남은 판 '),
-                      TextSpan(text: '$left/${m.daily + (ad ? m.ad : 0)}', style: _bGold),
+                      TextSpan(text: '$left/${m.daily}', style: _bGold),
                       const TextSpan(text: ' · 연습판은 무제한'),
                     ]
                   : [TextSpan(text: settled ? '랭킹 정산이 끝났어요 · 보상은 우편함으로' : '크리스마스 주간에 열려요')]),
@@ -705,10 +701,6 @@ class _EventSheetState extends State<EventSheet> {
           ),
           const SizedBox(width: 6),
           Expanded(flex: 2, child: KdBuy(kind: BuyKind.ghost, minWidth: 0, text: '연습', onTap: () => g.chainSheet(widget.sheet, () => g.evMgStart(id, true)))),
-          if (!ad && !back) ...[
-            const SizedBox(width: 6),
-            Expanded(flex: 3, child: KdBuy(kind: BuyKind.ad, minWidth: 0, text: '▶ 광고 +1판', onTap: () => g.chainSheet(widget.sheet, () => g.evAdWatch(id, 'mg')))),
-          ],
         ]),
       ],
       const SizedBox(height: 8),

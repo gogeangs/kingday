@@ -43,10 +43,8 @@ import '../ui/game_widgets.dart';
 import '../ui/report_sheet.dart';
 import '../ui/theme.dart';
 import '../ui/widgets.dart';
-import 'ads.dart';
 import 'feel.dart';
 import 'online.dart';
-import 'play_log.dart';
 
 part 'controller_ads.dart';
 part 'controller_bond.dart';
@@ -72,7 +70,7 @@ enum GameTab {
   up('단련', 'tab_training'),
   vl('마을', 'tab_village'),
   mp('지도', 'tab_map'),
-  sh('피트의 상점', null);
+  sh('피트의 가게', null); // 2026-11-16 상점 탭을 마을로 합침 — 마을 「피트의 가게」 버튼·이삭 버튼으로 열고, 닫으면 마을로
 
   const GameTab(this.title, this.icon);
   final String title;
@@ -132,12 +130,8 @@ class GameController extends ChangeNotifier {
     _saveTimer = Timer.periodic(const Duration(seconds: 5), (_) => save());
     // 8단계: 계정·랭킹·우편·클라우드 (서버가 없으면 꺼짐)
     online = Online(this, server)..start();
-    playLog.boot(); // 행동 기록 (서버가 있을 때만 올림)
     _evBoot(isNew); // 정기 이벤트(눈꽃제): 지난 이벤트 정리·시작 장면·서버 날짜 (웹 evBoot)
   }
-
-  /// 유저 행동 기록 (하루 한 줄 → kd_log_day, docs/PLAN_MONETIZATION_REMOVAL.md 6번)
-  late final PlayLog playLog = PlayLog(this);
 
   /// 계정·랭킹·우편함·클라우드 저장
   late final Online online;
@@ -244,7 +238,6 @@ class GameController extends ChangeNotifier {
     attAuto();
     // 원정 일지: 시즌이 바뀌었으면 넘김
     act((a) => a.passS());
-    playLog.flush();
     refresh();
     // 웹 'online' 이벤트처럼: 돌아오면 계정·우편 다시 확인
     if (online.on) online.ensure();
@@ -278,7 +271,6 @@ class GameController extends ChangeNotifier {
     _toastTimer?.cancel();
     save();
     online.dispose();
-    playLog.dispose();
     game.pauseEngine();
     super.dispose();
   }
@@ -415,8 +407,6 @@ class GameController extends ChangeNotifier {
   bool titleOpen = true;
   bool modalOpen = false;
 
-  /// 보스 「광고 보고 다시 도전」에서 「괜찮아요」를 누른 영지 (그 영지에서는 다시 묻지 않음, 웹 retrySkip)
-  int retrySkip = 0;
 
   /// 시련의 탑 자동 오르기: 이번에 연달아 오른 층·보상 (웹 CH.run)
   TowerRun? towerRun;
@@ -740,54 +730,6 @@ class GameController extends ChangeNotifier {
   /// 단련 탭 「카엘의 은퇴 계획」 상자
   final retireKey = GlobalKey();
 
-  // ── 광고 보상 (AdMob 보상형 광고 · 시험용 ID. 광고가 없으면 3초 가짜 광고로 대신) ──
-  /// watchAd(k, give): 오늘 남은 횟수가 있으면 광고를 보고 보상
-  Future<void> watchAd(String k, void Function() give) async {
-    if (calc.adLeft(k) <= 0) {
-      toast('오늘은 다 봤어요. 내일 다시 받을 수 있어요');
-      return;
-    }
-    if (!await playAd()) return;
-    final ad = asMap(calc.daily()['ad'])!;
-    ad[k] = orNum(ad[k], 0) + 1;
-    playLog.ad(k);
-    give();
-    save();
-    refresh();
-    pump();
-  }
-
-  /// 광고 한 편 보기 (횟수 기록 없이 — 이벤트 광고처럼 저장 칸이 따로인 것, 웹 playAd). 끝까지 봤으면 true
-  Future<bool> playAd() async {
-    final ctx = navKey.currentContext;
-    if (ctx == null || modalOpen) return false;
-    modalOpen = true;
-    notifyListeners();
-    bool? watched;
-    try {
-      watched = await Ads.show();
-      // 보여 줄 광고가 없으면 (인터넷 없음·시험 환경) 웹처럼 3초 가짜 광고
-      if (watched == null && ctx.mounted) {
-        await showGeneralDialog<void>(
-          context: ctx,
-          barrierDismissible: false,
-          barrierColor: const Color(0xE0000000),
-          pageBuilder: (c, _, __) => _AdCountdown(onDone: () => Navigator.of(c).pop()),
-        );
-        watched = true;
-      }
-    } finally {
-      modalOpen = false;
-      notifyListeners();
-    }
-    if (watched != true) {
-      toast('광고를 끝까지 보면 받을 수 있어요');
-      pump();
-      return false;
-    }
-    return true;
-  }
-
   // ── 도전: 시련의 탑 · 요일 던전 (docs/content/CHALLENGE.md) ──
 
   // ── 다음 할 일 안내 (웹 GUIDE.go) ──
@@ -814,53 +756,6 @@ class GameController extends ChangeNotifier {
 
 /// 칭호 그림 (웹 RANKIMG)
 final List<String> rankImg = wRankimg.cast<String>();
-
-/// 테스트 광고 화면: 3, 2, 1 뒤 보상 (웹 #adOv)
-class _AdCountdown extends StatefulWidget {
-  const _AdCountdown({required this.onDone});
-  final VoidCallback onDone;
-
-  @override
-  State<_AdCountdown> createState() => _AdCountdownState();
-}
-
-class _AdCountdownState extends State<_AdCountdown> {
-  int n = 3;
-  Timer? _t;
-
-  @override
-  void initState() {
-    super.initState();
-    _t = Timer.periodic(const Duration(seconds: 1), (_) {
-      if (n <= 1) {
-        _t?.cancel();
-        widget.onDone();
-        return;
-      }
-      setState(() => n--);
-    });
-  }
-
-  @override
-  void dispose() {
-    _t?.cancel();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) => Material(
-        type: MaterialType.transparency,
-        child: Center(
-          child: Column(mainAxisSize: MainAxisSize.min, children: [
-            Text('광고 자리 · 테스트 모드', style: KdText.body(12, color: const Color(0xFF97A2C3))),
-            const SizedBox(height: 6),
-            Text('$n', style: KdText.display(56, color: const Color(0xFFFFC94A))),
-            const SizedBox(height: 6),
-            Text('초 뒤 보상을 받아요', style: KdText.body(14, color: Colors.white)),
-          ]),
-        ),
-      );
-}
 
 /// 방치 보상 창의 작은 「2배」 버튼 (웹 .dblrow button)
 class _DblBtn extends StatelessWidget {

@@ -103,6 +103,8 @@ class VlPage extends StatelessWidget {
     final c = g.calc, todos = g.vTodos();
     return Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
       _LvBar(g),
+      const SizedBox(height: 8),
+      _ShopBtn(g),
       const SizedBox(height: 10),
       // 할 일 칩은 지도 안 아래쪽 가운데에 띄움 → 지도가 한 화면에 들어옴 (웹 .vtodo, 2026-10-23 마을 화면 정리)
       Stack(children: [
@@ -160,6 +162,39 @@ class _Chip extends StatelessWidget {
           ),
           child: Text(t, style: KdText.body(12.5, weight: FontWeight.w700, color: all || gold ? KdColors.goldInk : const Color(0xFFFFE6A8))),
         ),
+      );
+}
+
+/// 마을 「피트의 가게」 버튼 (웹 #vShop, 2026-11-16 상점 탭을 마을로 합침) — 받을 것이 있으면 빨간 점
+class _ShopBtn extends StatelessWidget {
+  const _ShopBtn(this.g);
+  final GameController g;
+
+  @override
+  Widget build(BuildContext context) => GestureDetector(
+        key: const ValueKey('vShop'),
+        onTap: () => g.setTab(GameTab.sh),
+        child: Stack(clipBehavior: Clip.none, children: [
+          Container(
+            padding: const EdgeInsets.fromLTRB(12, 6, 12, 6),
+            decoration: BoxDecoration(
+              gradient: const LinearGradient(colors: [Color(0xFF2A2216), Color(0xFF1D1810)], begin: Alignment.topCenter, end: Alignment.bottomCenter),
+              border: Border.all(color: const Color(0x73FFC94A)),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Row(children: [
+              kdImg('assets/game/ui/icon_shop.png', w: 30, h: 30),
+              const SizedBox(width: 8),
+              Text('피트의 가게', style: KdText.body(14, weight: FontWeight.w700)),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Text('원정 일지 · 오늘의 할 일 · 동료 카드',
+                    textAlign: TextAlign.right, maxLines: 1, overflow: TextOverflow.ellipsis, style: KdText.body(12, color: KdColors.muted, weight: FontWeight.w600)),
+              ),
+            ]),
+          ),
+          if (g.shopSig().isNotEmpty) const Positioned(top: -3, right: -3, child: KdRedDot()),
+        ]),
       );
 }
 
@@ -712,10 +747,8 @@ class _Bless extends StatelessWidget {
           ]));
         }),
         KdNote('고른 축복은 ${fmtT(c.blessMs() / 1000)} 동안 이어져요${c.workBonus('chapel') > 0 ? ' (일꾼 포함)' : ''}. 다른 축복을 받으면 바뀌고, 같은 축복이면 시간만 새로 시작해요.'),
-      ] else if (truthy(b['ad']) || c.adLeft('bless') <= 0)
-        const KdNote('오늘 받을 수 있는 축복을 모두 받았어요. 내일 0시에 다시 받을 수 있어요.')
-      else
-        KdBuy(kind: BuyKind.ad, minWidth: 0, text: '▶ 광고 보고 축복 한 번 더', onTap: () => g.watchAd('bless', () => g.act((a) => a.blessAdGrant()))),
+      ] else
+        const KdNote('오늘 받을 수 있는 축복을 모두 받았어요. 내일 0시에 다시 받을 수 있어요.'),
     ]);
   }
 }
@@ -1145,13 +1178,6 @@ class _Farm extends StatelessWidget {
           costIcon: gemIcon,
           onTap: () => g.act((a) => a.growNow()),
         ),
-        if (c.adLeft('farm') > 0)
-          KdBuy(
-            kind: BuyKind.ad,
-            minWidth: 0,
-            text: '▶ 광고 보고 바로 키우기 · 오늘 ${c.adLeft('farm')}회',
-            onTap: () => g.watchAd('farm', () => g.act((a) => a.growByAd())),
-          ),
       ],
       const KdNote('씨앗은 마물이 가끔 떨어뜨려요. 작물은 게임을 꺼 둔 동안에도 자라요.'),
     ]);
