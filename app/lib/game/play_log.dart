@@ -21,7 +21,7 @@ class PlayLog {
 
   Map<String, dynamic>? _all;
   bool _busy = false;
-  Timer? _timer;
+  Timer? _timer, _first;
 
   Map<String, dynamic> _load() {
     if (_all != null) return _all!;
@@ -68,16 +68,23 @@ class PlayLog {
     r['open'] = 0;
   }
 
-  /// 접속할 때: 오늘 줄을 만들고, 이삭 쓴 곳 기록을 잇고, 조금 뒤·10분마다 올림
+  /// 접속할 때: 오늘 줄을 만들고, 이삭 쓴 곳 기록을 잇고, 서버가 있으면 조금 뒤·10분마다 올림
   void boot() {
     GameActions.onGemOut = out;
     _day();
     _save();
-    Timer(const Duration(seconds: 8), flush);
+    if (!g.online.on) return; // 서버 없음(시험 환경 등): 기기에만 모아 둠
+    _first = Timer(const Duration(seconds: 8), flush);
     _timer?.cancel();
     _timer = Timer.periodic(const Duration(minutes: 10), (_) {
       if (!g.backgrounded) flush();
     });
+  }
+
+  void dispose() {
+    _first?.cancel();
+    _timer?.cancel();
+    if (GameActions.onGemOut == out) GameActions.onGemOut = null;
   }
 
   /// 광고 자리별 시청 (웹 lgAd)

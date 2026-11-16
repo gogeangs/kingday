@@ -125,7 +125,6 @@ class GameController extends ChangeNotifier {
     }
     acts.passS();
     act((a) => a.uqCheck()); // 유니크 합류 조건: 예전 저장이 이미 넘었으면 접속할 때 합류
-    playLog.boot();
     calc.pfCheck();
     // 웹 start() 끝의 events(): 옛 기록·다른 곳에서 가져온 기록이면 밀린 이야기·칭호를 바로 보여 줌
     sim.runStoryEvents();
@@ -133,6 +132,7 @@ class GameController extends ChangeNotifier {
     _saveTimer = Timer.periodic(const Duration(seconds: 5), (_) => save());
     // 8단계: 계정·랭킹·우편·클라우드 (서버가 없으면 꺼짐)
     online = Online(this, server)..start();
+    playLog.boot(); // 행동 기록 (서버가 있을 때만 올림)
     _evBoot(isNew); // 정기 이벤트(눈꽃제): 지난 이벤트 정리·시작 장면·서버 날짜 (웹 evBoot)
   }
 
@@ -278,6 +278,7 @@ class GameController extends ChangeNotifier {
     _toastTimer?.cancel();
     save();
     online.dispose();
+    playLog.dispose();
     game.pauseEngine();
     super.dispose();
   }
