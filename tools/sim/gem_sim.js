@@ -83,6 +83,9 @@
   let day = {};
   const log = [],
     weeks = [];
+  let gOff = 0,
+    gOffAd = 0,
+    gAct = 0;
   let wk = {},
     stall = 0,
     best0 = 1,
@@ -114,7 +117,15 @@
       if (d >= PL.harvDay) dd.harv = Math.max(dd.harv || 0, 10);
       for (const m of MISSIONS) if (misCan(m)) { dd.claim[m.k] = true; gainGem(m.r, m.n); passAdd('mis'); }
       if (misCan(null)) { dd.claim.all = true; gainGem(MIS_ALL); passAdd('misall'); }
-      S.gold += idleGold((16 / PL.n) * 3600);
+      /* 접속 사이 방치(하루 16시간 깨어 있음을 접속 수로 나눔 · 여관 최대 시간까지): 골드만. 광고 2배는 하루 ADS.offline.n 번까지 (PL.ad) */
+      {
+        const og = idleGold(Math.min((16 / PL.n) * 3600, offCapH() * 3600)) * (PL.offMul || 1),
+          dbl = PL.ad && s < 2 ? og : 0;
+        S.gold += og + dbl;
+        gOff += og;
+        gOffAd += dbl;
+        gAct += goldRate() * PL.min * 60;
+      }
     }
     /* 피트의 선물: 이삭 광고 */
     if (PL.ad) {
@@ -156,7 +167,8 @@
       best0 = S.best;
     }
     const tot = Object.values(day).reduce((a, b) => a + b, 0);
-    log.push([d, tot, Math.min(S.best - 1, 50), S.retires || 0, towerTop, JSON.stringify(day)]);
+    log.push([d, tot, Math.min(S.best - 1, 50), S.retires || 0, towerTop, JSON.stringify(day), Math.round(gAct), Math.round(gOff), Math.round(gOffAd)]);
+    gAct = gOff = gOffAd = 0;
     for (const k in day) wk[k] = (wk[k] || 0) + day[k];
     if (d % 7 === 0) { weeks.push(wk); wk = {}; }
   }
