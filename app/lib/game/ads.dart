@@ -19,8 +19,8 @@ class Ads {
   static const testIos = 'ca-app-pub-3940256099942544/1712485313';
 
   /// 실제 광고 단위 (AdMob 「왕이 되는 그날까지」 · 보상형 광고)
-  static const realAndroid = 'ca-app-pub-8720405407394137/5228095656';
-  static const realIos = 'ca-app-pub-8720405407394137/7880637162';
+  static const realAndroid = 'ca-app-pub-8634871594482105/4005555466';
+  static const realIos = 'ca-app-pub-8634871594482105/7144910032';
 
   /// 실제 폰에서만 true (main.dart)
   static bool live = false;

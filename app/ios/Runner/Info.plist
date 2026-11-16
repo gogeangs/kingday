@@ -87,7 +87,7 @@
 		<false/>
 		<!-- AdMob 앱 ID (공개돼도 되는 값) -->
 		<key>GADApplicationIdentifier</key>
-		<string>ca-app-pub-8720405407394137~8148230470</string>
+		<string>ca-app-pub-8634871594482105~6443357403</string>
 		<!-- 광고 추적 허용(ATT) 창 문구 -->
 		<key>NSUserTrackingUsageDescription</key>
 		<string>허용하면 관심사에 더 맞는 광고가 나와요. 허용하지 않아도 광고 보상은 똑같이 받아요.</string>
