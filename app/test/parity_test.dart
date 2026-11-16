@@ -257,7 +257,6 @@ void main() {
         same({for (final b in buildings) b.k: [for (var l = 0; l <= b.max; l++) c.bldEff(b.k, l)]}, e['bldEff'], 'bldEff');
         same({for (final k in itemName.keys) k: c.itemPrice(k)}, e['price'], 'itemPrice');
         same([for (final s in [0, 1, 179, 180, 181, 3600, 43200]) GameCalc.timeGem(s)], e['timeGem'], 'timeGem');
-        same({for (final k in ads.keys) k: c.adLeft(k)}, e['adLeft'], 'adLeft');
         same(c.cardReady(), e['cardReady'], 'cardReady');
         same(c.nextGoal(), e['nextGoal'], 'nextGoal');
       });

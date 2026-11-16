@@ -30,7 +30,7 @@ extension GameReturnX on GameController {
 
   Future<void> _offlineSheet(BuildContext ctx, ({num sec, num cap, num gold}) r) => showKdSheet<void>(ctx, closable: false, builder: (c) {
         final g = r.gold, hr = (r.sec / 3600).floor(), mn = (r.sec % 3600 / 60).floor(), capH = (r.cap / 3600).round();
-        final full = r.sec >= r.cap, adN = calc.adLeft('offline');
+        final full = r.sec >= r.cap;
         void twice() {
           state.gold = state.gold + g;
           toast('세금 2배! 골드 +${fmt(g)}');
@@ -60,17 +60,6 @@ extension GameReturnX on GameController {
             ),
             // 2배 받기는 작은 줄 두 개, 기본은 「받기」 하나 (웹 .dblrow, UX 점검 5)
             Row(children: [
-              if (adN > 0) ...[
-                Expanded(
-                  child: _DblBtn(
-                    text: '▶ 광고 2배',
-                    sub: '· $adN회',
-                    // 창을 닫고 「닫힌 다음」 광고를 띄움 (바로 부르면 창이 아직 열린 것으로 보여 광고가 안 뜸)
-                    onTap: () => chainSheet(c, () => watchAd('offline', twice)),
-                  ),
-                ),
-                const SizedBox(width: 6),
-              ],
               Expanded(
                 child: _DblBtn(
                   icon: gemIcon,

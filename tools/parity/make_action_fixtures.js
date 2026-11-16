@@ -65,7 +65,6 @@ function op(o) {
     case 'oskip': return F('ordSkip')(+a);
     case 'keep': return w.run(`S.keepOrder=${+a}`);
     case 'blessfirst': return w.run('(()=>{const o=blessOpts();if(o.length)blessPick(o[0])})()');
-    case 'blessad': return w.run('(()=>{blessDay().ad=1;S.bless.opts=[]})()');
     case 'wkput': return F('wkPut')(a, +b, c);
     case 'wkout': return w.run(`S.work[${q(a)}]=wkIds(${q(a)}).filter(x=>x!==${q(b)})`);
     case 'wkauto': return F('wkAuto')(a === '1');
@@ -83,18 +82,12 @@ function op(o) {
     case 'kseat': return F('setKaelSeat')(a);
     case 'ucard': return w.run(`S.ucard=${+a}`);
     case 'retires': return w.run(`S.retires=${+a}`);
-    case 'adbox': return w.run('(()=>{S.gold+=boxCost();openBox(false)})()');
-    case 'adgem': return w.run('(()=>{S.gem=(S.gem||0)+10})()');
-    case 'passad': return w.run(`passAdd('ad',PASS.ad)`);
     case 'uqchk': return F('uqCheck')();
     case 'stat': return w.run(`S.stat=S.stat||{};S.stat[${q(a)}]=${+b}`);
-    case 'adcard': return w.run("(()=>{gainCards(3,'shop',1)})()");
     case 'att': return F('attDo')(a);
-    case 'attad': return F('attAdDo')(a);
     case 'attm': return w.run(`(()=>{const x=attA();x.ym=${q(a)};x.m=${+b}})()`);
     // 판마다 따로 받기 · 전설 만능 카드 (CONTENT_ATTENDANCE_2.md)
     case 'attb': return F('attDo')(a, b);
-    case 'attadb': return F('attAdDo')(a, b);
     case 'attlegacy': return w.run(`S.att={last:${q(a)},w:${+b},ym:'2026-10',m:${+c},ad:${q(a)},got:[{k:'gem',n:10}],intro:1,tab:'w'}`);
     case 'lcard': return w.run(`S.lcard=${+a}`);
     case 'lcuse': return F('lcardUse')(a);
@@ -138,20 +131,19 @@ const CASES = {
   // 마을 확장: 주문(납품·덤·이삭 한도·다른 주문·1시간 갱신)·창고 판매 주문 재료 남기기·축복(광고 1번 더)·일꾼(추천·편성으로 빠짐)·마을 레벨 보상·새 요리·대장간
   village2: [base.vill, ['otick', 'odeliver:0', 'odeliver:2', 'odeliver:3', 'items:fish:500', 'items:egg:50', 'items:milk:60', 'otick', 'odeliver:0', 'odeliver:1', 'odeliver:2', 'oskip:1', 'oskip:1',
     'time:' + 61 * M, 'otick', 'oskip:1', 'items:ore:999', 'items:honey:999', 'items:wheat:999', 'items:pumpkin:999', 'otick', 'odeliver:0', 'odeliver:1', 'odeliver:2', 'odeliver:3', 'odeliver:4',
-    'keep:1', 'sellall', 'otick', 'keep:0', 'sellall', 'blessfirst', 'blessfirst', 'blessad', 'blessfirst', 'blessad',
-    'wkauto:0', 'wkput:inn:0:haral', 'set:fisher:haral', 'wkout:mine:gordon', 'wkauto:1', 'wkclear', 'wkauto:0', 'bld:market:9', 'otick', 'vlclaim', 'bld:chapel:10', 'vlclaim', 'vlclaim',
+    'keep:1', 'sellall', 'otick', 'keep:0', 'sellall', 'blessfirst', 'blessfirst', 'blessfirst', 'wkauto:0', 'wkput:inn:0:haral', 'set:fisher:haral', 'wkout:mine:gordon', 'wkauto:1', 'wkclear', 'wkauto:0', 'bld:market:9', 'otick', 'vlclaim', 'bld:chapel:10', 'vlclaim', 'vlclaim',
     'items:milk:10', 'items:carrot:10', 'items:wheat:10', 'cook:soup', 'items:egg:9', 'items:pumpkin:9', 'cook:pancake', 'time:' + 30 * M,
     'en:weapon', 'en:weapon', 'en:weapon', 'cw:haral', 'bld:forge:0', 'en:helm', 'gem:0', 'ensure', 'seeds:wheat:9', 'plantall', 'time:' + 3 * M, 'harvre', 'time:' + 2 * H]],
   // 첫 공사: 이삭 10개 선물 → 바로 완료
   firstBuild: [Object.assign({}, base.fresh, { stage: 3, best: 3, done: { marta: true }, bld: { farm: 1 } }), ['gold:100000', 'ensure', 'build:inn', 'bfin', 'build:farm', 'build:inn', 'time:' + 2 * H, 'gem:3', 'build:farm', 'bfin', 'time:' + 24 * H]],
   // 희귀 동료 3명(토비·카라·베릴) 맞이하기·별·편성 + 카드 묶음 나눠 받기
-  rares: [base.mid, ['card:toby:30', 'rec:toby', 'card:kara:30', 'rec:kara', 'card:beryl:45', 'rec:beryl', 'rec:beryl', 'set:fisher:toby', 'set:cook:kara', 'set:miner:beryl', 'gem:2000', 'cp:1', 'cp:1', 'wish:kara', 'cp:1', 'cp:0', 'adcard', 'en:weapon', 'cw:haral']],
+  rares: [base.mid, ['card:toby:30', 'rec:toby', 'card:kara:30', 'rec:kara', 'card:beryl:45', 'rec:beryl', 'rec:beryl', 'set:fisher:toby', 'set:cook:kara', 'set:miner:beryl', 'gem:2000', 'cp:1', 'cp:1', 'wish:kara', 'cp:1', 'cp:0', 'en:weapon', 'cw:haral']],
   commons: [base.mid, ['card:mora:30', 'rec:mora', 'card:melo:30', 'rec:melo', 'card:pori:50', 'rec:pori', 'rec:pori', 'set:fisher:mora', 'set:keeper:melo', 'set:cook:pori', 'cp:1', 'wish:pori', 'cp:1']],
   commons2: [base.mid, ['card:rollo:30', 'rec:rollo', 'card:crab:30', 'rec:crab', 'card:birch:30', 'rec:birch', 'card:gram:50', 'rec:gram', 'rec:gram', 'set:miner:rollo', 'set:fisher:crab', 'set:keeper:birch', 'set:cook:gram', 'cp:1', 'wish:gram', 'cp:1']],
   // 피트의 상점: 할 일 보상·무료 선물·골드 바꾸기·카드 묶음 (2026-11-16 결제 상품 없앰)
   shop: [base.mid, ['mis:kill', 'daily:kill:150', 'mis:kill', 'mis:kill', 'daily:box:10', 'daily:harv:12', 'mis:all', 'mis:box', 'mis:harv', 'mis:all', 'mis:all',
     'gem:20', 'gx:g1', 'gx:g2', 'gem:5000', 'gx:g1', 'gx:g2', 'gx:g3', 'cp:0', 'cp:1', 'cp:1', 'cp:0',
-    'adgem', 'adcard', 'adbox', 'sell', 'gold:0', 'adbox', 'equip']],
+    'sell', 'gold:0', 'equip']],
   // 유니크 카엘 촌장: 은퇴 10번 무료 합류 → 카엘 자리 → 유니크 카드로 별(10·15·30·45) → 카엘로 되돌림
   chief: [base.mid, ['retires:9', 'chiefchk', 'retires:10', 'chiefchk', 'kseat:kael_chief', 'chiefup', 'ucard:9', 'chiefup', 'ucard:10', 'chiefup', 'ucard:100', 'chiefup', 'chiefup', 'chiefup', 'chiefup', 'up:hp', 'kseat:kael', 'kseat:kael', 'kseat:kael_chief']],
   chief10: [base.late, ['chiefchk', 'retires:9', 'chiefchk', 'retires:10', 'chiefchk', 'chiefchk', 'kseat:kael_chief', 'chiefup']],
@@ -182,27 +174,23 @@ const CASES = {
     'otick', 'odeliver:0', 'odeliver:1', 'odeliver:2', 'ucard:20', 'uqup:lucian', 'odeliver:3', 'odeliver:4']],
   // 출석체크: 7일 판 반복·한달 판 초기화·건너뛰기·같은 날·날짜 되돌리기·광고 2배·큰 보상(7·14·21·28)·배지·무료권 사용
   attend: [base.mid, ['att:2026-10-21', 'att:2026-10-22', 'att:2026-10-23', 'att:2026-10-24', 'att:2026-10-25', 'att:2026-10-26', 'att:2026-10-27',
-    'attad:2026-10-27', 'attad:2026-10-27', 'att:2026-10-27', 'att:2026-10-29', 'att:2026-10-28', 'att:2026-11-1', 'att:2026-11-2',
-    'attm:2026-11:6', 'att:2026-11-3', 'attad:2026-11-3', 'attm:2026-11:13', 'att:2026-11-4', 'attm:2026-11:20', 'att:2026-11-5', 'attad:2026-11-5',
-    'attm:2026-11:27', 'att:2026-11-6', 'attad:2026-11-6', 'att:2026-11-7', 'att:2026-11-30', 'att:2026-12-1', 'att:2026-1-5',
+    'att:2026-10-27', 'att:2026-10-29', 'att:2026-10-28', 'att:2026-11-1', 'att:2026-11-2',
+    'attm:2026-11:6', 'att:2026-11-3', 'attm:2026-11:13', 'att:2026-11-4', 'attm:2026-11:20', 'att:2026-11-5', 'attm:2026-11:27', 'att:2026-11-6', 'att:2026-11-7', 'att:2026-11-30', 'att:2026-12-1', 'att:2026-1-5',
     'tk:box:2', 'box', 'sell', 'box', 'sell', 'box', 'sell', 'tk:box10:1', 'gem:0', 'open10', 'open10']],
   // 출석 판마다 받기: 같은 판 두 번 막기 · 판별 광고 2배(하루 판마다 1번) · 5배수 회차 전설 만능 카드(2배 포함) · 만능 카드 넣기(모자란 만큼만)
   //   · 별 다 채운/안 열린 동료에겐 안 들어감 · 옛 저장(last 하나) 넘기기 · 날짜 되돌리기
-  attendBoard: [base.late, ['attb:2026-10-21:w', 'attb:2026-10-21:w', 'attb:2026-10-21:m', 'attadb:2026-10-21:m', 'attadb:2026-10-21:m', 'attadb:2026-10-21:w',
-    'attm:2026-10:9', 'attb:2026-10-22:m', 'attadb:2026-10-22:m', 'lcuse:brida', 'lcuse:makrye', 'lcuse:malbong', 'lcuse:deokbae', 'lcuse:naia', 'lcuse:bernard', 'lcuse:elm', 'lcuse:hagrin',
-    'lcuse:luka', 'lcard:500', 'lcuse:brida', 'lcuse:brida', 'attb:2026-10-22:w', 'attb:2026-10-20:m', 'attm:2026-10:29', 'attb:2026-10-23:m', 'attb:2026-10-23:w', 'attadb:2026-10-23:w',
-    'att:2026-10-24', 'attad:2026-10-24', 'attm:2026-10:14', 'att:2026-10-25', 'attlegacy:2026-10-26:3:12', 'attb:2026-10-26:w', 'attb:2026-10-26:m', 'attadb:2026-10-26:w',
-    'attb:2026-10-27:m', 'attb:2026-10-27:w']],
+  attendBoard: [base.late, ['attb:2026-10-21:w', 'attb:2026-10-21:w', 'attb:2026-10-21:m', 'attm:2026-10:9', 'attb:2026-10-22:m', 'lcuse:brida', 'lcuse:makrye', 'lcuse:malbong', 'lcuse:deokbae', 'lcuse:naia', 'lcuse:bernard', 'lcuse:elm', 'lcuse:hagrin',
+    'lcuse:luka', 'lcard:500', 'lcuse:brida', 'lcuse:brida', 'attb:2026-10-22:w', 'attb:2026-10-20:m', 'attm:2026-10:29', 'attb:2026-10-23:m', 'attb:2026-10-23:w', 'att:2026-10-24', 'attm:2026-10:14', 'att:2026-10-25', 'attlegacy:2026-10-26:3:12', 'attb:2026-10-26:w', 'attb:2026-10-26:m', 'attb:2026-10-27:m', 'attb:2026-10-27:w']],
   // 전설 동료가 아직 안 열렸을 때 만능 카드 대신 이삭 300 (한달 판 5회)
-  attendLcFresh: [base.fresh, ['attm:2026-10:4', 'attb:2026-10-21:m', 'attadb:2026-10-21:m', 'lcuse:brida']],
+  attendLcFresh: [base.fresh, ['attm:2026-10:4', 'attb:2026-10-21:m', 'lcuse:brida']],
   // 출석체크: 카드 받을 동료가 없을 때 이삭으로 대체 (7일 판 6칸, 한달 판 7회)
-  attendFresh: [base.fresh, ['att:2026-10-21', 'att:2026-10-22', 'att:2026-10-23', 'att:2026-10-24', 'att:2026-10-25', 'att:2026-10-26', 'att:2026-10-27', 'attad:2026-10-27']],
+  attendFresh: [base.fresh, ['att:2026-10-21', 'att:2026-10-22', 'att:2026-10-23', 'att:2026-10-24', 'att:2026-10-25', 'att:2026-10-26', 'att:2026-10-27']],
   // 카드 동료가 아직 없을 때 카드 묶음
-  shopEarly: [base.fresh, ['gem:999', 'cp:0', 'cp:1', 'adcard', 'mis:all']],
+  shopEarly: [base.fresh, ['gem:999', 'cp:0', 'cp:1', 'mis:all']],
   // 원정 일지(무료 줄 하나): 하루 한도(출석·할 일·영지·마물 1,000·탑·던전·주문·광고) → 다음 날 → 칸 받기(유료 줄 칸은 못 받음)
   //   → 20단계·시즌 테두리·유니크 카드 → 시즌 바뀜(남은 보상 우편)·우편 받기
   pass: [base.mid, ['padd:att', 'started', 'padd:att', 'padd:att', ...rep('padd:boss', 12), 'pkill:2500', ...rep('padd:mis', 4), 'padd:misall', 'padd:misall',
-    ...rep('padd:tower', 4), ...rep('padd:dun', 4), ...rep('padd:ord', 4), ...rep('passad', 4), 'time:' + 24 * H, 'padd:att', 'padd:boss', 'ppt:750', 'pclaim:f:0', 'pclaim:p:1', 'pclaim:f:9',
+    ...rep('padd:tower', 4), ...rep('padd:dun', 4), ...rep('padd:ord', 4), 'time:' + 24 * H, 'padd:att', 'padd:boss', 'ppt:750', 'pclaim:f:0', 'pclaim:p:1', 'pclaim:f:9',
     'pclaim', 'ppt:2000', 'pclaim', 'pclaim', 'time:' + 9 * 24 * H, 'time:' + 24 * H, 'padd:att',
     'time:' + 14 * 24 * H, 'padd:boss', 'ppt:640', 'pclaim:f:0', 'pclaim:p:3', 'time:' + 14 * 24 * H, 'padd:att', 'pmail', 'pmail']],
   // 카드 받을 동료가 없을 때: 원정 일지 카드 → 이삭 (1장당 3)

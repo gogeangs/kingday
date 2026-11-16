@@ -1,4 +1,4 @@
-/// 출석체크 「피트의 출석부」 — 웹 index.html 의 attDo()/attAdDo()/attGive()/attCards() 를 그대로 옮긴 것.
+/// 출석체크 「피트의 출석부」 — 웹 index.html 의 attDo()/attGive()/attCards() 를 그대로 옮긴 것.
 /// 기획: docs/content/ATTENDANCE.md · 저장 필드 S.att · S.tickets (웹과 같은 이름)
 ///
 /// 하루 한 번 출석 → 7일 판(7칸 반복)·한달 판(매달 1일 새로, 최대 31칸)에 동시에 도장.
@@ -16,20 +16,20 @@ import 'js.dart';
 /// 7일 판 보상 (1~7칸)
 const List<List<Map<String, Object>>> attWeek = [
   [{'k': 'gold', 'h': 1}],
-  [{'k': 'gem', 'n': 10}],
+  [{'k': 'gem', 'n': 40}], // 2026-11-16 10 → 40 (광고 이삭 대신)
   [{'k': 'tbox', 'n': 3}],
   [{'k': 'ore', 'n': 20}],
-  [{'k': 'gem', 'n': 10}],
+  [{'k': 'gem', 'n': 40}], // 2026-11-16 10 → 40 (광고 이삭 대신)
   [{'k': 'card', 'n': 3, 'alt': 30}],
-  [{'k': 'gem', 'n': 30}, {'k': 'tbox10', 'n': 1}, {'k': 'ucard', 'n': 1}], // 2026-11-16 출석 7일마다 유니크 카드 1장
+  [{'k': 'gem', 'n': 100}, {'k': 'tbox10', 'n': 1}, {'k': 'ucard', 'n': 1}], // 2026-11-16 이삭 30 → 100 · 유니크 카드 1장
 ];
 
 /// 한달 판 큰 보상 (7·14·21·28회)
 const Map<int, List<Map<String, Object>>> attBig = {
   7: [{'k': 'card', 'n': 10, 'alt': 100}],
-  14: [{'k': 'gem', 'n': 100}],
+  14: [{'k': 'gem', 'n': 250}], // 2026-11-16 100 → 250
   21: [{'k': 'ecard', 'n': 10, 'alt': 100}],
-  28: [{'k': 'gem', 'n': 100}, {'k': 'badge'}],
+  28: [{'k': 'gem', 'n': 250}, {'k': 'badge'}], // 100 → 250
 };
 const _attG = [1, 4, 10, 13, 17, 20, 24, 27], _attS = [2, 5, 9, 12, 16, 19, 23, 26];
 
@@ -47,7 +47,7 @@ List<Map<String, Object>> _attMonth0(int n) =>
             ? const [{'k': 'gold', 'h': .5}]
             : _attS.contains(n)
                 ? const [{'k': 'seed'}]
-                : const [{'k': 'ore', 'n': 10}]);
+                : const [{'k': 'ore', 'n': 10}, {'k': 'gem', 'n': 20}]); // 2026-11-16 광석 칸 8곳에 이삭 20
 
 /// today() 형식('2026-1-5', 0 없음)을 숫자로 바꿔 비교
 int attDnum(String? t) {
@@ -140,9 +140,8 @@ extension Attendance on GameActions {
     final last0 = a['last'];
     if (last0 is String && last0.isNotEmpty && !_has(a['lw']) && !_has(a['lm'])) {
       a['lw'] = a['lm'] = last0;
-      if (a['ad'] == last0) a['adw'] = a['adm'] = last0;
     }
-    const d = {'last': '', 'w': 0, 'ym': '', 'm': 0, 'ad': '', 'intro': 0, 'tab': 'w', 'lw': '', 'lm': '', 'adw': '', 'adm': ''};
+    const d = {'last': '', 'w': 0, 'ym': '', 'm': 0, 'intro': 0, 'tab': 'w', 'lw': '', 'lm': ''};
     for (final e in d.entries) {
       a[e.key] ??= e.value;
     }
@@ -227,26 +226,6 @@ extension Attendance on GameActions {
     if (a['lw'] == t && a['lm'] == t) a['last'] = t;
     if (first) c.stat('att', 1);
     return AttResult(wd, md, rows, b: b, first: first);
-  }
-
-  /// 웹 attAdDo(t, b): 광고 2배 — 그 판에서 그날 받은 보상을 한 번 더(판마다 하루 1번, 배지 제외, 전설 만능 카드는 2배).
-  /// [b] 없으면 두 판 모두. 못 받으면 null
-  List<AttRow>? attAdDo(String t, [String? b]) {
-    if (b == null) {
-      final w = attAdDo(t, 'w'), m = attAdDo(t, 'm');
-      return w == null && m == null ? null : [...?w, ...?m];
-    }
-    final a = attA(), k = b == 'w' ? 'adw' : 'adm';
-    if (attStatusAt(t, b) != 'done' || a[k] == t) return null;
-    final rows = <AttRow>[];
-    for (final r in (a[b == 'w' ? 'gw' : 'gm'] as List)) {
-      final m = asMap(r)!;
-      if (m['k'] == 'badge' || m['k'] == 'ucard') continue; // 유니크 카드는 광고 2배에서 빠짐 (웹 attAdDo)
-      rows.add(attGive(m, again: true).$2);
-    }
-    a[k] = t;
-    a['ad'] = t;
-    return rows;
   }
 
   /// 전설 만능 카드: 받을 수 있는(이야기 동료 합류·별 5 전) 전설 동료가 있어야 쓸 수 있음 (웹 lcardCan)

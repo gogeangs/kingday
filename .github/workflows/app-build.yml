@@ -200,6 +200,17 @@ jobs:
           if [ ! -f android/key.properties ]; then echo "정식 키 없음 → 건너뜀"; exit 0; fi
           flutter build appbundle --release
 
+      # 2026-11-16 완전 무료: 광고·결제 패키지와 권한이 빌드에 남지 않았는지 (docs/PLAN_MONETIZATION_REMOVAL.md 2단계 10번)
+      - name: 광고·결제 흔적 검사
+        run: |
+          bad=0
+          if grep -nE "google_mobile_ads|app_tracking_transparency|in_app_purchase|purchases_flutter|billing" pubspec.lock; then echo "::error title=no-ads::pubspec.lock 에 광고·결제 패키지"; bad=1; fi
+          for f in $(find build/app/intermediates -path '*release*' -name AndroidManifest.xml 2>/dev/null); do
+            if grep -nE "com.android.vending.BILLING|com.google.android.gms.permission.AD_ID|com.google.android.gms.ads|ACCESS_ADSERVICES" "$f"; then echo "::error title=no-ads::$f 에 광고·결제 권한"; bad=1; fi
+          done
+          if grep -rnE "GADApplicationIdentifier|NSUserTrackingUsageDescription|SKAdNetwork" ios/Runner/Info.plist; then echo "::error title=no-ads::Info.plist 에 광고 설정"; bad=1; fi
+          exit $bad
+
       - uses: actions/upload-artifact@v5
         if: hashFiles('app/build/app/outputs/bundle/release/app-release.aab') != ''
         with:

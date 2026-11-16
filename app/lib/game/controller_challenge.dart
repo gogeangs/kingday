@@ -137,15 +137,6 @@ extension GameChallengeX on GameController {
     refresh();
   }
 
-  /// 광고 보고 입장권 +1 (하루 1번) → 도전 창 다시
-  Future<void> dunAd() async {
-    await watchAd('dun', () {
-      calc.dunDay()['ad'] = 1;
-      toast('던전 입장권 +1');
-    });
-    openChallenge(this);
-  }
-
   /// 위쪽 「나가기」: 탑은 그 층 실패로 바로 나감, 던전은 그때까지 잡은 수로 정산
   void chExitTap() {
     final h = sim.ch;

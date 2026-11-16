@@ -408,7 +408,7 @@ class StageBottom extends StatelessWidget {
             g.refresh();
           }),
           const SizedBox(height: 10),
-          _QBtn(img: x2 || g.spdAdLeft > 0 ? 'btn_x2' : 'btn_x1', label: g.spdAdLeft > 0 ? 'x3 ${(g.spdAdLeft / 60000).ceil()}분' : x2 ? 'x2' : 'x1', on: x2 || g.spdAdLeft > 0, onTap: g.speedTap),
+          _QBtn(img: x2 ? 'btn_x2' : 'btn_x1', label: x2 ? 'x2' : 'x1', on: x2, onTap: g.speedTap),
         ]),
       ]),
     );

@@ -150,10 +150,7 @@ class SocialFabs extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final o = g.online;
-    // 상점 버튼 (U-2 ③): 늘 보임 · 할 일·무료 선물이 남았고 아직 안 봤으면 점
-    final shop = _btn('icon_shop', () => g.setTab(GameTab.sh),
-        g.dotOn(GameTab.sh) ? Positioned(top: -3, right: -3, child: Container(width: 11, height: 11, decoration: BoxDecoration(color: KdColors.bad, shape: BoxShape.circle, border: Border.all(color: Colors.white)))) : null, '상점');
-    // 출석부 (웹 #attBtn): 상점 바로 밑, 1-3 이후 · 오늘 안 받았으면 노란 점
+    // 출석부 (웹 #attBtn): 랭킹 밑 (2026-11-16 상점 버튼은 마을 「피트의 가게」로), 1-3 이후 · 오늘 안 받았으면 노란 점
     final att = attEligible(g)
         ? _btn(
             'ic_attend',
@@ -181,7 +178,6 @@ class SocialFabs extends StatelessWidget {
     if (!o.on) {
       return Column(mainAxisSize: MainAxisSize.min, children: [
         if (lm > 0) ...[_btn('icon_mail', () => openMail(g), Positioned(top: -5, right: -5, child: CountDot(lm)), '우편'), const SizedBox(height: 4)],
-        shop,
         if (eventFabOn(g)) ...[const SizedBox(height: 4), EventFab(g)],
         if (att != null) ...[const SizedBox(height: 4), att],
       ]);
@@ -213,7 +209,6 @@ class SocialFabs extends StatelessWidget {
             left > 3 ? '랭킹' : null,
           ),
           const SizedBox(height: 4),
-          shop,
           if (eventFabOn(g)) ...[const SizedBox(height: 4), EventFab(g)],
           if (att != null) ...[const SizedBox(height: 4), att],
         ]);

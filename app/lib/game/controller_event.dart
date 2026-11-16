@@ -157,21 +157,6 @@ extension GameEventX on GameController {
     _chShow();
   }
 
-  /// 광고 보고 +1 (이벤트마다 하루 1번 — 광고 표 ADS 는 건드리지 않고 이벤트 저장에 기록, 웹 evAdWatch) → 이벤트 창 다시
-  Future<void> evAdWatch(String id, String k) async {
-    final x = calc.evToday(calc.evS(id));
-    if (truthy((x[k] as Map)['ad'])) {
-      toast('오늘은 다 봤어요. 내일 다시 받을 수 있어요');
-      return;
-    }
-    if (!await playAd()) return;
-    (calc.evToday(calc.evS(id))[k] as Map)['ad'] = 1;
-    toast(k == 'boss' ? '눈사람 대장 도전 +1' : '선물 배달 +1판');
-    save();
-    refresh();
-    await openEventSheet(this, id, k);
-  }
-
   /// 마을 광장 트리 누름 (웹 evTreeHit) — 트리 자리를 눌렀으면 true
   bool evTreeTap(double mx, double my) {
     final e = calc.evTreeE();

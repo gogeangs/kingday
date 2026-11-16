@@ -28,7 +28,7 @@
   return{days:+(secs/86400).toFixed(1),gold,ore}}
  setS(FX.late,{});res.lv10={noRetire:toLv10(1),carpenter6:toLv10(.7),huntGoldH_late:Math.round(goldRate()*3600),lateBldSum:bldSum(),lateVLv:vLv()};
  /* ③ 이삭: 하루 받는 이삭(할 일 50 + 광고 15 + 출석 평균) 대비 주문 이삭 */
- res.gem={missions:MISSIONS.reduce((a,m)=>a+m.r,0)+MIS_ALL,adGem:ADS.gem.n*5,orderCap:ORD_GEM,orderAvg:res.order['late(영지46·시장10)'].autoWork.gemPerDay,goldBag:'이삭 30 = 사냥 2시간'};
+ res.gem={missions:MISSIONS.reduce((a,m)=>a+m.r,0)+MIS_ALL,orderCap:ORD_GEM,orderAvg:res.order['late(영지46·시장10)'].autoWork.gemPerDay,goldBag:'이삭 30 = 사냥 2시간'};
  /* ④ 일꾼 꽉 채움: 같은 상태에서 일꾼 없음 vs 추천 일꾼으로 20명 배치 */
  setS(FX.late,{bld:{market:10,ranch:10,chapel:10,forge:10,apiary:10}});maxAll();S.work={};const base={prod:{},idle:idleGold(3600),cut:forgeCut()};for(const b of['dock','apiary','mine','ranch'])base.prod[b]=prodMul(b);const ow=orderWeek();
  S.work={};wkAuto(false);const full={prod:{},idle:idleGold(3600),cut:forgeCut()};for(const b of['dock','apiary','mine','ranch'])full.prod[b]=prodMul(b);const ow3=orderWeek();

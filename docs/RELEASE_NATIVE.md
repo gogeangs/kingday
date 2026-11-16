@@ -1,6 +1,6 @@
 # 앱 출시 준비 안내 (대표님 할 일 + 값 넣는 곳)
 
-앱 코드는 로그인·결제·광고까지 미리 만들어 두었어요. 아래 값만 생기면 제가 바로 연결할 수 있어요.
+앱 코드는 로그인까지 미리 만들어 두었어요. 아래 값만 생기면 제가 바로 연결할 수 있어요. **2026-11-16부터 결제·광고가 없는 완전 무료 게임**이에요(docs/PLAN_MONETIZATION_REMOVAL.md).
 
 - **공개해도 되는 값**: 클라이언트 ID, 광고 ID, 상품 ID, SHA-1. 채팅으로 주셔도 돼요.
 - **절대 채팅·코드에 넣지 않는 값**: 비밀번호, 키 파일, 서비스 계정 JSON. GitHub Secrets나 Supabase Secrets에 **대표님이 직접** 넣어 주세요.
@@ -12,7 +12,7 @@
 1. 정식 서명 키 만들기 → GitHub Secrets 4개 (§1)
 2. Google Play Console 가입 → 앱 만들기 → 내부 테스트에 AAB 올리기 (§2)
 3. Google Cloud에 안드로이드 OAuth 클라이언트 추가 → Supabase에 클라이언트 ID 추가 (§3)
-4. AdMob 앱·광고 단위 만들기 (§4)
+4. ~~AdMob 앱·광고 단위~~ → 2026-11-16 광고 없앰, 0.0.10부터 광고 코드 없음 (§4)
 5. ~~Play Console에 상품 등록·결제 서버~~ → 2026-11-16 결제 없앰, 상품 판매 중지·서버 정리 (§5)
 6. (iOS) Apple Developer 가입 → 앱·상품·애플 로그인 → Codemagic (§6)
 7. 스토어 등록정보·개인정보처리방침·콘텐츠 등급 (§7, `docs/STORE_LISTING.md`, `docs/PRIVACY_POLICY.md`)
@@ -69,36 +69,27 @@
    - 웹 클라이언트 ID
    - iOS 클라이언트 ID
 
-## 4. AdMob (보상형 광고)
+## 4. AdMob (보상형 광고) — **2026-11-16 없앰** (docs/PLAN_MONETIZATION_REMOVAL.md 2단계)
 
-2026-11-16 AdMob 계정을 **dev@itso.co.kr** (게시자 `pub-8634871594482105`) 로 바꿨어요. 새 계정에 앱 2개 · 보상형 광고 단위 2개(`보상형-공통`)를 만들어 다음 앱 버전부터 넣어요. 모두 공개돼도 되는 값이에요.
-(이전: 2026-10-27 biz@project30s.co.kr 계정 `pub-8720405407394137` — 0.0.5~0.0.8 빌드에 들어 있음. **2026-11-16 이전에 계정 해지됨** → 그 빌드들은 진짜 광고가 안 나오고 3초 가짜 광고 뒤 보상이 지급됨. 새 버전으로 바꿔야 광고 수익이 생김)
-
-| 값 | ID | 넣은 곳 |
-|---|---|---|
-| 안드로이드 앱 ID | `ca-app-pub-8634871594482105~9412960669` | `app/android/app/src/main/AndroidManifest.xml` |
-| 아이폰 앱 ID | `ca-app-pub-8634871594482105~6443357403` | `app/ios/Runner/Info.plist` |
-| 안드로이드 보상형 광고 단위 | `ca-app-pub-8634871594482105/4005555466` | `app/lib/game/ads.dart` `realAndroid` |
-| 아이폰 보상형 광고 단위 | `ca-app-pub-8634871594482105/7144910032` | `app/lib/game/ads.dart` `realIos` |
-
-- 아이폰: 첫 광고를 보기 직전 「추적 허용」 창(ATT, `NSUserTrackingUsageDescription`)을 한 번 띄워요. 구글 광고 네트워크 `cstr6suwn9.skadnetwork` 등록.
-- AdMob 앱은 스토어에 공개된 뒤 (안드로이드는 2026-11-16 Google Play와 연결해 만듦, 아이폰은 App Store 검색에 아직 안 나와 스토어 없이 만듦) 「스토어 추가」로 연결해야 광고 제한이 풀려요(그 전에는 「검토 필요 · 광고 게재 제한」).
-- `app-ads.txt`: https://gogeangs.github.io/app-ads.txt (저장소 gogeangs/gogeangs.github.io, 2026-10-27 · 2026-11-16 새 계정 줄로 교체, 예전 계정 줄은 해지돼서 지움). 스토어 개발자 웹사이트 도메인 맨 위에 있어야 해서 이 저장소에 둠.
-
-> 실제 광고를 내 폰에서 직접 누르거나 반복해서 보면 AdMob 계정이 정지될 수 있어요. AdMob 「설정 → 테스트 기기」에 대표님 폰을 등록해 두면 내 폰에는 시험 광고가 나와요.
+> 광고를 모두 없애 완전 무료 게임이 됨. 앱 0.0.10 에서 `google_mobile_ads`·`app_tracking_transparency` 패키지, `app/lib/game/ads.dart`, AndroidManifest·Info.plist 의 AdMob 앱 ID, 아이폰 「추적 허용(ATT)」 문구·SKAdNetwork 를 지움(지우기 직전 커밋 태그 `ads-last` = `a6401a1`). 웹 `watchAd`·광고 칸도 삭제.
+> CI 「광고·결제 흔적 검사」 단계가 빌드마다 pubspec.lock·병합된 AndroidManifest·Info.plist 에 광고·결제 패키지/권한(BILLING·AD_ID 등)이 남지 않았는지 확인함.
+> 안드로이드 0.0.9 는 올리지 않고 건너뜀(Play Console 의 0.0.9 프로덕션 초안은 삭제). 아이폰은 심사 중인 0.0.5 그대로.
+>
+> 기록: AdMob 계정 dev@itso.co.kr (게시자 `pub-8634871594482105`) — 안드로이드 앱 ID `~9412960669`, 아이폰 앱 ID `~6443357403`, 보상형 광고 단위 `/4005555466`(안드로이드)·`/7144910032`(아이폰). 0.0.10 이 퍼진 뒤 AdMob 앱은 그대로 둬도 되고(광고 요청이 없어 비용 없음) 원하면 보관 처리. `app-ads.txt` 는 그대로 둬도 무해.
 
 ## 5. 인앱결제 — **2026-11-16 없앰** (docs/PLAN_MONETIZATION_REMOVAL.md)
 
-> 결제 상품을 모두 없애고 수익은 보상형 광고만 남김. 웹 `pay()`·앱 `IapStore`·`in_app_purchase` 패키지·상점 「구매 복원」은 코드에서 삭제(지우기 직전 커밋 태그 `iap-last` = `572807a`).
-> 앱은 0.0.9부터 결제 없음. 아이폰은 심사 중인 0.0.5 그대로 두고, 다음 제출 때 결제 없는 버전을 냄.
+> 결제 상품을 모두 없앰(2단계에서 광고도 없앰 → 완전 무료). 웹 `pay()`·앱 `IapStore`·`in_app_purchase` 패키지·상점 「구매 복원」은 코드에서 삭제(지우기 직전 커밋 태그 `iap-last` = `572807a`).
+> 앱은 0.0.10부터 결제·광고 없음(0.0.9 는 건너뜀). 아이폰은 심사 중인 0.0.5 그대로 두고, 다음 제출 때 결제 없는 버전을 냄.
 >
-> **대표님 할 일 (순서대로)**
-> 1. 안드로이드 0.0.9 를 Play Console 에 올린 뒤 → Play Console → 수익 창출 → 상품: 아래 13개 + 정기 결제 `kd_sub_monthly` **판매 중지(비활성화)** — 지우지 말 것(같은 ID를 다시 못 씀)
-> 2. 아이폰 0.0.5 심사가 끝나고 결제 없는 버전을 낸 뒤 → App Store Connect 인앱 구매도 **판매 중지**(「판매 가능」 해제)
-> 3. 위 둘이 끝난 뒤 → Supabase SQL Editor 에서 `supabase/stage16_iap_off.sql` 실행 → Edge Functions 에서 `kd-iap` 삭제 → Secrets 에서 `GOOGLE_SERVICE_ACCOUNT_JSON`·`APPLE_ISSUER_ID`·`APPLE_KEY_ID`·`APPLE_PRIVATE_KEY` 삭제
-> 4. Google Cloud 서비스 계정 `kingday-iap@…` 키 삭제(또는 계정 비활성화), Play Console 사용자 목록에서 그 계정 권한 해제
-> 5. 스토어 「데이터 보안」·「앱이 수집하는 개인정보」에서 「구매 내역」 빼기 (docs/PRIVACY_POLICY.md 끝)
-> - 행동 기록 테이블 `supabase/stage15_play_log.sql` 은 2026-11-16 실행 완료
+> **대표님 할 일 (순서대로, 2026-11-16 2단계 기준)**
+> 1. **안드로이드 0.0.10 올리기**: GitHub Actions 의 `kingday-aab` 를 받아 Play Console → 프로덕션 → 새 버전(0.0.9 초안은 삭제하고 새로 만들기)
+> 2. **광고 포함·데이터 보안 수정**: Play Console → 앱 콘텐츠 → 「광고」를 **「아니요, 광고 없음」**, 「데이터 보안」에서 광고 식별자·구매 내역·앱 사용 기록(행동 기록) 빼기 · 「광고 ID」 신고를 「사용 안 함」 · 스토어 설명 교체(docs/STORE_LISTING.md 2단계) · 새 스크린샷
+> 3. **결제 상품 판매 중지**: Play Console → 수익 창출 → 상품 13개 + 정기 결제 `kd_sub_monthly` **판매 중지(비활성화)** — 지우지 말 것(같은 ID를 다시 못 씀). 아이폰은 0.0.5 심사가 끝나고 결제·광고 없는 버전을 낸 뒤 App Store Connect 인앱 구매 「판매 가능」 해제 + 앱 개인정보(추적·광고 데이터) 수정
+> 4. **SQL 실행**: Supabase SQL Editor 에서 `supabase/stage16_iap_off.sql` → `supabase/stage17_play_log_off.sql` 차례로 실행 → Edge Functions 에서 `kd-iap` 삭제 → Secrets 에서 `GOOGLE_SERVICE_ACCOUNT_JSON`·`APPLE_ISSUER_ID`·`APPLE_KEY_ID`·`APPLE_PRIVATE_KEY` 삭제
+> 5. Google Cloud 서비스 계정 `kingday-iap@…` 키 삭제(또는 계정 비활성화), Play Console 사용자 목록에서 그 계정 권한 해제
+> 6. 개인정보처리방침 변경 공지(docs/PRIVACY_POLICY.md 맨 위 공지 문구) — 시행일은 공지 7일 뒤
+> - 행동 기록 테이블 `supabase/stage15_play_log.sql` 은 2026-11-16 실행했고, 4번의 `stage17_play_log_off.sql` 로 지움
 >
 > 아래는 기록으로만 남김.
 
@@ -165,8 +156,8 @@
 - 설명 문구 초안: `docs/STORE_LISTING.md`
 - 개인정보처리방침 초안: `docs/PRIVACY_POLICY.md`
   - 회사 정보와 문의 이메일을 채워서 공개 주소(예: GitHub Pages)에 올려 주세요.
-- **콘텐츠 등급(IARC 설문)**: 판타지 전투(만화풍, 피 표현 없음), 인앱 구매 있음, 광고 있음, 사용자 간 소통 없음(닉네임·랭킹만), 도박 요소 없음으로 답하면 돼요.
-  - 단, 성유물 상자는 **유료 확률형 아이템**이에요. 한국은 확률 공개가 의무예요. 게임 안 장비 탭에 확률이 이미 표시돼 있어요.
+- **콘텐츠 등급(IARC 설문)**: 판타지 전투(만화풍, 피 표현 없음), **인앱 구매 없음, 광고 없음**(2026-11-16 완전 무료), 사용자 간 소통 없음(닉네임·랭킹만), 도박 요소 없음으로 답하면 돼요.
+  - 성유물 상자·동료 카드는 이제 돈으로 사지 않지만 확률 표시는 그대로 둬요(게임 안 「확률 보기」·odds.html).
 - **데이터 보안(Data safety)**: `docs/PRIVACY_POLICY.md` 끝의 표대로 답해 주세요.
 
 ---
@@ -176,7 +167,7 @@
 | 기능 | 파일 | 지금 상태 |
 |---|---|---|
 | 효과음·진동 | `app/lib/game/feel.dart`, `app/assets/audio/` | 켜짐(설정에서 끄기 가능) |
-| 보상형 광고 | `app/lib/game/ads.dart` | 실제 광고 ID (0.0.5부터) |
+| 보상형 광고 | (2026-11-16 삭제 — `ads-last` 참고) | 없음 (0.0.10부터) |
 | 인앱결제 | (2026-11-16 삭제 — `iap-last` 참고) | 없음 |
 | 구글·애플 로그인 | `app/lib/game/login.dart` | 꺼짐(클라이언트 ID 대기) |
 | 정식 서명 | `.github/workflows/app-build.yml`, `app/android/app/build.gradle.kts` | GitHub 비밀값을 넣으면 자동 사용 |

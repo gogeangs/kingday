@@ -621,14 +621,6 @@ class GameActions {
     _toast('리엘의 벌들이 밭을 도왔어요. 모두 다 자랐어요');
   }
 
-  /// 광고 보상: 자라는 작물 바로 키우기 (adFarm 의 보상 부분)
-  void growByAd() {
-    for (final p in s.plots) {
-      if (c.plotState(p).st == 'grow') (p as Map)['at'] = 0;
-    }
-    _toast('리엘의 벌들이 밭을 도왔어요. 모두 다 자랐어요');
-  }
-
   // ════════════════════ 식당 ════════════════════
   bool canCook(RecipeDef r) => r.need.entries.every((e) => orNum(s.items[e.key], 0) >= e.value);
 
@@ -762,12 +754,6 @@ class GameActions {
     b['opts'] = <dynamic>[];
     out.add(ActHaptic(const [18]));
     _toast('${blessDef(k).n}이 함께해요 · ${fmtT(c.blessMs() / 1000)}');
-  }
-
-  /// 광고 보고 축복 한 번 더 (광고 횟수는 화면 쪽 watchAd 가 셈)
-  void blessAdGrant() {
-    c.blessDay()['ad'] = 1;
-    c.bless['opts'] = <dynamic>[];
   }
 
   /// 일꾼 넣기 (다른 건물에 있던 동료면 옮김)
@@ -951,31 +937,6 @@ class GameActions {
       if (t != null) out.add(ActLaterToast(t, 1200));
     }
     gainGem(m?.r ?? missionAllReward, m?.n ?? '오늘의 할 일 완료');
-  }
-
-  /// 무료 선물 종류 (동료 카드는 카드 동료가 생긴 뒤부터)
-  List<String> adKeys() => ['box', 'gem', if (GameCalc.cardIds().any(c.cardOpen)) 'card'];
-
-  /// 광고 보상: 성유물 상자 1회 무료 (웹 adBox)
-  void adBoxGive() {
-    s.gold = s.gold + c.boxCost();
-    openBox(false, noTicket: true);
-  }
-
-  /// 광고 보상: 황금 이삭 +10 (웹 adGem, 2026-11-16 +5 → +10)
-  void adGemGive() {
-    s.gem = s.gem + 10;
-    _toast('피트의 선물! 황금 이삭 +10');
-  }
-
-  /// 광고 보상: 동료 카드 3장 (웹 adCard)
-  void adCardGive() {
-    final r = c.gainCards(rng, 3, 'shop', 1);
-    if (r == null) {
-      _toast('아직 모을 수 있는 동료 카드가 없어요');
-      return;
-    }
-    out.add(ActCardReveal(r.got, '피트의 선물', r.gold));
   }
 
   /// 웹 cardToast(cid,n): 카드 한 묶음 결과 알림 문장
@@ -1283,13 +1244,6 @@ class GameActions {
     if (n == 0) return;
     final o = passGive(r, (wPass['n'] as String));
     _toast('${n > 1 ? '보상 $n개 · ' : ''}${o.join(' · ')}');
-  }
-
-  /// 원정 일지 「광고 보고 점수 받기」 보상 (웹 passAd 의 지급 부분, 하루 한도는 PASS_SRC.ad)
-  num passAdGive() {
-    final n = passAdd('ad', asNum(wPass['ad']));
-    _toast('원정 일지 점수 +${fmt(n)}');
-    return n;
   }
 
   /// 시즌이 끝나 우편으로 넘어온 원정 일지 보상 (이 기기 저장에 있음)

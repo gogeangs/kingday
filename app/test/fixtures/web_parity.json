@@ -1649,7 +1649,6 @@
     "retires": 0,
     "ucard": 0,
     "uq2": 1,
-    "adSpd": 0,
     "gem": 0,
     "gemRank": 0,
     "gemLord": {},
@@ -1665,16 +1664,13 @@
      "w": 0,
      "ym": "",
      "m": 0,
-     "ad": "",
      "got": [],
      "intro": 0,
      "tab": "w",
      "lw": "",
      "lm": "",
      "gw": [],
-     "gm": [],
-     "adw": "",
-     "adm": ""
+     "gm": []
     },
     "lcard": 0,
     "tickets": {
@@ -1693,7 +1689,6 @@
     "dun": {
      "d": "",
      "used": 0,
-     "ad": 0,
      "star": {
       "mine": {},
       "field": {},
@@ -1718,7 +1713,6 @@
     "bless": {
      "d": "",
      "used": 0,
-     "ad": 0,
      "k": "",
      "until": 0,
      "opts": []
@@ -4150,19 +4144,6 @@
      20,
      240
     ],
-    "adLeft": {
-     "card": 1,
-     "box": 3,
-     "gem": 3,
-     "retry": 5,
-     "spd": 4,
-     "pass": 3,
-     "farm": 2,
-     "offline": 2,
-     "att": 2,
-     "dun": 1,
-     "bless": 1
-    },
     "cardReady": [],
     "nextGoal": {
      "id": "bron",
@@ -4798,7 +4779,6 @@
     "bless": {
      "d": "",
      "used": 0,
-     "ad": 0,
      "k": "",
      "until": 0,
      "opts": []
@@ -5545,7 +5525,6 @@
     "retires": 1,
     "ucard": 0,
     "uq2": 1,
-    "adSpd": 0,
     "gem": 50,
     "gemRank": 0,
     "gemLord": {},
@@ -5561,16 +5540,13 @@
      "w": 0,
      "ym": "",
      "m": 0,
-     "ad": "",
      "got": [],
      "intro": 0,
      "tab": "w",
      "lw": "",
      "lm": "",
      "gw": [],
-     "gm": [],
-     "adw": "",
-     "adm": ""
+     "gm": []
     },
     "lcard": 0,
     "tickets": {
@@ -5589,7 +5565,6 @@
     "dun": {
      "d": "",
      "used": 0,
-     "ad": 0,
      "star": {
       "mine": {},
       "field": {},
@@ -5616,7 +5591,6 @@
     "bless": {
      "d": "",
      "used": 0,
-     "ad": 0,
      "k": "",
      "until": 0,
      "opts": []
@@ -5688,8 +5662,7 @@
     "kill": 0,
     "box": 0,
     "harv": 0,
-    "claim": {},
-    "ad": {}
+    "claim": {}
    }
   },
   "mid": {
@@ -5832,7 +5805,6 @@
     "retires": 1,
     "ucard": 0,
     "uq2": 1,
-    "adSpd": 0,
     "gem": 77,
     "gemRank": 0,
     "gemLord": {},
@@ -5843,9 +5815,6 @@
      "harv": 4,
      "claim": {
       "box": true
-     },
-     "ad": {
-      "box": 2
      }
     },
     "att": {
@@ -5853,16 +5822,13 @@
      "w": 0,
      "ym": "",
      "m": 0,
-     "ad": "",
      "got": [],
      "intro": 0,
      "tab": "w",
      "lw": "",
      "lm": "",
      "gw": [],
-     "gm": [],
-     "adw": "",
-     "adm": ""
+     "gm": []
     },
     "lcard": 0,
     "tickets": {
@@ -5881,7 +5847,6 @@
     "dun": {
      "d": "",
      "used": 0,
-     "ad": 0,
      "star": {
       "mine": {},
       "field": {},
@@ -5909,7 +5874,6 @@
     "bless": {
      "d": "",
      "used": 0,
-     "ad": 0,
      "k": "",
      "until": 0,
      "opts": []
@@ -8390,19 +8354,6 @@
      20,
      240
     ],
-    "adLeft": {
-     "card": 1,
-     "box": 1,
-     "gem": 3,
-     "retry": 5,
-     "spd": 4,
-     "pass": 3,
-     "farm": 2,
-     "offline": 2,
-     "att": 2,
-     "dun": 1,
-     "bless": 1
-    },
     "cardReady": [],
     "nextGoal": {
      "id": "daisy",
@@ -9058,7 +9009,6 @@
     "bless": {
      "d": "",
      "used": 0,
-     "ad": 0,
      "k": "",
      "until": 0,
      "opts": []
@@ -9515,7 +9465,7 @@
      "skip": {}
     }
    },
-   "offline": 65349.000000000015,
+   "offline": 98023.00000000001,
    "produced": {
     "items": {
      "wheat": 12,
@@ -10157,7 +10107,6 @@
     "retires": 2,
     "ucard": 0,
     "uq2": 1,
-    "adSpd": 0,
     "gem": 127,
     "gemRank": 0,
     "gemLord": {},
@@ -10168,9 +10117,6 @@
      "harv": 4,
      "claim": {
       "box": true
-     },
-     "ad": {
-      "box": 2
      }
     },
     "att": {
@@ -10178,16 +10124,13 @@
      "w": 0,
      "ym": "",
      "m": 0,
-     "ad": "",
      "got": [],
      "intro": 0,
      "tab": "w",
      "lw": "",
      "lm": "",
      "gw": [],
-     "gm": [],
-     "adw": "",
-     "adm": ""
+     "gm": []
     },
     "lcard": 0,
     "tickets": {
@@ -10206,7 +10149,6 @@
     "dun": {
      "d": "",
      "used": 0,
-     "ad": 0,
      "star": {
       "mine": {},
       "field": {},
@@ -10236,7 +10178,6 @@
     "bless": {
      "d": "",
      "used": 0,
-     "ad": 0,
      "k": "",
      "until": 0,
      "opts": []
@@ -10361,8 +10302,7 @@
     "kill": 0,
     "box": 0,
     "harv": 0,
-    "claim": {},
-    "ad": {}
+    "claim": {}
    }
   },
   "late": {
@@ -10500,7 +10440,6 @@
     "retires": 4,
     "ucard": 0,
     "uq2": 1,
-    "adSpd": 0,
     "gem": 5000,
     "gemRank": 0,
     "gemLord": {},
@@ -10516,16 +10455,13 @@
      "w": 0,
      "ym": "",
      "m": 0,
-     "ad": "",
      "got": [],
      "intro": 0,
      "tab": "w",
      "lw": "",
      "lm": "",
      "gw": [],
-     "gm": [],
-     "adw": "",
-     "adm": ""
+     "gm": []
     },
     "lcard": 0,
     "tickets": {
@@ -10544,7 +10480,6 @@
     "dun": {
      "d": "",
      "used": 0,
-     "ad": 0,
      "star": {
       "mine": {},
       "field": {},
@@ -10574,7 +10509,6 @@
     "bless": {
      "d": "",
      "used": 0,
-     "ad": 0,
      "k": "",
      "until": 0,
      "opts": []
@@ -13058,19 +12992,6 @@
      20,
      240
     ],
-    "adLeft": {
-     "card": 1,
-     "box": 3,
-     "gem": 3,
-     "retry": 5,
-     "spd": 4,
-     "pass": 3,
-     "farm": 2,
-     "offline": 2,
-     "att": 2,
-     "dun": 1,
-     "bless": 1
-    },
     "cardReady": [],
     "nextGoal": {
      "id": "luka",
@@ -13734,7 +13655,6 @@
     "bless": {
      "d": "",
      "used": 0,
-     "ad": 0,
      "k": "",
      "until": 0,
      "opts": []
@@ -14410,7 +14330,7 @@
      "skip": {}
     }
    },
-   "offline": 89389374,
+   "offline": 134084061,
    "produced": {
     "items": {
      "wheat": 400,
@@ -15014,7 +14934,6 @@
     "retires": 5,
     "ucard": 0,
     "uq2": 1,
-    "adSpd": 0,
     "gem": 5200,
     "gemRank": 0,
     "gemLord": {},
@@ -15030,16 +14949,13 @@
      "w": 0,
      "ym": "",
      "m": 0,
-     "ad": "",
      "got": [],
      "intro": 0,
      "tab": "w",
      "lw": "",
      "lm": "",
      "gw": [],
-     "gm": [],
-     "adw": "",
-     "adm": ""
+     "gm": []
     },
     "lcard": 0,
     "tickets": {
@@ -15058,7 +14974,6 @@
     "dun": {
      "d": "",
      "used": 0,
-     "ad": 0,
      "star": {
       "mine": {},
       "field": {},
@@ -15092,7 +15007,6 @@
     "bless": {
      "d": "",
      "used": 0,
-     "ad": 0,
      "k": "",
      "until": 0,
      "opts": []
@@ -15235,8 +15149,7 @@
     "kill": 0,
     "box": 0,
     "harv": 0,
-    "claim": {},
-    "ad": {}
+    "claim": {}
    }
   },
   "g1": {
@@ -15310,7 +15223,6 @@
     "retires": 0,
     "ucard": 0,
     "uq2": 1,
-    "adSpd": 0,
     "gem": 0,
     "gemRank": 0,
     "gemLord": {},
@@ -15326,16 +15238,13 @@
      "w": 0,
      "ym": "",
      "m": 0,
-     "ad": "",
      "got": [],
      "intro": 0,
      "tab": "w",
      "lw": "",
      "lm": "",
      "gw": [],
-     "gm": [],
-     "adw": "",
-     "adm": ""
+     "gm": []
     },
     "lcard": 0,
     "tickets": {
@@ -15354,7 +15263,6 @@
     "dun": {
      "d": "",
      "used": 0,
-     "ad": 0,
      "star": {
       "mine": {},
       "field": {},
@@ -15379,7 +15287,6 @@
     "bless": {
      "d": "",
      "used": 0,
-     "ad": 0,
      "k": "",
      "until": 0,
      "opts": []
@@ -17811,19 +17718,6 @@
      20,
      240
     ],
-    "adLeft": {
-     "card": 1,
-     "box": 3,
-     "gem": 3,
-     "retry": 5,
-     "spd": 4,
-     "pass": 3,
-     "farm": 2,
-     "offline": 2,
-     "att": 2,
-     "dun": 1,
-     "bless": 1
-    },
     "cardReady": [],
     "nextGoal": {
      "id": "bron",
@@ -18459,7 +18353,6 @@
     "bless": {
      "d": "",
      "used": 0,
-     "ad": 0,
      "k": "",
      "until": 0,
      "opts": []
@@ -19221,7 +19114,6 @@
     "retires": 1,
     "ucard": 0,
     "uq2": 1,
-    "adSpd": 0,
     "gem": 50,
     "gemRank": 0,
     "gemLord": {},
@@ -19237,16 +19129,13 @@
      "w": 0,
      "ym": "",
      "m": 0,
-     "ad": "",
      "got": [],
      "intro": 0,
      "tab": "w",
      "lw": "",
      "lm": "",
      "gw": [],
-     "gm": [],
-     "adw": "",
-     "adm": ""
+     "gm": []
     },
     "lcard": 0,
     "tickets": {
@@ -19265,7 +19154,6 @@
     "dun": {
      "d": "",
      "used": 0,
-     "ad": 0,
      "star": {
       "mine": {},
       "field": {},
@@ -19292,7 +19180,6 @@
     "bless": {
      "d": "",
      "used": 0,
-     "ad": 0,
      "k": "",
      "until": 0,
      "opts": []
@@ -19365,8 +19252,7 @@
     "kill": 0,
     "box": 0,
     "harv": 0,
-    "claim": {},
-    "ad": {}
+    "claim": {}
    }
   },
   "g2": {
@@ -19444,7 +19330,6 @@
     "retires": 0,
     "ucard": 0,
     "uq2": 1,
-    "adSpd": 0,
     "gem": 0,
     "gemRank": 0,
     "gemLord": {},
@@ -19460,16 +19345,13 @@
      "w": 0,
      "ym": "",
      "m": 0,
-     "ad": "",
      "got": [],
      "intro": 0,
      "tab": "w",
      "lw": "",
      "lm": "",
      "gw": [],
-     "gm": [],
-     "adw": "",
-     "adm": ""
+     "gm": []
     },
     "lcard": 0,
     "tickets": {
@@ -19488,7 +19370,6 @@
     "dun": {
      "d": "",
      "used": 0,
-     "ad": 0,
      "star": {
       "mine": {},
       "field": {},
@@ -19513,7 +19394,6 @@
     "bless": {
      "d": "",
      "used": 0,
-     "ad": 0,
      "k": "",
      "until": 0,
      "opts": []
@@ -21948,19 +21828,6 @@
      20,
      240
     ],
-    "adLeft": {
-     "card": 1,
-     "box": 3,
-     "gem": 3,
-     "retry": 5,
-     "spd": 4,
-     "pass": 3,
-     "farm": 2,
-     "offline": 2,
-     "att": 2,
-     "dun": 1,
-     "bless": 1
-    },
     "cardReady": [],
     "nextGoal": {
      "id": "bron",
@@ -22596,7 +22463,6 @@
     "bless": {
      "d": "",
      "used": 0,
-     "ad": 0,
      "k": "",
      "until": 0,
      "opts": []
@@ -23420,7 +23286,6 @@
     "retires": 1,
     "ucard": 0,
     "uq2": 1,
-    "adSpd": 0,
     "gem": 50,
     "gemRank": 0,
     "gemLord": {},
@@ -23436,16 +23301,13 @@
      "w": 0,
      "ym": "",
      "m": 0,
-     "ad": "",
      "got": [],
      "intro": 0,
      "tab": "w",
      "lw": "",
      "lm": "",
      "gw": [],
-     "gm": [],
-     "adw": "",
-     "adm": ""
+     "gm": []
     },
     "lcard": 0,
     "tickets": {
@@ -23464,7 +23326,6 @@
     "dun": {
      "d": "",
      "used": 0,
-     "ad": 0,
      "star": {
       "mine": {},
       "field": {},
@@ -23491,7 +23352,6 @@
     "bless": {
      "d": "",
      "used": 0,
-     "ad": 0,
      "k": "",
      "until": 0,
      "opts": []
@@ -23564,8 +23424,7 @@
     "kill": 0,
     "box": 0,
     "harv": 0,
-    "claim": {},
-    "ad": {}
+    "claim": {}
    }
   },
   "g3": {
@@ -23634,7 +23493,6 @@
     "retires": 0,
     "ucard": 0,
     "uq2": 1,
-    "adSpd": 0,
     "gem": 0,
     "gemRank": 0,
     "gemLord": {},
@@ -23650,16 +23508,13 @@
      "w": 0,
      "ym": "",
      "m": 0,
-     "ad": "",
      "got": [],
      "intro": 0,
      "tab": "w",
      "lw": "",
      "lm": "",
      "gw": [],
-     "gm": [],
-     "adw": "",
-     "adm": ""
+     "gm": []
     },
     "lcard": 0,
     "tickets": {
@@ -23678,7 +23533,6 @@
     "dun": {
      "d": "",
      "used": 0,
-     "ad": 0,
      "star": {
       "mine": {},
       "field": {},
@@ -23705,7 +23559,6 @@
     "bless": {
      "d": "",
      "used": 0,
-     "ad": 0,
      "k": "",
      "until": 0,
      "opts": []
@@ -26143,19 +25996,6 @@
      20,
      240
     ],
-    "adLeft": {
-     "card": 1,
-     "box": 3,
-     "gem": 3,
-     "retry": 5,
-     "spd": 4,
-     "pass": 3,
-     "farm": 2,
-     "offline": 2,
-     "att": 2,
-     "dun": 1,
-     "bless": 1
-    },
     "cardReady": [],
     "nextGoal": {
      "id": "bron",
@@ -26799,7 +26639,6 @@
     "bless": {
      "d": "",
      "used": 0,
-     "ad": 0,
      "k": "",
      "until": 0,
      "opts": []
@@ -27708,7 +27547,6 @@
     "retires": 1,
     "ucard": 0,
     "uq2": 1,
-    "adSpd": 0,
     "gem": 50,
     "gemRank": 0,
     "gemLord": {},
@@ -27724,16 +27562,13 @@
      "w": 0,
      "ym": "",
      "m": 0,
-     "ad": "",
      "got": [],
      "intro": 0,
      "tab": "w",
      "lw": "",
      "lm": "",
      "gw": [],
-     "gm": [],
-     "adw": "",
-     "adm": ""
+     "gm": []
     },
     "lcard": 0,
     "tickets": {
@@ -27752,7 +27587,6 @@
     "dun": {
      "d": "",
      "used": 0,
-     "ad": 0,
      "star": {
       "mine": {},
       "field": {},
@@ -27781,7 +27615,6 @@
     "bless": {
      "d": "",
      "used": 0,
-     "ad": 0,
      "k": "",
      "until": 0,
      "opts": []
@@ -27858,8 +27691,7 @@
     "kill": 0,
     "box": 0,
     "harv": 0,
-    "claim": {},
-    "ad": {}
+    "claim": {}
    }
   },
   "g4": {
@@ -27928,7 +27760,6 @@
     "retires": 0,
     "ucard": 0,
     "uq2": 1,
-    "adSpd": 0,
     "gem": 0,
     "gemRank": 0,
     "gemLord": {},
@@ -27946,16 +27777,13 @@
      "w": 0,
      "ym": "",
      "m": 0,
-     "ad": "",
      "got": [],
      "intro": 0,
      "tab": "w",
      "lw": "",
      "lm": "",
      "gw": [],
-     "gm": [],
-     "adw": "",
-     "adm": ""
+     "gm": []
     },
     "lcard": 0,
     "tickets": {
@@ -27974,7 +27802,6 @@
     "dun": {
      "d": "",
      "used": 0,
-     "ad": 0,
      "star": {
       "mine": {},
       "field": {},
@@ -28002,7 +27829,6 @@
     "bless": {
      "d": "",
      "used": 0,
-     "ad": 0,
      "k": "",
      "until": 0,
      "opts": []
@@ -30440,19 +30266,6 @@
      20,
      240
     ],
-    "adLeft": {
-     "card": 1,
-     "box": 3,
-     "gem": 3,
-     "retry": 5,
-     "spd": 4,
-     "pass": 3,
-     "farm": 2,
-     "offline": 2,
-     "att": 2,
-     "dun": 1,
-     "bless": 1
-    },
     "cardReady": [],
     "nextGoal": {
      "id": "bron",
@@ -31096,7 +30909,6 @@
     "bless": {
      "d": "",
      "used": 0,
-     "ad": 0,
      "k": "",
      "until": 0,
      "opts": []
@@ -32100,7 +31912,6 @@
     "retires": 1,
     "ucard": 0,
     "uq2": 1,
-    "adSpd": 0,
     "gem": 50,
     "gemRank": 0,
     "gemLord": {},
@@ -32118,16 +31929,13 @@
      "w": 0,
      "ym": "",
      "m": 0,
-     "ad": "",
      "got": [],
      "intro": 0,
      "tab": "w",
      "lw": "",
      "lm": "",
      "gw": [],
-     "gm": [],
-     "adw": "",
-     "adm": ""
+     "gm": []
     },
     "lcard": 0,
     "tickets": {
@@ -32146,7 +31954,6 @@
     "dun": {
      "d": "",
      "used": 0,
-     "ad": 0,
      "star": {
       "mine": {},
       "field": {},
@@ -32176,7 +31983,6 @@
     "bless": {
      "d": "",
      "used": 0,
-     "ad": 0,
      "k": "",
      "until": 0,
      "opts": []
@@ -32254,8 +32060,7 @@
     "kill": 0,
     "box": 0,
     "harv": 0,
-    "claim": {},
-    "ad": {}
+    "claim": {}
    }
   },
   "old": {
@@ -32322,7 +32127,6 @@
     "retires": 0,
     "ucard": 0,
     "uq2": 1,
-    "adSpd": 0,
     "gem": 0,
     "gemRank": 0,
     "gemLord": {},
@@ -32338,16 +32142,13 @@
      "w": 0,
      "ym": "",
      "m": 0,
-     "ad": "",
      "got": [],
      "intro": 0,
      "tab": "w",
      "lw": "",
      "lm": "",
      "gw": [],
-     "gm": [],
-     "adw": "",
-     "adm": ""
+     "gm": []
     },
     "lcard": 0,
     "tickets": {
@@ -32366,7 +32167,6 @@
     "dun": {
      "d": "",
      "used": 0,
-     "ad": 0,
      "star": {
       "mine": {},
       "field": {},
@@ -32393,7 +32193,6 @@
     "bless": {
      "d": "",
      "used": 0,
-     "ad": 0,
      "k": "",
      "until": 0,
      "opts": []
@@ -34828,19 +34627,6 @@
      20,
      240
     ],
-    "adLeft": {
-     "card": 1,
-     "box": 3,
-     "gem": 3,
-     "retry": 5,
-     "spd": 4,
-     "pass": 3,
-     "farm": 2,
-     "offline": 2,
-     "att": 2,
-     "dun": 1,
-     "bless": 1
-    },
     "cardReady": [],
     "nextGoal": {
      "id": "bron",
@@ -35476,7 +35262,6 @@
     "bless": {
      "d": "",
      "used": 0,
-     "ad": 0,
      "k": "",
      "until": 0,
      "opts": []
@@ -36383,7 +36168,6 @@
     "retires": 1,
     "ucard": 0,
     "uq2": 1,
-    "adSpd": 0,
     "gem": 50,
     "gemRank": 0,
     "gemLord": {},
@@ -36399,16 +36183,13 @@
      "w": 0,
      "ym": "",
      "m": 0,
-     "ad": "",
      "got": [],
      "intro": 0,
      "tab": "w",
      "lw": "",
      "lm": "",
      "gw": [],
-     "gm": [],
-     "adw": "",
-     "adm": ""
+     "gm": []
     },
     "lcard": 0,
     "tickets": {
@@ -36427,7 +36208,6 @@
     "dun": {
      "d": "",
      "used": 0,
-     "ad": 0,
      "star": {
       "mine": {},
       "field": {},
@@ -36456,7 +36236,6 @@
     "bless": {
      "d": "",
      "used": 0,
-     "ad": 0,
      "k": "",
      "until": 0,
      "opts": []
@@ -36530,8 +36309,7 @@
     "kill": 0,
     "box": 0,
     "harv": 0,
-    "claim": {},
-    "ad": {}
+    "claim": {}
    }
   },
   "tr": {
@@ -36683,7 +36461,6 @@
     "retires": 9,
     "ucard": 0,
     "uq2": 1,
-    "adSpd": 0,
     "gem": 5000,
     "gemRank": 0,
     "gemLord": {},
@@ -36699,16 +36476,13 @@
      "w": 0,
      "ym": "",
      "m": 0,
-     "ad": "",
      "got": [],
      "intro": 0,
      "tab": "w",
      "lw": "",
      "lm": "",
      "gw": [],
-     "gm": [],
-     "adw": "",
-     "adm": ""
+     "gm": []
     },
     "lcard": 0,
     "tickets": {
@@ -36727,7 +36501,6 @@
     "dun": {
      "d": "",
      "used": 0,
-     "ad": 0,
      "star": {
       "mine": {},
       "field": {},
@@ -36781,7 +36554,6 @@
     "bless": {
      "d": "",
      "used": 0,
-     "ad": 0,
      "k": "",
      "until": 0,
      "opts": []
@@ -39265,19 +39037,6 @@
      20,
      240
     ],
-    "adLeft": {
-     "card": 1,
-     "box": 3,
-     "gem": 3,
-     "retry": 5,
-     "spd": 4,
-     "pass": 3,
-     "farm": 2,
-     "offline": 2,
-     "att": 2,
-     "dun": 1,
-     "bless": 1
-    },
     "cardReady": [],
     "nextGoal": {
      "id": "luka",
@@ -39941,7 +39700,6 @@
     "bless": {
      "d": "",
      "used": 0,
-     "ad": 0,
      "k": "",
      "until": 0,
      "opts": []
@@ -40156,7 +39914,7 @@
      "skip": {}
     }
    },
-   "offline": 595400843,
+   "offline": 893101264,
    "produced": {
     "items": {
      "wheat": 400,
@@ -40796,7 +40554,6 @@
     "retires": 10,
     "ucard": 0,
     "uq2": 1,
-    "adSpd": 0,
     "gem": 5300,
     "gemRank": 0,
     "gemLord": {},
@@ -40812,16 +40569,13 @@
      "w": 0,
      "ym": "",
      "m": 0,
-     "ad": "",
      "got": [],
      "intro": 0,
      "tab": "w",
      "lw": "",
      "lm": "",
      "gw": [],
-     "gm": [],
-     "adw": "",
-     "adm": ""
+     "gm": []
     },
     "lcard": 0,
     "tickets": {
@@ -40840,7 +40594,6 @@
     "dun": {
      "d": "",
      "used": 0,
-     "ad": 0,
      "star": {
       "mine": {},
       "field": {},
@@ -40896,7 +40649,6 @@
     "bless": {
      "d": "",
      "used": 0,
-     "ad": 0,
      "k": "",
      "until": 0,
      "opts": []
@@ -41062,8 +40814,7 @@
     "kill": 0,
     "box": 0,
     "harv": 0,
-    "claim": {},
-    "ad": {}
+    "claim": {}
    }
   },
   "box": {
@@ -41201,7 +40952,6 @@
     "retires": 4,
     "ucard": 0,
     "uq2": 1,
-    "adSpd": 0,
     "gem": 5000,
     "gemRank": 0,
     "gemLord": {},
@@ -41217,16 +40967,13 @@
      "w": 0,
      "ym": "",
      "m": 0,
-     "ad": "",
      "got": [],
      "intro": 0,
      "tab": "w",
      "lw": "",
      "lm": "",
      "gw": [],
-     "gm": [],
-     "adw": "",
-     "adm": ""
+     "gm": []
     },
     "lcard": 0,
     "tickets": {
@@ -41245,7 +40992,6 @@
     "dun": {
      "d": "",
      "used": 0,
-     "ad": 0,
      "star": {
       "mine": {},
       "field": {},
@@ -41275,7 +41021,6 @@
     "bless": {
      "d": "",
      "used": 0,
-     "ad": 0,
      "k": "",
      "until": 0,
      "opts": []
@@ -43759,19 +43504,6 @@
      20,
      240
     ],
-    "adLeft": {
-     "card": 1,
-     "box": 3,
-     "gem": 3,
-     "retry": 5,
-     "spd": 4,
-     "pass": 3,
-     "farm": 2,
-     "offline": 2,
-     "att": 2,
-     "dun": 1,
-     "bless": 1
-    },
     "cardReady": [],
     "nextGoal": {
      "id": "luka",
@@ -44435,7 +44167,6 @@
     "bless": {
      "d": "",
      "used": 0,
-     "ad": 0,
      "k": "",
      "until": 0,
      "opts": []
@@ -45111,7 +44842,7 @@
      "skip": {}
     }
    },
-   "offline": 89389374,
+   "offline": 134084061,
    "produced": {
     "items": {
      "wheat": 400,
@@ -45715,7 +45446,6 @@
     "retires": 5,
     "ucard": 0,
     "uq2": 1,
-    "adSpd": 0,
     "gem": 5200,
     "gemRank": 0,
     "gemLord": {},
@@ -45731,16 +45461,13 @@
      "w": 0,
      "ym": "",
      "m": 0,
-     "ad": "",
      "got": [],
      "intro": 0,
      "tab": "w",
      "lw": "",
      "lm": "",
      "gw": [],
-     "gm": [],
-     "adw": "",
-     "adm": ""
+     "gm": []
     },
     "lcard": 0,
     "tickets": {
@@ -45759,7 +45486,6 @@
     "dun": {
      "d": "",
      "used": 0,
-     "ad": 0,
      "star": {
       "mine": {},
       "field": {},
@@ -45793,7 +45519,6 @@
     "bless": {
      "d": "",
      "used": 0,
-     "ad": 0,
      "k": "",
      "until": 0,
      "opts": []
@@ -45936,8 +45661,7 @@
     "kill": 0,
     "box": 0,
     "harv": 0,
-    "claim": {},
-    "ad": {}
+    "claim": {}
    }
   },
   "vill": {
@@ -46077,7 +45801,6 @@
     "retires": 4,
     "ucard": 0,
     "uq2": 1,
-    "adSpd": 0,
     "gem": 5000,
     "gemRank": 0,
     "gemLord": {},
@@ -46093,16 +45816,13 @@
      "w": 0,
      "ym": "",
      "m": 0,
-     "ad": "",
      "got": [],
      "intro": 0,
      "tab": "w",
      "lw": "",
      "lm": "",
      "gw": [],
-     "gm": [],
-     "adw": "",
-     "adm": ""
+     "gm": []
     },
     "lcard": 0,
     "tickets": {
@@ -46121,7 +45841,6 @@
     "dun": {
      "d": "",
      "used": 0,
-     "ad": 0,
      "star": {
       "mine": {},
       "field": {},
@@ -46194,7 +45913,6 @@
     "bless": {
      "d": "2026-10-20",
      "used": 1,
-     "ad": 0,
      "k": "gold",
      "until": 1792467600000,
      "opts": []
@@ -48701,19 +48419,6 @@
      20,
      240
     ],
-    "adLeft": {
-     "card": 1,
-     "box": 3,
-     "gem": 3,
-     "retry": 5,
-     "spd": 4,
-     "pass": 3,
-     "farm": 2,
-     "offline": 2,
-     "att": 2,
-     "dun": 1,
-     "bless": 1
-    },
     "cardReady": [],
     "nextGoal": {
      "id": "luka",
@@ -49408,7 +49113,6 @@
     "bless": {
      "d": "2026-10-20",
      "used": 1,
-     "ad": 0,
      "k": "gold",
      "until": 1792467600000,
      "opts": []
@@ -50151,7 +49855,7 @@
      }
     }
    },
-   "offline": 97019094,
+   "offline": 145528642,
    "produced": {
     "items": {
      "wheat": 520,
@@ -50757,7 +50461,6 @@
     "retires": 5,
     "ucard": 0,
     "uq2": 1,
-    "adSpd": 0,
     "gem": 5200,
     "gemRank": 0,
     "gemLord": {},
@@ -50773,16 +50476,13 @@
      "w": 0,
      "ym": "",
      "m": 0,
-     "ad": "",
      "got": [],
      "intro": 0,
      "tab": "w",
      "lw": "",
      "lm": "",
      "gw": [],
-     "gm": [],
-     "adw": "",
-     "adm": ""
+     "gm": []
     },
     "lcard": 0,
     "tickets": {
@@ -50801,7 +50501,6 @@
     "dun": {
      "d": "",
      "used": 0,
-     "ad": 0,
      "star": {
       "mine": {},
       "field": {},
@@ -50878,7 +50577,6 @@
     "bless": {
      "d": "2026-10-20",
      "used": 1,
-     "ad": 0,
      "k": "gold",
      "until": 1792467600000,
      "opts": []
@@ -51044,8 +50742,7 @@
     "kill": 0,
     "box": 0,
     "harv": 0,
-    "claim": {},
-    "ad": {}
+    "claim": {}
    }
   },
   "vill2": {
@@ -51194,7 +50891,6 @@
     "retires": 4,
     "ucard": 0,
     "uq2": 1,
-    "adSpd": 0,
     "gem": 5000,
     "gemRank": 0,
     "gemLord": {},
@@ -51210,16 +50906,13 @@
      "w": 0,
      "ym": "",
      "m": 0,
-     "ad": "",
      "got": [],
      "intro": 0,
      "tab": "w",
      "lw": "",
      "lm": "",
      "gw": [],
-     "gm": [],
-     "adw": "",
-     "adm": ""
+     "gm": []
     },
     "lcard": 0,
     "tickets": {
@@ -51238,7 +50931,6 @@
     "dun": {
      "d": "",
      "used": 0,
-     "ad": 0,
      "star": {
       "mine": {},
       "field": {},
@@ -51311,7 +51003,6 @@
     "bless": {
      "d": "2026-10-19",
      "used": 1,
-     "ad": 1,
      "k": "earth",
      "until": 1792471140000,
      "opts": [
@@ -53814,19 +53505,6 @@
      20,
      240
     ],
-    "adLeft": {
-     "card": 1,
-     "box": 3,
-     "gem": 3,
-     "retry": 5,
-     "spd": 4,
-     "pass": 3,
-     "farm": 2,
-     "offline": 2,
-     "att": 2,
-     "dun": 1,
-     "bless": 1
-    },
     "cardReady": [],
     "nextGoal": {
      "id": "luka",
@@ -54512,7 +54190,6 @@
     "bless": {
      "d": "2026-10-19",
      "used": 1,
-     "ad": 1,
      "k": "earth",
      "until": 1792471140000,
      "opts": [
@@ -55188,7 +54865,7 @@
      }
     }
    },
-   "offline": 92324622,
+   "offline": 138486933,
    "produced": {
     "items": {
      "wheat": 520,
@@ -55814,7 +55491,6 @@
     "retires": 5,
     "ucard": 0,
     "uq2": 1,
-    "adSpd": 0,
     "gem": 5200,
     "gemRank": 0,
     "gemLord": {},
@@ -55830,16 +55506,13 @@
      "w": 0,
      "ym": "",
      "m": 0,
-     "ad": "",
      "got": [],
      "intro": 0,
      "tab": "w",
      "lw": "",
      "lm": "",
      "gw": [],
-     "gm": [],
-     "adw": "",
-     "adm": ""
+     "gm": []
     },
     "lcard": 0,
     "tickets": {
@@ -55858,7 +55531,6 @@
     "dun": {
      "d": "",
      "used": 0,
-     "ad": 0,
      "star": {
       "mine": {},
       "field": {},
@@ -55935,7 +55607,6 @@
     "bless": {
      "d": "2026-10-19",
      "used": 1,
-     "ad": 1,
      "k": "earth",
      "until": 1792471140000,
      "opts": [
@@ -56097,8 +55768,7 @@
     "kill": 0,
     "box": 0,
     "harv": 0,
-    "claim": {},
-    "ad": {}
+    "claim": {}
    }
   },
   "chief": {
@@ -56239,7 +55909,6 @@
     "retires": 3,
     "ucard": 45,
     "uq2": 1,
-    "adSpd": 0,
     "gem": 5000,
     "gemRank": 0,
     "gemLord": {},
@@ -56255,16 +55924,13 @@
      "w": 0,
      "ym": "",
      "m": 0,
-     "ad": "",
      "got": [],
      "intro": 0,
      "tab": "w",
      "lw": "",
      "lm": "",
      "gw": [],
-     "gm": [],
-     "adw": "",
-     "adm": ""
+     "gm": []
     },
     "lcard": 0,
     "tickets": {
@@ -56283,7 +55949,6 @@
     "dun": {
      "d": "",
      "used": 0,
-     "ad": 0,
      "star": {
       "mine": {},
       "field": {},
@@ -56356,7 +56021,6 @@
     "bless": {
      "d": "2026-10-20",
      "used": 1,
-     "ad": 0,
      "k": "gold",
      "until": 1792467600000,
      "opts": []
@@ -58865,19 +58529,6 @@
      20,
      240
     ],
-    "adLeft": {
-     "card": 1,
-     "box": 3,
-     "gem": 3,
-     "retry": 5,
-     "spd": 4,
-     "pass": 3,
-     "farm": 2,
-     "offline": 2,
-     "att": 2,
-     "dun": 1,
-     "bless": 1
-    },
     "cardReady": [],
     "nextGoal": {
      "id": "luka",
@@ -59572,7 +59223,6 @@
     "bless": {
      "d": "2026-10-20",
      "used": 1,
-     "ad": 0,
      "k": "gold",
      "until": 1792467600000,
      "opts": []
@@ -60315,7 +59965,7 @@
      }
     }
    },
-   "offline": 97073285,
+   "offline": 145609928,
    "produced": {
     "items": {
      "wheat": 520,
@@ -60922,7 +60572,6 @@
     "retires": 4,
     "ucard": 45,
     "uq2": 1,
-    "adSpd": 0,
     "gem": 5100,
     "gemRank": 0,
     "gemLord": {},
@@ -60938,16 +60587,13 @@
      "w": 0,
      "ym": "",
      "m": 0,
-     "ad": "",
      "got": [],
      "intro": 0,
      "tab": "w",
      "lw": "",
      "lm": "",
      "gw": [],
-     "gm": [],
-     "adw": "",
-     "adm": ""
+     "gm": []
     },
     "lcard": 0,
     "tickets": {
@@ -60966,7 +60612,6 @@
     "dun": {
      "d": "",
      "used": 0,
-     "ad": 0,
      "star": {
       "mine": {},
       "field": {},
@@ -61042,7 +60687,6 @@
     "bless": {
      "d": "2026-10-20",
      "used": 1,
-     "ad": 0,
      "k": "gold",
      "until": 1792467600000,
      "opts": []
@@ -61208,8 +60852,7 @@
     "kill": 0,
     "box": 0,
     "harv": 0,
-    "claim": {},
-    "ad": {}
+    "claim": {}
    }
   }
  },
@@ -62478,8 +62121,8 @@
   ]
  },
  "codes": {
-  "mid": "eyJnb2xkIjoxMjM0NTYuNywic3RhZ2UiOjIzLCJ3YXZlIjo0LCJib3hMdiI6NCwiYm94WHAiOjcsInVwIjp7ImF0ayI6NDAsImhwIjozMCwic3BkIjoxMCwiY3JpdCI6MTJ9LCJlcSI6eyJ3ZWFwb24iOnsic2xvdCI6IndlYXBvbiIsImciOjMsImx2IjoyMiwiYXRrIjoxMDMxLCJocCI6MCwicHJpY2UiOjMwMH0sImhlbG0iOnsic2xvdCI6ImhlbG0iLCJnIjoyLCJsdiI6MjAsImF0ayI6MCwiaHAiOjEwMTAsInByaWNlIjoyMDB9LCJhcm1vciI6eyJzbG90IjoiYXJtb3IiLCJnIjoyLCJsdiI6MjMsImF0ayI6MCwiaHAiOjE4NTAsInByaWNlIjoyMTB9LCJnbG92ZXMiOnsic2xvdCI6Imdsb3ZlcyIsImciOjEsImx2IjoyMSwiYXRrIjoxMjAsImhwIjoyMTAsInByaWNlIjo5MH0sImJvb3RzIjp7InNsb3QiOiJib290cyIsImciOjQsImx2IjoyNCwiYXRrIjoxNDAsImhwIjoxOTAwLCJwcmljZSI6OTAwfX0sImF1dG9TZWxsIjpmYWxzZSwiYXV0b09wZW4iOmZhbHNlLCJsYXN0IjoxNzkyNDYzNDAwMDAwLCJiZXN0IjoyNSwic3RhcnRlZCI6dHJ1ZSwiam9pbmVkIjp7Im1hcmdvIjp0cnVlLCJoYXJhbCI6dHJ1ZSwicmllbCI6dHJ1ZSwiYnJvbiI6dHJ1ZX0sImRvbmUiOnsibWFydGEiOnRydWUsIm1hcmdvIjp0cnVlLCJoYXJhbCI6dHJ1ZSwicmllbCI6dHJ1ZSwiYnJvbiI6dHJ1ZSwicGV0ZSI6dHJ1ZSwidHV0QnVpbGQiOnRydWV9LCJsdiI6eyJicm9uIjo1LCJoYXJhbCI6NywicmllbCI6NCwibWFyZ28iOjYsImRhaXN5IjoyfSwiYmxkIjp7ImlubiI6NCwiZmFybSI6MywiZGluZXIiOjUsImRvY2siOjIsImFwaWFyeSI6MywibWluZSI6MiwiZm9yZ2UiOjEsIm1hcmtldCI6MCwicmFuY2giOjAsImNoYXBlbCI6MH0sInBsb3RzIjpbeyJrIjoid2hlYXQiLCJhdCI6MTc5MjQ2NTA4MDAwMH0seyJrIjoiY2Fycm90IiwiYXQiOjE3OTI0NjUxNDAwMDB9LG51bGwsbnVsbCx7ImsiOiJwdW1wa2luIiwiYXQiOjE3OTI0NjM0MDAwMDB9XSwic2VlZHMiOnsid2hlYXQiOjQsImNhcnJvdCI6MiwicHVtcGtpbiI6MH0sIml0ZW1zIjp7IndoZWF0IjoxMiwiY2Fycm90IjozLCJwdW1wa2luIjoxLCJmaXNoIjo0MCwiaG9uZXkiOjIyLCJvcmUiOjMxLCJlZ2ciOjAsIm1pbGsiOjB9LCJwcm9kIjp7ImRvY2siOjE3OTI0NjQ2NjAwMDAsImFwaWFyeSI6MTc5MjQ2NTAyMDAwMCwibWluZSI6MTc5MjQ2MTU0MDAwMH0sImJ1ZmZzIjp7ImF0ayI6MTc5MjQ2NTUwMDAwMCwiY3JpdCI6MTc5MjQ2NTE5OTAwMCwiZ29sZCI6MTc5MjQ2NTMyMDAwMH0sInJhbmtTZWVuIjowLCJtZW1vcnkiOjMsInJldGlyZXMiOjEsInVjYXJkIjowLCJ1cTIiOjEsImFkU3BkIjowLCJnZW0iOjc3LCJnZW1SYW5rIjowLCJnZW1Mb3JkIjp7fSwiZGFpbHkiOnsiZCI6IjIwMjYtMTAtMjAiLCJraWxsIjo1NSwiYm94IjoxMCwiaGFydiI6NCwiY2xhaW0iOnsiYm94Ijp0cnVlfSwiYWQiOnsiYm94IjoyfX0sImF0dCI6eyJsYXN0IjoiIiwidyI6MCwieW0iOiIiLCJtIjowLCJhZCI6IiIsImdvdCI6W10sImludHJvIjowLCJ0YWIiOiJ3IiwibHciOiIiLCJsbSI6IiIsImd3IjpbXSwiZ20iOltdLCJhZHciOiIiLCJhZG0iOiIifSwibGNhcmQiOjAsInRpY2tldHMiOnsiYm94IjowLCJib3gxMCI6MH0sImNhcENsZWFycyI6MCwiY2FwQm9udXMiOjAsImVuZGluZzEiOjAsImNoT3BlbiI6MCwidG93ZXIiOnsidG9wIjowLCJkYXkiOiIiLCJwayI6MH0sImR1biI6eyJkIjoiIiwidXNlZCI6MCwiYWQiOjAsInN0YXIiOnsibWluZSI6e30sImZpZWxkIjp7fSwidmF1bHQiOnt9fSwic2VlbiI6e319LCJtYXBJbnRybyI6MCwiZm9nU2VlbiI6MjUsInJlZ1NlZW4iOnsiMCI6MSwiMSI6MX0sInRyYWl0Ijp7fSwidHJSZXNldCI6MCwicnVuU3RhcnQiOjEsInJldFJ3Ijp7fSwiZGlhcnlJbnRybyI6MCwib3JkZXJzIjpbXSwib3JkRGF5Ijp7ImQiOiIiLCJnZW0iOjAsInNraXAiOnt9fSwiYmxlc3MiOnsiZCI6IiIsInVzZWQiOjAsImFkIjowLCJrIjoiIiwidW50aWwiOjAsIm9wdHMiOltdfSwidmx2IjoxLCJlcCI6e30sIndhbGtlcnMiOnsiZCI6IiIsImlkcyI6W119LCJrZWVwT3JkZXIiOjEsIndvcmsiOnt9LCJ3b3JrSW50cm8iOjAsIndvcmtEb3QiOiIiLCJwYXNzIjp7InMiOjAsInB0IjowLCJnb3QiOnsiZiI6W10sInAiOltdfSwiZGF5Ijp7ImQiOiIiLCJzcmMiOnt9LCJrYyI6MH0sImludHJvIjowLCJtYWlsIjpbXX0sImFmZiI6e30sImFmZlRhbGsiOnsiZCI6IiIsImlkcyI6e319LCJib25kIjp7InNlZW4iOnt9LCJpbnRybyI6MCwiZml2ZSI6e319LCJhbGx5Ijp7ImVsZiI6MCwiZGVzZXJ0IjowLCJub3J0aCI6MH0sInAyQ2xyIjp7ImVsZiI6MCwiZGVzZXJ0IjowLCJub3J0aCI6MH0sInAySW50cm8iOjAsImVuZGluZzIiOjAsInAydiI6MywidiI6Mywic2xvdEVuIjp7IndlYXBvbiI6NSwiYXJtb3IiOjMsImJvb3RzIjoxfSwiY3dFbiI6eyJoYXJhbCI6NCwiYnJvbiI6MiwibWFyZ28iOjF9LCJyZWMiOnsiZGFpc3kiOjJ9LCJjYXJkcyI6eyJkYWlzeSI6MTEsImdvcmRvbiI6NywibHVrYSI6MywiaGFyYWwiOjl9LCJwYXJ0eSI6eyJrZWVwZXIiOiJkYWlzeSJ9LCJ3aXNoIjoiZ29yZG9uIiwiZ2VtUGxvdHMiOjEsImJ1aWxkIjp7ImsiOiJkaW5lciIsImVuZCI6MTc5MjQ2NDkwMDAwMCwiZHVyIjozNjAwfSwiYnEiOlsiZG9jayJdLCJwZiI6Indvb2QiLCJwZlVubCI6eyJ3b29kIjoxfX0=",
-  "late": "eyJnb2xkIjo5ODcwMDAwMDAwMDAwMDAsInN0YWdlIjo0NSwid2F2ZSI6OSwiYm94THYiOjEwLCJib3hYcCI6MCwidXAiOnsiYXRrIjo5MDAsImhwIjo4NTAsInNwZCI6NDAsImNyaXQiOjU1fSwiZXEiOnsid2VhcG9uIjp7InNsb3QiOiJ3ZWFwb24iLCJnIjo1LCJsdiI6NDYsImF0ayI6MjIwMDAsImhwIjowLCJwcmljZSI6OTAwMDAwMDAwMH0sImhlbG0iOnsic2xvdCI6ImhlbG0iLCJnIjo0LCJsdiI6NDUsImF0ayI6MCwiaHAiOjk5MDAwLCJwcmljZSI6NTAwMDAwMDAwMH0sImFybW9yIjp7InNsb3QiOiJhcm1vciIsImciOjUsImx2Ijo0NCwiYXRrIjowLCJocCI6MjYwMDAwLCJwcmljZSI6ODAwMDAwMDAwMH0sImdsb3ZlcyI6eyJzbG90IjoiZ2xvdmVzIiwiZyI6NSwibHYiOjQ2LCJhdGsiOjE0MDAwLCJocCI6MzAwMDAsInByaWNlIjo4MDAwMDAwMDAwfSwiYm9vdHMiOnsic2xvdCI6ImJvb3RzIiwiZyI6NCwibHYiOjQ3LCJhdGsiOjYwMDAsImhwIjo2MDAwMCwicHJpY2UiOjYwMDAwMDAwMDB9LCJyaW5nIjp7InNsb3QiOiJyaW5nIiwiZyI6NSwibHYiOjQ1LCJhdGsiOjExMDAwLCJocCI6NDAwMDAsInByaWNlIjo4MDAwMDAwMDAwfX0sImF1dG9TZWxsIjpmYWxzZSwiYXV0b09wZW4iOmZhbHNlLCJsYXN0IjoxNzkyMzkzMjAwMDAwLCJiZXN0Ijo0Niwic3RhcnRlZCI6dHJ1ZSwiam9pbmVkIjp7Im1hcmdvIjp0cnVlLCJoYXJhbCI6dHJ1ZSwicmllbCI6dHJ1ZSwiYnJvbiI6dHJ1ZX0sImRvbmUiOnsibWFydGEiOnRydWUsIm1hcmdvIjp0cnVlLCJoYXJhbCI6dHJ1ZSwicmllbCI6dHJ1ZSwiYnJvbiI6dHJ1ZX0sImx2Ijp7ImJyb24iOjYwLCJoYXJhbCI6NjEsInJpZWwiOjU4LCJtYXJnbyI6NTUsImJyaWRhIjo0MCwibmVsbGEiOjMzLCJsdWthIjoyMCwiZGFpc3kiOjEyLCJnb3Jkb24iOjl9LCJibGQiOnsiaW5uIjoxMCwiZmFybSI6NiwiZGluZXIiOjEwLCJkb2NrIjoxMCwiYXBpYXJ5Ijo5LCJtaW5lIjoxMCwiZm9yZ2UiOjEsIm1hcmtldCI6MCwicmFuY2giOjAsImNoYXBlbCI6MH0sInBsb3RzIjpbXSwic2VlZHMiOnsid2hlYXQiOjAsImNhcnJvdCI6MCwicHVtcGtpbiI6MH0sIml0ZW1zIjp7IndoZWF0Ijo0MDAsImNhcnJvdCI6MTIwLCJwdW1wa2luIjo1NSwiZmlzaCI6MjAwMCwiaG9uZXkiOjE1MDAsIm9yZSI6OTgwLCJlZ2ciOjAsIm1pbGsiOjB9LCJwcm9kIjp7ImRvY2siOjE3OTI0NjIyMDAwMDAsImFwaWFyeSI6MTc5MjQ2MjIwMDAwMCwibWluZSI6MTc5MjQ2MjIwMDAwMH0sImJ1ZmZzIjp7InNwZCI6MTc5MjQ2NTc0MDAwMCwiYXRrIjoxNzkyNDY1MjYwMDAwLCJjcml0IjoxNzkyNDY1MzgwMDAwfSwicmFua1NlZW4iOjAsIm1lbW9yeSI6MTIsInJldGlyZXMiOjQsInVjYXJkIjowLCJ1cTIiOjEsImFkU3BkIjowLCJnZW0iOjUwMDAsImdlbVJhbmsiOjAsImdlbUxvcmQiOnt9LCJkYWlseSI6eyJkIjoiIiwia2lsbCI6MCwiYm94IjowLCJoYXJ2IjowLCJjbGFpbSI6e319LCJhdHQiOnsibGFzdCI6IiIsInciOjAsInltIjoiIiwibSI6MCwiYWQiOiIiLCJnb3QiOltdLCJpbnRybyI6MCwidGFiIjoidyIsImx3IjoiIiwibG0iOiIiLCJndyI6W10sImdtIjpbXSwiYWR3IjoiIiwiYWRtIjoiIn0sImxjYXJkIjowLCJ0aWNrZXRzIjp7ImJveCI6MCwiYm94MTAiOjB9LCJjYXBDbGVhcnMiOjAsImNhcEJvbnVzIjowLCJlbmRpbmcxIjowLCJjaE9wZW4iOjAsInRvd2VyIjp7InRvcCI6MCwiZGF5IjoiIiwicGsiOjB9LCJkdW4iOnsiZCI6IiIsInVzZWQiOjAsImFkIjowLCJzdGFyIjp7Im1pbmUiOnt9LCJmaWVsZCI6e30sInZhdWx0Ijp7fX0sInNlZW4iOnt9fSwibWFwSW50cm8iOjAsImZvZ1NlZW4iOjQ2LCJyZWdTZWVuIjp7IjAiOjEsIjEiOjEsIjIiOjEsIjMiOjF9LCJ0cmFpdCI6e30sInRyUmVzZXQiOjAsInJ1blN0YXJ0IjoxLCJyZXRSdyI6e30sImRpYXJ5SW50cm8iOjAsIm9yZGVycyI6W10sIm9yZERheSI6eyJkIjoiIiwiZ2VtIjowLCJza2lwIjp7fX0sImJsZXNzIjp7ImQiOiIiLCJ1c2VkIjowLCJhZCI6MCwiayI6IiIsInVudGlsIjowLCJvcHRzIjpbXX0sInZsdiI6MSwiZXAiOnt9LCJ3YWxrZXJzIjp7ImQiOiIiLCJpZHMiOltdfSwia2VlcE9yZGVyIjoxLCJ3b3JrIjp7fSwid29ya0ludHJvIjowLCJ3b3JrRG90IjoiIiwicGFzcyI6eyJzIjowLCJwdCI6MCwiZ290Ijp7ImYiOltdLCJwIjpbXX0sImRheSI6eyJkIjoiIiwic3JjIjp7fSwia2MiOjB9LCJpbnRybyI6MCwibWFpbCI6W119LCJhZmYiOnt9LCJhZmZUYWxrIjp7ImQiOiIiLCJpZHMiOnt9fSwiYm9uZCI6eyJzZWVuIjp7fSwiaW50cm8iOjAsImZpdmUiOnt9fSwiYWxseSI6eyJlbGYiOjAsImRlc2VydCI6MCwibm9ydGgiOjB9LCJwMkNsciI6eyJlbGYiOjAsImRlc2VydCI6MCwibm9ydGgiOjB9LCJwMkludHJvIjowLCJlbmRpbmcyIjowLCJwMnYiOjMsInYiOjMsInNsb3RFbiI6eyJ3ZWFwb24iOjIwLCJoZWxtIjoxOCwiYXJtb3IiOjIwLCJnbG92ZXMiOjE1LCJib290cyI6MTIsInJpbmciOjE5fSwiY3dFbiI6eyJoYXJhbCI6MjAsImJyb24iOjE3LCJtYXJnbyI6MTIsInJpZWwiOjE1fSwicmVjIjp7ImJyaWRhIjozLCJsdWthIjoxLCJuZWxsYSI6NSwiZ29yZG9uIjoyLCJkYWlzeSI6NH0sImNhcmRzIjp7ImJyaWRhIjo3MCwibHVrYSI6MjksIm5lbGxhIjowLCJnb3Jkb24iOjE1LCJkYWlzeSI6NzksImJyb24iOjN9LCJwYXJ0eSI6eyJtaW5lciI6ImJyaWRhIiwiZmlzaGVyIjoibmVsbGEiLCJrZWVwZXIiOiJyaWVsIiwiY29vayI6Imx1a2EifX0=",
-  "old": "eyJnb2xkIjo1MDAsInN0YWdlIjoxNCwid2F2ZSI6MCwiYm94THYiOjEsImJveFhwIjowLCJ1cCI6eyJhdGsiOjAsImhwIjowLCJzcGQiOjAsImNyaXQiOjB9LCJlcSI6e30sImF1dG9TZWxsIjpmYWxzZSwiYXV0b09wZW4iOmZhbHNlLCJsYXN0IjoxNzkyNDY1MjAwMDAwLCJiZXN0IjoxNCwic3RhcnRlZCI6ZmFsc2UsImpvaW5lZCI6eyJtYXJnbyI6dHJ1ZX0sImRvbmUiOnt9LCJsdiI6eyJicm9uIjoxLCJoYXJhbCI6MSwicmllbCI6MSwibWFyZ28iOjN9LCJibGQiOnsiaW5uIjowLCJmYXJtIjowLCJkaW5lciI6MCwiZG9jayI6MCwiYXBpYXJ5IjowLCJtaW5lIjowLCJmb3JnZSI6MCwibWFya2V0IjowLCJyYW5jaCI6MCwiY2hhcGVsIjowfSwicGxvdHMiOltdLCJzZWVkcyI6eyJ3aGVhdCI6MCwiY2Fycm90IjowLCJwdW1wa2luIjowfSwiaXRlbXMiOnsid2hlYXQiOjgsImNhcnJvdCI6MiwicHVtcGtpbiI6MCwiZmlzaCI6MCwiaG9uZXkiOjAsIm9yZSI6MCwiZWdnIjowLCJtaWxrIjowfSwicHJvZCI6e30sImJ1ZmZzIjp7fSwicmFua1NlZW4iOjIsIm1lbW9yeSI6MCwicmV0aXJlcyI6MCwidWNhcmQiOjAsInVxMiI6MSwiYWRTcGQiOjAsImdlbSI6MCwiZ2VtUmFuayI6MCwiZ2VtTG9yZCI6e30sImRhaWx5Ijp7ImQiOiIiLCJraWxsIjowLCJib3giOjAsImhhcnYiOjAsImNsYWltIjp7fX0sImF0dCI6eyJsYXN0IjoiIiwidyI6MCwieW0iOiIiLCJtIjowLCJhZCI6IiIsImdvdCI6W10sImludHJvIjowLCJ0YWIiOiJ3IiwibHciOiIiLCJsbSI6IiIsImd3IjpbXSwiZ20iOltdLCJhZHciOiIiLCJhZG0iOiIifSwibGNhcmQiOjAsInRpY2tldHMiOnsiYm94IjowLCJib3gxMCI6MH0sImNhcENsZWFycyI6MCwiY2FwQm9udXMiOjAsImVuZGluZzEiOjAsImNoT3BlbiI6MCwidG93ZXIiOnsidG9wIjowLCJkYXkiOiIiLCJwayI6MH0sImR1biI6eyJkIjoiIiwidXNlZCI6MCwiYWQiOjAsInN0YXIiOnsibWluZSI6e30sImZpZWxkIjp7fSwidmF1bHQiOnt9fSwic2VlbiI6e319LCJtYXBJbnRybyI6MCwiZm9nU2VlbiI6MTQsInJlZ1NlZW4iOnsiMCI6MX0sInRyYWl0Ijp7fSwidHJSZXNldCI6MCwicnVuU3RhcnQiOjEsInJldFJ3Ijp7fSwiZGlhcnlJbnRybyI6MCwib3JkZXJzIjpbXSwib3JkRGF5Ijp7ImQiOiIiLCJnZW0iOjAsInNraXAiOnt9fSwiYmxlc3MiOnsiZCI6IiIsInVzZWQiOjAsImFkIjowLCJrIjoiIiwidW50aWwiOjAsIm9wdHMiOltdfSwidmx2IjoxLCJlcCI6e30sIndhbGtlcnMiOnsiZCI6IiIsImlkcyI6W119LCJrZWVwT3JkZXIiOjEsIndvcmsiOnt9LCJ3b3JrSW50cm8iOjAsIndvcmtEb3QiOiIiLCJwYXNzIjp7InMiOjAsInB0IjowLCJnb3QiOnsiZiI6W10sInAiOltdfSwiZGF5Ijp7ImQiOiIiLCJzcmMiOnt9LCJrYyI6MH0sImludHJvIjowLCJtYWlsIjpbXX0sImFmZiI6e30sImFmZlRhbGsiOnsiZCI6IiIsImlkcyI6e319LCJib25kIjp7InNlZW4iOnt9LCJpbnRybyI6MCwiZml2ZSI6e319LCJhbGx5Ijp7ImVsZiI6MCwiZGVzZXJ0IjowLCJub3J0aCI6MH0sInAyQ2xyIjp7ImVsZiI6MCwiZGVzZXJ0IjowLCJub3J0aCI6MH0sInAySW50cm8iOjAsImVuZGluZzIiOjAsInAydiI6MywidiI6M30="
+  "mid": "eyJnb2xkIjoxMjM0NTYuNywic3RhZ2UiOjIzLCJ3YXZlIjo0LCJib3hMdiI6NCwiYm94WHAiOjcsInVwIjp7ImF0ayI6NDAsImhwIjozMCwic3BkIjoxMCwiY3JpdCI6MTJ9LCJlcSI6eyJ3ZWFwb24iOnsic2xvdCI6IndlYXBvbiIsImciOjMsImx2IjoyMiwiYXRrIjoxMDMxLCJocCI6MCwicHJpY2UiOjMwMH0sImhlbG0iOnsic2xvdCI6ImhlbG0iLCJnIjoyLCJsdiI6MjAsImF0ayI6MCwiaHAiOjEwMTAsInByaWNlIjoyMDB9LCJhcm1vciI6eyJzbG90IjoiYXJtb3IiLCJnIjoyLCJsdiI6MjMsImF0ayI6MCwiaHAiOjE4NTAsInByaWNlIjoyMTB9LCJnbG92ZXMiOnsic2xvdCI6Imdsb3ZlcyIsImciOjEsImx2IjoyMSwiYXRrIjoxMjAsImhwIjoyMTAsInByaWNlIjo5MH0sImJvb3RzIjp7InNsb3QiOiJib290cyIsImciOjQsImx2IjoyNCwiYXRrIjoxNDAsImhwIjoxOTAwLCJwcmljZSI6OTAwfX0sImF1dG9TZWxsIjpmYWxzZSwiYXV0b09wZW4iOmZhbHNlLCJsYXN0IjoxNzkyNDYzNDAwMDAwLCJiZXN0IjoyNSwic3RhcnRlZCI6dHJ1ZSwiam9pbmVkIjp7Im1hcmdvIjp0cnVlLCJoYXJhbCI6dHJ1ZSwicmllbCI6dHJ1ZSwiYnJvbiI6dHJ1ZX0sImRvbmUiOnsibWFydGEiOnRydWUsIm1hcmdvIjp0cnVlLCJoYXJhbCI6dHJ1ZSwicmllbCI6dHJ1ZSwiYnJvbiI6dHJ1ZSwicGV0ZSI6dHJ1ZSwidHV0QnVpbGQiOnRydWV9LCJsdiI6eyJicm9uIjo1LCJoYXJhbCI6NywicmllbCI6NCwibWFyZ28iOjYsImRhaXN5IjoyfSwiYmxkIjp7ImlubiI6NCwiZmFybSI6MywiZGluZXIiOjUsImRvY2siOjIsImFwaWFyeSI6MywibWluZSI6MiwiZm9yZ2UiOjEsIm1hcmtldCI6MCwicmFuY2giOjAsImNoYXBlbCI6MH0sInBsb3RzIjpbeyJrIjoid2hlYXQiLCJhdCI6MTc5MjQ2NTA4MDAwMH0seyJrIjoiY2Fycm90IiwiYXQiOjE3OTI0NjUxNDAwMDB9LG51bGwsbnVsbCx7ImsiOiJwdW1wa2luIiwiYXQiOjE3OTI0NjM0MDAwMDB9XSwic2VlZHMiOnsid2hlYXQiOjQsImNhcnJvdCI6MiwicHVtcGtpbiI6MH0sIml0ZW1zIjp7IndoZWF0IjoxMiwiY2Fycm90IjozLCJwdW1wa2luIjoxLCJmaXNoIjo0MCwiaG9uZXkiOjIyLCJvcmUiOjMxLCJlZ2ciOjAsIm1pbGsiOjB9LCJwcm9kIjp7ImRvY2siOjE3OTI0NjQ2NjAwMDAsImFwaWFyeSI6MTc5MjQ2NTAyMDAwMCwibWluZSI6MTc5MjQ2MTU0MDAwMH0sImJ1ZmZzIjp7ImF0ayI6MTc5MjQ2NTUwMDAwMCwiY3JpdCI6MTc5MjQ2NTE5OTAwMCwiZ29sZCI6MTc5MjQ2NTMyMDAwMH0sInJhbmtTZWVuIjowLCJtZW1vcnkiOjMsInJldGlyZXMiOjEsInVjYXJkIjowLCJ1cTIiOjEsImdlbSI6NzcsImdlbVJhbmsiOjAsImdlbUxvcmQiOnt9LCJkYWlseSI6eyJkIjoiMjAyNi0xMC0yMCIsImtpbGwiOjU1LCJib3giOjEwLCJoYXJ2Ijo0LCJjbGFpbSI6eyJib3giOnRydWV9fSwiYXR0Ijp7Imxhc3QiOiIiLCJ3IjowLCJ5bSI6IiIsIm0iOjAsImdvdCI6W10sImludHJvIjowLCJ0YWIiOiJ3IiwibHciOiIiLCJsbSI6IiIsImd3IjpbXSwiZ20iOltdfSwibGNhcmQiOjAsInRpY2tldHMiOnsiYm94IjowLCJib3gxMCI6MH0sImNhcENsZWFycyI6MCwiY2FwQm9udXMiOjAsImVuZGluZzEiOjAsImNoT3BlbiI6MCwidG93ZXIiOnsidG9wIjowLCJkYXkiOiIiLCJwayI6MH0sImR1biI6eyJkIjoiIiwidXNlZCI6MCwic3RhciI6eyJtaW5lIjp7fSwiZmllbGQiOnt9LCJ2YXVsdCI6e319LCJzZWVuIjp7fX0sIm1hcEludHJvIjowLCJmb2dTZWVuIjoyNSwicmVnU2VlbiI6eyIwIjoxLCIxIjoxfSwidHJhaXQiOnt9LCJ0clJlc2V0IjowLCJydW5TdGFydCI6MSwicmV0UnciOnt9LCJkaWFyeUludHJvIjowLCJvcmRlcnMiOltdLCJvcmREYXkiOnsiZCI6IiIsImdlbSI6MCwic2tpcCI6e319LCJibGVzcyI6eyJkIjoiIiwidXNlZCI6MCwiayI6IiIsInVudGlsIjowLCJvcHRzIjpbXX0sInZsdiI6MSwiZXAiOnt9LCJ3YWxrZXJzIjp7ImQiOiIiLCJpZHMiOltdfSwia2VlcE9yZGVyIjoxLCJ3b3JrIjp7fSwid29ya0ludHJvIjowLCJ3b3JrRG90IjoiIiwicGFzcyI6eyJzIjowLCJwdCI6MCwiZ290Ijp7ImYiOltdLCJwIjpbXX0sImRheSI6eyJkIjoiIiwic3JjIjp7fSwia2MiOjB9LCJpbnRybyI6MCwibWFpbCI6W119LCJhZmYiOnt9LCJhZmZUYWxrIjp7ImQiOiIiLCJpZHMiOnt9fSwiYm9uZCI6eyJzZWVuIjp7fSwiaW50cm8iOjAsImZpdmUiOnt9fSwiYWxseSI6eyJlbGYiOjAsImRlc2VydCI6MCwibm9ydGgiOjB9LCJwMkNsciI6eyJlbGYiOjAsImRlc2VydCI6MCwibm9ydGgiOjB9LCJwMkludHJvIjowLCJlbmRpbmcyIjowLCJwMnYiOjMsInYiOjMsInNsb3RFbiI6eyJ3ZWFwb24iOjUsImFybW9yIjozLCJib290cyI6MX0sImN3RW4iOnsiaGFyYWwiOjQsImJyb24iOjIsIm1hcmdvIjoxfSwicmVjIjp7ImRhaXN5IjoyfSwiY2FyZHMiOnsiZGFpc3kiOjExLCJnb3Jkb24iOjcsImx1a2EiOjMsImhhcmFsIjo5fSwicGFydHkiOnsia2VlcGVyIjoiZGFpc3kifSwid2lzaCI6ImdvcmRvbiIsImdlbVBsb3RzIjoxLCJidWlsZCI6eyJrIjoiZGluZXIiLCJlbmQiOjE3OTI0NjQ5MDAwMDAsImR1ciI6MzYwMH0sImJxIjpbImRvY2siXSwicGYiOiJ3b29kIiwicGZVbmwiOnsid29vZCI6MX19",
+  "late": "eyJnb2xkIjo5ODcwMDAwMDAwMDAwMDAsInN0YWdlIjo0NSwid2F2ZSI6OSwiYm94THYiOjEwLCJib3hYcCI6MCwidXAiOnsiYXRrIjo5MDAsImhwIjo4NTAsInNwZCI6NDAsImNyaXQiOjU1fSwiZXEiOnsid2VhcG9uIjp7InNsb3QiOiJ3ZWFwb24iLCJnIjo1LCJsdiI6NDYsImF0ayI6MjIwMDAsImhwIjowLCJwcmljZSI6OTAwMDAwMDAwMH0sImhlbG0iOnsic2xvdCI6ImhlbG0iLCJnIjo0LCJsdiI6NDUsImF0ayI6MCwiaHAiOjk5MDAwLCJwcmljZSI6NTAwMDAwMDAwMH0sImFybW9yIjp7InNsb3QiOiJhcm1vciIsImciOjUsImx2Ijo0NCwiYXRrIjowLCJocCI6MjYwMDAwLCJwcmljZSI6ODAwMDAwMDAwMH0sImdsb3ZlcyI6eyJzbG90IjoiZ2xvdmVzIiwiZyI6NSwibHYiOjQ2LCJhdGsiOjE0MDAwLCJocCI6MzAwMDAsInByaWNlIjo4MDAwMDAwMDAwfSwiYm9vdHMiOnsic2xvdCI6ImJvb3RzIiwiZyI6NCwibHYiOjQ3LCJhdGsiOjYwMDAsImhwIjo2MDAwMCwicHJpY2UiOjYwMDAwMDAwMDB9LCJyaW5nIjp7InNsb3QiOiJyaW5nIiwiZyI6NSwibHYiOjQ1LCJhdGsiOjExMDAwLCJocCI6NDAwMDAsInByaWNlIjo4MDAwMDAwMDAwfX0sImF1dG9TZWxsIjpmYWxzZSwiYXV0b09wZW4iOmZhbHNlLCJsYXN0IjoxNzkyMzkzMjAwMDAwLCJiZXN0Ijo0Niwic3RhcnRlZCI6dHJ1ZSwiam9pbmVkIjp7Im1hcmdvIjp0cnVlLCJoYXJhbCI6dHJ1ZSwicmllbCI6dHJ1ZSwiYnJvbiI6dHJ1ZX0sImRvbmUiOnsibWFydGEiOnRydWUsIm1hcmdvIjp0cnVlLCJoYXJhbCI6dHJ1ZSwicmllbCI6dHJ1ZSwiYnJvbiI6dHJ1ZX0sImx2Ijp7ImJyb24iOjYwLCJoYXJhbCI6NjEsInJpZWwiOjU4LCJtYXJnbyI6NTUsImJyaWRhIjo0MCwibmVsbGEiOjMzLCJsdWthIjoyMCwiZGFpc3kiOjEyLCJnb3Jkb24iOjl9LCJibGQiOnsiaW5uIjoxMCwiZmFybSI6NiwiZGluZXIiOjEwLCJkb2NrIjoxMCwiYXBpYXJ5Ijo5LCJtaW5lIjoxMCwiZm9yZ2UiOjEsIm1hcmtldCI6MCwicmFuY2giOjAsImNoYXBlbCI6MH0sInBsb3RzIjpbXSwic2VlZHMiOnsid2hlYXQiOjAsImNhcnJvdCI6MCwicHVtcGtpbiI6MH0sIml0ZW1zIjp7IndoZWF0Ijo0MDAsImNhcnJvdCI6MTIwLCJwdW1wa2luIjo1NSwiZmlzaCI6MjAwMCwiaG9uZXkiOjE1MDAsIm9yZSI6OTgwLCJlZ2ciOjAsIm1pbGsiOjB9LCJwcm9kIjp7ImRvY2siOjE3OTI0NjIyMDAwMDAsImFwaWFyeSI6MTc5MjQ2MjIwMDAwMCwibWluZSI6MTc5MjQ2MjIwMDAwMH0sImJ1ZmZzIjp7InNwZCI6MTc5MjQ2NTc0MDAwMCwiYXRrIjoxNzkyNDY1MjYwMDAwLCJjcml0IjoxNzkyNDY1MzgwMDAwfSwicmFua1NlZW4iOjAsIm1lbW9yeSI6MTIsInJldGlyZXMiOjQsInVjYXJkIjowLCJ1cTIiOjEsImdlbSI6NTAwMCwiZ2VtUmFuayI6MCwiZ2VtTG9yZCI6e30sImRhaWx5Ijp7ImQiOiIiLCJraWxsIjowLCJib3giOjAsImhhcnYiOjAsImNsYWltIjp7fX0sImF0dCI6eyJsYXN0IjoiIiwidyI6MCwieW0iOiIiLCJtIjowLCJnb3QiOltdLCJpbnRybyI6MCwidGFiIjoidyIsImx3IjoiIiwibG0iOiIiLCJndyI6W10sImdtIjpbXX0sImxjYXJkIjowLCJ0aWNrZXRzIjp7ImJveCI6MCwiYm94MTAiOjB9LCJjYXBDbGVhcnMiOjAsImNhcEJvbnVzIjowLCJlbmRpbmcxIjowLCJjaE9wZW4iOjAsInRvd2VyIjp7InRvcCI6MCwiZGF5IjoiIiwicGsiOjB9LCJkdW4iOnsiZCI6IiIsInVzZWQiOjAsInN0YXIiOnsibWluZSI6e30sImZpZWxkIjp7fSwidmF1bHQiOnt9fSwic2VlbiI6e319LCJtYXBJbnRybyI6MCwiZm9nU2VlbiI6NDYsInJlZ1NlZW4iOnsiMCI6MSwiMSI6MSwiMiI6MSwiMyI6MX0sInRyYWl0Ijp7fSwidHJSZXNldCI6MCwicnVuU3RhcnQiOjEsInJldFJ3Ijp7fSwiZGlhcnlJbnRybyI6MCwib3JkZXJzIjpbXSwib3JkRGF5Ijp7ImQiOiIiLCJnZW0iOjAsInNraXAiOnt9fSwiYmxlc3MiOnsiZCI6IiIsInVzZWQiOjAsImsiOiIiLCJ1bnRpbCI6MCwib3B0cyI6W119LCJ2bHYiOjEsImVwIjp7fSwid2Fsa2VycyI6eyJkIjoiIiwiaWRzIjpbXX0sImtlZXBPcmRlciI6MSwid29yayI6e30sIndvcmtJbnRybyI6MCwid29ya0RvdCI6IiIsInBhc3MiOnsicyI6MCwicHQiOjAsImdvdCI6eyJmIjpbXSwicCI6W119LCJkYXkiOnsiZCI6IiIsInNyYyI6e30sImtjIjowfSwiaW50cm8iOjAsIm1haWwiOltdfSwiYWZmIjp7fSwiYWZmVGFsayI6eyJkIjoiIiwiaWRzIjp7fX0sImJvbmQiOnsic2VlbiI6e30sImludHJvIjowLCJmaXZlIjp7fX0sImFsbHkiOnsiZWxmIjowLCJkZXNlcnQiOjAsIm5vcnRoIjowfSwicDJDbHIiOnsiZWxmIjowLCJkZXNlcnQiOjAsIm5vcnRoIjowfSwicDJJbnRybyI6MCwiZW5kaW5nMiI6MCwicDJ2IjozLCJ2IjozLCJzbG90RW4iOnsid2VhcG9uIjoyMCwiaGVsbSI6MTgsImFybW9yIjoyMCwiZ2xvdmVzIjoxNSwiYm9vdHMiOjEyLCJyaW5nIjoxOX0sImN3RW4iOnsiaGFyYWwiOjIwLCJicm9uIjoxNywibWFyZ28iOjEyLCJyaWVsIjoxNX0sInJlYyI6eyJicmlkYSI6MywibHVrYSI6MSwibmVsbGEiOjUsImdvcmRvbiI6MiwiZGFpc3kiOjR9LCJjYXJkcyI6eyJicmlkYSI6NzAsImx1a2EiOjI5LCJuZWxsYSI6MCwiZ29yZG9uIjoxNSwiZGFpc3kiOjc5LCJicm9uIjozfSwicGFydHkiOnsibWluZXIiOiJicmlkYSIsImZpc2hlciI6Im5lbGxhIiwia2VlcGVyIjoicmllbCIsImNvb2siOiJsdWthIn19",
+  "old": "eyJnb2xkIjo1MDAsInN0YWdlIjoxNCwid2F2ZSI6MCwiYm94THYiOjEsImJveFhwIjowLCJ1cCI6eyJhdGsiOjAsImhwIjowLCJzcGQiOjAsImNyaXQiOjB9LCJlcSI6e30sImF1dG9TZWxsIjpmYWxzZSwiYXV0b09wZW4iOmZhbHNlLCJsYXN0IjoxNzkyNDY1MjAwMDAwLCJiZXN0IjoxNCwic3RhcnRlZCI6ZmFsc2UsImpvaW5lZCI6eyJtYXJnbyI6dHJ1ZX0sImRvbmUiOnt9LCJsdiI6eyJicm9uIjoxLCJoYXJhbCI6MSwicmllbCI6MSwibWFyZ28iOjN9LCJibGQiOnsiaW5uIjowLCJmYXJtIjowLCJkaW5lciI6MCwiZG9jayI6MCwiYXBpYXJ5IjowLCJtaW5lIjowLCJmb3JnZSI6MCwibWFya2V0IjowLCJyYW5jaCI6MCwiY2hhcGVsIjowfSwicGxvdHMiOltdLCJzZWVkcyI6eyJ3aGVhdCI6MCwiY2Fycm90IjowLCJwdW1wa2luIjowfSwiaXRlbXMiOnsid2hlYXQiOjgsImNhcnJvdCI6MiwicHVtcGtpbiI6MCwiZmlzaCI6MCwiaG9uZXkiOjAsIm9yZSI6MCwiZWdnIjowLCJtaWxrIjowfSwicHJvZCI6e30sImJ1ZmZzIjp7fSwicmFua1NlZW4iOjIsIm1lbW9yeSI6MCwicmV0aXJlcyI6MCwidWNhcmQiOjAsInVxMiI6MSwiZ2VtIjowLCJnZW1SYW5rIjowLCJnZW1Mb3JkIjp7fSwiZGFpbHkiOnsiZCI6IiIsImtpbGwiOjAsImJveCI6MCwiaGFydiI6MCwiY2xhaW0iOnt9fSwiYXR0Ijp7Imxhc3QiOiIiLCJ3IjowLCJ5bSI6IiIsIm0iOjAsImdvdCI6W10sImludHJvIjowLCJ0YWIiOiJ3IiwibHciOiIiLCJsbSI6IiIsImd3IjpbXSwiZ20iOltdfSwibGNhcmQiOjAsInRpY2tldHMiOnsiYm94IjowLCJib3gxMCI6MH0sImNhcENsZWFycyI6MCwiY2FwQm9udXMiOjAsImVuZGluZzEiOjAsImNoT3BlbiI6MCwidG93ZXIiOnsidG9wIjowLCJkYXkiOiIiLCJwayI6MH0sImR1biI6eyJkIjoiIiwidXNlZCI6MCwic3RhciI6eyJtaW5lIjp7fSwiZmllbGQiOnt9LCJ2YXVsdCI6e319LCJzZWVuIjp7fX0sIm1hcEludHJvIjowLCJmb2dTZWVuIjoxNCwicmVnU2VlbiI6eyIwIjoxfSwidHJhaXQiOnt9LCJ0clJlc2V0IjowLCJydW5TdGFydCI6MSwicmV0UnciOnt9LCJkaWFyeUludHJvIjowLCJvcmRlcnMiOltdLCJvcmREYXkiOnsiZCI6IiIsImdlbSI6MCwic2tpcCI6e319LCJibGVzcyI6eyJkIjoiIiwidXNlZCI6MCwiayI6IiIsInVudGlsIjowLCJvcHRzIjpbXX0sInZsdiI6MSwiZXAiOnt9LCJ3YWxrZXJzIjp7ImQiOiIiLCJpZHMiOltdfSwia2VlcE9yZGVyIjoxLCJ3b3JrIjp7fSwid29ya0ludHJvIjowLCJ3b3JrRG90IjoiIiwicGFzcyI6eyJzIjowLCJwdCI6MCwiZ290Ijp7ImYiOltdLCJwIjpbXX0sImRheSI6eyJkIjoiIiwic3JjIjp7fSwia2MiOjB9LCJpbnRybyI6MCwibWFpbCI6W119LCJhZmYiOnt9LCJhZmZUYWxrIjp7ImQiOiIiLCJpZHMiOnt9fSwiYm9uZCI6eyJzZWVuIjp7fSwiaW50cm8iOjAsImZpdmUiOnt9fSwiYWxseSI6eyJlbGYiOjAsImRlc2VydCI6MCwibm9ydGgiOjB9LCJwMkNsciI6eyJlbGYiOjAsImRlc2VydCI6MCwibm9ydGgiOjB9LCJwMkludHJvIjowLCJlbmRpbmcyIjowLCJwMnYiOjMsInYiOjN9"
  }
 }

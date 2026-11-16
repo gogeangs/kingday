@@ -175,10 +175,9 @@ class MgEvDef {
         settle = m['settle'],
         year = asNum(m['year']).toInt(),
         daily = asNum(m['daily']).toInt(),
-        ad = asNum(m['ad']).toInt(),
         rew = [for (final r in m['rew'] as List) ((r as List)[0] as String, r[1] as String)];
   final String k, ev, n, from, to, settle;
-  final int year, daily, ad;
+  final int year, daily;
   final List<(String, String)> rew;
 }
 
@@ -289,12 +288,12 @@ extension EventCalc on GameCalc {
     Map<String, dynamic> d() => <String, dynamic>{
           'sf': 0,
           'day': <String, dynamic>{'d': '', 'bat': 0, 'kc': 0},
-          'boss': <String, dynamic>{'d': '', 'n': 0, 'ad': 0, 'st': 1, 'best': 0, 'mile': <String, dynamic>{}, 'ref': 0},
+          'boss': <String, dynamic>{'d': '', 'n': 0, 'st': 1, 'best': 0, 'mile': <String, dynamic>{}, 'ref': 0},
           'att': <String, dynamic>{'last': '', 'cnt': 0},
           'shop': <String, dynamic>{},
           'seen': <String, dynamic>{'start': 0, 'end': 0, 'xmas': 0, 'mgEnd': 0, 'warn': ''},
           'xm': <String, dynamic>{'gift': <String, dynamic>{}, 'tree': '', 'days': <String, dynamic>{}},
-          'mg': <String, dynamic>{'d': '', 'n': 0, 'ad': 0, 'best': 0},
+          'mg': <String, dynamic>{'d': '', 'n': 0, 'best': 0},
           'hi': 0,
         };
     final def = d();
@@ -353,7 +352,6 @@ extension EventCalc on GameCalc {
       if (b['d'] != t) {
         b['d'] = t;
         b['n'] = 0;
-        b['ad'] = 0;
       }
     }
     return e;
@@ -449,7 +447,7 @@ extension EventCalc on GameCalc {
 
   static num evBossHp(EvBossDef b, int stg, int ref) => GameCalc.monHp(ref, false) * Balance.bossHp * b.hp0 * math.pow(b.hpG, stg - 1);
   static num evBossAtk(EvBossDef b, int stg, int ref) => GameCalc.monAtk(ref, false) * Balance.bossAtk * b.atk * math.pow(b.atkG, stg - 1);
-  int evTries(EventDef e, Map<String, dynamic> x) => e.boss!.tries + (truthy((x['boss'] as Map)['ad']) ? 1 : 0);
+  int evTries(EventDef e, Map<String, dynamic> x) => e.boss!.tries;
   int evTriesLeft(EventDef e) {
     final x = evToday(evS(e.id));
     return math.max(0, evTries(e, x) - asNum((x['boss'] as Map)['n']).toInt());
@@ -508,7 +506,7 @@ extension EventCalc on GameCalc {
   int evMgLeft(EventDef e) {
     if (!evMgOn(e)) return 0;
     final mm = mgEvs[e.mg]!, x = evToday(evS(e.id)), g = x['mg'] as Map;
-    return math.max(0, mm.daily + (truthy(g['ad']) ? mm.ad : 0) - asNum(g['n']).toInt());
+    return math.max(0, mm.daily - asNum(g['n']).toInt());
   }
 
   /// 상단 버튼 빨간 점 (웹 evDot)

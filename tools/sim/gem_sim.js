@@ -83,6 +83,9 @@
   let day = {};
   const log = [],
     weeks = [];
+  let gOff = 0,
+    gOffAd = 0,
+    gAct = 0;
   let wk = {},
     stall = 0,
     best0 = 1,
@@ -91,15 +94,11 @@
   for (let d = 1; d <= DAYS; d++) {
     day = {};
     if (d > 1) OFF += 864e5;
-    /* 출석 (두 판) + 광고 2배 */
+    /* 출석 (두 판) — 2026-11-16 광고 2배 없앰 */
     ctx = '출석';
     attDo(today(), 'w');
     attDo(today(), 'm');
     passAdd('att');
-    if (PL.ad) {
-      ctx = '광고 · 출석 2배';
-      try { attAdDo(today(), 'w'); attAdDo(today(), 'm'); } catch (e) {}
-    }
     for (let s = 0; s < PL.n; s++) {
       ctx = 'battle';
       const T = PL.min * 60,
@@ -114,12 +113,15 @@
       if (d >= PL.harvDay) dd.harv = Math.max(dd.harv || 0, 10);
       for (const m of MISSIONS) if (misCan(m)) { dd.claim[m.k] = true; gainGem(m.r, m.n); passAdd('mis'); }
       if (misCan(null)) { dd.claim.all = true; gainGem(MIS_ALL); passAdd('misall'); }
-      S.gold += idleGold((16 / PL.n) * 3600);
-    }
-    /* 피트의 선물: 이삭 광고 */
-    if (PL.ad) {
-      ctx = '광고 · 피트의 이삭';
-      for (let i = 0; i < 3; i++) adGem();
+      /* 접속 사이 방치(하루 16시간 깨어 있음을 접속 수로 나눔 · 여관 최대 시간까지): 골드만. 게임과 같은 배율 OFF_MUL(×1.5) — PL.offMul 로 바꿔 볼 수 있음 */
+      {
+        const og = idleGold(Math.min((16 / PL.n) * 3600, offCapH() * 3600)) * (PL.offMul || (typeof OFF_MUL === 'number' ? OFF_MUL : 1)),
+          dbl = 0;
+        S.gold += og + dbl;
+        gOff += og;
+        gOffAd += dbl;
+        gAct += goldRate() * PL.min * 60;
+      }
     }
     /* 시련의 탑: 하루 한 번, 막힐 때까지 (실제 전투) */
     if (S.chOpen || S.best > 20) {
@@ -156,7 +158,8 @@
       best0 = S.best;
     }
     const tot = Object.values(day).reduce((a, b) => a + b, 0);
-    log.push([d, tot, Math.min(S.best - 1, 50), S.retires || 0, towerTop, JSON.stringify(day)]);
+    log.push([d, tot, Math.min(S.best - 1, 50), S.retires || 0, towerTop, JSON.stringify(day), Math.round(gAct), Math.round(gOff), Math.round(gOffAd)]);
+    gAct = gOff = gOffAd = 0;
     for (const k in day) wk[k] = (wk[k] || 0) + day[k];
     if (d % 7 === 0) { weeks.push(wk); wk = {}; }
   }

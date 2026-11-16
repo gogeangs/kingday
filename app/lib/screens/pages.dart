@@ -48,7 +48,7 @@ class _PageSheetState extends State<PageSheet> {
       onVerticalDragEnd: half
           ? (_) {
               if (_drag > 50) {
-                g.setTab(null);
+                g.setTab(t == GameTab.sh ? GameTab.vl : null);
               } else {
                 setState(() => _drag = 0);
               }
@@ -91,7 +91,8 @@ class _PageSheetState extends State<PageSheet> {
                 ),
               ),
             GestureDetector(
-              onTap: () => g.setTab(null),
+              // 피트의 가게는 마을 안 — 닫으면 마을로 (웹 #shBack)
+              onTap: () => g.setTab(t == GameTab.sh ? GameTab.vl : null),
               child: Container(
                 width: 36,
                 height: 36,

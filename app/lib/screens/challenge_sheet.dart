@@ -53,8 +53,7 @@ class _ChSheet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final c = g.calc, top = c.towerTop(), nx = towerInfo(top + 1), dl = c.dunLeft(), d = c.dunDay(), open = c.dunOpenK(), l = c.dunL();
-    final adOk = !(d['ad'] == 1 || d['ad'] == true) && c.adLeft('dun') > 0;
+    final c = g.calc, top = c.towerTop(), nx = towerInfo(top + 1), dl = c.dunLeft(), open = c.dunOpenK(), l = c.dunL();
     final tag = nx.gate ? ' · 수문장' : nx.rule >= 0 ? ' · 시련: ${towerRules[nx.rule].n}' : '';
     return KdSheetBody(
       titleWidget: SizedBox(
@@ -123,11 +122,10 @@ class _ChSheet extends StatelessWidget {
               style: KdText.body(11.5, color: KdColors.muted, height: 1.4)),
         ]),
         _card([
-          _head('📅', '요일 던전', '입장권', '$dl/${dunTk + (d['ad'] == 1 || d['ad'] == true ? 1 : 0)}'),
+          _head('📅', '요일 던전', '입장권', '$dl/$dunTk'),
           for (final k in open) _dunRow(k, l, dl),
           Text('3분 동안 ${dunStars.join(' / ')}마리 → ★1 / ★2 / ★3. 별이 없으면 입장권을 돌려줘요. ★3 단계는 소탕 가능${c.weekday() == 0 ? ' · 일요일은 셋 다 열려요' : ''}',
               style: KdText.body(11.5, color: KdColors.muted, height: 1.4)),
-          if (adOk) KdBuy(text: '▶ 광고 보고 입장권 +1', kind: BuyKind.ad, minWidth: 0, onTap: () => g.chainSheet(sheet, g.dunAd)),
         ]),
       ],
       acts: KdActs(buttons: [KdAct('닫기', primary: true, onTap: () => Navigator.of(sheet).pop())]),

@@ -6,7 +6,6 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 
 import '../core/actions.dart';
-import '../core/data.dart';
 import '../core/event.dart';
 import '../core/fmt.dart';
 import '../core/js.dart';
@@ -152,7 +151,7 @@ class _PassSheetState extends State<_PassSheet> {
           final g = widget.g, a = g.acts, p = a.passS(), lv = a.passLv(), n = a.passCanN();
           final steps = GameActions.passSteps, per = GameActions.passPer;
           final pt = orNum(p['pt'], 0), inLv = lv >= steps ? per : pt % per;
-          final left = passLeftTxt(g), al = g.calc.adLeft('pass');
+          final left = passLeftTxt(g);
           return KdSheetBody(
             titleWidget: const _PassHd(),
             children: [
@@ -210,14 +209,6 @@ class _PassSheetState extends State<_PassSheet> {
                 ]),
               ),
               Text('10단계·20단계에 유니크 카드 · 20단계에서 시즌 ${p['s']} 한정 테두리!', textAlign: TextAlign.center, style: KdText.body(12, color: KdColors.muted)),
-              // 「광고 보고 점수 받기」 (하루 3번 · 점수 10, 웹 passAd)
-              if (lv < steps)
-                KdBuy(
-                  kind: BuyKind.ad,
-                  minWidth: 0,
-                  text: '▶ 광고 보고 점수 +${fmt(asNum(wPass['ad']))}  · 오늘 $al / ${ads['pass']!.n}회',
-                  onTap: al > 0 ? () => g.watchAd('pass', () => g.act((x) => x.passAdGive())) : null,
-                ),
               const KdSec('오늘 얻은 점수', small: '할 일마다 하루 한도'),
               // 눈사람 대장 도전은 이벤트 기간에만 (웹 evPassSrc 의 PASS_SRC.snow · 맨 뒤에 붙음)
               for (final e in [...wPassSrc.entries, if (g.calc.evBossOn()) const MapEntry<String, List<Object>>('snow', [20, 20, '눈사람 대장 도전'])])
@@ -280,41 +271,7 @@ class _PassHd extends StatelessWidget {
       );
 }
 
-/// 상점 맨 위 배너: 시즌 · 남은 날 · 단계 + 진행 막대 (누르면 패스 창)
-/// 원정 일지 작은 줄 — 처음 온 영주의 상점(영지 10 전)에서 큰 배너 대신 (웹 passMini)
-class PassMini extends StatelessWidget {
-  const PassMini(this.g, {super.key});
-  final GameController g;
-
-  @override
-  Widget build(BuildContext context) {
-    final a = g.acts, p = a.passS(), n = a.passCanN();
-    return GestureDetector(
-      onTap: () => openPass(g),
-      child: Stack(clipBehavior: Clip.none, children: [
-        Container(
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 9),
-          decoration: BoxDecoration(
-            color: KdColors.panel2,
-            border: Border.all(color: const Color(0x66FFC94A)),
-            borderRadius: BorderRadius.circular(12),
-          ),
-          child: Row(children: [
-            Text('📜 원정 일지', style: KdText.body(14, weight: FontWeight.w700)),
-            const SizedBox(width: 8),
-            Expanded(
-              child: Text('시즌 ${p['s']} · ${a.passLv()}/${GameActions.passSteps}단계',
-                  maxLines: 1, overflow: TextOverflow.ellipsis, style: KdText.body(12.5, color: KdColors.muted)),
-            ),
-            Text('›', style: KdText.body(18, color: KdColors.gold)),
-          ]),
-        ),
-        if (n > 0) const Positioned(top: -3, right: -3, child: KdRedDot()),
-      ]),
-    );
-  }
-}
-
+/// 피트의 가게(마을) 맨 위 배너: 시즌 · 남은 날 · 단계 + 진행 막대 (누르면 패스 창)
 class PassBanner extends StatelessWidget {
   const PassBanner(this.g, {super.key});
   final GameController g;

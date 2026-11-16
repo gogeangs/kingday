@@ -55,6 +55,17 @@ extension GameDotsX on GameController {
     return ready + c.ordReady() + vNewDone.length + (c.vlRw() ? 1 : 0);
   }
 
+  /// 피트의 가게(마을)에 받을 것: 오늘의 할 일 · 원정 일지 칸 (웹 shopSigNow). 없으면 ''
+  String shopSig() {
+    if (!truthy(state.raw['started'])) return '';
+    final c = calc, d = c.daily();
+    final claim = asMap(d['claim']) ?? const <String, dynamic>{};
+    final n = missions.where((m) => orNum(d[m.k], 0) >= m.goal && !truthy(claim[m.k])).length +
+        (missions.every((m) => truthy(claim[m.k])) && !truthy(claim['all']) ? 1 : 0);
+    final pn = acts.passCanN();
+    return n > 0 || pn > 0 ? 's$n${pn > 0 ? 'p${acts.passLv()}.$pn' : ''}${c.today()}' : '';
+  }
+
   /// 탭 점 서명 (웹 dotSig, U-2 ②): 「지금 누르면 바로 이득」인 이유들. 탭을 열면 본 것으로 기록
   String dotSig(GameTab t) {
     final c = calc;
@@ -62,10 +73,12 @@ extension GameDotsX on GameController {
       case GameTab.up:
         return c.trCanAny() ? 'm${c.memPts()}' : '';
       case GameTab.vl:
-        if (!vlDot) return '';
+        // 마을 안 「피트의 가게」에 받을 것도 마을 탭 점으로 (2026-11-16 상점을 마을로)
+        final sh = shopSig();
+        if (!vlDot) return sh.isEmpty ? '' : '#$sh';
         final s = state;
         final w = s.raw['workDot'] != c.today() && c.wkOpen() && c.idleIds().isNotEmpty;
-        return [
+        return '${[
           vReadyN(),
           c.ordReady(),
           c.blessLeft() > 0 ? 'b${c.today()}' : '',
@@ -73,18 +86,11 @@ extension GameDotsX on GameController {
           c.vlRw() ? 'r${c.vLv()}' : '',
           truthy(s.bld['forge']) && (onForgeCan?.call() ?? false) ? 'f' : '',
           w ? 'w' : '',
-        ].join('|');
+        ].join('|')}#$sh';
       case GameTab.mp:
         return c.chDot() ? 'c${c.supplyCan() ? 1 : 0}.${c.dunLeft()}.${c.today()}' : '';
       case GameTab.sh:
-        final d = c.daily();
-        final claim = asMap(d['claim']) ?? const <String, dynamic>{};
-        final n = missions.where((m) => orNum(d[m.k], 0) >= m.goal && !truthy(claim[m.k])).length +
-            (missions.every((m) => truthy(claim[m.k])) && !truthy(claim['all']) ? 1 : 0);
-        final a = acts.adKeys().any((k) => c.adLeft(k) > 0);
-        // 원정 일지에 받을 보상 (웹 dotSig 'sh' 의 p)
-        final pn = truthy(state.raw['started']) ? acts.passCanN() : 0;
-        return n > 0 || a || pn > 0 ? 's$n${a ? 'a' : ''}${pn > 0 ? 'p${acts.passLv()}.$pn' : ''}${c.today()}' : '';
+        return shopSig();
       default:
         return '';
     }
@@ -94,7 +100,7 @@ extension GameDotsX on GameController {
     final sig = dotSig(t);
     if (sig.isEmpty) return false;
     final seen = asMap(state.raw['dotSeen2']) ?? (state.raw['dotSeen2'] = <String, dynamic>{});
-    if (tab == t) {
+    if (tab == t || (t == GameTab.vl && tab == GameTab.sh)) {
       seen[t.name] = sig;
       return false;
     }

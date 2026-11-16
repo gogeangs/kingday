@@ -287,16 +287,6 @@ const int missionAllReward = wMisAll, rankGem = wRankGem, lordGem = wLordGem;
 /// 왕도 보상 (웹 GHOST_GEM · DEMON_GEM · CAP_MEM)
 const int ghostGem = 30, demonGem = 300, capMem = 3;
 
-class AdDef {
-  AdDef._(this.k, Map<String, dynamic> m) : n = _n(m['n']).toInt(), t = m['t'];
-  final String k, t;
-
-  /// 하루 횟수
-  final int n;
-}
-
-final Map<String, AdDef> ads = {for (final e in wAds.entries) e.key: AdDef._(e.key, _m(e.value))};
-
 class GoldExchange {
   GoldExchange._(Map<String, dynamic> m) : k = m['k'], n = m['n'], gem = _n(m['gem']), h = _n(m['h']);
   final String k, n;
@@ -307,10 +297,11 @@ final goldExchanges = [for (final x in wGoldx) GoldExchange._(_m(x))];
 final List<Map<String, dynamic>> cardPacks = [for (final x in wCardpk) _m(x)];
 const int gem10 = wGem10, gemPlot = wGemPlot, gemOffline = wGemOffline;
 
-/// 유니크 합류 조건·새 광고 값 (웹 LUC_ORD · GOLD_ATT · MAXLAND_1 · TOWER_UC · RETRY_ATK · SPD_AD, 2026-11-16)
+/// 돌아왔을 때 방치 보상 배율 (웹 OFF_MUL, 2026-11-16 광고 2배를 없애며 ×1.5)
+const num offMul = wOffMul;
+
+/// 유니크 합류 조건 (웹 LUC_ORD · GOLD_ATT · MAXLAND_1 · TOWER_UC, 2026-11-16)
 final int uqLucOrd = _n(wUqCond['lucOrd']).toInt(),
     uqGoldAtt = _n(wUqCond['goldAtt']).toInt(),
     uqTtukLand = _n(wUqCond['ttukLand']).toInt(),
-    towerUcard = _n(wUqCond['towerUc']).toInt(),
-    adSpdMs = _n(wUqCond['spdAd']).toInt();
-final num retryAtkMul = _n(wUqCond['retryAtk']);
+    towerUcard = _n(wUqCond['towerUc']).toInt();

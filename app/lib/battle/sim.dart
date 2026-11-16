@@ -358,12 +358,6 @@ class FightResetEvent extends BattleEvent {
   final String msg;
 }
 
-/// 보스에게 짐 (마왕 제외) → 「광고 보고 다시 도전」 묻기 (웹 retryAsk)
-class BossLossEvent extends BattleEvent {
-  BossLossEvent(this.st);
-  final int st;
-}
-
 /// 화면 배치 (웹 layout())
 class BattleLayout {
   BattleLayout(this.ids, this.pos, this.py, this.dsc, this.front, this.s, this.top, this.bot);
@@ -1603,8 +1597,6 @@ class BattleSim {
   void resetFight(String msg) {
     if (ch != null) return _chLose();
     final dem = mons.any((m) => m.dem);
-    final bossLoss = mons.any((m) => m.boss && m.hp > 0 && m.dead == 0) && !dem;
-    c.adRetry = 0;
     skx.shield = skx.honey = skx.feast = skx.guts = skx.sym = skx.lamp = skx.sap = skx.ward = skx.dok = skx.phx = 0;
     skx.stew = skx.taunt = skx.blk = skx.bloom = 0;
     skx.spice = 0;
@@ -1627,20 +1619,6 @@ class BattleSim {
     }
     events.add(FightResetEvent(msg));
     toast(msg);
-    if (bossLoss) events.add(BossLossEvent(s.stage));
-  }
-
-  /// 「광고 보고 다시 도전」: 체력을 채우고 바로 보스부터, 그 도전 동안 공격력 +30% (웹 retryAsk 의 보상)
-  void retryBoss(int st) {
-    if (s.stage != st) return;
-    c.adRetry = st;
-    for (final id in c.members()) {
-      party[id]!.hp = c.stats(id).hp;
-      party[id]!.down = false;
-    }
-    mons = [];
-    spawnT = .5;
-    s.wave = 10;
   }
 
   // ───────────── 한 프레임 ─────────────

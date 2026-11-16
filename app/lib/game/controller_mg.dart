@@ -171,7 +171,7 @@ class _MgHost implements MgHost {
           tok = r['id'];
           seed = asNum(r['seed']).toInt() & 0xFFFFFFFF;
         } else if (r is Map && r['err'] == 'limit') {
-          mg['n'] = math.max(asNum(mg['n']).toInt(), mm.daily + (truthy(mg['ad']) ? mm.ad : 0));
+          mg['n'] = math.max(asNum(mg['n']).toInt(), mm.daily);
           g.save();
           g.toast('오늘 판을 다 했어요 (다른 기기 포함). 연습판은 계속 할 수 있어요');
           return (null, true);

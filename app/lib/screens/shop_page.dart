@@ -1,5 +1,5 @@
 /// 피트의 상점 — 웹 #p-sh renderShop
-/// 오늘의 할 일 · 피트의 무료 선물(광고) · 동료 카드 · 골드 바꾸기 (2026-11-16 결제 상품 없앰)
+/// 피트의 가게(마을 안): 원정 일지 배너 · 오늘의 할 일 · 동료 카드 · 골드 바꾸기 (2026-11-16 결제·광고 없앰)
 library;
 
 import 'dart:math' as math;
@@ -29,7 +29,7 @@ class ShopPage extends StatefulWidget {
 
 class _ShopPageState extends State<ShopPage> {
   // 다 받은 묶음을 눌러 펼쳐 보기 (웹 misOpen · adOpen)
-  bool _misOpen = false, _adOpen = false;
+  bool _misOpen = false;
   final _jump = {for (final k in ['free', 'gem']) k: GlobalKey()};
 
   GameController get g => widget.g;
@@ -155,7 +155,6 @@ class _ShopPageState extends State<ShopPage> {
     final s = g.state, c = g.calc, d = c.daily();
     final claim = asMap(d['claim']) ?? const <String, dynamic>{};
     final cardOk = GameCalc.cardIds().any(c.cardOpen);
-    final adKeys = a.adKeys();
 
     Widget misRow(MissionDef m) {
       final v = math.min(orNum(d[m.k], 0), m.goal), done = truthy(claim[m.k]), can = a.misCan(m);
@@ -171,7 +170,7 @@ class _ShopPageState extends State<ShopPage> {
       );
     }
 
-    final freeDot = missions.any(a.misCan) || a.misCan(null) || adKeys.any((k) => c.adLeft(k) > 0);
+    final freeDot = missions.any(a.misCan) || a.misCan(null);
     final cardBlock = Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
         Row(crossAxisAlignment: CrossAxisAlignment.center, children: [
           Expanded(child: Text('동료 카드', style: KdText.display(15))),
@@ -212,12 +211,11 @@ class _ShopPageState extends State<ShopPage> {
 
     return Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
       const SizedBox(height: 12),
-      // 원정 일지 배너 (상점 맨 위, docs/content/SHOP.md 4장)
-      // 처음 온 영주(영지 10 전)는 「매일 무료」가 위, 원정 일지는 매일 무료 칸 끝의 작은 줄로 (웹 passMini · UI 점검 10-27 3번)
-      if (truthy(s.raw['started']) && s.best >= 10) ...[PassBanner(g), const SizedBox(height: 12)],
+      // 원정 일지 배너 (피트의 가게 맨 위 — 2026-11-16 상점을 마을로 합치며 늘 큰 배너, 웹 passBanner)
+      if (truthy(s.raw['started'])) ...[PassBanner(g), const SizedBox(height: 12)],
       // 바로 가기 (웹 .shjump) — 무료로 받을 게 있으면 빨간 점
       Row(children: [
-        for (final (k, n, dot) in [('free', '🎁 매일 무료', freeDot), ('gem', '🌾 이삭 상점', false)]) ...[
+        for (final (k, n, dot) in [('free', '📋 오늘의 할 일', freeDot), ('gem', '🌾 이삭으로', false)]) ...[
           if (k != 'free') const SizedBox(width: 6),
           Expanded(
             child: GestureDetector(
@@ -236,8 +234,8 @@ class _ShopPageState extends State<ShopPage> {
         ],
       ]),
       const SizedBox(height: 12),
-      const Para('m:피트|어서 와, 형씨! 오늘도 진품만 들여놨어. …대부분.'),
-      _group('free', '🎁 매일 무료', Text('매일 자정에 새로', style: KdText.body(12, color: KdColors.muted)), [
+      const Para('m:피트|어서 와, 형씨! 오늘도 진품만 들여놨어. …대부분. 원정 일지도 내가 꼬박꼬박 적고 있다고.'),
+      _group('free', '📋 오늘의 할 일', Text('매일 자정에 새로', style: KdText.body(12, color: KdColors.muted)), [
       // ── 오늘의 할 일 ──
       if (truthy(claim['all']) && !_misOpen)
         _done('✓ 오늘의 할 일 완료', '내일 자정에 새 할 일이 열려요 · 눌러서 보기', () => setState(() => _misOpen = true))
@@ -254,41 +252,10 @@ class _ShopPageState extends State<ShopPage> {
           ),
         ),
       ],
-      const SizedBox(height: 12),
-      // ── 피트의 무료 선물 (광고) ──
-      if (!adKeys.any((k) => c.adLeft(k) > 0) && !_adOpen)
-        _done('✓ 피트의 무료 선물 모두 받음', '내일 자정에 다시 받을 수 있어요 · 눌러서 보기', () => setState(() => _adOpen = true))
-      else ...[
-        const KdSec('피트의 무료 선물', small: '광고를 보면 받아요'),
-        for (final k in adKeys) ...[
-          _row(
-            title: ads[k]!.t,
-            sub: Text('오늘 ${c.adLeft(k)} / ${ads[k]!.n}회 남음', style: KdText.body(11, color: KdColors.muted)),
-            btn: KdBuy(
-              kind: BuyKind.ad,
-              minWidth: 72,
-              text: '▶ 받기',
-              onTap: c.adLeft(k) > 0
-                  ? () => g.watchAd(k, () => g.act((x) {
-                        if (k == 'box') {
-                          x.adBoxGive();
-                        } else if (k == 'gem') {
-                          x.adGemGive();
-                        } else {
-                          x.adCardGive();
-                        }
-                      }))
-                  : null,
-            ),
-          ),
-          const SizedBox(height: 8),
-        ],
-      ],
-      if (truthy(s.raw['started']) && s.best < 10) ...[const SizedBox(height: 4), PassMini(g)],
       ]),
       _group(
           'gem',
-          '🌾 이삭 상점',
+          '🌾 이삭으로',
           Row(mainAxisSize: MainAxisSize.min, children: [
             Text('가진 이삭 ', style: KdText.body(12, color: KdColors.muted)),
             kdImg(gemIcon, w: 14, h: 14),
@@ -316,7 +283,7 @@ class _ShopPageState extends State<ShopPage> {
         title: '황금 이삭은 어디에 쓰나요?',
         seen: g.helpSeen,
         open: g.helpOpen,
-        body: KdNote('황금 이삭 ${fmt(s.gem)}개 · 동료 카드, 골드 바꾸기, 성유물 상자 10연속(장비 탭), 작물 바로 키우기·건물 바로 짓기(마을 탭), 방치 보상 2배 받기에 써요. 오늘의 할 일·출석·피트의 선물·원정 일지·시련의 탑·황금 고블린에서 얻어요.'),
+        body: KdNote('황금 이삭 ${fmt(s.gem)}개 · 동료 카드, 골드 바꾸기, 성유물 상자 10연속(장비 탭), 작물 바로 키우기·건물 바로 짓기(마을 탭), 방치 보상 2배 받기에 써요. 오늘의 할 일·출석·원정 일지·시련의 탑·황금 고블린·칭호 상승에서 얻어요.'),
       ),
       const SizedBox(height: 6),
       Row(children: [
@@ -350,7 +317,7 @@ void showCardOdds(GameController g) {
         children: [
           const KdNote('카드 한 묶음이 어떤 동료에게 갈지 정하는 확률이에요. 영웅·전설 확률은 동료 수와 상관없이 늘 같아요.'),
           Table(columnWidths: cols, children: [
-            row([t('등급', right: false, col: KdColors.muted), t('상점·광고·우편', col: KdColors.muted), t('전투', col: KdColors.muted)]),
+            row([t('등급', right: false, col: KdColors.muted), t('가게·우편', col: KdColors.muted), t('전투', col: KdColors.muted)]),
             for (final gk in const ['legend', 'epic', 'rare', 'common'])
               row([
                 t(compGrades[gk]!.n, right: false, col: Color(hexColor(compGrades[gk]!.color)), bold: true),

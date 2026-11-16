@@ -3926,22 +3926,46 @@ table.codds th {
 .pcell.multi3 {
   width: 124px;
 }
-/* 원정 일지 「광고 보고 점수 받기」 (2026-11-16) */
-.buy.padbtn {
-  display: block;
+/* 마을 「피트의 가게」 버튼 (2026-11-16 상점 탭을 마을로 합침) */
+.vshop {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 8px;
   width: 100%;
-  margin: 8px 0 2px;
-  padding: 10px;
+  margin: 0 0 8px;
+  padding: 6px 12px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 201, 74, 0.45);
+  background: linear-gradient(#2a2216, #1d1810);
+  color: var(--fg, #fff);
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
 }
-.buy.padbtn small {
+.vshop img {
+  flex: none;
+  width: 30px;
+  height: 30px;
+  object-fit: contain;
+}
+.vshop b {
+  white-space: nowrap;
+}
+.vshop small {
+  margin-left: auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--muted);
   font-weight: 600;
-  opacity: 0.85;
-  margin-left: 4px;
+  font-size: 12px;
 }
-/* 전투 속도 x3 (광고 30분) */
-#speedBtn.x3 small {
-  color: #ffd34a;
-  font-size: 10px;
+.vshop > .dot {
+  position: absolute;
+  top: -3px;
+  right: -3px;
 }
 .pcell .pci {
   display: flex;
@@ -4224,33 +4248,7 @@ table.codds th {
   border-radius: 999px;
   padding: 1px 7px;
 }
-.adov {
-  position: fixed;
-  inset: 0;
-  z-index: 60;
-  background: rgba(0, 0, 0, 0.88);
-  display: grid;
-  place-items: center;
-}
-.adbox {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 6px;
-  color: #fff;
-  text-align: center;
-}
-.adbox small {
-  font-size: 12.5px;
-  color: var(--muted);
-}
-.adbox b {
-  font-size: 56px;
-  font-family: var(--f-display);
-  color: var(--gold);
-}
 /* 버튼 색 규칙 (U-2 ⑦): 금색 = 골드·이삭 쓰기 · 테두리(ghost) = 다른 화면으로 이동 · 초록 = 받기 */
-.buy.ad,
 .buy.claim {
   background: linear-gradient(#2f7a4a, #1d5232);
   color: #e8ffe8;
@@ -4265,8 +4263,7 @@ button.pri.claim:not(:disabled) {
   color: #effff2;
   border-color: #5ac07a;
 }
-.buy.claim:disabled,
-.buy.ad:disabled {
+.buy.claim:disabled {
   background: var(--panel2);
   color: var(--muted);
   border-color: var(--line);
@@ -8297,11 +8294,10 @@ body.mgon {
 
   <div class="stagewrap" id="wrap">
     <canvas id="cv" aria-label="원정대 자동 전투 화면"></canvas>
-    <!-- 오른쪽 세로 버튼 줄: 우편 · 랭킹 · 상점 · 출석부 (숨은 버튼은 빈자리 없이 당겨짐) -->
+    <!-- 오른쪽 세로 버튼 줄: 우편 · 랭킹 · 출석부 (숨은 버튼은 빈자리 없이 당겨짐 · 2026-11-16 상점은 마을 「피트의 가게」로) -->
     <div class="fabcol">
       <button class="mailbtn" id="mailBtn" aria-label="우편함" data-l="우편" hidden><img src="assets/ui/icon_mail.png" alt="" onerror="this.outerHTML='<span>✉️</span>'"><i class="mdot" id="mailDot" hidden></i></button>
       <button class="mailbtn rkfab" id="rankBtn" aria-label="랭킹" data-l="랭킹" hidden><img src="assets/ui/icon_rank.png" alt="" onerror="this.outerHTML='<span>🏆</span>'"><i class="dday" id="rankDday" hidden></i></button>
-      <button class="mailbtn shfab" id="shopBtn" aria-label="피트의 상점" data-l="상점"><img src="assets/ui/icon_shop.png" alt="" onerror="this.outerHTML='<span>🛒</span>'"><i class="mdot" id="shopDot" hidden></i></button>
       <button class="mailbtn attfab" id="attBtn" aria-label="피트의 출석부" data-l="출석" hidden><img src="assets/ui/ic_attend.png" alt="" onerror="this.outerHTML='<span>📅</span>'"><i class="dot" id="attDot" hidden></i></button>
     </div>
     <div class="pgshade" id="pgShade" hidden></div>
@@ -8360,6 +8356,7 @@ body.mgon {
     <section class="page" id="p-vl" hidden>
       <div class="phead"><h2>마을</h2><button class="pclose" data-close aria-label="전투로 돌아가기">✕</button></div>
       <button class="vlvbar" id="vlvBar" aria-label="마을 레벨"></button>
+      <button class="vshop" id="vShop" aria-label="피트의 가게"><img src="assets/ui/icon_shop.png" alt="" onerror="this.outerHTML='<span>🛒</span>'"><b>피트의 가게</b><small>원정 일지 · 오늘의 할 일 · 동료 카드</small><i class="dot" id="vShopDot" hidden></i></button>
       <div class="vmap" id="vscene"><div class="vtodo" id="vTodo" hidden></div><canvas id="vc" aria-label="마을 지도. 건물을 누르면 관리 창이 열려요"></canvas></div>
       <div class="vwk" id="vWk" hidden><button class="buy ghost" id="wkMgr">🔨 일꾼 관리</button><button class="buy" id="wkRec">추천 일꾼</button></div>
       <p class="vhint">건물을 누르면 아래에 관리 창이 열려요 · 길 위 사람을 누르면 한마디</p>
@@ -8376,7 +8373,7 @@ body.mgon {
     </section>
 
     <section class="page" id="p-sh" hidden>
-      <div class="phead"><h2>피트의 상점</h2><button class="pclose" data-close aria-label="전투로 돌아가기">✕</button></div>
+ <div class="phead"><h2>피트의 가게</h2><button class="pclose" id="shBack" aria-label="마을로 돌아가기">✕</button></div>
       <div id="shop" style="display:flex;flex-direction:column;gap:12px"></div>
     </section>
 
@@ -8415,7 +8412,6 @@ body.mgon {
 
 <div class="modal" id="modal" hidden><div class="sheet" id="sheet"></div></div>
 <div class="toast" id="toast" style="opacity:0"></div>
-<div class="adov" id="adOv" hidden><div class="adbox"><small>광고 자리 · 테스트 모드</small><b id="adTxt">3</b><span>초 뒤 보상을 받아요</span></div></div>
 
 <script>
 const $ = id => document.getElementById(id);
@@ -8969,7 +8965,7 @@ const COMP = {
     n: '카엘 촌장',
     role: '촌장 · 원정대 전원 강화',
     desc: '은퇴의 꿈을 이룬 미래의 카엘. 그런데 촌장이 되어 은퇴 전보다 더 바쁘다. 새벽마다 종을 쳐 마을 사람들을 깨워 다 함께 일한다.',
-    join: '첫 은퇴 뒤 피트의 상점에서 맞이하거나, 은퇴 10번이면 찾아와요'
+    join: '은퇴 10번이면 찾아와요 (유니크)'
   },
   luka: {
     n: '루카',
@@ -10004,9 +10000,9 @@ function cardOddsSheet() {
       .filter(cardOpen)
       .sort((a, b) => gr(a).w - gr(b).w);
   const gsum = (R, g) => ids.filter(x => GRADE[x] === g).reduce((a, x) => a + (R.o[x] || 0), 0);
-  $('sheet').innerHTML = `<div class="eyebrow">피트의 상점</div><h2>동료 카드 확률</h2>
+  $('sheet').innerHTML = `<div class="eyebrow">피트의 가게</div><h2>동료 카드 확률</h2>
  <p class="note">카드 한 묶음이 어떤 동료에게 갈지 정하는 확률이에요. 영웅·전설 확률은 동료 수와 상관없이 늘 같아요.</p>
- <table class="codds"><tr><th>등급</th><th>상점·광고·우편</th><th>전투</th></tr>${['legend', 'epic', 'rare', 'common'].map(g => `<tr><td style="color:${GR[g].c}">${GR[g].n}</td><td>${g === 'legend' || g === 'epic' ? pc(CARD_FIX.shop[g]) : pc(gsum(A, g))}</td><td>${g === 'legend' || g === 'epic' ? pc(CARD_FIX.battle[g]) : pc(gsum(B, g))}</td></tr>`).join('')}</table>
+ <table class="codds"><tr><th>등급</th><th>가게·우편</th><th>전투</th></tr>${['legend', 'epic', 'rare', 'common'].map(g => `<tr><td style="color:${GR[g].c}">${GR[g].n}</td><td>${g === 'legend' || g === 'epic' ? pc(CARD_FIX.shop[g]) : pc(gsum(A, g))}</td><td>${g === 'legend' || g === 'epic' ? pc(CARD_FIX.battle[g]) : pc(gsum(B, g))}</td></tr>`).join('')}</table>
  <div class="sec">동료 한 명당</div><table class="codds">${ids.map(id => `<tr><td><b style="color:${gr(id).c}">${COMP[id].n}</b> <small>${GR[GRADE[id]].n}</small></td><td>${cardCan(id) ? pc(A.o[id] || 0) : '<small>별 모두 모음</small>'}</td><td>${cardCan(id) ? pc(B.o[id] || 0) : ''}</td></tr>`).join('')}</table>
  <p class="note">· 전투(보스·몬스터·황금 고블린)에서 얻는 카드에는 전설이 나오지 않아요.<br>· 별을 다 채운 동료 몫이나 아직 모을 동료가 없는 등급의 몫은 골드로 바뀌어요.<br>· 희망 동료를 정하면 뽑을 때마다 절반 확률로 그 동료가 나와요. 단, 영웅·전설 희망 동료는 그 등급이 뽑혔을 때만 적용돼요.<br>· 30장 묶음과 우편 카드는 5장씩 나눠 뽑아요.</p>
  <div class="acts one"><button class="pri" id="mGo">닫기</button></div>`;
@@ -10592,7 +10588,6 @@ function blessDay() {
   if (b.d !== today()) {
     b.d = today();
     b.used = 0;
-    b.ad = 0;
     b.opts = [];
   }
   return b;
@@ -10600,7 +10595,7 @@ function blessDay() {
 const blessLeft = () => {
   if (!S.bld.chapel) return 0;
   const b = blessDay();
-  return Math.max(0, 1 + (b.ad ? 1 : 0) - b.used);
+  return Math.max(0, 1 - b.used);
 };
 function blessOpts() {
   const b = blessDay();
@@ -10770,12 +10765,11 @@ function fresh() {
     retires: 0,
     ucard: 0,
     uq2: 1 /* 유니크 별 장수 바뀐 뒤(10·15·30·45) 저장 표시 */,
-    adSpd: 0,
     gem: 0,
     gemRank: 0,
     gemLord: {},
     daily: { d: '', kill: 0, box: 0, harv: 0, claim: {} },
-    att: { last: '', w: 0, ym: '', m: 0, ad: '', got: [], intro: 0, tab: 'w', lw: '', lm: '', gw: [], gm: [], adw: '', adm: '' },
+    att: { last: '', w: 0, ym: '', m: 0, got: [], intro: 0, tab: 'w', lw: '', lm: '', gw: [], gm: [] },
     lcard: 0,
     tickets: { box: 0, box10: 0 },
     capClears: 0,
@@ -10783,7 +10777,7 @@ function fresh() {
     ending1: 0,
     chOpen: 0,
     tower: { top: 0, day: '', pk: 0 },
-    dun: { d: '', used: 0, ad: 0, star: { mine: {}, field: {}, vault: {} }, seen: {} },
+    dun: { d: '', used: 0, star: { mine: {}, field: {}, vault: {} }, seen: {} },
     mapIntro: 0,
     fogSeen: 1,
     regSeen: {},
@@ -10794,7 +10788,7 @@ function fresh() {
     diaryIntro: 0,
     orders: [],
     ordDay: { d: '', gem: 0, skip: {} },
-    bless: { d: '', used: 0, ad: 0, k: '', until: 0, opts: [] },
+    bless: { d: '', used: 0, k: '', until: 0, opts: [] },
     vlv: 1,
     ep: {},
     walkers: { d: '', ids: [] },
@@ -10878,7 +10872,18 @@ function hydrate(d) {
   delete f.buys;
   delete f.sub;
   delete f.grow;
-  if (typeof f.adSpd !== 'number' || !isFinite(f.adSpd)) f.adSpd = 0;
+  /* 2026-11-16 광고 없앰: 옛 저장의 광고 버프·광고 횟수 칸을 조용히 지움 */
+  delete f.adSpd;
+  if (isObj(f.daily)) delete f.daily.ad;
+  if (isObj(f.dun)) delete f.dun.ad;
+  if (isObj(f.bless)) delete f.bless.ad;
+  if (isObj(f.att)) for (const k of ['ad', 'adw', 'adm']) delete f.att[k];
+  if (isObj(f.evs))
+    for (const id in f.evs) {
+      const e = f.evs[id];
+      if (isObj(e) && isObj(e.boss)) delete e.boss.ad;
+      if (isObj(e) && isObj(e.mg)) delete e.mg.ad;
+    }
   /* 유니크 별 장수가 290장 → 100장으로 줄어든 뒤 처음 읽는 저장: 이미 쓴 카드로 새 기준 별까지 올림 (남은 카드는 그대로) */
   if (d && !d.uq2) {
     f.uq2 = 1;
@@ -10933,7 +10938,7 @@ const MISSIONS = [
     { k: 'harv', n: '작물 10개 수확', goal: 10, r: 10 }
   ],
   MIS_ALL = 20,
-  RANK_GEM = 30,
+  RANK_GEM = 60 /* 2026-11-16 30 → 60 */,
   LORD_GEM = 50,
   GHOST_GEM = 30,
   DEMON_GEM = 300,
@@ -10943,83 +10948,10 @@ function today() {
   return t.getFullYear() + '-' + (t.getMonth() + 1) + '-' + t.getDate();
 }
 function daily() {
-  if (!S.daily || S.daily.d !== today()) S.daily = { d: today(), kill: 0, box: 0, harv: 0, claim: {}, ad: {} };
-  if (!S.daily.ad) S.daily.ad = {};
+  if (!S.daily || S.daily.d !== today()) S.daily = { d: today(), kill: 0, box: 0, harv: 0, claim: {} };
   return S.daily;
 }
-/* 광고 보상 자리: AD_TEST 동안은 3초짜리 가짜 광고 화면 뒤에 보상. 실제 광고 SDK를 붙일 때 playAd만 바꾸면 됨 */
-const AD_TEST = true,
-  ADS = {
-    card: { n: 1, t: '동료 카드 3장' },
-    box: { n: 3, t: '성유물 상자 1회 무료' },
-    gem: { n: 3, t: '황금 이삭 +10' } /* 2026-11-16 +5 → +10 (광고 중심 전환) */,
-    retry: { n: 5, t: '보스 다시 도전 · 공격력 +30%' },
-    spd: { n: 4, t: '전투 속도 x3 · 30분' },
-    pass: { n: 3, t: '원정 일지 점수 +10' },
-    farm: { n: 2, t: '자라는 작물 바로 키우기' },
-    offline: { n: 2, t: '방치 보상 2배' },
-    att: { n: 2, t: '출석 보상 2배' },
-    dun: { n: 1, t: '던전 입장권 +1' },
-    bless: { n: 1, t: '축복 한 번 더' }
-  };
-const adLeft = k => Math.max(0, ADS[k].n - (daily().ad[k] || 0));
-function playAd(done) {
-  const o = $('adOv');
-  let n = 3;
-  o.hidden = false;
-  $('adTxt').textContent = n;
-  const it = setInterval(() => {
-    n--;
-    if (n > 0) {
-      $('adTxt').textContent = n;
-      return;
-    }
-    clearInterval(it);
-    o.hidden = true;
-    done();
-  }, 1000);
-}
-function watchAd(k, give) {
-  if (adLeft(k) <= 0) return toast('오늘은 다 봤어요. 내일 다시 받을 수 있어요');
-  playAd(() => {
-    daily().ad[k] = (daily().ad[k] || 0) + 1;
-    lgAd(k);
-    give();
-    shopSig = '';
-    farmSig = '';
-    save();
-    renderAll();
-  });
-}
-function adBox() {
-  watchAd('box', () => {
-    S.gold += boxCost();
-    openBox(false, true);
-  });
-}
-function adCard() {
-  watchAd('card', () => {
-    const r = gainCards(3, 'shop', 1);
-    if (!r) return toast('아직 모을 수 있는 동료 카드가 없어요');
-    setTimeout(() => cardReveal(r.got, '피트의 선물', r.gold), 50);
-  });
-}
-const adKeys = () => ['box', 'gem', ...(CARDIDS().some(cardOpen) ? ['card'] : [])];
-function adGem() {
-  watchAd('gem', () => {
-    S.gem = (S.gem || 0) + 10;
-    toast('피트의 선물! 황금 이삭 +10');
-  });
-}
-function adFarm() {
-  if (!S.plots.some(p => plotState(p).st === 'grow')) return;
-  watchAd('farm', () => {
-    S.plots.forEach(p => {
-      if (plotState(p).st === 'grow') p.at = 0;
-    });
-    toast('리엘의 벌들이 밭을 도왔어요. 모두 다 자랐어요');
-  });
-}
+/* 2026-11-16 광고를 모두 없앰 (docs/PLAN_MONETIZATION_REMOVAL.md 2단계). 지우기 직전 커밋 = 태그 ads-last */
 function dailyAdd(k, n) {
   const d = daily();
   d[k] = (d[k] || 0) + n;
@@ -11049,7 +10981,7 @@ function gemSheet() {
  <div class="sec">오늘의 할 일 <small>매일 자정에 새로 시작해요</small></div>
  ${MISSIONS.map(row).join('')}
  <div class="mis"><div class="info"><b>오늘의 할 일 모두 끝내기</b></div><button class="buy claim" data-m="all" ${allCan ? '' : 'disabled'}>${allDone ? '받음' : '+' + MIS_ALL + (allCan ? ' 받기' : '')}</button></div>
- <p class="note">그 밖에 칭호가 오를 때 +${RANK_GEM}, 군단장을 처음 쓰러뜨릴 때 +${LORD_GEM}을 얻어요. 황금 이삭으로 쓸 수 있는 곳(상점)은 곧 열려요.</p>
+ <p class="note">그 밖에 출석·원정 일지·시련의 탑(10층마다)·황금 고블린, 칭호가 오를 때 +${RANK_GEM}, 군단장을 처음 쓰러뜨릴 때 +${LORD_GEM}을 얻어요. 동료 카드·골드 바꾸기는 마을 「피트의 가게」에서.</p>
  <div class="acts one"><button class="pri" id="mGo">닫기</button></div>`;
   $('modal').hidden = false;
   $('mGo').onclick = closeModal;
@@ -11073,13 +11005,13 @@ function gemSheet() {
         })
     );
 }
-/* 결제 상품은 모두 없앰 (2026-11-16 대표님 결정, docs/PLAN_MONETIZATION_REMOVAL.md). 지우기 직전 커밋 572807a. 수익은 보상형 광고만 */
+/* 결제 상품은 모두 없앰 (2026-11-16 대표님 결정, docs/PLAN_MONETIZATION_REMOVAL.md). 지우기 직전 커밋 572807a. 광고도 2단계에서 없앰 — 완전 무료 */
 /* ---------- 원정 일지(시즌 패스) — docs/content/SHOP.md · docs/PLAN_MONETIZATION_REMOVAL.md 3번 ----------
    원정 일지: 랭킹 시즌과 같은 2주·같은 시즌 번호, 20단계 × 100점. 줄은 하나(누구나 받음, 2026-11-16 유료 줄 없앰).
    점수는 평소 플레이에 passAdd(src, n) 한 줄씩 (할 일별 하루 한도). 시즌이 바뀌면 받지 않은 보상은 우편함으로. */
 const seasonNo = (t = Date.now()) => Math.floor((t - SEAS0) / 12096e5) + 1,
   seasonLeft = () => Math.max(0, (seasonEnd() - Date.now()) / 864e5);
-const PASS = { k: 'pass', n: '원정 일지', steps: 20, per: 100, ad: 10 };
+const PASS = { k: 'pass', n: '원정 일지', steps: 20, per: 100 };
 /* [한 번에 얻는 점수, 하루 최대, 이름] */
 const PASS_SRC = {
   att: [20, 20, '출석'],
@@ -11089,8 +11021,7 @@ const PASS_SRC = {
   kill: [10, 30, '마물 1,000마리 처치'],
   tower: [10, 30, '시련의 탑 층 돌파'],
   dun: [10, 30, '요일 던전 입장·소탕'],
-  ord: [10, 30, '마을 주문 납품'],
-  ad: [10, 30, '광고 보고 점수 받기']
+  ord: [10, 30, '마을 주문 납품']
 };
 /* 보상: idle 방치 골드(시간) · ore 광석 · seed 씨앗 묶음(밀 6·당근 3·호박 1) · gem 이삭 · card 동료 카드 · box10 상자 10연속 무료권 · ucard 유니크 카드 · frame 시즌 한정 테두리
    2026-11-16: 기존 무료 보상 + 짝수 단계 이삭 15 · 1·5·9·13·17단계 동료 카드 3장 · 10단계 10연속권+유니크 카드 2 · 20단계 테두리+유니크 카드 3 (이삭 합계 190, 유니크 카드 5)
@@ -11188,7 +11119,7 @@ function passAdd(src, n) {
   if (passLv() > lv0) {
     shopSig = '';
     mapSig = '';
-    toast('📖 원정 일지 ' + passLv() + '단계! 상점에서 보상을 받아요');
+    toast('📖 원정 일지 ' + passLv() + '단계! 마을 피트의 가게에서 보상을 받아요');
   }
   return add;
 }
@@ -11278,21 +11209,12 @@ function passClaim(row, i) {
   const out = passGive(r, PASS.n);
   toast((n > 1 ? '보상 ' + n + '개 · ' : '') + out.join(' · '));
 }
-/* 원정 일지 「광고 보고 점수 받기」 (하루 3번 · 점수 10, 하루 한도는 PASS_SRC.ad) */
-function passAd() {
-  if (passLv() >= PASS.steps) return toast('20단계를 모두 채웠어요');
-  watchAd('pass', () => {
-    const n = passAdd('ad', PASS.ad);
-    toast('원정 일지 점수 +' + n);
-    if (!$('modal').hidden && $('passBody')) passSheet();
-  });
-}
 const passLeftTxt = () => {
   const l = seasonLeft();
   return l >= 1 ? Math.ceil(l) + '일 남음' : Math.max(1, Math.ceil(l * 24)) + '시간 남음';
 };
-/* 상점 맨 위 배너: 시즌 · 남은 날 · 단계 + 진행 막대 (누르면 패스 창) */
-/* 원정 일지 작은 줄 (처음 온 영주의 상점: 큰 배너 대신) */
+/* 피트의 가게 맨 위 배너: 시즌 · 남은 날 · 단계 + 진행 막대 (누르면 패스 창) */
+/* 원정 일지 작은 줄 (지금은 안 씀 — 2026-11-16 피트의 가게는 늘 큰 배너) */
 function passMini() {
   if (!S.started) return '';
   const p = passS(),
@@ -11344,7 +11266,7 @@ function passSheet() {
     save();
     return queue(() =>
       scene(
-        '피트의 상점',
+        '피트의 가게',
         '원정 일지 · 시즌 ' + p.s,
         [
           'm:피트|영주님! 이번 시즌 「원정 일지」예요. 평소처럼 싸우고 일하시면 칸이 채워져요.',
@@ -11356,13 +11278,11 @@ function passSheet() {
       )
     );
   }
-  const al = adLeft('pass');
   $('sheet').innerHTML =
     `<div class="hdban passban" style="--hb:url(assets/ui/hd_pass.png);--hs:18px"><span>원정 일지</span></div>
  <div class="pinfo"><div><b>시즌 ${p.s}</b> · ${passLeftTxt()} · <b>${lv}/${PASS.steps}</b>단계</div><div class="xp"><div style="width:${(inLv / PASS.per) * 100}%"></div></div><small>${lv >= PASS.steps ? '20단계를 모두 채웠어요!' : cur + '단계까지 ' + (PASS.per - inLv) + '점'}</small></div>
  <div class="pscroll one" id="passBody"><div class="pgrid">${PASS_REW.map((_, i) => `<div class="pcol${i < lv ? ' on' : ''}${i === lv ? ' cur' : ''}" data-i="${i}"><i class="pno">${i + 1}</i>${passCell('f', i)}</div>`).join('')}</div></div>
  <p class="note" style="text-align:center">10단계·20단계에 유니크 카드 · 20단계에서 시즌 ${p.s} 한정 테두리!</p>
- ${lv < PASS.steps ? `<button class="buy ad padbtn" id="passAd" ${al ? '' : 'disabled'}>▶ 광고 보고 점수 +${PASS.ad} <small>오늘 ${al} / ${ADS.pass.n}회</small></button>` : ''}
  <div class="sec">오늘 얻은 점수 <small>할 일마다 하루 한도</small></div>
  <div class="pday">${Object.entries(PASS_SRC)
    .map(([k, c]) => `<div class="pdr${(d.src[k] || 0) >= c[1] ? ' full' : ''}"><span>${c[2]} <small>+${c[0]}</small></span><b>${d.src[k] || 0} / ${c[1]}</b></div>`)
@@ -11375,7 +11295,6 @@ function passSheet() {
       passClaim();
       passSheet();
     };
-  if ($('passAd')) $('passAd').onclick = passAd;
   document.querySelectorAll('[data-pc]').forEach(
     b =>
       (b.onclick = () => {
@@ -11425,8 +11344,7 @@ const passMailChips = r =>
     .join('');
 
 let shopSig = '';
-let misOpen = false,
-  adOpen = false;
+let misOpen = false;
 const CARDPK = [
   { n: 3, gem: 30 },
   { n: 30, gem: 270 }
@@ -11445,10 +11363,6 @@ function renderShop() {
   const d = daily();
   const sig = [
     misOpen,
-    adOpen,
-    adLeft('box'),
-    adLeft('gem'),
-    adLeft('card'),
     JSON.stringify(S.cards || {}),
     S.gem,
     S.stage,
@@ -11466,20 +11380,18 @@ function renderShop() {
     return `<div class="mis"><div class="info"><b>${m.n}</b><div class="xp"><div style="width:${(v / m.goal) * 100}%"></div></div></div><button class="buy claim" data-m="${m.k}" ${can ? '' : 'disabled'}>${done ? '받음' : can ? '+' + m.r + ' 받기' : v + ' / ' + m.goal}</button></div>`;
   };
   const gemI = '<img src="assets/gem/ui_gem.png" alt="" style="width:16px;height:16px;vertical-align:-3px" onerror="this.remove()">';
-  /* 상점 (2026-11-16 결제 상품 없앰): 「매일 무료 / 황금 이삭으로」 두 묶음 + 위에 바로가기 */
-  const freeDot = MISSIONS.some(m => misCan(m)) || misCan(null) || adKeys().some(k => adLeft(k));
-  /* 처음 온 영주(영지 10 전)는 「매일 무료」가 맨 위, 원정 일지는 작은 줄로 (UI 점검 10-27 3번) */
-  const newbie = (S.best || 1) < 10;
+  /* 피트의 가게 (2026-11-16 결제·광고 없앰, 상점 탭을 마을로): 맨 위 원정 일지 배너 → 「오늘의 할 일 / 황금 이삭으로」 두 묶음 */
+  const freeDot = MISSIONS.some(m => misCan(m)) || misCan(null);
   $('shop').innerHTML =
-    `${newbie ? '' : passBanner()}
+    `${passBanner()}
  <div class="shjump">${[
-   ['shs-free', '🎁 매일 무료', freeDot],
-   ['shs-gem', '🌾 이삭 상점', false]
+   ['shs-free', '📋 오늘의 할 일', freeDot],
+   ['shs-gem', '🌾 이삭으로', false]
  ]
    .map(([k, n, dot]) => `<button data-jump="${k}">${n}${dot ? '<i class="dot"></i>' : ''}</button>`)
    .join('')}</div>
- ${para('m:피트|어서 와, 형씨! 오늘도 진품만 들여놨어. …대부분.')}
- <section class="shgrp" id="shs-free"><div class="shgh"><b>🎁 매일 무료</b><small>매일 자정에 새로</small></div>
+ ${para('m:피트|어서 와, 형씨! 오늘도 진품만 들여놨어. …대부분. 원정 일지도 내가 꼬박꼬박 적고 있다고.')}
+ <section class="shgrp" id="shs-free"><div class="shgh"><b>📋 오늘의 할 일</b><small>매일 자정에 새로</small></div>
  ${
    d.claim.all && !misOpen
      ? `<button class="misdone" id="misOpen"><b>✓ 오늘의 할 일 완료</b><small>내일 자정에 새 할 일이 열려요 · 눌러서 보기</small></button>`
@@ -11487,19 +11399,8 @@ function renderShop() {
  ${MISSIONS.map(misRow).join('')}
  <div class="mis"><div class="info"><b>오늘의 할 일 모두 끝내기</b></div><button class="buy claim" data-m="all" ${misCan(null) ? '' : 'disabled'}>${d.claim.all ? '받음' : '+' + MIS_ALL + (misCan(null) ? ' 받기' : '')}</button></div>`
  }
- ${
-   !adKeys().some(k => adLeft(k)) && !adOpen
-     ? `<button class="misdone" id="adOpen"><b>✓ 피트의 무료 선물 모두 받음</b><small>내일 자정에 다시 받을 수 있어요 · 눌러서 보기</small></button>`
-     : `<div class="sec">피트의 무료 선물 <small>광고를 보면 받아요</small></div>
- ${adKeys()
-   .map(
-     k =>
-       `<div class="mis"><div class="info"><b>${ADS[k].t}</b><div style="font-size:11px;color:var(--muted)">오늘 ${adLeft(k)} / ${ADS[k].n}회 남음</div></div><button class="buy ad" data-ad="${k}" ${adLeft(k) ? '' : 'disabled'}>▶ 받기</button></div>`
-   )
-   .join('')}`
- }
- ${newbie ? passMini() : ''}</section>
- <section class="shgrp" id="shs-gem"><div class="shgh"><b>🌾 이삭 상점</b><small>가진 이삭 ${gemI}${fmt(S.gem || 0)}</small></div>${
+</section>
+ <section class="shgrp" id="shs-gem"><div class="shgh"><b>🌾 이삭으로</b><small>가진 이삭 ${gemI}${fmt(S.gem || 0)}</small></div>${
    CARDIDS().some(cardOpen)
      ? `<div class="sec">동료 카드 <small>여러 동료에게 무작위 · <button class="lnk" id="cardOdds">확률 보기</button></small></div>
  <div class="packs">${CARDPK.map((c, i) => `<button class="pack gx" data-cp="${i}">${i ? '<span class="tag">10% 이득</span>' : ''}<span class="cpk"><img src="assets/ui/card_pack${c.n >= 30 ? 30 : 3}.png" alt="" onerror="this.replaceWith('🂠')"><b>×${c.n}</b></span><b>카드 ${c.n}장</b><small>${c.n >= 30 ? '5장씩 6번 무작위' : '1장씩 3번 무작위'}</small><span class="price">${gemI}${c.gem}</span></button>`).join('')}</div>`
@@ -11507,7 +11408,7 @@ function renderShop() {
  }
  <div class="sec">골드 바꾸기 <small>지금 영지 기준 · 영지가 오를수록 더 많이</small></div>
  <div class="packs">${GOLDX.map((x, i) => `<button class="pack gx" data-gx="${x.k}">${i ? `<span class="tag">${x.h}시간치</span>` : ''}<img src="assets/ui/gold_pack${i + 1}.png" alt="" style="width:72px;height:72px;object-fit:contain" onerror="this.remove()"><b>${fmt(goldX(x))}</b><small>${x.n}</small><span class="price">${gemI}${x.gem}</span></button>`).join('')}</div>
- ${helpNote('gemuse', '황금 이삭은 어디에 쓰나요?', `황금 이삭은 동료 카드, 골드 바꾸기, 성유물 상자 10연속(장비 탭), 작물 바로 키우기·건물 바로 짓기(마을 탭), 방치 보상 2배 받기에 써요. 오늘의 할 일·출석·피트의 선물·원정 일지·시련의 탑·황금 고블린에서 얻어요.`)}
+ ${helpNote('gemuse', '황금 이삭은 어디에 쓰나요?', `황금 이삭은 동료 카드, 골드 바꾸기, 성유물 상자 10연속(장비 탭), 작물 바로 키우기·건물 바로 짓기(마을 탭), 방치 보상 2배 받기에 써요. 오늘의 할 일·출석·원정 일지·시련의 탑·황금 고블린·칭호 상승에서 얻어요.`)}
  <p class="note"><a href="terms.html" target="_blank" rel="noopener">이용약관</a> · <a href="odds.html" target="_blank" rel="noopener">확률 안내</a></p></section>`;
   const sh = $('shop');
   if ($('passBn')) $('passBn').onclick = passSheet;
@@ -11536,15 +11437,7 @@ function renderShop() {
         shopSig = '';
         renderShop();
       };
-    const ao = $('adOpen');
-    if (ao)
-      ao.onclick = () => {
-        adOpen = true;
-        shopSig = '';
-        renderShop();
-      };
   }
-  sh.querySelectorAll('[data-ad]').forEach(b => (b.onclick = () => ({ box: adBox, gem: adGem, card: adCard })[b.dataset.ad]()));
   {
     const co = $('cardOdds');
     if (co)
@@ -11578,11 +11471,10 @@ const GEM10 = 100,
 const GEMIMG = '<img src="assets/gem/ui_gem.png" alt="" onerror="this.remove()">';
 function spendGem(n, why) {
   if ((S.gem || 0) < n) {
-    toast('황금 이삭이 부족해요. 피트의 상점에서 구할 수 있어요');
+    toast('황금 이삭이 부족해요. 오늘의 할 일·출석·원정 일지에서 모아요');
     return false;
   }
   S.gem -= n;
-  lgOut(why || 'etc', n);
   return true;
 }
 const gemGold = () => reward(S.stage, false) * 20; /* 이삭 1개 ≈ 마물 20마리 골드 */
@@ -11709,7 +11601,7 @@ function kStats() {
   const fm = 1 + 0.06 * S.bld.mine,
     m = allMul();
   return {
-    atk: (10 + S.up.atk * 3 + ga * fm) * (buff('atk') ? 1.2 : 1) * m * trAtk() * vBrave() * ulA() * p2Atk() * retryAtk(),
+    atk: (10 + S.up.atk * 3 + ga * fm) * (buff('atk') ? 1.2 : 1) * m * trAtk() * vBrave() * ulA() * p2Atk(),
     hp: (100 + S.up.hp * 20 + gh * fm) * (1 + 0.05 * S.bld.diner) * m * trHp() * vHp() * stewM() * p2Hp(),
     aps: (1 + S.up.spd * 0.05) * (buff('spd') ? 1.2 : 1) * ulS(),
     crit: (5 + S.up.crit) / 100 + (buff('crit') ? 0.1 : 0)
@@ -11746,7 +11638,7 @@ function cStats(id) {
     g = Math.pow(COMP_GROW, l - 1),
     gs = gearSum();
   return {
-    atk: (c.base.atk * g + gs.a * BLESS) * (1 + 0.08 * S.bld.apiary) * (buff('atk') ? 1.2 : 1) * m * trAtk() * vBrave() * ulA() * p2Atk() * retryAtk(),
+    atk: (c.base.atk * g + gs.a * BLESS) * (1 + 0.08 * S.bld.apiary) * (buff('atk') ? 1.2 : 1) * m * trAtk() * vBrave() * ulA() * p2Atk(),
     hp: (c.base.hp * g + gs.h * BLESS) * (1 + 0.05 * S.bld.diner) * m * trHp() * vHp() * stewM() * p2Hp(),
     aps:
       c.base.aps *
@@ -12644,7 +12536,7 @@ function cycleTag(i) {
   renderAll();
 }
 let farmSig = '';
-/* 처음 밭(첫 수확 전)에는 「심기·수확」만 — 밭 지정·황금 밭·이삭/광고로 바로 키우기는 첫 수확 뒤 (UX 점검 16) */
+/* 처음 밭(첫 수확 전)에는 「심기·수확」만 — 밭 지정·황금 밭·이삭으로 바로 키우기는 첫 수확 뒤 (UX 점검 16) */
 const farmFirst = () => !(S.stat && S.stat.harv > 0);
 function renderFarm() {
   const fb = $('farmBox');
@@ -12690,11 +12582,11 @@ function renderFarm() {
   const nGrow = S.plots.filter(p => plotState(p).st === 'grow').length,
     anyReady = S.plots.some(p => plotState(p).st === 'ready'),
     anyEmpty = S.plots.some((p, i) => !p && (plotTag(i) ? S.seeds[plotTag(i)] > 0 : CROPS.some(c => S.seeds[c.k] > 0)));
-  const sig = seeds + cells + anyReady + anyEmpty + (S.gem || 0) + adLeft('farm') + (S.gemPlots || 0) + plotEdit + farmFirst();
+  const sig = seeds + cells + anyReady + anyEmpty + (S.gem || 0) + (S.gemPlots || 0) + plotEdit + farmFirst();
   if (sig === farmSig) return;
   farmSig = sig;
   fb.innerHTML = `<div class="sec">카엘의 밭 <small>Lv.${S.bld.farm} · ${S.plots.length}칸${S.gemPlots ? ' (황금 밭 ' + S.gemPlots + '칸)' : ''} · 카엘의 진짜 꿈</small></div><div class="inv">${seeds}</div>${plotEdit ? '<p class="note" style="color:#ffe08a">밭을 누를 때마다 자유 → 밀 → 은빛 당근 → 달빛 호박 순서로 바뀌어요. 지정한 밭에는 그 작물만 심어져요.</p>' : ''}<div class="plots">${cells}</div>${!farmFirst() && GEM_PLOTS.length - (S.gemPlots || 0) > 1 ? `<p class="note gpl">🔒 황금 밭 ${GEM_PLOTS.length - (S.gemPlots || 0) - 1}칸 더 열 수 있어요 · 앞의 밭부터 차례로</p>` : ''}
-  <div class="btns">${farmFirst() ? '' : `<button class="buy ghost${plotEdit ? ' on' : ''}" id="plotEdit">${plotEdit ? '지정 끝내기' : '밭 지정'}</button>`}<button class="buy ghost" id="plantAll" ${anyEmpty && !plotEdit ? '' : 'disabled'}>모두 심기</button><button class="buy claim" id="harvAll" ${anyReady ? '' : 'disabled'}>모두 수확</button></div>${farmFirst() ? '<p class="note">빈 밭을 눌러 씨앗을 심고, 다 자라면 눌러 수확해요. 첫 수확을 하면 밭 지정·바로 키우기가 열려요.</p>' : ''}${nGrow && !farmFirst() ? `<button class="buy gem" id="growNow"><span class="bl">자라는 작물 ${nGrow}칸 바로 키우기</span><span class="bc">${GEMIMG}${nGrow * GEM_PLOT}</span></button>${adLeft('farm') ? `<button class="buy ad" id="adFarm">▶ 광고 보고 바로 키우기 · 오늘 ${adLeft('farm')}회</button>` : ''}` : ''}
+  <div class="btns">${farmFirst() ? '' : `<button class="buy ghost${plotEdit ? ' on' : ''}" id="plotEdit">${plotEdit ? '지정 끝내기' : '밭 지정'}</button>`}<button class="buy ghost" id="plantAll" ${anyEmpty && !plotEdit ? '' : 'disabled'}>모두 심기</button><button class="buy claim" id="harvAll" ${anyReady ? '' : 'disabled'}>모두 수확</button></div>${farmFirst() ? '<p class="note">빈 밭을 눌러 씨앗을 심고, 다 자라면 눌러 수확해요. 첫 수확을 하면 밭 지정·바로 키우기가 열려요.</p>' : ''}${nGrow && !farmFirst() ? `<button class="buy gem" id="growNow"><span class="bl">자라는 작물 ${nGrow}칸 바로 키우기</span><span class="bc">${GEMIMG}${nGrow * GEM_PLOT}</span></button>` : ''}
   <p class="note">씨앗은 마물이 가끔 떨어뜨려요. 작물은 게임을 꺼 둔 동안에도 자라요.</p>`;
   fb.querySelectorAll('[data-gp]').forEach(
     b =>
@@ -12745,8 +12637,6 @@ function renderFarm() {
   {
     const gn = $('growNow');
     if (gn) gn.onclick = growNow;
-    const af = $('adFarm');
-    if (af) af.onclick = adFarm;
   }
   $('harvAll').onclick = () => {
     let t = 0,
@@ -12949,7 +12839,7 @@ const GUIDE = [
       setTimeout(() => vlSelect('farm'), 50);
     }
   },
-  { ok: () => Object.values(daily().claim || {}).some(Boolean), t: '피트의 상점에서 오늘의 할 일 보상을 받아요', go: () => setTab('sh') },
+  { ok: () => Object.values(daily().claim || {}).some(Boolean), t: '마을 피트의 가게에서 오늘의 할 일 보상을 받아요', go: () => setTab('sh') },
   { ok: () => S.best < 20 || (S.retires || 0) > 0, t: '단련 탭에서 첫 은퇴를 해 봐요', go: () => setTab('up') }
 ];
 /* 할 일 길잡이 (FIRST_DAY 3): 늘 문구가 보임. 골드가 가장 싼 강화값의 3배 이상이면 「추천 강화 하기」,
@@ -13860,7 +13750,7 @@ function renderParty() {
           `<div class="sec">동료 ${list.filter(owned).length}명 <small><b style="color:#ffd34a">★</b> 별 올리기 · <b style="color:#7be08f">▲</b> 출전하면 더 셈</small></div><div class="cgrid tgrid">${list.map(id => gcell(id, true)).join('')}</div>` +
           ngoalHtml() +
           tpanelHtml(ptSel, upN)
-        : `${helpNote('cardgr', '카드 등급·얻는 곳', `카드 등급: <b style="color:#b8c0cc">일반</b>(★3까지) · <b style="color:#5aa8ff">희귀</b>(★4) · <b style="color:#b07bff">영웅</b>(★5) · <b style="color:#ffc23a">전설</b>(★5). 높은 등급일수록 드물게 나오고 기본 능력치가 높아요. 마물·성주·군단장·황금 고블린·오늘의 할 일·피트의 상점에서 카드를 얻어요. ♡ 희망을 눌러 두면 그 동료 카드가 절반 확률로 나와요. 은퇴해도 카드와 별은 남아요.${ucRow || cmax.includes(CHIEF) ? ' <b style="color:#3ee08f">유니크</b>(★5)는 카드 뽑기에 나오지 않고, 유니크 카드로만 별을 올려요.' : ''}`)}${(S.lcard || 0) > 0 ? `<div class="lcbar"><span class="lcic"><img src="assets/ui/card_back.png" alt=""><i>전설</i></span><span><b>전설 만능 카드 ${S.lcard}장</b><small>${lcardCan() ? '전설 동료 줄의 「만능 … 넣기」로 원하는 동료에게 넣어요' : '전설 동료 카드가 나오기 시작하면 넣을 수 있어요'}</small></span></div>` : ''}${cupBar}${recsReady}${ucRow}${ttRow}${recsRest}${maxSec}`;
+        : `${helpNote('cardgr', '카드 등급·얻는 곳', `카드 등급: <b style="color:#b8c0cc">일반</b>(★3까지) · <b style="color:#5aa8ff">희귀</b>(★4) · <b style="color:#b07bff">영웅</b>(★5) · <b style="color:#ffc23a">전설</b>(★5). 높은 등급일수록 드물게 나오고 기본 능력치가 높아요. 마물·성주·군단장·황금 고블린·오늘의 할 일·마을 피트의 가게에서 카드를 얻어요. ♡ 희망을 눌러 두면 그 동료 카드가 절반 확률로 나와요. 은퇴해도 카드와 별은 남아요.${ucRow || cmax.includes(CHIEF) ? ' <b style="color:#3ee08f">유니크</b>(★5)는 카드 뽑기에 나오지 않고, 유니크 카드로만 별을 올려요.' : ''}`)}${(S.lcard || 0) > 0 ? `<div class="lcbar"><span class="lcic"><img src="assets/ui/card_back.png" alt=""><i>전설</i></span><span><b>전설 만능 카드 ${S.lcard}장</b><small>${lcardCan() ? '전설 동료 줄의 「만능 … 넣기」로 원하는 동료에게 넣어요' : '전설 동료 카드가 나오기 시작하면 넣을 수 있어요'}</small></span></div>` : ''}${cupBar}${recsReady}${ucRow}${ttRow}${recsRest}${maxSec}`;
     document.querySelectorAll('#ptTabs [data-pt]').forEach(b => b.classList.toggle('on', b.dataset.pt === ptTab));
     helpBind($('party'), () => {
       partySig = '';
@@ -14907,11 +14797,10 @@ function renderAll() {
   renderAuto();
   const ready = S.bld.farm && S.plots.some(p => plotState(p).st === 'ready');
   {
-    const sd = $('shopDot');
+    const sd = $('vShopDot');
     if (sd && ((T * 2) | 0) !== sd._t) {
       sd._t = (T * 2) | 0;
-      sd.hidden = !dotOn('sh');
-      if (toastCur !== null) toastPos($('toast'));
+      sd.hidden = !shopSigNow();
     }
   }
   {
@@ -14942,9 +14831,9 @@ function setTab(t) {
     if (toastCur !== null) toastPos($('toast'));
   }, 0);
   if (t === 'pt') dotSeen();
-  if (t !== 'sh') misOpen = adOpen = false;
+  if (t !== 'sh') misOpen = false;
   curTab = t;
-  document.querySelectorAll('.tab').forEach(b => b.setAttribute('aria-selected', b.dataset.t === t));
+  document.querySelectorAll('.tab').forEach(b => b.setAttribute('aria-selected', b.dataset.t === (t === 'sh' ? 'vl' : t))); /* 피트의 가게는 마을 안 */
   ['eq', 'pt', 'up', 'vl', 'mp', 'sh'].forEach(x => ($('p-' + x).hidden = x !== t));
   pgMode();
   if (t === 'vl') {
@@ -15082,9 +14971,10 @@ $('chNext').onclick = () => {
 $('mailBtn').onclick = () => {
   if ($('modal').hidden) mailSheet();
 };
-$('shopBtn').onclick = () => {
+$('vShop').onclick = () => {
   if ($('modal').hidden) setTab('sh');
 };
+$('shBack').onclick = () => setTab('vl');
 $('rankBtn').onclick = () => {
   if ($('modal').hidden) rankSheet();
 };
@@ -15097,33 +14987,12 @@ $('attBtn').onclick = () => {
 };
 $('gemBtn').onclick = () => setTab('sh');
 $('quickBox').onclick = () => openBox(false);
-/* 전투 속도: 무료 x1↔x2 · 광고 보면 30분 x3 (하루 4번, PLAN_MONETIZATION_REMOVAL.md 5번) */
-const SPD_AD = 30 * 60000,
-  spdAdLeft = () => Math.max(0, (S.adSpd || 0) - Date.now()),
-  spdX = () => (spdAdLeft() > 0 ? 3 : S.speed === 2 ? 2 : 1);
+/* 전투 속도: x1↔x2 (무료) */
+const spdX = () => (S.speed === 2 ? 2 : 1);
 $('speedBtn').onclick = () => {
-  if (spdAdLeft() > 0) return toast('속도 x3 · ' + Math.ceil(spdAdLeft() / 60000) + '분 남았어요');
-  if (S.speed === 2 && adLeft('spd') && $('modal').hidden) return spdAsk();
   S.speed = S.speed === 2 ? 1 : 2;
   renderSpeed();
 };
-function spdAsk() {
-  $('sheet').innerHTML = `<div class="eyebrow">전투 속도</div><h2>더 빠르게 사냥할까요?</h2><p class="note" style="text-align:center">광고를 보면 <b>30분 동안 x3</b><br>남은 시간은 속도 버튼에 보여요<br><small>오늘 ${adLeft('spd')} / ${ADS.spd.n}회 남음</small></p><div class="acts"><button id="mX">x1로</button><button class="pri" id="mGo">▶ 광고 보고 x3</button></div>`;
-  $('modal').hidden = false;
-  $('mX').onclick = () => {
-    closeModal();
-    S.speed = 1;
-    renderSpeed();
-  };
-  $('mGo').onclick = () => {
-    closeModal();
-    watchAd('spd', () => {
-      S.adSpd = Date.now() + SPD_AD;
-      toast('30분 동안 전투 속도 x3!');
-      renderSpeed();
-    });
-  };
-}
 $('autoBtn').onclick = () => {
   S.autoSkill = S.autoSkill === false;
   renderAuto();
@@ -15143,12 +15012,10 @@ function renderSpeed() {
     x = spdX(),
     im = b.querySelector('img'),
     sm = b.querySelector('small');
-  if (im) im.src = 'assets/ui/btn_x' + Math.min(2, x) + '.png';
-  if (sm) sm.textContent = x === 3 ? 'x3 ' + Math.ceil(spdAdLeft() / 60000) + '분' : 'x' + x;
-  b.classList.toggle('on', x >= 2);
-  b.classList.toggle('x3', x === 3);
+  if (im) im.src = 'assets/ui/btn_x' + x + '.png';
+  if (sm) sm.textContent = 'x' + x;
+  b.classList.toggle('on', x === 2);
 }
-setInterval(() => S && S.started && renderSpeed(), 20000); /* x3 남은 시간·끝나면 원래 속도로 */
 /* 전투 화면 아래 원정대 초상화 줄 */
 let prowSig = '';
 function renderPartyRow() {
@@ -16854,43 +16721,9 @@ function hitMon(m, d, cr, s, gy) {
     cr ? 21 : 14
   );
 }
-/* 보스에게 졌을 때 「광고 보고 다시 도전」 (하루 5번): 바로 보스부터 · 그 도전 동안 원정대 공격력 +30% (PLAN_MONETIZATION_REMOVAL.md 5번) */
-let adRetry = 0 /* 다시 도전 중인 영지 (0이면 없음) */,
-  retrySkip = 0; /* 「괜찮아요」를 누른 영지 — 그 영지에서는 다시 묻지 않음 */
-const RETRY_ATK = 1.3,
-  retryAtk = () => (adRetry && adRetry === S.stage ? RETRY_ATK : 1);
-function retryAsk(st) {
-  if (!adLeft('retry') || st > LAND || retrySkip === st) return;
-  queue(() => {
-    $('sheet').innerHTML = `<div class="eyebrow">보스 다시 도전</div><h2>한 번 더 해 볼까요?</h2>${para('m:피트|형씨, 응원단 불러올까? 광고 한 편이면 다들 기운이 펄펄 날 거야.')}<p class="note" style="text-align:center">광고를 보면 바로 보스부터 다시 싸워요<br>이번 도전 동안 원정대 공격력 <b>+30%</b><br><small>오늘 ${adLeft('retry')} / ${ADS.retry.n}회 남음</small></p><div class="acts"><button id="mX">괜찮아요</button><button class="pri" id="mGo">▶ 광고 보고 다시 도전</button></div>`;
-    $('modal').hidden = false;
-    $('mX').onclick = () => {
-      retrySkip = st;
-      closeModal();
-    };
-    $('mGo').onclick = () => {
-      closeModal();
-      if (S.stage !== st) return;
-      watchAd('retry', () => {
-        adRetry = st;
-        partySig = '';
-        for (const id of members()) {
-          P[id].hp = stats(id).hp;
-          P[id].down = false;
-        }
-        mons = [];
-        spawnT = 0.5;
-        S.wave = 10;
-        toast('다시 도전! 이번 보스전 동안 공격력 +30%');
-      });
-    };
-  });
-}
 function resetFight(msg) {
   if (CH) return chLose();
-  const dem = mons.some(m => m.dem),
-    bossLoss = mons.some(m => m.boss && m.hp > 0 && !m.dead) && !dem;
-  adRetry = 0;
+  const dem = mons.some(m => m.dem);
   SKX.shield = SKX.honey = SKX.feast = SKX.guts = SKX.sym = SKX.lamp = SKX.sap = SKX.ward = SKX.dok = SKX.phx = 0;
   SKX.stew = SKX.taunt = SKX.blk = SKX.bloom = 0;
   if (SKX.spice) SKX.spice = 0;
@@ -16916,7 +16749,6 @@ function resetFight(msg) {
   $('bossbar').classList.remove('gold', 'dem');
   toast(msg);
   renderAll();
-  if (bossLoss) retryAsk(S.stage);
 }
 /* ---------- 마왕 발타사르 (60 알현실): 50%에서 1.5초 멈춤 → 정체 공개 → 2단계, 2단계는 8초마다 「봉인의 파동」 ---------- */
 const BALT_TALK = {
@@ -18079,7 +17911,7 @@ function towerInfo(f) {
 }
 const towerGold = f => reward(f + 5, true) * 3,
   towerOre = f => 5 + Math.floor(f / 5),
-  TOWER_GEM = 30,
+  TOWER_GEM = 60 /* 2026-11-16 30 → 60 */,
   TOWER_UC = 2 /* 10층마다 처음 돌파 유니크 카드 (2026-11-16) */;
 /* 매일 탑 보급: 방치 보상 (30+최고 층)분 어치(최대 120분) + 광석 5+floor(최고 층/5)×2 */
 const supplyMin = () => Math.min(120, 30 + (S.tower.top || 0)),
@@ -18129,13 +17961,12 @@ const dunDay = () => {
   if (S.dun.d !== today()) {
     S.dun.d = today();
     S.dun.used = 0;
-    S.dun.ad = 0;
   }
   return S.dun;
 };
 const dunLeft = () => {
   const d = dunDay();
-  return Math.max(0, DUN_TK + (d.ad ? 1 : 0) - d.used);
+  return Math.max(0, DUN_TK - d.used);
 };
 const dunOpenK = (wd = new Date().getDay()) => Object.keys(DUNS).filter(k => wd === 0 || DUNS[k].days.includes(wd));
 const bestLand = () => Math.max(1, Math.min(S.best, MAXLAND + 1) - 1); /* 요일 던전 세기는 1부(60)까지로 맞춰 둠 — 2부로 가도 그대로 (CHALLENGE.md 밸런스) */
@@ -18638,7 +18469,7 @@ function chSheet() {
   <div class="btns"><button class="buy pri" id="chTw">도전하기</button><button class="buy claim" id="chSp" ${supplyCan() ? '' : 'disabled'}>${supplyCan() ? '🎁 탑 보급 받기' : '보급 받음 · 내일 다시'}</button></div>
   <label class="tg chauto"><input type="checkbox" id="chAuto" ${towerAutoOn() ? 'checked' : ''}><span>자동으로 계속 오르기<small>수문장·시련 층 앞과 실패에서 멈춰요</small></span></label>
   <p class="note chn">탑 보급: 방치 보상 ${supplyMin()}분 어치 골드 + 광석 ${supplyOre()} (하루 1번, 최고 층이 높을수록 많이)</p></div>
- <div class="chcard"><div class="chh"><span class="chi">📅</span><b>요일 던전</b><small>입장권 <b>${dl}/${DUN_TK + (d.ad ? 1 : 0)}</b></small></div>
+ <div class="chcard"><div class="chh"><span class="chi">📅</span><b>요일 던전</b><small>입장권 <b>${dl}/${DUN_TK}</b></small></div>
   ${open
     .map(k => {
       const D = DUNS[k],
@@ -18647,7 +18478,7 @@ function chSheet() {
     })
     .join('')}
   <p class="note chn">3분 동안 ${DUN_STAR.join(' / ')}마리 → ★1 / ★2 / ★3. 별이 없으면 입장권을 돌려줘요. ★3 단계는 소탕 가능${new Date().getDay() === 0 ? ' · 일요일은 셋 다 열려요' : ''}</p>
-  ${!d.ad && adLeft('dun') ? `<button class="buy ad" id="chAd" style="width:100%">▶ 광고 보고 입장권 +1</button>` : ''}</div>
+</div>
  <div class="acts one"><button class="pri" id="mGo">닫기</button></div>`;
   $('modal').hidden = false;
   $('mGo').onclick = closeModal;
@@ -18671,14 +18502,6 @@ function chSheet() {
   };
   document.querySelectorAll('[data-dun]').forEach(b => (b.onclick = () => dunEnter(b.dataset.dun)));
   document.querySelectorAll('[data-sw]').forEach(b => (b.onclick = () => dunSweep(b.dataset.sw)));
-  const ab = $('chAd');
-  if (ab)
-    ab.onclick = () =>
-      watchAd('dun', () => {
-        dunDay().ad = 1;
-        toast('던전 입장권 +1');
-        chSheet();
-      });
 }
 /* 전투 화면 위쪽: 도전 중 표시·나가기 */
 function chHud() {
@@ -21308,8 +21131,9 @@ const vReadyN = () =>
   (S.bld.farm ? S.plots.filter(p => plotState(p).st === 'ready').length : 0) + ordReady() + Object.keys(vNewDone).length + (vlRw() ? 1 : 0);
 function dotSig(t) {
   if (t === 'up') return trCanAny() ? 'm' + memPts() : '';
-  if (t === 'vl')
-    return vDot()
+  if (t === 'vl') {
+    const sh = shopSigNow();
+    const v = vDot()
       ? [
           vReadyN(),
           ordReady(),
@@ -21320,21 +21144,23 @@ function dotSig(t) {
           S.workDot !== today() && wkOpen() && idleIds().length > 0 ? 'w' : ''
         ].join('|')
       : '';
-  if (t === 'sh') {
-    const d = daily(),
-      n = MISSIONS.filter(misCan).length + (misCan(null) ? 1 : 0),
-      a = adKeys().some(k => adLeft(k)),
-      pn = S.started ? passCanN() : 0;
-    return n || a || pn ? 's' + n + (a ? 'a' : '') + (pn ? 'p' + passLv() + '.' + pn : '') + today() : '';
+    return v || sh ? v + '#' + sh : '';
   }
   if (t === 'mp') return chDot() ? 'c' + (supplyCan() ? 1 : 0) + '.' + dunLeft() + '.' + today() : '';
   return '';
+}
+/* 피트의 가게(마을)에 받을 것: 오늘의 할 일 · 원정 일지 칸 */
+function shopSigNow() {
+  if (!S || !S.started) return '';
+  const n = MISSIONS.filter(misCan).length + (misCan(null) ? 1 : 0),
+    pn = passCanN();
+  return n || pn ? 's' + n + (pn ? 'p' + passLv() + '.' + pn : '') + today() : '';
 }
 function dotOn(t) {
   const g = dotSig(t);
   if (!g) return false;
   if (!S.dotSeen2) S.dotSeen2 = {};
-  if (curTab === t) {
+  if (curTab === t || (t === 'vl' && curTab === 'sh')) {
     S.dotSeen2[t] = g;
     return false;
   }
@@ -21444,7 +21270,7 @@ const VNOTE = {
   forge: '브론이 성유물 부위와 동료 무기를 강화해요. 대장간 레벨이 오르면 강화 한도가 늘고 광석이 덜 들어요.',
   market: '주민들이 올린 주문에 납품하면 그냥 팔 때보다 골드를 더 받고(판매가의 1.6배부터), 덤도 있어요.',
   ranch: '달걀·우유는 창고에 쌓여요. 식당 부엌에서 새 요리(우유 수프·달걀 호박전)에 써요.',
-  chapel: '하루 한 번(광고 +1번) 리엘의 축복을 골라 몇 시간 동안 받아요.',
+  chapel: '하루 한 번 리엘의 축복을 골라 몇 시간 동안 받아요.',
   diner: '마고의 식당이에요. 부엌 탭에서 요리하면 원정대가 강해져요.',
   farm: '카엘의 밭이에요. 밭 탭에서 씨앗을 심고 수확해요.'
 };
@@ -21645,7 +21471,6 @@ function vbBless(el) {
       k +
       (k ? Math.ceil((b.until - Date.now()) / 60000) : '') +
       left +
-      adLeft('bless') +
       S.bld.chapel +
       workBonus('chapel');
   if (el.dataset.s === sig) return;
@@ -21655,19 +21480,9 @@ function vbBless(el) {
  ${
    left
      ? `<div class="blcs">${opts.map(o => `<button class="blc${o === k ? ' cur' : ''}" data-bl="${o}"><img src="assets/ui/bless_${o}.png" alt="" onerror="this.remove()"><b>${BLS[o].n}</b><small>${BLS[o].d}</small></button>`).join('')}</div><p class="note">고른 축복은 ${fmtT(blessMs() / 1000)} 동안 이어져요${workBonus('chapel') ? ' (일꾼 포함)' : ''}. 다른 축복을 받으면 바뀌고, 같은 축복이면 시간만 새로 시작해요.</p>`
-     : b.ad || !adLeft('bless')
-       ? `<p class="note">오늘 받을 수 있는 축복을 모두 받았어요. 내일 0시에 다시 받을 수 있어요.</p>`
-       : `<button class="buy ad" id="blAd">▶ 광고 보고 축복 한 번 더</button>`
+     : `<p class="note">오늘 받을 수 있는 축복을 모두 받았어요. 내일 0시에 다시 받을 수 있어요.</p>`
  }</div>`;
   el.querySelectorAll('[data-bl]').forEach(x => (x.onclick = () => blessPick(x.dataset.bl)));
-  const ad = $('blAd');
-  if (ad)
-    ad.onclick = () =>
-      watchAd('bless', () => {
-        blessDay().ad = 1;
-        S.bless.opts = [];
-        el.dataset.s = '';
-      });
 }
 function blessPick(k) {
   if (!blessLeft() || !blessOpts().includes(k)) return;
@@ -24629,6 +24444,8 @@ function idleGold(sec) {
     tpk = monHp(fightSt(), false) / dps + 1.2;
   return (sec / tpk) * reward(fightSt(), false) * 0.5 * memMul() * vIdle() * vpDok() * allyGold() * evGoldMul();
 }
+/* 돌아왔을 때 방치 보상 배율 (2026-11-16 광고 2배를 없애며 ×1.5, docs/PLAN_MONETIZATION_REMOVAL.md 2단계 4번) */
+const OFF_MUL = 1.5;
 function offline() {
   const cap = offCapH() * 3600,
     sec = Math.min(cap, (Date.now() - S.last) / 1000);
@@ -24639,14 +24456,14 @@ function offline() {
       E = evList().find(X => X.bat && evPhase(X) === 'on');
     if (sf && E) queue(() => toast((E.sym || '❄') + ' 쉬는 동안 ' + E.cur.n + ' +' + sf));
   }
-  const g = Math.floor(idleGold(sec));
+  const g = Math.floor(idleGold(sec) * OFF_MUL);
   if (g <= 0) return;
   S.gold += g;
   const hr = Math.floor(sec / 3600),
     mn = Math.floor((sec % 3600) / 60);
   queue(() => {
     $('sheet').innerHTML =
-      `<img class="illust il-offline" src="assets/illust/illust_offline.jpg" alt="" onerror="this.remove()"><div class="eyebrow">돌아온 카엘</div><h2>영지에서 세금이 걷혔어요</h2><div class="card" style="--c:var(--gold)"><span class="cap">${hr ? hr + '시간 ' : ''}${mn}분 동안</span><div class="t" style="font-size:28px;color:var(--gold)">+${fmt(g)}</div><span class="s">백성들이 보낸 골드${S.bld.farm ? ' · 밭 작물도 자랐어요' : ''}</span><span class="s ofcap">${sec >= cap ? '⏳ 가득 참! ' : ''}최대 ${cap / 3600}시간 · 여관 레벨마다 +1시간${tl('inn') ? ' · 넉넉한 여관 +' + tl('inn') + '시간' : ''}</span></div><div class="dblrow">${adLeft('offline') ? `<button id="mAd">▶ 광고 2배 <small>· ${adLeft('offline')}회</small></button>` : ''}<button id="mDbl">이삭 ${GEMIMG.replace('alt=""', 'alt="" style="width:14px;height:14px;vertical-align:-2px"')}${GEM_OFFLINE}로 2배</button></div><div class="acts one"><button class="pri claim" id="mGo">받기</button></div>`;
+      `<img class="illust il-offline" src="assets/illust/illust_offline.jpg" alt="" onerror="this.remove()"><div class="eyebrow">돌아온 카엘</div><h2>영지에서 세금이 걷혔어요</h2><div class="card" style="--c:var(--gold)"><span class="cap">${hr ? hr + '시간 ' : ''}${mn}분 동안</span><div class="t" style="font-size:28px;color:var(--gold)">+${fmt(g)}</div><span class="s">백성들이 보낸 골드${S.bld.farm ? ' · 밭 작물도 자랐어요' : ''}</span><span class="s ofcap">${sec >= cap ? '⏳ 가득 참! ' : ''}최대 ${cap / 3600}시간 · 여관 레벨마다 +1시간${tl('inn') ? ' · 넉넉한 여관 +' + tl('inn') + '시간' : ''}</span></div><div class="dblrow"><button id="mDbl">이삭 ${GEMIMG.replace('alt=""', 'alt="" style="width:14px;height:14px;vertical-align:-2px"')}${GEM_OFFLINE}로 2배</button></div><div class="acts one"><button class="pri claim" id="mGo">받기</button></div>`;
     $('modal').hidden = false;
     $('mGo').onclick = closeModal;
     $('mDbl').onclick = () => {
@@ -24655,121 +24472,30 @@ function offline() {
       toast('세금 2배! 골드 +' + fmt(g));
       closeModal();
     };
-    const ab = $('mAd');
-    if (ab)
-      ab.onclick = () =>
-        watchAd('offline', () => {
-          S.gold += g;
-          toast('세금 2배! 골드 +' + fmt(g));
-          closeModal();
-        });
     $('mGo').focus({ preventScroll: true });
   });
 }
-
-/* ---------- 행동 기록 (docs/PLAN_MONETIZATION_REMOVAL.md 6번) ----------
-   계정 id로만 묶고(서버가 auth.uid() 로 정함) 개인을 알아볼 정보는 보내지 않음.
-   하루 한 줄: 날짜 · 최고 영지 · 지금 영지 · 은퇴 횟수 · 광고 자리별 시청 수 · 이삭 얻은 양 · 이삭 쓴 곳별 양.
-   이 기기 localStorage 「kd-log」에 최근 날짜만 모아 두고, 접속할 때·10분마다 서버에 올림(같은 날은 덮어씀). 서버 함수가 없거나 로그인 전이면 조용히 다음에 */
-const LOGK = 'kd-log';
-let LG = null,
-  lgBusy = false;
-function lgAll() {
-  if (!LG) {
-    try {
-      LG = JSON.parse(localStorage.getItem(LOGK) || '{}');
-    } catch (e) {
-      LG = {};
-    }
-    if (!LG || typeof LG !== 'object' || Array.isArray(LG)) LG = {};
-  }
-  return LG;
-}
-function lgDay() {
-  const all = lgAll(),
-    t = today();
-  if (!all[t]) {
-    /* 날이 바뀜: 어제 줄의 「얻은 이삭」을 지금 이삭으로 마감 */
-    for (const d in all) if (all[d].open) lgClose(all[d]);
-    all[t] = { d: t, g0: Math.floor(S.gem || 0), ad: {}, out: {}, open: 1 };
-    const ks = Object.keys(all).sort();
-    while (ks.length > 14) delete all[ks.shift()];
-  }
-  return all[t];
-}
-function lgClose(r) {
-  const out = Object.values(r.out || {}).reduce((a, b) => a + b, 0);
-  r.gin = Math.max(0, Math.floor(S.gem || 0) - (r.g0 || 0) + out);
-  r.best = Math.min(S.best || 1, LAND + 1);
-  r.stage = S.stage || 1;
-  r.ret = S.retires || 0;
-  r.open = 0;
-}
-function lgSave() {
-  try {
-    localStorage.setItem(LOGK, JSON.stringify(lgAll()));
-  } catch (e) {}
-}
-function lgAd(k) {
-  if (!S || !S.started || noSave) return;
-  const r = lgDay();
-  r.ad[k] = (r.ad[k] || 0) + 1;
-  lgSave();
-}
-function lgOut(why, n) {
-  if (!S || !S.started || noSave || !(n > 0)) return;
-  const r = lgDay();
-  r.out[why] = (r.out[why] || 0) + n;
-  lgSave();
-}
-async function lgFlush() {
-  if (lgBusy || !S || !S.started || noSave || typeof sbOn !== 'function' || !sbOn()) return;
-  const all = lgAll(),
-    cur = lgDay();
-  lgClose(cur);
-  cur.open = 1;
-  const rows = Object.values(all)
-    .filter(r => !r.sent || r.open)
-    .map(r => ({ d: r.d, best: r.best || 1, stage: r.stage || 1, ret: r.ret || 0, ad: r.ad || {}, gin: r.gin || 0, out: r.out || {} }));
-  if (!rows.length) return;
-  lgBusy = true;
-  try {
-    await sbRpc('kd_log_day', { p_rows: rows });
-    for (const r of Object.values(all)) if (!r.open) r.sent = 1;
-    lgSave();
-  } catch (e) {
-  } finally {
-    lgBusy = false;
-  }
-}
-function lgBoot() {
-  if (!S || !S.started || noSave) return;
-  lgDay();
-  lgSave();
-  setTimeout(lgFlush, 8000);
-}
-setInterval(() => lgFlush(), 600000);
 
 /* ---------- 출석체크: 피트의 출석부 (docs/content/ATTENDANCE.md) ---------- */
 /* 하루 한 번 → 7일 판(7칸 반복)·한달 판(매달 1일 새로, 최대 31칸)에 동시에 도장. 빠진 날이 있어도 다음 칸으로 이어짐 */
 const ATT_W = [
   [{ k: 'gold', h: 1 }],
-  [{ k: 'gem', n: 10 }],
+  [{ k: 'gem', n: 40 }] /* 2026-11-16 10 → 40 (광고 이삭 대신) */,
   [{ k: 'tbox', n: 3 }],
   [{ k: 'ore', n: 20 }],
-  [{ k: 'gem', n: 10 }],
+  [{ k: 'gem', n: 40 }] /* 10 → 40 */,
   [{ k: 'card', n: 3, alt: 30 }],
   [
-    { k: 'gem', n: 30 },
+    { k: 'gem', n: 100 } /* 30 → 100 */,
     { k: 'tbox10', n: 1 },
     { k: 'ucard', n: 1 } /* 2026-11-16 출석 7일마다 유니크 카드 1장 */
   ]
 ];
 const ATT_BIG = {
   7: [{ k: 'card', n: 10, alt: 100 }],
-  14: [{ k: 'gem', n: 100 }],
+  14: [{ k: 'gem', n: 250 }] /* 2026-11-16 100 → 250 */,
   21: [{ k: 'ecard', n: 10, alt: 100 }],
-  28: [{ k: 'gem', n: 100 }, { k: 'badge' }]
+  28: [{ k: 'gem', n: 250 }, { k: 'badge' }] /* 100 → 250 */
 };
 const ATT_G = [1, 4, 10, 13, 17, 20, 24, 27],
   ATT_S = [2, 5, 9, 12, 16, 19, 23, 26];
@@ -24784,7 +24510,7 @@ const attM0 = n =>
       ? [{ k: 'gold', h: 0.5 }]
       : ATT_S.includes(n)
         ? [{ k: 'seed' }]
-        : [{ k: 'ore', n: 10 }]);
+        : [{ k: 'ore', n: 10 }, { k: 'gem', n: 20 }]) /* 2026-11-16 광석 칸 8곳에 이삭 20 */;
 /* today()는 0을 붙이지 않는 'Y-M-D' → 숫자로 바꿔 비교 */
 const dnum = t => {
   const p = String(t || '')
@@ -24820,7 +24546,6 @@ function attA() {
   /* 옛 저장(두 판 함께 받던 때): 마지막 출석 날짜를 두 판에 나눠 넣음 */
   if (a.last && !a.lw && !a.lm) {
     a.lw = a.lm = a.last;
-    if (a.ad === a.last) a.adw = a.adm = a.ad;
   }
   for (const k in d) if (a[k] == null) a[k] = d[k];
   for (const k of ['got', 'gw', 'gm']) if (!Array.isArray(a[k])) a[k] = [];
@@ -24892,26 +24617,6 @@ function attDo(t, b) {
   if (a.lw === t && a.lm === t) a.last = t;
   if (first) stat('att', 1);
   return { b, wd, md, rows, first };
-}
-/* 광고 2배(창 없이): 그날 받은 보상을 한 번 더, 배지는 빼고 */
-/* 광고 2배(창 없이): 그 판에서 그날 받은 보상을 한 번 더 — 판마다 하루 1번, 배지는 빼고 (전설 만능 카드는 2배) */
-function attAdDo(t, b) {
-  if (!b) {
-    const w = attAdDo(t, 'w'),
-      m = attAdDo(t, 'm');
-    return w || m ? [...(w || []), ...(m || [])] : null;
-  }
-  const a = attA(),
-    k = b === 'w' ? 'adw' : 'adm';
-  if (attStatusAt(t, b) !== 'done' || a[k] === t) return null;
-  const rows = [];
-  for (const r of b === 'w' ? a.gw : a.gm) {
-    if (r.k === 'badge' || r.k === 'ucard') continue;
-    rows.push(attGive(r, true).row);
-  }
-  a[k] = t;
-  a.ad = t;
-  return rows;
 }
 /* 전설 만능 카드: 받을 수 있는(그 직업 이야기 동료 합류·별 5 전) 전설 동료가 있어야 쓸 수 있음 */
 const lcardCan = () => CARDIDS().some(x => GRADE[x] === 'legend' && cardCan(x)),
@@ -25165,21 +24870,6 @@ function attClaim(b) {
   toast(b === 'w' ? '출석 완료! 7일 판 ' + (r.wd + 1) + '일째' : '출석 완료! 이번 달 ' + r.md + '회째');
   attSheet();
 }
-function attAd(b) {
-  const a = attA();
-  if (attStatus(b) !== 'done') return;
-  if (a[b === 'w' ? 'adw' : 'adm'] === today()) return toast('이 판은 오늘 다 봤어요. 내일 다시 받을 수 있어요');
-  watchAd('att', () => {
-    const rows = attAdDo(today(), b);
-    if (!rows) return;
-    attJust = { ad: 1, b, rows };
-    pfCheck();
-    partySig = '';
-    save();
-    toast('피트가 한 번 더 챙겨 줬어요');
-    setTimeout(attSheet, 30);
-  });
-}
 function attSheet(tab) {
   const a = attA();
   if (tab) {
@@ -25220,18 +24910,17 @@ function attSheet(tab) {
       now = !done && n === mc + 1;
     return `<div class="attc${big ? ' big' : ''}${n % 5 === 0 ? ' lc' : ''}${now ? ' now' : ''}${got ? ' got' : ''}" title="${n}회 · ${rs.map(attNm).join(' + ')}"><em>${n}</em>${attIc(rs[0])}${n % 5 === 0 ? '<i class="lct">전설</i>' : ''}${got ? stp(n === jm) : ''}</div>`;
   }).join('')}</div>
-  <p class="note">큰 보상 · 7회 동료 카드 10장 · 14회 이삭 100 · 21회 영웅 이상 카드 10장 · 28회 이삭 100 + ${mo}월 출석 배지. <b style="color:#ffc23a">5·10·15·20·25·30회</b>엔 <b style="color:#ffc23a">전설 만능 카드 10장</b>을 더 줘요(원하는 전설 동료에게 넣어요). 매달 1일에 새로 시작해요.</p>`;
+  <p class="note">큰 보상 · 7회 동료 카드 10장 · 14회 이삭 250 · 21회 영웅 이상 카드 10장 · 28회 이삭 250 + ${mo}월 출석 배지. 광석 칸엔 이삭 20도 함께. <b style="color:#ffc23a">5·10·15·20·25·30회</b>엔 <b style="color:#ffc23a">전설 만능 카드 10장</b>을 더 줘요(원하는 전설 동료에게 넣어요). 매달 1일에 새로 시작해요.</p>`;
   }
   const bg = tb === 'w' ? a.gw : a.gm;
-  const adOk = done && a[tb === 'w' ? 'adw' : 'adm'] !== t && adLeft('att') > 0;
   const gotHtml =
     attJust && attJust.rows
-      ? `<div class="attgot"><b>${attJust.ad ? '광고 보상 · 한 번 더' : '오늘 받은 선물'}</b>${attJust.rows.join('')}</div>`
+      ? `<div class="attgot"><b>오늘 받은 선물</b>${attJust.rows.join('')}</div>`
       : done && bg.length
         ? `<div class="attgot"><b>오늘 받은 선물 · ${tb === 'w' ? '7일 판' : '한달 판'}</b>${bg.map(r => attRow(r.k === 'badge' ? { k: 'badge' } : r, r.k === 'badge' ? BDN(r.id) + ' 배지' : attNm(r), '')).join('')}</div>`
         : '';
   const line =
-    attJust && !attJust.ad
+    attJust
       ? attJust.md && attJust.md % 5 === 0 && (S.lcard || 0) > 0
         ? 'm:피트|전설 만능 카드예요! 원정대 카드 탭에서 마음에 드는 전설 동료에게 넣어 주세요.'
         : attJust.md === 28
@@ -25245,9 +24934,7 @@ function attSheet(tab) {
       ? `<button class="pri" disabled>날짜를 확인해 주세요</button>`
       : !done
         ? `<button class="pri" id="attGo">${tb === 'w' ? '7일 판 받기' : '한달 판 받기'}</button>`
-        : adOk
-          ? `<button id="attAdB" style="font-size:14px">▶ 광고로 한 번 더</button>`
-          : oth
+        : oth
             ? `<button class="pri" id="attOth">${tb === 'w' ? '한달 판도 받기 ›' : '7일 판도 받기 ›'}</button>`
             : `<button disabled>내일 또 만나요</button>`;
   $('sheet').innerHTML =
@@ -25263,7 +24950,6 @@ function attSheet(tab) {
   };
   document.querySelectorAll('[data-at]').forEach(b => (b.onclick = () => attSheet(b.dataset.at)));
   if ($('attGo')) $('attGo').onclick = () => attClaim(tb);
-  if ($('attAdB')) $('attAdB').onclick = () => attAd(tb);
   if ($('attOth')) $('attOth').onclick = () => attSheet(tb === 'w' ? 'm' : 'w');
 }
 /* 배지 그림: 출석 배지는 월별 그림 → 공용 그림 → 그림이 없으면 그려 둔 메달 */
@@ -25354,7 +25040,7 @@ const EVT = {
       cap: 100,
       idleK: 0.03
     } /* 처치 25마리마다 1 · 하루 100 · 방치(꺼 둔 동안) 처치는 0.03배로 셈 (기획서 8장 시뮬레이터로 맞춤) */,
-    /* 이벤트 출석 14칸 (21일 안에 14번 받으면 끝, 광고 2배 없음) */
+    /* 이벤트 출석 14칸 (21일 안에 14번 받으면 끝) */
     att: [
       ...[1, 2, 3, 4, 5, 6].map(i =>
         i % 2
@@ -25663,7 +25349,6 @@ const MGEV = {
     settle: '2026-12-26T00:00:00+09:00',
     year: 2026,
     daily: 3,
-    ad: 1,
     rew: [
       ['1위', '황금 이삭 500 · 배지 「선물 배달왕」 · 외형 「산타 카엘」'],
       ['2~10위', '황금 이삭 200 · 외형 「산타 카엘」'],
@@ -25789,12 +25474,12 @@ function evS(id) {
   const d = {
     sf: 0,
     day: { d: '', bat: 0, kc: 0 },
-    boss: { d: '', n: 0, ad: 0, st: 1, best: 0, mile: {}, ref: 0 },
+    boss: { d: '', n: 0, st: 1, best: 0, mile: {}, ref: 0 },
     att: { last: '', cnt: 0 },
     shop: {},
     seen: { start: 0, end: 0, xmas: 0, mgEnd: 0, warn: '' },
     xm: { gift: {}, tree: '', days: {} },
-    mg: { d: '', n: 0, ad: 0, best: 0 },
+    mg: { d: '', n: 0, best: 0 },
     hi: 0,
     /* 신년축제: 윷(n 가진 개수 · pos 말 칸 · rt 들어간 대각선 · laps 바퀴 · d 오늘 · dl 오늘 접속 윷 · bat 오늘 전투 윷 · kc 처치 · shop 오늘 상점 윷) · 복주머니(n · free 무료 받은 날) · 첫날 선물 */
     yut: { n: 0, pos: 'o0', rt: '', laps: 0, d: '', dl: '', bat: 0, kc: 0, shop: 0 },
@@ -25830,8 +25515,8 @@ function evS(id) {
 function evToday(e) {
   const t = evDay();
   if (e.day.d !== t) e.day = { d: t, bat: 0, kc: 0 };
-  if (e.boss.d !== t) Object.assign(e.boss, { d: t, n: 0, ad: 0 });
-  if (e.mg.d !== t) Object.assign(e.mg, { d: t, n: 0, ad: 0 });
+  if (e.boss.d !== t) Object.assign(e.boss, { d: t, n: 0 });
+  if (e.mg.d !== t) Object.assign(e.mg, { d: t, n: 0 });
   if (e.yut.d !== t) Object.assign(e.yut, { d: t, bat: 0, kc: 0, shop: 0 });
   return e;
 }
@@ -26021,7 +25706,7 @@ function evFlakeFx(E, txt) {
 }
 
 /* ---- 눈사람 대장 (기간 한정 보스, 도전 모드 CH.mode = 'ev') ----
-   하루 3번(광고 +1). 체력은 내 최고 영지 성주 × 0.8 × 1.15^(단계−1). 30초 안에 처치. 10초마다 「눈덩이 굴리기」(1초 전 경고) */
+   하루 3번. 체력은 내 최고 영지 성주 × 0.8 × 1.15^(단계−1). 30초 안에 처치. 10초마다 「눈덩이 굴리기」(1초 전 경고) */
 /* 기준 영지: 이번 이벤트에서 처음 도전할 때 되찾은 가장 먼 영지 (e.boss.ref 에 고정).
    지금 최고 영지를 그대로 따라가면 영지를 넓힐수록 눈사람도 같이 세져 단계가 멈추므로, 시작 때 기준으로 고정하고
    이벤트 동안 원정대가 자라는 만큼 단계가 오르게 함 (기획서 8장 시뮬레이터) */
@@ -26029,7 +25714,7 @@ const evBossSt = () => Math.max(1, Math.min((S.best || 1) - 1, LAND));
 const evBossRef = e => (e && e.boss.ref > 0 ? Math.min(e.boss.ref, LAND) : evBossSt());
 const evBossHp = (B, stg, ref) => monHp(ref || evBossSt(), false) * BAL.bossHp * B.hp0 * Math.pow(B.hpG, stg - 1);
 const evBossAtk = (B, stg, ref) => monAtk(ref || evBossSt(), false) * BAL.bossAtk * B.atk * Math.pow(B.atkG || 1.05, stg - 1);
-const evTries = (E, e) => E.boss.tries + (e.boss.ad ? 1 : 0);
+const evTries = (E, e) => E.boss.tries;
 const evTriesLeft = E => {
   const e = evToday(evS(E.id));
   return Math.max(0, evTries(E, e) - e.boss.n);
@@ -26694,7 +26379,7 @@ function evTreeHit(mx, my) {
   renderAll();
   return true;
 }
-/* ---- 상단 버튼 (상점 버튼 아래) ---- */
+/* ---- 상단 버튼 (랭킹 버튼 아래) ---- */
 let evHudSig = '' /* 서버 날짜를 다시 읽으면 '' 로 → 버튼 다시 그림 */,
   evHudDay = '';
 function evHud() {
@@ -26861,27 +26546,10 @@ function evSheet(id, tab, just) {
       closeModal();
       evBossStart(id);
     };
-  if (q('#evBossAd'))
-    q('#evBossAd').onclick = () =>
-      evAdWatch(id, 'boss', () => {
-        evToday(evS(id)).boss.ad = 1;
-        toast('눈사람 대장 도전 +1');
-        evSheet(id, 'boss');
-      });
   document.querySelectorAll('[data-evbuy]').forEach(b => (b.onclick = () => evBuy(id, b.dataset.evbuy)));
   if (E.mg) evMgBind(E);
   if (cur === 'yut') evYutBind(E);
   if (cur === 'bok') evBokBind(E);
-}
-/* 광고 +1 (이벤트마다 하루 1번, 기존 광고 표 ADS 를 건드리지 않고 이벤트 저장에 기록) */
-function evAdWatch(id, k, give) {
-  const e = evToday(evS(id));
-  if (e[k].ad) return toast('오늘은 다 봤어요. 내일 다시 받을 수 있어요');
-  playAd(() => {
-    give();
-    save();
-    renderAll();
-  });
 }
 function evAttHtml(E, e) {
   const can = evAttCan(E),
@@ -26919,7 +26587,7 @@ function evBossHtml(E, e) {
       : ''
   }</small></div></div>
  <p class="note">${B.lim}초 안에 쓰러뜨리면 다음 단계로 · 기술 「${B.sk.n}」: ${B.sk.every}초마다 앞줄 동료에게 큰 피해 + ${B.sk.slow}초 느려짐 (경고가 뜨면 막기·보호막 스킬!) · 배경 하른 설원</p>
- <div class="btns"><button class="buy pri evbig" id="evBoss" ${left > 0 && !back ? '' : 'disabled'}>${back ? '휴대폰 시간을 확인해 주세요' : left > 0 ? '도전하기' : '오늘 도전 끝 · 내일 다시'}</button>${!e.boss.ad && !back ? `<button class="buy ad" id="evBossAd">▶ 광고 보고 +1</button>` : ''}</div>${nm ? '' : ''}`;
+ <div class="btns"><button class="buy pri evbig" id="evBoss" ${left > 0 && !back ? '' : 'disabled'}>${back ? '휴대폰 시간을 확인해 주세요' : left > 0 ? '도전하기' : '오늘 도전 끝 · 내일 다시'}</button></div>${nm ? '' : ''}`;
 }
 function evShopHtml(E, e) {
   return `<div class="evshop">${E.shop
@@ -27297,7 +26965,7 @@ const evMgLeft = E => {
   if (!evMgOn(E)) return 0;
   const M = MGEV[E.mg],
     e = evToday(evS(E.id));
-  return Math.max(0, M.daily + (e.mg.ad ? M.ad : 0) - e.mg.n);
+  return Math.max(0, M.daily - e.mg.n);
 };
 async function evMgStart(id, practice) {
   const E = EVT[id];
@@ -27338,7 +27006,7 @@ async function evMgStart(id, practice) {
           tok = r.id;
           seed = r.seed >>> 0;
         } else if (r && r.err === 'limit') {
-          e.mg.n = Math.max(e.mg.n, M.daily + (e.mg.ad ? M.ad : 0));
+          e.mg.n = Math.max(e.mg.n, M.daily);
           save();
           mgClose();
           return toast('오늘 판을 다 했어요 (다른 기기 포함). 연습판은 계속 할 수 있어요');
@@ -27459,10 +27127,10 @@ function evMgHtml(E, e) {
     st = evNow() >= evT(M.settle);
   return `<div class="evmg"><img class="evmgimg" src="assets/mini/sled.png" alt=""><div>
   <b>🎁 선물 배달</b>
-  <small>${on ? `오늘 남은 판 <b>${left}/${M.daily + (e.mg.ad ? M.ad : 0)}</b> · 연습판은 무제한` : st ? '랭킹 정산이 끝났어요 · 보상은 우편함으로' : '크리스마스 주간에 열려요'}</small>
+  <small>${on ? `오늘 남은 판 <b>${left}/${M.daily}</b> · 연습판은 무제한` : st ? '랭킹 정산이 끝났어요 · 보상은 우편함으로' : '크리스마스 주간에 열려요'}</small>
   <small>내 최고 <b>${fmt(e.mg.best || 0)}점</b> <span id="evMgRk"></span></small></div></div>
  <p class="note">30초 동안 화면을 눌러 굴뚝에 선물을 넣어요. 굴뚝 10점 × 연속 배수(5번마다 +1배, 최대 5배) · 한가운데 +5 · <b style="color:#ffd34a">황금 굴뚝</b> 30점 · 연기 나는 굴뚝은 연속이 끊겨요. 판마다 ${E.cur.n} 점수÷10 (최대 100)</p>
- ${on ? `<div class="btns"><button class="buy pri evbig" id="evMgGo" ${left > 0 && !back ? '' : 'disabled'}>${back ? '휴대폰 시간을 확인해 주세요' : left > 0 ? '시작' : '오늘 판 끝'}</button><button class="buy" id="evMgPr">연습</button>${!e.mg.ad && !back ? '<button class="buy ad" id="evMgAd">▶ 광고 +1판</button>' : ''}</div>` : ''}
+ ${on ? `<div class="btns"><button class="buy pri evbig" id="evMgGo" ${left > 0 && !back ? '' : 'disabled'}>${back ? '휴대폰 시간을 확인해 주세요' : left > 0 ? '시작' : '오늘 판 끝'}</button><button class="buy" id="evMgPr">연습</button></div>` : ''}
  <button class="buy ghost" id="evMgRank" style="width:100%">🏆 선물 배달 랭킹</button>
  <details class="evrw"><summary>랭킹 보상 (${kstDate(evT(M.settle) - 1)} 하루 끝에 정산 → 우편)</summary>${M.rew.map(([a, b]) => `<div class="kv"><span>${a}</span><b>${b}</b></div>`).join('')}<p class="note">크리스마스 주간 동안 보상 판 한 판 최고 점수로 순위를 정해요 (같은 점수면 먼저 낸 사람)</p></details>`;
 }
@@ -27472,13 +27140,6 @@ function evMgBind(E) {
   q('#evMgRank').onclick = () => rankSheet('mg');
   if (q('#evMgGo')) q('#evMgGo').onclick = () => evMgStart(E.id, false);
   if (q('#evMgPr')) q('#evMgPr').onclick = () => evMgStart(E.id, true);
-  if (q('#evMgAd'))
-    q('#evMgAd').onclick = () =>
-      evAdWatch(E.id, 'mg', () => {
-        evToday(evS(E.id)).mg.ad = 1;
-        toast('선물 배달 +1판');
-        evSheet(E.id, 'mg');
-      });
   if (sbOn() && S.nick && !noSave)
     sbRpc('kd_mg_ranking', { p_game: E.mg })
       .then(rows => {
@@ -27854,7 +27515,7 @@ function evInstall() {
   BADGES.push({ k: 'xmas', n: '메리 크리스마스', d: '크리스마스 주간 5일 중 3일 접속', ok: () => evXmasCount() >= 3 });
   BADGES.push({ k: 'delivery', n: '선물 배달왕', d: '선물 배달 랭킹 1위', ok: () => false, rk: 1 });
   /* 화면: 상단 버튼 · 미니게임 판 · 장비 탭 「외형」 */
-  const sb = $('shopBtn');
+  const sb = $('rankBtn');
   if (sb && !$('evBtn')) {
     sb.insertAdjacentHTML(
       'afterend',
@@ -28026,7 +27687,6 @@ function start(data) {
   }
   passS();
   uqCheck();
-  lgBoot();
   evBoot(isNew);
   attAutoDay = today();
   attPreload();
