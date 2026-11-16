@@ -1,4 +1,4 @@
-// 피트의 상점 화면: 할 일 보상·무료 선물(광고)·골드 바꾸기·카드 묶음·첫 거래 특가·정기 배송·이삭 꾸러미
+// 피트의 상점 화면: 할 일 보상·무료 선물(광고)·골드 바꾸기·카드 묶음 (결제 상품 없음, 2026-11-16)
 // 폰 폭 320·390 에서 넘침 없이 눌러지고, 웹과 같은 결과(조작 비교는 actions_parity_test)가 나오는지.
 import 'dart:convert';
 
@@ -87,59 +87,19 @@ void main() {
       g.navKey.currentState!.pop();
       await frames(4);
 
-      // 첫 거래 특가 → 이야기 → 전설 성유물 비교 창 → 장착
-      await press('₩1,200');
-      await frames(3);
-      expect(find.text('피트의 진품 보증'), findsOneWidget);
-      await press('성유물 확인하기');
-      await frames(3);
-      expect(find.text('성유물을 얻었어요'), findsOneWidget);
-      await press('장착');
-      expect(find.text('한 번만'), findsNothing, reason: '첫 거래 특가는 한 번만');
+      // 결제 상품은 없음 (2026-11-16 유료화 제거)
+      expect(find.textContaining('₩'), findsNothing);
+      expect(find.text('💳 충전·패키지'), findsNothing);
 
-      // 유니크 뚝딱이(₩5,500, 정기 배송보다 위): 합류 장면 → 바로 출전 → 상점에서 사라짐
-      await press('₩5,500');
-      await frames(3);
-      expect(find.text('산에서 내려온 도깨비 뚝딱이'), findsOneWidget);
-      await press('바로 출전');
-      expect(g.calc.slotMember('miner'), 'ttukttak');
-      expect(find.text('뚝딱이 맞이하기'), findsNothing);
-
-      // 유니크 루시안(₩5,500, 뚝딱이 다음 줄): 합류 장면 → 바로 출전(요리사) → 상점에서 사라짐
-      await press('₩5,500');
-      await frames(3);
-      expect(find.text('불사조와 함께 온 궁정 요리장 루시안'), findsOneWidget);
-      await press('바로 출전');
-      expect(g.calc.slotMember('cook'), 'lucian');
-      expect(find.text('루시안 맞이하기'), findsNothing);
-
-      // 유니크 골디(₩5,500, 루시안 다음 줄 · 2026-10-27): 합류 장면 → 「잘 부탁해, 골디」(양봉가 자리 출전) → 상점에서 사라짐
-      await press('₩5,500');
-      await frames(3);
-      expect(find.text('아기 황금용 골디'), findsOneWidget);
-      await press('잘 부탁해, 골디');
-      expect(g.calc.slotMember('keeper'), 'goldie');
-      expect(find.text('골디 맞이하기'), findsNothing);
-
-      // 정기 배송: 시작하면 오늘 배송까지 받음
-      await press('₩5,500');
-      expect(find.text('받음'), findsWidgets);
-      expect(g.calc.subOn(), isTrue);
-
-      // 이삭 꾸러미 첫 구매 2배
-      final gem1 = g.state.gem;
-      await press('₩1,200');
-      expect(g.state.gem, gem1 + 120);
-
-      // 무료 선물: 이삭 +5 (3초 광고)
+      // 무료 선물: 이삭 +10 (3초 광고, 2026-11-16 +5 → +10)
       final gem2 = g.state.gem;
-      await tester.ensureVisible(find.text('황금 이삭 +5'));
+      await tester.ensureVisible(find.text('황금 이삭 +10'));
       await frames(1);
-      await tester.tap(find.descendant(of: find.ancestor(of: find.text('황금 이삭 +5'), matching: find.byType(Row)).first, matching: find.text('▶ 받기')));
+      await tester.tap(find.descendant(of: find.ancestor(of: find.text('황금 이삭 +10'), matching: find.byType(Row)).first, matching: find.text('▶ 받기')));
       for (var i = 0; i < 40; i++) {
         await tester.pump(const Duration(milliseconds: 100));
       }
-      expect(g.state.gem, gem2 + 5);
+      expect(g.state.gem, gem2 + 10);
       expect(find.text('오늘 2 / 3회 남음'), findsWidgets);
 
       await tester.pumpWidget(const SizedBox());

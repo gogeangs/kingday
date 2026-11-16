@@ -349,21 +349,7 @@ class Online {
     final items = <String>[];
     for (final m in list) {
       final r = asMap(m['reward']) ?? const {};
-      // 스토어 결제 확인 우편 (kd-iap): 꾸러미는 첫 구매 2배 계산까지 게임 규칙대로
-      final pk = r['pack'];
-      if (pk is String && gemPacks.any((p) => p.k == pk)) {
-        g.act((a) => a.grantPack(pk));
-        continue;
-      }
-      if (truthy(r['starter'])) g.act((a) => a.grantStarter(count: true));
-      if (asNum(r['sub_days']) > 0) g.act((a) => a.grantSub(count: true, days: asNum(r['sub_days'])));
-      if (truthy(r['chief'])) g.act((a) => a.grantChief());
-      if (truthy(r['ttuk'])) g.act((a) => a.grantTtuk());
-      if (truthy(r['lucian'])) g.act((a) => a.grantLucian());
-      if (truthy(r['goldie'])) g.act((a) => a.grantGoldie());
-      // 상점·패스 (docs/content/SHOP.md): 원정 일지 {pass: 시즌} · 영주의 첫걸음 {grow: 1}
-      if (truthy(r['pass'])) g.act((a) => a.passOpen(asNum(r['pass']).toInt()));
-      if (truthy(r['grow'])) g.act((a) => a.growGive());
+      // 2026-11-16 결제 없앰: 예전 결제 확인 우편 칸(pack·starter·sub_days·chief·ttuk·lucian·goldie·pass·grow)은 읽지 않음
       // 정기 이벤트 (docs/content/EVENT_SNOW.md 3-11·8-1): 외형 {skin, skin_year} · 이벤트 재화 {evc: {이벤트 id: 개수}}
       final sk = r['skin'];
       if (sk is String && skinDefs[sk] != null) {
@@ -424,14 +410,6 @@ class Online {
     final msg = [if (gem > 0) '황금 이삭 +${fmt(gem)}', ...items].join(' · ');
     if (msg.isNotEmpty) g.toast(msg);
     if (got.isNotEmpty || cgold > 0) g.queue((ctx) => showCardReveal(ctx, g, got, '우편 보상', gold: cgold));
-  }
-
-  /// 결제 확인 우편(kind=shop)을 바로 받기
-  Future<void> claimShopMails() async {
-    await mailFetch();
-    for (final m in List.of(mails)) {
-      if (m['kind'] == 'shop') await mailClaim(asNum(m['id']).toInt());
-    }
   }
 
   static final _seasonRe = RegExp(r'^(\d+)시즌 랭킹 보상 · (\d+)위');

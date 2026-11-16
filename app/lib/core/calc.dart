@@ -184,6 +184,12 @@ class GameCalc {
   num allyAtk() => allyAll() ? 1.1 : 1;
   /// 2부 공격 배수: 사프란 향신료 +15% · 연합군 맹주 +10%
   num p2Atk() => (_spice ? 1.15 : 1) * allyAtk();
+
+  /// 보스 「광고 보고 다시 도전」 중인 영지 (0 이면 없음, 저장 안 함 — 웹 adRetry)
+  int adRetry = 0;
+
+  /// 다시 도전 중이면 원정대 공격력 ×1.3 (웹 retryAtk)
+  num retryAtk() => adRetry != 0 && adRetry == s.stage ? retryAtkMul : 1;
   num p2Hp() => allyHp();
   /// 2부가 열려 있는지(1부 마왕을 한 번이라도 쓰러뜨림) — 지도 「바다 건너」 칩·동맹 칸 (웹 p2Open)
   bool p2Open() => p2On && asNum(s.raw['capClears']) > 0;
@@ -216,10 +222,6 @@ class GameCalc {
   /// 보스 제한 시간 (+끈질긴 농부) — 웹 bossLim
   int bossLimT(int st) => bossLim(st) + 2 * tl('stubborn');
   num allMul() => (1 + .04 * rankIdx()) * memMul();
-  bool subOn() {
-    final sub = asMap(s.raw['sub']);
-    return sub != null && asNum(sub['until']) > now;
-  }
 
   // ───────────── 동료 등급·별 ─────────────
   static bool isRec(String id) => recruits.containsKey(id);
@@ -339,7 +341,7 @@ class GameCalc {
     }
     final fm = 1 + .06 * s.bldLv('mine'), m = allMul();
     return Stats(
-      (10 + s.upLv('atk') * 3 + ga * fm) * (buff('atk') ? 1.2 : 1) * m * trAtk() * this.vBrave() * _ulA * p2Atk(),
+      (10 + s.upLv('atk') * 3 + ga * fm) * (buff('atk') ? 1.2 : 1) * m * trAtk() * this.vBrave() * _ulA * p2Atk() * retryAtk(),
       (100 + s.upLv('hp') * 20 + gh * fm) * (1 + .05 * s.bldLv('diner')) * m * trHp() * this.vHp() * _stew * p2Hp(),
       (1 + s.upLv('spd') * .05) * (buff('spd') ? 1.2 : 1) * _ulS,
       (5 + s.upLv('crit')) / 100 + (buff('crit') ? .1 : 0),
@@ -376,7 +378,7 @@ class GameCalc {
     final l = orNum(s.lv[id], 1);
     final m = allMul() * cwMul(id) * starMul(id) * affMul(id) /* 원정대의 정 ♥마다 +2% */, g = math.pow(compGrow, l - 1), gs = gearSum();
     return Stats(
-      (base.atk * g + gs.a * bless) * (1 + .08 * s.bldLv('apiary')) * (buff('atk') ? 1.2 : 1) * m * trAtk() * this.vBrave() * _ulA * p2Atk(),
+      (base.atk * g + gs.a * bless) * (1 + .08 * s.bldLv('apiary')) * (buff('atk') ? 1.2 : 1) * m * trAtk() * this.vBrave() * _ulA * p2Atk() * retryAtk(),
       (base.hp * g + gs.h * bless) * (1 + .05 * s.bldLv('diner')) * m * trHp() * this.vHp() * _stew * p2Hp(),
       base.aps! * (buff('spd') ? 1.2 : 1) * (_bake ? 1.3 : 1) * _ulS,
       .05 + (buff('crit') ? .1 : 0),
@@ -392,29 +394,33 @@ class GameCalc {
   Stats stats(String id) => id == 'kael' ? kStats() : id == chiefId ? chStats() : cStats(id);
 
   // ───────────── 유니크 동료 카엘 촌장 (docs/companions/KAEL_CHIEF.md) ─────────────
-  static const chiefId = 'kael_chief', chiefRet = 10, chiefWon = 500;
+  static const chiefId = 'kael_chief', chiefRet = 10;
   static const chiefBonus = [0, .05, .075, .1, .125, .15];
 
-  /// 황금 이삭 상품의 덤 유니크 카드 (웹 UCARD_PK)
-  static const ucardPack = {'p2': 1, 'p3': 3, 'p4': 6, 'p5': 16, 'p6': 30}; // 2026-10-23 줄임
   static num chPct(int st) => 10 + 2.5 * (math.max(1, st) - 1);
   num vpChief() => owned(chiefId) ? 1 + chPct(recStar(chiefId)) / 100 : 1;
   bool chiefOn() => owned(chiefId) && s.party?['kael'] == chiefId;
-  bool chiefShop() => orNum(s.raw['retires'], 0) >= 1 && !owned(chiefId);
+  /// 첫 은퇴 뒤부터 카드 목록에 보임 (웹 chiefSoon)
+  bool chiefSoon() => orNum(s.raw['retires'], 0) >= 1 && !owned(chiefId);
   int get ucard => orNum(s.raw['ucard'], 0).toInt();
   bool chiefCan() => owned(chiefId) && recStar(chiefId) < starMax(chiefId) && ucard >= (starNeed(chiefId) ?? 1 << 30);
 
-  // ───────────── 유니크 동료 뚝딱이 (docs/companions/TTUKTTAK.md): 결제로만 합류, 광부 자리, 별은 유니크 카드 ─────────────
-  static const ttukId = 'ttukttak', ttukWon = 5500;
-  bool ttukShop() => !owned(ttukId);
+  // ───────────── 유니크 동료 뚝딱이·루시안·골디: 게임 안 조건으로 합류 (2026-11-16, docs/PLAN_MONETIZATION_REMOVAL.md 2번) ─────────────
+  static const ttukId = 'ttukttak', lucId = 'lucian', goldId = 'goldie';
+  static const uqIds = [ttukId, lucId, goldId];
 
-  /// 유니크 루시안 (docs/companions/LUCIAN.md): 결제로만 합류, 요리사 자리
-  static const lucId = 'lucian', lucWon = 5500;
-  bool lucShop() => !owned(lucId);
+  /// 합류 조건 (글, 지금 값, 목표) — 웹 UQ_HOW
+  (String, num, num) uqHow(String id) => switch (id) {
+        ttukId => ('영지 50 처음 되찾기', math.min(uqTtukLand, math.max(0, s.best - 1)), uqTtukLand),
+        lucId => ('시장 주문 납품', st('order'), uqLucOrd),
+        _ => ('출석 (모두 합쳐)', st('att'), uqGoldAtt),
+      };
 
-  /// 유니크 골디 (docs/companions/GOLDIE.md): 결제로만 합류, 양봉가 자리
-  static const goldId = 'goldie', goldWon = 5500;
-  bool goldShop() => !owned(goldId);
+  /// 웹 uqHowTxt
+  String uqHowTxt(String id) {
+    final (t, v, g) = uqHow(id);
+    return '$t ${fmt(math.min(v, g))} / ${fmt(g)}';
+  }
 
   /// 유니크 카드로 ★ 올릴 수 있는지 (웹 uqCan)
   bool uqCan(String id) => id == chiefId ? chiefCan() : owned(id) && recStar(id) < starMax(id) && ucard >= (starNeed(id) ?? 1 << 30);
@@ -559,7 +565,7 @@ class GameCalc {
   /// 방치 보상: sec초 동안의 골드 (방치 보상·탑 보급·고블린 금고가 같이 씀, 웹 idleGold)
   num idleGold(num sec) {
     final tpk = monHp(fightSt(), false) / _dps() + 1.2;
-    return sec / tpk * reward(fightSt(), false) * .5 * memMul() * (subOn() ? 1.5 : 1) * this.vIdle() * vpDok() * allyGold();
+    return sec / tpk * reward(fightSt(), false) * .5 * memMul() * this.vIdle() * vpDok() * allyGold();
   }
 
 
@@ -643,6 +649,9 @@ class GameCalc {
     final m = asMap(s.raw['stat']) ?? (s.raw['stat'] = <String, dynamic>{});
     m[k] = orNum(m[k], 0) + n;
   }
+
+  /// st(k): 누적 기록 읽기 (웹 st)
+  num st(String k) => orNum(asMap(s.raw['stat'])?[k], 0);
 
   // ───────────── 난수가 드는 것 ─────────────
   /// rollItem(fg): 성유물 상자에서 나오는 장비. fg 를 주면 그 등급으로 고정(난수는 똑같이 소모).

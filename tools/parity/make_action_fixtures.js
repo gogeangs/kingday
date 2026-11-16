@@ -77,19 +77,17 @@ function op(o) {
     case 'mis': return w.run(`(()=>{const k=${q(a)},m=MISSIONS.find(x=>x.k===k);if(!misCan(m||null))return;daily().claim[k]=true;passAdd(k==='all'?'misall':'mis');if(k==='all'){gainCard(5,'shop')}gainGem(m?m.r:MIS_ALL,m?m.n:'오늘의 할 일 완료')})()`);
     case 'gx': return F('buyGoldX')(a);
     case 'cp': return w.run(`(()=>{const c=CARDPK[${+a}];if(!CARDIDS().some(x=>cardOpen(x)&&recStar(x)<starMax(x)))return;if(!spendGem(c.gem))return;gainCards(c.n,'shop',c.n>=30?5:1)})()`);
-    case 'pack': return F('buyPack')(F('PACKS').find((p) => p.k === a));
-    case 'starter': return F('buyStarter')();
-    case 'sub': return F('buySub')();
-    case 'subclaim': return F('claimSub')();
     // ── 카엘 촌장 ──
-    case 'chief': return F('buyChief')();
     case 'chiefchk': return F('chiefCheck')();
     case 'chiefup': return F('chiefUp')();
     case 'kseat': return F('setKaelSeat')(a);
     case 'ucard': return w.run(`S.ucard=${+a}`);
     case 'retires': return w.run(`S.retires=${+a}`);
     case 'adbox': return w.run('(()=>{S.gold+=boxCost();openBox(false)})()');
-    case 'adgem': return w.run('(()=>{S.gem=(S.gem||0)+5})()');
+    case 'adgem': return w.run('(()=>{S.gem=(S.gem||0)+10})()');
+    case 'passad': return w.run(`passAdd('ad',PASS.ad)`);
+    case 'uqchk': return F('uqCheck')();
+    case 'stat': return w.run(`S.stat=S.stat||{};S.stat[${q(a)}]=${+b}`);
     case 'adcard': return w.run("(()=>{gainCards(3,'shop',1)})()");
     case 'att': return F('attDo')(a);
     case 'attad': return F('attAdDo')(a);
@@ -107,19 +105,11 @@ function op(o) {
     case 'pkill': return w.run(`for(let i=0;i<${+a};i++)passKill()`);
     case 'ppt': return w.run(`passS().pt=${+a}`);
     case 'pclaim': return a ? F('passClaim')(a, +b) : F('passClaim')();
-    case 'pbuy': return F('buyPass')();
-    case 'popen': return F('passOpen')(+a);
     case 'pmail': return F('passMailClaim')(a || null);
-    case 'pwarn': return F('passWarn')();
     case 'best': return w.run(`S.best=${+a}`);
-    case 'grow': return F('buyGrow')();
-    case 'growgive': return F('growGive')();
-    case 'growchk': return F('growCheck')();
     // ── 유니크 뚝딱이 ──
-    case 'tbuy': return F('buyTtuk')();
     case 'uqup': return F('uqUp')(a);
     // ── 유니크 루시안 ──
-    case 'lbuy': return F('buyLucian')();
     // ── 원정대의 정 (호감도·관계 이야기) ──
     case 'aff': return w.run(`S.aff[${q(a)}]=${+b}`);
     case 'afftick': return F('affTick')(+a);
@@ -158,13 +148,12 @@ const CASES = {
   rares: [base.mid, ['card:toby:30', 'rec:toby', 'card:kara:30', 'rec:kara', 'card:beryl:45', 'rec:beryl', 'rec:beryl', 'set:fisher:toby', 'set:cook:kara', 'set:miner:beryl', 'gem:2000', 'cp:1', 'cp:1', 'wish:kara', 'cp:1', 'cp:0', 'adcard', 'en:weapon', 'cw:haral']],
   commons: [base.mid, ['card:mora:30', 'rec:mora', 'card:melo:30', 'rec:melo', 'card:pori:50', 'rec:pori', 'rec:pori', 'set:fisher:mora', 'set:keeper:melo', 'set:cook:pori', 'cp:1', 'wish:pori', 'cp:1']],
   commons2: [base.mid, ['card:rollo:30', 'rec:rollo', 'card:crab:30', 'rec:crab', 'card:birch:30', 'rec:birch', 'card:gram:50', 'rec:gram', 'rec:gram', 'set:miner:rollo', 'set:fisher:crab', 'set:keeper:birch', 'set:cook:gram', 'cp:1', 'wish:gram', 'cp:1']],
-  // 피트의 상점: 할 일 보상·무료 선물·골드 바꾸기·카드 묶음·꾸러미·첫 거래·정기 배송 (결제는 시험용 바로 지급)
+  // 피트의 상점: 할 일 보상·무료 선물·골드 바꾸기·카드 묶음 (2026-11-16 결제 상품 없앰)
   shop: [base.mid, ['mis:kill', 'daily:kill:150', 'mis:kill', 'mis:kill', 'daily:box:10', 'daily:harv:12', 'mis:all', 'mis:box', 'mis:harv', 'mis:all', 'mis:all',
     'gem:20', 'gx:g1', 'gx:g2', 'gem:5000', 'gx:g1', 'gx:g2', 'gx:g3', 'cp:0', 'cp:1', 'cp:1', 'cp:0',
-    'pack:p1', 'pack:p1', 'pack:p6', 'starter', 'starter', 'sub', 'subclaim', 'time:' + 24 * H, 'subclaim', 'subclaim', 'sub',
     'adgem', 'adcard', 'adbox', 'sell', 'gold:0', 'adbox', 'equip']],
-  // 유니크 카엘 촌장: 은퇴 전엔 못 삼 → 첫 은퇴 뒤 500원 → 카엘 자리 → 유니크 카드로 별(덤·정기 배송) → 카엘로 되돌림 / 은퇴 10번 무료
-  chief: [base.mid, ['retires:0', 'chief', 'retires:1', 'chief', 'chief', 'kseat:kael_chief', 'chiefup', 'pack:p2', 'pack:p3', 'pack:p4', 'chiefup', 'sub', 'subclaim', 'time:' + 24 * H, 'subclaim', 'ucard:100', 'chiefup', 'chiefup', 'chiefup', 'chiefup', 'up:hp', 'kseat:kael', 'kseat:kael', 'kseat:kael_chief']],
+  // 유니크 카엘 촌장: 은퇴 10번 무료 합류 → 카엘 자리 → 유니크 카드로 별(10·15·30·45) → 카엘로 되돌림
+  chief: [base.mid, ['retires:9', 'chiefchk', 'retires:10', 'chiefchk', 'kseat:kael_chief', 'chiefup', 'ucard:9', 'chiefup', 'ucard:10', 'chiefup', 'ucard:100', 'chiefup', 'chiefup', 'chiefup', 'chiefup', 'up:hp', 'kseat:kael', 'kseat:kael', 'kseat:kael_chief']],
   chief10: [base.late, ['chiefchk', 'retires:9', 'chiefchk', 'retires:10', 'chiefchk', 'chiefchk', 'kseat:kael_chief', 'chiefup']],
   // 전설 어부 막례: 카드 모아 맞이하기 → 별 올리기 → 편성 → 낚시터 생선 생산 「물질 대장」
   makrye: [base.mid, ['ensure', 'card:makrye:29', 'rec:makrye', 'card:makrye:30', 'rec:makrye', 'set:fisher:makrye', 'time:' + 10 * M, 'card:makrye:40', 'rec:makrye', 'time:' + 30 * M, 'auto', 'card:makrye:999', 'rec:makrye', 'rec:makrye', 'rec:makrye', 'rec:makrye', 'time:' + 2 * H, 'lv:makrye', 'cw:makrye']],
@@ -182,14 +171,14 @@ const CASES = {
   // 영웅 소피·오스카: 맞이하기·별(★5까지)·편성
   epic2: [base.mid, ['ensure', 'gold:1e12', 'card:sophie:30', 'rec:sophie', 'card:oscar:30', 'rec:oscar', 'set:cook:sophie', 'set:keeper:oscar',
     'card:sophie:9999', 'rec:sophie', 'rec:sophie', 'rec:sophie', 'rec:sophie', 'lv:sophie', 'lv:oscar', 'auto', 'time:' + 2 * H]],
-  // 유니크 뚝딱이: 상점 구매(합류 ★1) → 두 번 사기 막힘 → 바로 출전 → 유니크 카드로 ★ 올리기(카엘 촌장과 같은 카드) → 방치 골드 마을 스킬
-  ttuk: [base.mid, ['ensure', 'gold:1e12', 'tbuy', 'tbuy', 'set:miner:ttukttak', 'ucard:150', 'uqup:ttukttak', 'uqup:ttukttak', 'uqup:ttukttak', 'uqup:ttukttak',
+  // 유니크 뚝딱이: 영지 50 처음 탈환으로 합류(★1, 49에선 안 됨) → 두 번 합류 막힘 → 바로 출전 → 유니크 카드로 ★ 올리기(카엘 촌장과 같은 카드) → 방치 골드 마을 스킬
+  ttuk: [base.mid, ['ensure', 'gold:1e12', 'started', 'best:50', 'uqchk', 'best:51', 'uqchk', 'uqchk', 'set:miner:ttukttak', 'ucard:150', 'uqup:ttukttak', 'uqup:ttukttak', 'uqup:ttukttak', 'uqup:ttukttak',
     'lv:ttukttak', 'lv:ttukttak', 'auto', 'time:' + 3 * H]],
-  // 유니크 루시안: 상점 구매(합류 ★1) → 두 번 사기 막힘 → 바로 출전(요리사) → 유니크 카드로 ★ 올리기
-  lucian: [base.mid, ['ensure', 'gold:1e12', 'lbuy', 'lbuy', 'set:cook:lucian', 'ucard:60', 'uqup:lucian', 'uqup:lucian',
+  // 유니크 루시안: 시장 주문 누적 700회로 합류(★1, 699에선 안 됨) → 바로 출전(요리사) → 유니크 카드로 ★ 올리기 · 골디: 누적 출석 60일
+  lucian: [base.mid, ['ensure', 'gold:1e12', 'started', 'stat:order:699', 'uqchk', 'stat:order:700', 'uqchk', 'stat:att:59', 'uqchk', 'stat:att:60', 'uqchk', 'set:cook:lucian', 'ucard:60', 'uqup:lucian', 'uqup:lucian',
     'lv:lucian', 'lv:lucian', 'auto', 'time:' + 3 * H]],
   // 루시안 마을 스킬 「왕실 납품」: 시장 주문 골드 +50%
-  lucord: [base.vill, ['lbuy', 'items:ore:999', 'items:honey:999', 'items:wheat:999', 'items:pumpkin:999', 'items:fish:500', 'items:egg:50', 'items:milk:60',
+  lucord: [base.vill, ['started', 'stat:order:699', 'items:ore:999', 'items:honey:999', 'items:wheat:999', 'items:pumpkin:999', 'items:fish:500', 'items:egg:50', 'items:milk:60',
     'otick', 'odeliver:0', 'odeliver:1', 'odeliver:2', 'ucard:20', 'uqup:lucian', 'odeliver:3', 'odeliver:4']],
   // 출석체크: 7일 판 반복·한달 판 초기화·건너뛰기·같은 날·날짜 되돌리기·광고 2배·큰 보상(7·14·21·28)·배지·무료권 사용
   attend: [base.mid, ['att:2026-10-21', 'att:2026-10-22', 'att:2026-10-23', 'att:2026-10-24', 'att:2026-10-25', 'att:2026-10-26', 'att:2026-10-27',
@@ -210,19 +199,17 @@ const CASES = {
   attendFresh: [base.fresh, ['att:2026-10-21', 'att:2026-10-22', 'att:2026-10-23', 'att:2026-10-24', 'att:2026-10-25', 'att:2026-10-26', 'att:2026-10-27', 'attad:2026-10-27']],
   // 카드 동료가 아직 없을 때 카드 묶음
   shopEarly: [base.fresh, ['gem:999', 'cp:0', 'cp:1', 'adcard', 'mis:all']],
-  // 원정 일지: 하루 한도(출석·할 일·영지·마물 1,000·탑·던전·주문) → 다음 날 → 무료 칸 받기 → 중간 구매(지난 유료 한꺼번에)·중복 구매 막기
-  //   → 20단계·시즌 테두리 → 시즌 바뀜(남은 보상 우편)·우편 받기 → 마감 3일 전 알림 → 지난 시즌 결제(이삭 200)
+  // 원정 일지(무료 줄 하나): 하루 한도(출석·할 일·영지·마물 1,000·탑·던전·주문·광고) → 다음 날 → 칸 받기(유료 줄 칸은 못 받음)
+  //   → 20단계·시즌 테두리·유니크 카드 → 시즌 바뀜(남은 보상 우편)·우편 받기
   pass: [base.mid, ['padd:att', 'started', 'padd:att', 'padd:att', ...rep('padd:boss', 12), 'pkill:2500', ...rep('padd:mis', 4), 'padd:misall', 'padd:misall',
-    ...rep('padd:tower', 4), ...rep('padd:dun', 4), ...rep('padd:ord', 4), 'time:' + 24 * H, 'padd:att', 'padd:boss', 'ppt:750', 'pclaim:f:0', 'pclaim:p:1', 'pclaim:f:9',
-    'pbuy', 'pbuy', 'popen:1', 'pclaim', 'ppt:2000', 'pclaim', 'pclaim', 'time:' + 9 * 24 * H, 'pwarn', 'pwarn', 'time:' + 24 * H, 'padd:att',
-    'time:' + 14 * 24 * H, 'padd:boss', 'popen:2', 'ppt:640', 'pclaim:f:0', 'pclaim:p:3', 'time:' + 14 * 24 * H, 'padd:att', 'pmail', 'pmail', 'popen:2', 'pbuy', 'pbuy']],
-  // 카드 받을 동료가 없을 때: 유료 줄 카드 → 이삭 (1장당 3)
-  passFresh: [base.fresh, ['started', 'ppt:300', 'pbuy', 'pclaim']],
-  // 영주의 첫걸음: 영지 3까지는 안 보임 → 영지 35에서 사면 300+10·20·30 즉시 → 40·50 나중에 → 다 받으면 사라짐 · 두 번 못 삼
+    ...rep('padd:tower', 4), ...rep('padd:dun', 4), ...rep('padd:ord', 4), ...rep('passad', 4), 'time:' + 24 * H, 'padd:att', 'padd:boss', 'ppt:750', 'pclaim:f:0', 'pclaim:p:1', 'pclaim:f:9',
+    'pclaim', 'ppt:2000', 'pclaim', 'pclaim', 'time:' + 9 * 24 * H, 'time:' + 24 * H, 'padd:att',
+    'time:' + 14 * 24 * H, 'padd:boss', 'ppt:640', 'pclaim:f:0', 'pclaim:p:3', 'time:' + 14 * 24 * H, 'padd:att', 'pmail', 'pmail']],
+  // 카드 받을 동료가 없을 때: 원정 일지 카드 → 이삭 (1장당 3)
+  passFresh: [base.fresh, ['started', 'ppt:300', 'pclaim']],
   // 원정대의 정: 길 위 대화(하루 1번·카엘 제외·합류 전 제외) → 출전·일꾼 시간 → ♥1(처음 안내) → 브리다·브론 ♥3 → 관계 이야기(이삭 20 한 번) → ♥5 단짝 → 다음 날 대화
   bond: [base.late, ['afftalk:haral', 'afftalk:haral', 'afftalk:kael', 'afftalk:toby', 'wkput:mine:0:bron', 'afftick:300', 'afftick:17700', 'aff:brida:895', 'aff:bron:899.5', 'afftick:1500',
     'bondplay:4', 'bondplay:4', 'bondplay:9', 'aff:nella:3990', 'afftalk:nella', 'aff:riel:3999', 'afftick:600', 'time:' + 24 * H, 'afftalk:haral', 'afftalk:nella', 'afftick:0.5']],
-  grow: [base.mid, ['started', 'best:3', 'grow', 'best:35', 'growchk', 'grow', 'grow', 'best:41', 'growchk', 'growchk', 'best:52', 'growchk', 'best:12', 'growchk', 'growgive']],
 };
 
 const out = { now: NOW, cases: {} };

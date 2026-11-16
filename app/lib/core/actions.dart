@@ -56,14 +56,14 @@ class ActOpen10 extends ActResult {
 }
 
 /// 새 동료 맞이 장면
-/// 카엘 촌장 합류 장면 (src: pay · retire · mail)
+/// 카엘 촌장 합류 장면 (src: retire)
 class ActChiefScene extends ActResult {
   ActChiefScene(this.src);
   final String src;
 }
 
 /// 뚝딱이 합류 장면 (「바로 출전」 → 광부 자리)
-/// 결제로 합류한 유니크 동료(뚝딱이·루시안) 합류 장면 (「바로 출전」 → 그 직업 자리)
+/// 게임 안 조건으로 합류한 유니크 동료(뚝딱이·루시안·골디) 합류 장면 (「바로 출전」 → 그 직업 자리)
 class ActUqScene extends ActResult {
   ActUqScene(this.id);
   final String id;
@@ -105,12 +105,6 @@ class ActCardReveal extends ActResult {
   final String title;
 }
 
-/// 첫 거래 특가: 이야기 창 → 전설 성유물 비교 창
-class ActStarter extends ActResult {
-  ActStarter(this.it, this.cur);
-  final Relic it;
-  final Relic? cur;
-}
 
 /// 조금 뒤에 띄우는 알림 (웹 setTimeout(()=>toast(..), ms))
 class ActLaterToast extends ActResult {
@@ -119,13 +113,6 @@ class ActLaterToast extends ActResult {
   final int ms;
 }
 
-/// 스토어 결제로 받은 황금 이삭 꾸러미 — 애플·구글 「구입 완료」 창에 알림이 가려지지 않게 창으로 보여 줌
-class ActPackGot extends ActResult {
-  ActPackGot(this.gem, this.first, this.ucard);
-  final num gem;
-  final bool first;
-  final int ucard;
-}
 
 /// 원정대 교체로 전투 중 체력을 옮겨 줘야 할 때 (웹 P[cur] → P[id])
 typedef PartySwap = void Function(String cur, String id);
@@ -158,6 +145,9 @@ class GameActions {
   PartySwap? onSwap;
   void Function(String id, num addHp)? onHpAdd;
 
+  /// 이삭 쓴 곳 기록 (행동 기록 kd_log_day, 웹 lgOut)
+  static void Function(String why, num n)? onGemOut;
+
   /// 웹 pending: 고르는 중인 성유물이 있으면 상자를 못 연다
   Relic? pending;
 
@@ -169,13 +159,14 @@ class GameActions {
     d[k] = orNum(d[k], 0) + n;
   }
 
-  /// spendGem(n)
-  bool spendGem(num n) {
+  /// spendGem(n, why) — why: 쓴 곳 (box10 · card · goldx · build · crop · plot · offline · trait)
+  bool spendGem(num n, [String why = 'etc']) {
     if (s.gem < n) {
       _toast('황금 이삭이 부족해요. 피트의 상점에서 구할 수 있어요');
       return false;
     }
     s.gem = s.gem - n;
+    onGemOut?.call(why, n);
     return true;
   }
 
@@ -270,7 +261,7 @@ class GameActions {
     if (ticketN('box10') > 0) {
       _useTicket('box10');
       _toast('10연속 무료권 사용 · 남은 ${ticketN('box10')}장');
-    } else if (!spendGem(gem10)) {
+    } else if (!spendGem(gem10, 'box10')) {
       return;
     }
     final its = <Relic>[];
@@ -613,7 +604,7 @@ class GameActions {
 
   /// buyGemPlot 의 「이삭으로 일구기」
   void buyGemPlot(int n, num cost) {
-    if (!spendGem(cost)) return;
+    if (!spendGem(cost, 'plot')) return;
     s.raw['gemPlots'] = n + 1;
     ensurePlots();
     _toast('황금 밭 1칸이 생겼어요!');
@@ -623,7 +614,7 @@ class GameActions {
   void growNow() {
     final g = [for (final p in s.plots) if (c.plotState(p).st == 'grow') p as Map];
     if (g.isEmpty) return;
-    if (!spendGem(g.length * gemPlot)) return;
+    if (!spendGem(g.length * gemPlot, 'crop')) return;
     for (final p in g) {
       p['at'] = 0;
     }
@@ -743,6 +734,7 @@ class GameActions {
     }
     os[i] = <String, dynamic>{'at': c.now + ordWait};
     c.stat('order', 1);
+    uqCheck();
     out.add(ActHaptic(const [18]));
     _toast('${villagePeople[o['who']] ?? comps[o['who']]?.n ?? o['who']}의 주문 완료! 골드 +${fmt(g)}${ex.isNotEmpty ? ' · $ex' : ''}');
   }
@@ -914,7 +906,7 @@ class GameActions {
     final b = buildingDef(k), l = s.bldLv(k);
     if (l >= b.max || inBuild(k)) return;
     if (!c.oreOk(b, l)) return _toast('광석이 ${c.bldOre(b, l)}개 필요해요. 광산에서 브론이 캐 와요');
-    if (!spendGem(c.bldGem(GameCalc.bldCost(b, l)) + GameCalc.timeGem(c.bldTime(b, l)))) return;
+    if (!spendGem(c.bldGem(GameCalc.bldCost(b, l)) + GameCalc.timeGem(c.bldTime(b, l)), 'build')) return;
     s.items['ore'] = asNum(s.items['ore']) - c.bldOre(b, l);
     s.bld[k] = l + 1;
     if (l == 0) s.prod[k] = c.now;
@@ -924,18 +916,13 @@ class GameActions {
   /// 공사 중인 건물 황금 이삭으로 바로 완료 (남은 3분당 1)
   void finishByGem() {
     final bd = c.building();
-    if (bd == null || !spendGem(GameCalc.timeGem(buildLeft()))) return;
+    if (bd == null || !spendGem(GameCalc.timeGem(buildLeft()), 'build')) return;
     final k = bd['k'] as String, l = s.bldLv(k);
     c.finishBuild();
     _built(buildingDef(k), l);
   }
 
-  // ════════════════════ 피트의 상점 (웹 renderShop) ════════════════════
-  /// 결제 연동 전 (웹 TEST_PAY): 결제 없이 바로 지급. 9단계에서 인앱결제로 바꿈
-  static const testPay = true;
-
-  Map<String, dynamic> get buys => asMap(s.raw['buys']) ?? (s.raw['buys'] = <String, dynamic>{});
-  Map<String, dynamic> get sub => asMap(s.raw['sub']) ?? (s.raw['sub'] = <String, dynamic>{'until': 0, 'last': ''});
+  // ════════════════════ 피트의 상점 (웹 renderShop) — 2026-11-16 결제 상품 없앰 ════════════════════
 
   /// misCan(m): 할 일 보상을 받을 수 있는지 (m 이 null 이면 「모두 끝내기」)
   bool misCan(MissionDef? m) {
@@ -975,10 +962,10 @@ class GameActions {
     openBox(false, noTicket: true);
   }
 
-  /// 광고 보상: 황금 이삭 +5 (웹 adGem)
+  /// 광고 보상: 황금 이삭 +10 (웹 adGem, 2026-11-16 +5 → +10)
   void adGemGive() {
-    s.gem = s.gem + 5;
-    _toast('피트의 선물! 황금 이삭 +5');
+    s.gem = s.gem + 10;
+    _toast('피트의 선물! 황금 이삭 +10');
   }
 
   /// 광고 보상: 동료 카드 3장 (웹 adCard)
@@ -1001,7 +988,7 @@ class GameActions {
   /// 골드 바꾸기 (웹 buyGoldX)
   void buyGoldX(String k) {
     final x = goldExchanges.firstWhere((v) => v.k == k), g = c.goldX(x);
-    if (!spendGem(x.gem)) return;
+    if (!spendGem(x.gem, 'goldx')) return;
     s.gold = s.gold + g;
     _toast('${x.n} 구매! 골드 +${fmt(g)}');
   }
@@ -1013,89 +1000,9 @@ class GameActions {
       _toast('모을 수 있는 동료 카드가 없어요');
       return;
     }
-    if (!spendGem(asNum(cp['gem']))) return;
+    if (!spendGem(asNum(cp['gem']), 'card')) return;
     final r = c.gainCards(rng, n, 'shop', n >= 30 ? 5 : 1);
     out.add(ActCardReveal(r?.got ?? const [], '카드 $n장', r?.gold ?? 0, i));
-  }
-
-  /// 결제 (웹 pay): 지금은 시험용으로 바로 지급
-  bool _pay(String id, void Function() give) {
-    if (!testPay) {
-      _toast('결제 준비 중이에요');
-      return false;
-    }
-    buys[id] = orNum(buys[id], 0) + 1;
-    give();
-    // 웹 pay() 끝의 save(): 마지막 접속 시각도 이때 적힘
-    s.last = c.now;
-    return true;
-  }
-
-  /// 황금 이삭 꾸러미 (첫 구매 2배)
-  void buyPack(String k) {
-    final first = !truthy(buys[k]);
-    _pay(k, () => _givePack(k, first));
-  }
-
-  /// 스토어 결제 확인 우편으로 받은 꾸러미 (구매 기록도 여기서)
-  void grantPack(String k) {
-    final first = !truthy(buys[k]);
-    buys[k] = orNum(buys[k], 0) + 1;
-    _givePack(k, first, quiet: true);
-    final p = gemPacks.firstWhere((x) => x.k == k);
-    out.add(ActPackGot(p.gem * (first ? 2 : 1), first, GameCalc.ucardPack[k] ?? 0));
-  }
-
-  void _givePack(String k, bool first, {bool quiet = false}) {
-    final p = gemPacks.firstWhere((x) => x.k == k), n = p.gem * (first ? 2 : 1), u = GameCalc.ucardPack[k] ?? 0;
-    s.gem = s.gem + n;
-    s.raw['ucard'] = c.ucard + u;
-    if (!quiet) _toast('황금 이삭 +${fmt(n)}${first ? ' (첫 구매 2배)' : ''}${u > 0 ? ' · 유니크 카드 +$u' : ''}');
-  }
-
-  /// 첫 거래 특가: 전설 성유물 1개 + 이삭 100 (한 번만)
-  void buyStarter() {
-    if (truthy(buys['starter'])) return;
-    _pay('starter', grantStarter);
-  }
-
-  void grantStarter({bool count = false}) {
-    if (count) buys['starter'] = orNum(buys['starter'], 0) + 1;
-    s.gem = s.gem + asNum(starterPack['gem']);
-    final it = c.rollItem(rng, 4), cur = c.equipped(it.slot);
-    out.add(ActStarter(it, cur));
-  }
-
-  /// 정기 배송 시작·연장
-  void buySub() => _pay('sub', grantSub);
-
-  void grantSub({bool count = false, num days = 0}) {
-    if (count) buys['sub'] = orNum(buys['sub'], 0) + 1;
-    final base = math.max(c.now, orNum(sub['until'], 0));
-    sub['until'] = base + (days > 0 ? days : asNum(subscription['days'])) * 864e5;
-    sub['last'] = c.today();
-    final g = asNum(subscription['now']) + asNum(subscription['day']);
-    s.gem = s.gem + g;
-    _toast('정기 배송 시작! 황금 이삭 +${fmt(g)}${_subCardTxt(_subCard())}');
-  }
-
-  /// 웹 subCard(): 정기 배송 유니크 카드는 3일마다 1장 (배송 받은 횟수 1·4·7…번째)
-  bool _subCard() {
-    final cn = orNum(sub['cn'], 0).toInt() + 1;
-    sub['cn'] = cn;
-    if (cn % 3 != 1) return false;
-    s.raw['ucard'] = c.ucard + 1;
-    return true;
-  }
-
-  String _subCardTxt(bool u) => u ? ' · 유니크 카드 +1' : ' · 유니크 카드까지 ${3 - ((orNum(sub['cn'], 0).toInt() - 1) % 3)}일';
-
-  /// 정기 배송 오늘 받기
-  void claimSub() {
-    if (!c.subOn() || sub['last'] == c.today()) return;
-    sub['last'] = c.today();
-    s.gem = s.gem + asNum(subscription['day']);
-    _toast('피트의 마차가 도착했어요. 황금 이삭 +${fmt(asNum(subscription['day']))}${_subCardTxt(_subCard())}');
   }
 
   // ───────────── 카엘 촌장 (웹 chiefJoin · chiefCheck · chiefUp · buyChief) ─────────────
@@ -1114,18 +1021,6 @@ class GameActions {
   /// 은퇴 10번이면 무료로 찾아옴
   bool chiefCheck() => !c.owned(GameCalc.chiefId) && orNum(s.raw['retires'], 0) >= GameCalc.chiefRet && chiefJoin('retire');
 
-  /// 500원 상품 (첫 은퇴 뒤 상점)
-  void buyChief() {
-    if (!c.chiefShop()) return;
-    _pay('chief', () => chiefJoin('pay'));
-  }
-
-  /// 스토어 결제 확인 우편으로 받은 카엘 촌장
-  void grantChief() {
-    buys['chief'] = orNum(buys['chief'], 0) + 1;
-    chiefJoin('pay');
-  }
-
   /// 유니크 카드로 ★ 올리기
   bool chiefUp() {
     const id = GameCalc.chiefId;
@@ -1141,16 +1036,20 @@ class GameActions {
     return true;
   }
 
-  // ───────────── 뚝딱이 (웹 ttukJoin · uqUp · buyTtuk) ─────────────
-  bool ttukJoin() => uqJoin(GameCalc.ttukId);
+  // ───────────── 뚝딱이·루시안·골디: 게임 안 조건으로 합류 (웹 uqCheck · uqJoin) ─────────────
+  /// 조건을 채웠는지 확인 → 합류 (영지 탈환·주문 납품·출석·접속 때)
+  List<String> uqCheck() {
+    final got = <String>[];
+    if (!truthy(s.raw['started'])) return got;
+    for (final id in GameCalc.uqIds) {
+      if (c.owned(id)) continue;
+      final (_, v, g) = c.uqHow(id);
+      if (v >= g && uqJoin(id)) got.add(id);
+    }
+    return got;
+  }
 
-  /// 루시안 합류 (웹 lucianJoin)
-  bool lucianJoin() => uqJoin(GameCalc.lucId);
-
-  /// 골디 합류 (웹 goldieJoin)
-  bool goldieJoin() => uqJoin(GameCalc.goldId);
-
-  /// 결제로 합류하는 유니크 동료 ★1 합류 (웹 uqJoin)
+  /// 유니크 동료 ★1 합류 (웹 uqJoin)
   bool uqJoin(String id) {
     if (c.owned(id)) return false;
     s.recW[id] = 1;
@@ -1159,42 +1058,6 @@ class GameActions {
     out.add(ActHaptic(const [30, 40, 30]));
     out.add(ActUqScene(id));
     return true;
-  }
-
-  /// 5,500원 상품 (처음부터 상점)
-  void buyTtuk() {
-    if (!c.ttukShop()) return;
-    _pay('ttuk', ttukJoin);
-  }
-
-  /// 스토어 결제 확인 우편으로 받은 뚝딱이
-  void grantTtuk() {
-    buys['ttuk'] = orNum(buys['ttuk'], 0) + 1;
-    ttukJoin();
-  }
-
-  /// 5,500원 상품 루시안 (처음부터 상점)
-  void buyLucian() {
-    if (!c.lucShop()) return;
-    _pay('lucian', lucianJoin);
-  }
-
-  /// 스토어 결제 확인 우편으로 받은 루시안
-  void grantLucian() {
-    buys['lucian'] = orNum(buys['lucian'], 0) + 1;
-    lucianJoin();
-  }
-
-  /// 5,500원 상품 골디 (처음부터 상점)
-  void buyGoldie() {
-    if (!c.goldShop()) return;
-    _pay('goldie', goldieJoin);
-  }
-
-  /// 스토어 결제 확인 우편으로 받은 골디
-  void grantGoldie() {
-    buys['goldie'] = orNum(buys['goldie'], 0) + 1;
-    goldieJoin();
   }
 
   /// 유니크 카드로 ★ 올리기 (카엘 촌장 외 유니크)
@@ -1212,11 +1075,8 @@ class GameActions {
     return true;
   }
 
-  /// 남은 정기 배송 일수
-  int subLeft() => math.max(0, ((orNum(sub['until'], 0) - c.now) / 864e5).ceil());
-
-  // ════════════════════ 원정 일지(시즌 패스) · 영주의 첫걸음(성장 패키지) — docs/content/SHOP.md ════════════════════
-  // 웹 index.html 의 passS · passAdd · passKill · passGive · passClaim · passOpen · buyPass · growCheck · growGive · buyGrow 와 같은 규칙.
+  // ════════════════════ 원정 일지(시즌 패스) — docs/content/SHOP.md · PLAN_MONETIZATION_REMOVAL.md 3번 ════════════════════
+  // 웹 index.html 의 passS · passAdd · passKill · passGive · passClaim 과 같은 규칙. 줄은 하나(무료, 2026-11-16 유료 줄 없앰).
 
   static int get passSteps => asNum(wPass['steps']).toInt();
   static int get passPer => asNum(wPass['per']).toInt();
@@ -1263,11 +1123,11 @@ class GameActions {
 
   int passLv() => math.min(passSteps, (orNum(passS()['pt'], 0) / passPer).floor());
   bool passHas(String row, int i) => _passGot(passS(), row).contains(i);
-  bool passCan(String row, int i) => i < passLv() && !passHas(row, i) && (row == 'f' || truthy(passS()['paid']));
+  bool passCan(String row, int i) => row == 'f' && i < passLv() && !passHas(row, i);
   int passCanN() {
     var n = 0;
     for (var i = 0; i < passSteps; i++) {
-      n += (passCan('f', i) ? 1 : 0) + (passCan('p', i) ? 1 : 0);
+      n += passCan('f', i) ? 1 : 0;
     }
     return n;
   }
@@ -1289,21 +1149,17 @@ class GameActions {
     final p = _passRaw, old = asNum(p['s']).toInt(), lv = math.min(passSteps, (orNum(p['pt'], 0) / passPer).floor());
     final r = <String, dynamic>{};
     var n = 0;
-    final gf = _passGot(p, 'f'), gp = _passGot(p, 'p');
+    final gf = _passGot(p, 'f');
     for (var i = 0; i < lv; i++) {
       if (!gf.contains(i)) {
         _passMerge(r, wPassRew[i]['f']!, old);
-        n++;
-      }
-      if (truthy(p['paid']) && !gp.contains(i)) {
-        _passMerge(r, wPassRew[i]['p']!, old);
         n++;
       }
     }
     final mail = p['mail'] is List ? p['mail'] as List : <dynamic>[];
     if (n > 0) mail.add(<String, dynamic>{'id': 'pass$old', 's': old, 'title': '원정 일지 시즌 $old — 받지 못한 보상이에요', 'r': r});
     s.raw['pass'] = <String, dynamic>{
-      's': sn, 'pt': 0, 'paid': 0, 'got': <String, dynamic>{'f': <dynamic>[], 'p': <dynamic>[]},
+      's': sn, 'pt': 0, 'got': <String, dynamic>{'f': <dynamic>[], 'p': <dynamic>[]},
       'day': <String, dynamic>{'d': '', 'src': <String, dynamic>{}, 'kc': 0}, 'intro': truthy(p['intro']) ? p['intro'] : 0, 'mail': mail,
     };
   }
@@ -1372,6 +1228,10 @@ class GameActions {
       t['box10'] = orNum(t['box10'], 0) + asNum(r['box10']);
       o.add('상자 10연속 무료권 +${fmt(asNum(r['box10']))}');
     }
+    if (truthy(r['ucard'])) {
+      s.raw['ucard'] = c.ucard + asNum(r['ucard']);
+      o.add('유니크 카드 +${fmt(asNum(r['ucard']))}');
+    }
     if (truthy(r['card'])) {
       final n = asNum(r['card']).toInt();
       final res = c.gainCards(rng, n, 'shop', 3);
@@ -1403,15 +1263,13 @@ class GameActions {
     return m == null ? k : '원정 일지 · 시즌 ${m[1]}';
   }
 
-  /// 칸 하나 받기 (row 'f' 무료 · 'p' 유료, i 0~19) · row 가 null 이면 모두 받기 (웹 passClaim)
+  /// 칸 하나 받기 (row 'f', i 0~19) · row 가 null 이면 모두 받기 (웹 passClaim)
   void passClaim([String? row, int i = 0]) {
     final p = passS();
     final rows = <(String, int)>[if (row != null) (row, i)];
     if (row == null) {
       for (var j = 0; j < passSteps; j++) {
-        for (final w in const ['f', 'p']) {
-          if (passCan(w, j)) rows.add((w, j));
-        }
+        if (passCan('f', j)) rows.add(('f', j));
       }
     }
     final r = <String, dynamic>{};
@@ -1427,56 +1285,11 @@ class GameActions {
     _toast('${n > 1 ? '보상 $n개 · ' : ''}${o.join(' · ')}');
   }
 
-  /// 유료 줄 열기 (웹 바로 지급 · 앱은 결제 확인 우편 {pass: 시즌}) (웹 passOpen)
-  void passOpen(int? sn) {
-    final p = passS();
-    if (sn != null && sn != 0 && sn != asNum(p['s'])) {
-      // 결제한 사이 시즌이 바뀜: 그 시즌 값만큼 이삭으로
-      s.gem = s.gem + 200;
-      s.last = c.now;
-      _toast('지난 시즌 원정 일지 결제예요. 황금 이삭 +200으로 돌려 드려요');
-      return;
-    }
-    if (truthy(p['paid'])) {
-      _toast('이번 시즌 원정 일지는 이미 열려 있어요');
-      return;
-    }
-    p['paid'] = 1;
-    final r = <String, dynamic>{};
-    var n = 0;
-    final gp = _passGot(p, 'p');
-    for (var i = 0; i < passLv(); i++) {
-      if (!gp.contains(i)) {
-        gp.add(i);
-        _passMerge(r, wPassRew[i]['p']!, asNum(p['s']).toInt());
-        n++;
-      }
-    }
-    if (n > 0) {
-      passGive(r, (wPass['n'] as String));
-    } else {
-      s.last = c.now;
-    }
-    _toast('원정 일지를 열었어요! 지난 단계 보상 $n개를 받았어요');
-  }
-
-  /// 유료 줄 사기 (웹 buyPass · 시험용 바로 지급)
-  void buyPass() {
-    final p = passS();
-    if (truthy(p['paid'])) {
-      _toast('이번 시즌 원정 일지는 이미 열려 있어요');
-      return;
-    }
-    _pay((wPass['k'] as String), () => passOpen(asNum(p['s']).toInt()));
-  }
-
-  /// 마감 3일 전 알림 (하루 한 번, 웹 passWarn)
-  void passWarn() {
-    if (!truthy(s.raw['started'])) return;
-    final p = passS(), left = c.seasonLeft();
-    if (left > asNum(wPass['warn']) || p['warn'] == c.today() || (passCanN() == 0 && !truthy(p['paid']) && !truthy(p['pt']))) return;
-    p['warn'] = c.today();
-    _toast('이번 시즌이 ${math.max(1, left.ceil())}일 남았어요. 받을 보상을 챙기세요!');
+  /// 원정 일지 「광고 보고 점수 받기」 보상 (웹 passAd 의 지급 부분, 하루 한도는 PASS_SRC.ad)
+  num passAdGive() {
+    final n = passAdd('ad', asNum(wPass['ad']));
+    _toast('원정 일지 점수 +${fmt(n)}');
+    return n;
   }
 
   /// 시즌이 끝나 우편으로 넘어온 원정 일지 보상 (이 기기 저장에 있음)
@@ -1509,57 +1322,5 @@ class GameActions {
       }
     }
     _toast(passGive(r, '우편 보상').join(' · '));
-  }
-
-  // ---- 영주의 첫걸음 (성장 패키지): 계정당 1번, 영지 3 이후 상점에 보임 ----
-  Map<String, dynamic> growG() {
-    var g = s.raw['grow'];
-    if (g is! Map) g = s.raw['grow'] = <String, dynamic>{'buy': 0, 'got': <String, dynamic>{}};
-    if (g is! Map<String, dynamic>) g = s.raw['grow'] = Map<String, dynamic>.from(g);
-    if (g['got'] is! Map) g['got'] = <String, dynamic>{};
-    return g;
-  }
-
-  static List<(int, int)> get growAt => [for (final x in wGrow['at'] as List) (asNum((x as List)[0]).toInt(), asNum(x[1]).toInt())];
-  bool _growGot(int l) => truthy((growG()['got'] as Map)['$l']);
-  bool growShop() => !truthy(growG()['buy']) ? s.best > 3 : growAt.any((x) => !_growGot(x.$1));
-  (int, int)? growNext() => growAt.where((x) => !_growGot(x.$1)).firstOrNull;
-  bool growHas(int l) => _growGot(l);
-
-  /// 영지 l 「처음 탈환」 = S.best 가 l 을 넘음 (은퇴해도 다시 받지 않음, 웹 growCheck)
-  num growCheck() {
-    final g = growG();
-    if (!truthy(g['buy'])) return 0;
-    num n = 0;
-    final ls = <int>[];
-    for (final (l, v) in growAt) {
-      if (s.best > l && !_growGot(l)) {
-        (g['got'] as Map)['$l'] = 1;
-        n += v;
-        ls.add(l);
-      }
-    }
-    if (n == 0) return 0;
-    s.gem = s.gem + n;
-    s.last = c.now;
-    _toast('영주의 첫걸음 · 영지 ${ls.join('·')} 탈환 보상 황금 이삭 +${fmt(n)}');
-    return n;
-  }
-
-  /// 산 뒤 지급 (웹 growGive · 결제 확인 우편 {grow: 1})
-  void growGive() {
-    final g = growG();
-    if (truthy(g['buy'])) return;
-    g['buy'] = 1;
-    (g['got'] as Map)['0'] = 1;
-    s.gem = s.gem + asNum(wGrow['now']);
-    _toast('영주의 첫걸음을 샀어요! 황금 이삭 +${fmt(asNum(wGrow['now']))}');
-    growCheck();
-    s.last = c.now;
-  }
-
-  void buyGrow() {
-    if (truthy(growG()['buy'])) return;
-    _pay((wGrow['k'] as String), growGive);
   }
 }

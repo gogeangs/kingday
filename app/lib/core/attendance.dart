@@ -21,7 +21,7 @@ const List<List<Map<String, Object>>> attWeek = [
   [{'k': 'ore', 'n': 20}],
   [{'k': 'gem', 'n': 10}],
   [{'k': 'card', 'n': 3, 'alt': 30}],
-  [{'k': 'gem', 'n': 30}, {'k': 'tbox10', 'n': 1}],
+  [{'k': 'gem', 'n': 30}, {'k': 'tbox10', 'n': 1}, {'k': 'ucard', 'n': 1}], // 2026-11-16 출석 7일마다 유니크 카드 1장
 ];
 
 /// 한달 판 큰 보상 (7·14·21·28회)
@@ -110,6 +110,7 @@ String attShort(Map r) => switch (r['k']) {
       'card' => '카드 ${r['n']}',
       'ecard' => '영웅 ${r['n']}',
       'lcard' => '전설 ${r['n']}',
+      'ucard' => '유니크 ${r['n']}',
       'badge' => '배지',
       _ => '',
     };
@@ -125,6 +126,7 @@ String attName(Map r) => switch (r['k']) {
       'card' => '동료 카드 ${r['n']}장',
       'ecard' => '영웅↑ 카드 ${r['n']}장',
       'lcard' => '전설 만능 카드 ${r['n']}장',
+      'ucard' => '유니크 카드 ${r['n']}장',
       'badge' => '출석 배지',
       _ => '',
     };
@@ -239,7 +241,7 @@ extension Attendance on GameActions {
     final rows = <AttRow>[];
     for (final r in (a[b == 'w' ? 'gw' : 'gm'] as List)) {
       final m = asMap(r)!;
-      if (m['k'] == 'badge') continue;
+      if (m['k'] == 'badge' || m['k'] == 'ucard') continue; // 유니크 카드는 광고 2배에서 빠짐 (웹 attAdDo)
       rows.add(attGive(m, again: true).$2);
     }
     a[k] = t;
@@ -345,6 +347,9 @@ extension Attendance on GameActions {
         }
         s.raw['lcard'] = lcard + asNum(r['n']).toInt();
         return (it, AttRow('lcard', '전설 만능 카드 +${r['n']}장', '원정대 → 카드 탭에서 원하는 전설 동료에게 넣어요', again));
+      case 'ucard':
+        s.raw['ucard'] = c.ucard + asNum(r['n']).toInt();
+        return (it, AttRow('ucard', '유니크 카드 +${r['n']}장', '원하는 유니크 동료를 골라 별을 올려요', again));
       default: // badge
         final id = 'att_${(attA()['ym'] as String).replaceAll('-', '')}';
         final bd = asMap(s.raw['bdUnl']) ?? (s.raw['bdUnl'] = <String, dynamic>{});

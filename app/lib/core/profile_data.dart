@@ -84,7 +84,7 @@ int? passFrameNo(String k) {
   return m == null ? null : int.parse(m[1]!);
 }
 
-Deco passFrameDeco(int n) => Deco('pass_$n', '원정 일지 · 시즌 $n', '원정 일지 시즌 $n 20단계(유료 줄)', _no, tall: true);
+Deco passFrameDeco(int n) => Deco('pass_$n', '원정 일지 · 시즌 $n', '원정 일지 시즌 $n 20단계', _no, tall: true);
 
 /// 테두리 그림 경로
 String frameAsset(String k) {

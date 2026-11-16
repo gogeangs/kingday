@@ -217,13 +217,10 @@ void main() {
         expect(find.textContaining('되찾은 영지'), findsNothing);
         g.setTab(null);
 
-        // 유니크 카엘 촌장: 첫 은퇴 뒤 상점 상품 → 맞이하기 장면 → 카엘 자리 → 정보 창 · 카엘 자리 창
+        // 유니크 카엘 촌장: 은퇴 10번 → 맞이하기 장면 → 카엘 자리 → 정보 창 · 카엘 자리 창 (2026-11-16 결제 상품 없앰)
         final ret0 = g.state.raw['retires'];
-        g.state.raw['retires'] = 1;
-        g.setTab(GameTab.sh);
-        await frames(2);
-        expect(find.text('카엘 촌장 맞이하기'), findsOneWidget);
-        g.act((a) => a.buyChief());
+        g.state.raw['retires'] = 10;
+        g.act((a) => a.chiefCheck());
         await frames();
         expect(find.text('은퇴하면 더 바빠진다'), findsOneWidget);
         await tester.ensureVisible(find.text('출전시키기'));

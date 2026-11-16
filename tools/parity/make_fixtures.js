@@ -144,7 +144,7 @@ for (const name of Object.keys(SAVES)) {
   sc.basic = run(`({rankIdx:rankIdx(),memMul:memMul(),allMul:allMul(),boxCost:boxCost(),xpNeed:xpNeed(),odds:odds(),
     retireTarget:retireTarget(),retirePts:retirePts(),plotCount:plotCount(),landCount:landCount(),vpMine:vpMine(),
     members:members(),power:power(),gemGold:gemGold(),goldRate:goldRate(),goldX:GOLDX.map(goldX),
-    buffs:Object.keys(BUFFN).map(k=>buff(k)),subOn:subOn(),gearSum:gearSum(),kStats:kStats(),
+    buffs:Object.keys(BUFFN).map(k=>buff(k)),gearSum:gearSum(),kStats:kStats(),
     guide:(g=>g?g.k:'')(guideNow())})`);
   sc.retire = run(`({tl:Object.fromEntries(MEMT.map(t=>[t.k,tl(t.k)])),spent:trSpent(),spentB:MEMB.map(b=>trSpent(b.k)),memPts:memPts(),canAny:trCanAny(),
     open:MEMT.map(trOpen),next:MEMT.map(t=>trNext(t)??null),resetGem:trResetGem(),
@@ -183,7 +183,7 @@ for (const name of Object.keys(SAVES)) {
   sc.worldmap = run(`({seen:Array.from({length:60},(_,i)=>mapSeen(i+1)),taken:Array.from({length:60},(_,i)=>mapTaken(i+1)),
     entered:[0,1,2,3,4,5].map(mapEntered),cleared:[0,1,2,3,4,5].map(mapRegCleared),all:mapAllClear(),explore:mapExplore(),cur:wmCur(),holes:wmHoles()})`);
   // 유니크 카엘 촌장
-  sc.chief = run(`({vp:vpChief(),on:chiefOn(),shop:chiefShop(),can:chiefCan(),pct:[1,2,3,4,5].map(chPct),prod:['mine','dock','apiary','ranch','farm'].map(prodMul),slot:slotMember('kael'),mem:members(),pow:power()})`);
+  sc.chief = run(`({vp:vpChief(),on:chiefOn(),soon:chiefSoon(),uqHow:['ttukttak','lucian','goldie'].map(id=>UQ_HOW[id]()),can:chiefCan(),pct:[1,2,3,4,5].map(chPct),prod:['mine','dock','apiary','ranch','farm'].map(prodMul),slot:slotMember('kael'),mem:members(),pow:power()})`);
   // 마을 난수: 주문 새로 만들기 · 축복 고르기 · 오늘 길 위 동료
   setSave(name);
   w.setSeed(5151);

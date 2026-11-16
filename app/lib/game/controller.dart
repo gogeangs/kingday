@@ -46,7 +46,7 @@ import '../ui/widgets.dart';
 import 'ads.dart';
 import 'feel.dart';
 import 'online.dart';
-import 'store.dart';
+import 'play_log.dart';
 
 part 'controller_ads.dart';
 part 'controller_bond.dart';
@@ -98,11 +98,11 @@ class GameController extends ChangeNotifier {
         final p = sim.party[id];
         if (p != null) p.hp += h;
       };
-    // 원정 일지 점수·성장 패키지 (docs/content/SHOP.md)
+    // 원정 일지 점수 (docs/content/SHOP.md) · 영지를 되찾을 때 유니크 합류 조건 확인 (뚝딱이 영지 50, 웹 uqCheck)
     sim
       ..onPass = ((k) => act((a) => a.passAdd(k)))
       ..onKill = (() => act((a) => a.passKill()))
-      ..onGrow = (() => act((a) => a.growCheck()));
+      ..onGrow = (() => act((a) => a.uqCheck()));
     // 웹 start(): 처음이면 프롤로그 (방치 보상은 7단계)
     final isNew = !truthy(state.raw['started']);
     state.raw['started'] = true;
@@ -124,8 +124,8 @@ class GameController extends ChangeNotifier {
       _p2Boot(); // 2부: 61 「왕궁 뜰」에 있던 예전 세이브 → 2부 시작 장면
     }
     acts.passS();
-    act((a) => a.growCheck());
-    if (!isNew) queue((_) async => act((a) => a.passWarn()));
+    act((a) => a.uqCheck()); // 유니크 합류 조건: 예전 저장이 이미 넘었으면 접속할 때 합류
+    playLog.boot();
     calc.pfCheck();
     // 웹 start() 끝의 events(): 옛 기록·다른 곳에서 가져온 기록이면 밀린 이야기·칭호를 바로 보여 줌
     sim.runStoryEvents();
@@ -134,13 +134,10 @@ class GameController extends ChangeNotifier {
     // 8단계: 계정·랭킹·우편·클라우드 (서버가 없으면 꺼짐)
     online = Online(this, server)..start();
     _evBoot(isNew); // 정기 이벤트(눈꽃제): 지난 이벤트 정리·시작 장면·서버 날짜 (웹 evBoot)
-    // 인앱결제 (스토어 상품을 등록하기 전에는 꺼져 있음 → 시험용 바로 지급)
-    iap = IapStore(this);
-    if (Feel.live) iap.init();
   }
 
-  /// 스토어 결제
-  late final IapStore iap;
+  /// 유저 행동 기록 (하루 한 줄 → kd_log_day, docs/PLAN_MONETIZATION_REMOVAL.md 6번)
+  late final PlayLog playLog = PlayLog(this);
 
   /// 계정·랭킹·우편함·클라우드 저장
   late final Online online;
@@ -245,11 +242,9 @@ class GameController extends ChangeNotifier {
     _builtToast(calc.produce());
     offline();
     attAuto();
-    // 원정 일지: 시즌이 바뀌었으면 넘기고, 마감 3일 전이면 알림 (하루 한 번)
-    act((a) {
-      a.passS();
-      a.passWarn();
-    });
+    // 원정 일지: 시즌이 바뀌었으면 넘김
+    act((a) => a.passS());
+    playLog.flush();
     refresh();
     // 웹 'online' 이벤트처럼: 돌아오면 계정·우편 다시 확인
     if (online.on) online.ensure();
@@ -283,7 +278,6 @@ class GameController extends ChangeNotifier {
     _toastTimer?.cancel();
     save();
     online.dispose();
-    iap.dispose();
     game.pauseEngine();
     super.dispose();
   }
@@ -419,6 +413,9 @@ class GameController extends ChangeNotifier {
   /// 제목 화면이 떠 있는 동안은 창을 띄우지 않음
   bool titleOpen = true;
   bool modalOpen = false;
+
+  /// 보스 「광고 보고 다시 도전」에서 「괜찮아요」를 누른 영지 (그 영지에서는 다시 묻지 않음, 웹 retrySkip)
+  int retrySkip = 0;
 
   /// 시련의 탑 자동 오르기: 이번에 연달아 오른 층·보상 (웹 CH.run)
   TowerRun? towerRun;
@@ -562,12 +559,7 @@ class GameController extends ChangeNotifier {
       // 하루가 바뀌면 원정 일지 시즌·마감 알림 확인 (웹 attHud 의 날짜 바뀜)
       final t = calc.today();
       if (_passDayK != t) {
-        if (_passDayK.isNotEmpty) {
-          act((a) {
-            a.passS();
-            a.passWarn();
-          });
-        }
+        if (_passDayK.isNotEmpty) act((a) => a.passS());
         _passDayK = t;
       }
       refresh();
@@ -672,25 +664,8 @@ class GameController extends ChangeNotifier {
         case ActCardReveal(:final got, :final title, :final gold, :final again):
           sound('gem');
           queue((ctx) => showCardReveal(ctx, this, got, title, gold: gold, again: again));
-        case ActPackGot(:final gem, :final first, :final ucard):
-          // 결제 직후: 알림은 「구입 완료」 창 뒤에서 사라져 버려서 창으로 (2026-10-26)
-          sound('gem');
-          haptic(const [20, 30, 40]);
-          scene('결제 완료', '황금 이삭 +${fmt(gem)}', [
-            'sys:황금 이삭 ${fmt(gem)}개를 받았어요.${first ? ' 첫 구매라서 2배로 드렸어요.' : ''}${ucard > 0 ? ' 유니크 카드 $ucard장도 함께 받았어요.' : ''}',
-            'm:피트|고마워, 형씨! 이삭은 상단 바에서 바로 확인해 봐.',
-          ], '확인');
         case ActLaterToast(:final msg, :final ms):
           Timer(Duration(milliseconds: ms), () => toast(msg));
-        case ActStarter(:final it, :final cur):
-          scene('첫 거래 특가', '피트의 진품 보증', [
-            'm:피트|형씨, 첫 거래 기념이야. 이번 건 진짜 진품이라고. 진짜로.',
-            'k@surprised:…이번엔 정말 빛이 나네요.',
-            'sys:전설 등급 성유물 1개와 황금 이삭 ${starterPack['gem']}개를 받았어요.',
-          ], '성유물 확인하기', onGo: () => queue((ctx) async {
-                acts.pending = it;
-                await showItemSheet(ctx, it, cur);
-              }));
         case ActGemPlotAsk(:final n, :final cost):
           scene('황금 밭', '새 밭 일구기', [
             'm:마르타|황금 이삭을 땅에 뿌리면 굳은 땅도 금세 부드러워지지. 한 칸 더 일궈 볼 텐가?',
@@ -774,6 +749,7 @@ class GameController extends ChangeNotifier {
     if (!await playAd()) return;
     final ad = asMap(calc.daily()['ad'])!;
     ad[k] = orNum(ad[k], 0) + 1;
+    playLog.ad(k);
     give();
     save();
     refresh();

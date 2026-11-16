@@ -75,6 +75,7 @@ class _AttendSheetState extends State<AttendSheet> {
       'tbox' => 'assets/game/ui/item_boxticket.png',
       'tbox10' => 'assets/game/ui/item_box10ticket.png',
       'card' || 'ecard' || 'lcard' => 'assets/game/ui/card_back.png',
+      'ucard' => 'assets/game/ui/card_unique.png',
       _ => 'assets/game/profile/badge_att.png',
     };
     return kdImg(p, w: size, h: size);
@@ -144,6 +145,7 @@ class _AttendSheetState extends State<AttendSheet> {
     if (r == 'back') return g.toast('날짜가 이상해요. 휴대폰 시간을 확인해 주세요.');
     final res = r as AttResult;
     if (res.first) g.act((a) => a.passAdd('att'));
+    g.act((a) => a.uqCheck()); // 골디: 누적 출석 60일 (웹 attClaim → uqCheck)
     g.haptic(const [30, 40, 70]);
     g.calc.pfCheck();
     g.save();
