@@ -10,7 +10,7 @@ on:
       version:
         description: 'App Store 버전 번호 (앱 pubspec 과 같게)'
         required: true
-        default: '0.0.4'
+        default: '0.0.10'
 
 jobs:
   upload:
