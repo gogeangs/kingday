@@ -107,7 +107,7 @@ docs/           GAME_DESIGN.md, RANKING.md, BACKLOG.md, DESIGN_BRIEF.md, ART_ASS
 | 서버 | `supabase_flutter` (익명 로그인, RPC, 구글/애플 로그인 연결) |
 | 로그인 | `google_sign_in` + `sign_in_with_apple` → Supabase `signInWithIdToken` / `linkIdentity` |
 | 결제 | `purchases_flutter`(RevenueCat) 또는 `in_app_purchase` (+ Supabase Edge Function 영수증 검증) |
-| 광고 | `google_mobile_ads` (AdMob 보상형) |
+| 광고 | ~~`google_mobile_ads`~~ 2026-11-16 없앰 (완전 무료, 태그 `ads-last`) |
 | 저장 | `shared_preferences` 또는 `hive` (로컬) + 기존 `kd_save_put/get` (클라우드) |
 | 진동·소리 | `HapticFeedback`(기본 제공), `flame_audio` |
 | 글꼴 | `assets/fonts/*.woff2` → 앱용 TTF/OTF 원본으로 교체 필요 (Hahmlet, IBM Plex Sans KR) |

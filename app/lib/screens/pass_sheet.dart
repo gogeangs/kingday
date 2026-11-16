@@ -6,7 +6,6 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 
 import '../core/actions.dart';
-import '../core/data.dart';
 import '../core/event.dart';
 import '../core/fmt.dart';
 import '../core/js.dart';

@@ -759,9 +759,9 @@ final List<String> rankImg = wRankimg.cast<String>();
 
 /// 방치 보상 창의 작은 「2배」 버튼 (웹 .dblrow button)
 class _DblBtn extends StatelessWidget {
-  const _DblBtn({required this.text, this.sub, this.icon, required this.onTap});
+  const _DblBtn({required this.text, this.icon, required this.onTap});
   final String text;
-  final String? sub, icon;
+  final String? icon;
   final VoidCallback onTap;
 
   @override
@@ -776,7 +776,6 @@ class _DblBtn extends StatelessWidget {
             child: Row(mainAxisSize: MainAxisSize.min, children: [
               if (icon != null) ...[kdImg(icon!, w: 14, h: 14), const SizedBox(width: 3)],
               Text(text, style: KdText.body(12.5, color: const Color(0xFFFFE08A), weight: FontWeight.w700)),
-              if (sub != null) ...[const SizedBox(width: 4), Text(sub!, style: KdText.body(11, color: KdColors.muted))],
             ]),
           ),
         ),
