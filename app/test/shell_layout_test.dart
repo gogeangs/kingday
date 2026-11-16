@@ -91,9 +91,14 @@ void main() {
         // 이야기 창 (대사 줄·금테 창·버튼) — 앞에 열린 창이 있으면 실패 때 무엇인지 보여 줌
         printOnFailure('앞에 열린 창: ${tester.widgetList<Text>(find.descendant(of: find.byType(KdSheetFrame), matching: find.byType(Text))).map((t) => t.data).take(6).toList()} · 단계 ${g.state.stage}');
         // 이 저장에서 아직 안 본 옛 이야기·칭호 창이 있으면 먼저 모두 닫음 (전투가 빠르면 시험 중에 뜸)
-        for (var i = 0; i < 12; i++) {
+        // (영지 50을 넘은 저장은 접속할 때 유니크 합류 장면도 뜸 — 2026-11-16)
+        for (var i = 0; i < 30; i++) {
           final nav = g.navKey.currentState!;
-          if (!nav.canPop()) break;
+          if (!nav.canPop()) {
+            await tester.pump(const Duration(milliseconds: 300));
+            if (!g.navKey.currentState!.canPop()) break;
+            continue;
+          }
           nav.pop();
           await tester.pump(const Duration(milliseconds: 100));
         }
@@ -217,13 +222,10 @@ void main() {
         expect(find.textContaining('되찾은 영지'), findsNothing);
         g.setTab(null);
 
-        // 유니크 카엘 촌장: 첫 은퇴 뒤 상점 상품 → 맞이하기 장면 → 카엘 자리 → 정보 창 · 카엘 자리 창
+        // 유니크 카엘 촌장: 은퇴 10번 → 맞이하기 장면 → 카엘 자리 → 정보 창 · 카엘 자리 창 (2026-11-16 결제 상품 없앰)
         final ret0 = g.state.raw['retires'];
-        g.state.raw['retires'] = 1;
-        g.setTab(GameTab.sh);
-        await frames(2);
-        expect(find.text('카엘 촌장 맞이하기'), findsOneWidget);
-        g.act((a) => a.buyChief());
+        g.state.raw['retires'] = 10;
+        g.act((a) => a.chiefCheck());
         await frames();
         expect(find.text('은퇴하면 더 바빠진다'), findsOneWidget);
         await tester.ensureVisible(find.text('출전시키기'));
@@ -236,7 +238,7 @@ void main() {
         g.state.raw['ptTab'] = 'card';
         g.refresh();
         await frames(2);
-        expect(find.textContaining('유니크 카드 30 / 20'), findsOneWidget);
+        expect(find.textContaining('유니크 카드 30 / 10'), findsWidgets); // ★2 10장 (2026-11-16) · 영지 50 넘은 저장은 뚝딱이도 같이 보임
         chiefSheet(g);
         await frames();
         expect(find.text('다 함께 울력'), findsOneWidget);

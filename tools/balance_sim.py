@@ -5,6 +5,7 @@
     python3 tools/balance_sim.py village            # 마을 확장 밸런스 ①~④ (docs/content/VILLAGE.md 8장)
     python3 tools/balance_sim.py pass               # 원정 일지 점수: 하루 2~3번 접속 유저 · 출석만 하는 유저 (docs/content/SHOP.md 8장)
     python3 tools/balance_sim.py gem 28 '{"n":3,"min":20,"ad":1,"ret":1}'   # 황금 이삭: 보통 유저가 결제 없이 하루·한 주에 얻는 이삭 출처별 (PLAN_MONETIZATION_REMOVAL.md 4번)
+    python3 tools/balance_sim.py order '[8,13,21]'   # 시장 주문: 하루 3번 접속하는 유저의 하루 납품 수 (루시안 합류 조건, PLAN_MONETIZATION_REMOVAL.md 2번)
     python3 tools/balance_sim.py bond              # 원정대의 정: 하루 10시간 쌓이는 유저의 ♥3·♥5 도달일 · 같은 직업 짝 (docs/content/BOND.md 8장)
     python3 tools/balance_sim.py p2 4 50 8 '{"hpG2":1.03}' 70 1   # 2부(61~90): 1부 엔딩까지(최대 4시간, 추억 50·은퇴 8 + 1부 끝 무렵 마을 = 60을 겨우 깨는 유저) → 출퇴근 방치러가 61~91에 닿는 날 (PART2.md 8장)
     python3 tools/balance_sim.py newyear 2 10 2 '{}' '{}' '{}'   # 신년축제 21일: 같은 출발점 → 매일 오는 유저·하루 1번 유저 소원 등불·윷판 바퀴·복주머니·몽글이 카드 (EVENT_NEWYEAR.md 8-1)
@@ -55,6 +56,10 @@ async def main():
     if H=='bond':
       r=await pg.evaluate(open(SP+'/bond_sim.js').read())
       print(json.dumps(r,ensure_ascii=False,indent=1));await b.close();return
+    if H=='order':
+      A=sys.argv[2:];ck=A[0] if len(A)>0 else '[8,13,21]'
+      r=await pg.evaluate(open(SP+'/order_sim.js').read().replace('CHECKS_ARR',ck))
+      print(json.dumps(r,ensure_ascii=False));await b.close();return
     if H=='gem':
       A=sys.argv[2:]
       days=A[0] if len(A)>0 else '28';plan=A[1] if len(A)>1 else '{}'

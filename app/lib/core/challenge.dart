@@ -126,6 +126,7 @@ const rewardNames = {
   'carrot': ('은빛 당근 씨앗', 'assets/game/ui/seed_carrot.png'),
   'pumpkin': ('달빛 호박 씨앗', 'assets/game/ui/seed_pumpkin.png'),
   'gem': ('황금 이삭', 'assets/game/gem/ui_gem.png'),
+  'ucard': ('유니크 카드', 'assets/game/ui/card_unique.png'),
 };
 String rewardText(Reward r) => [
       for (final e in rewardNames.entries)
@@ -208,6 +209,7 @@ extension ChallengeCalc on GameCalc {
       if ((r[c] ?? 0) > 0) s.seeds[c] = orNum(s.seeds[c], 0) + r[c]!;
     }
     if ((r['gem'] ?? 0) > 0) s.gem = s.gem + r['gem']!;
+    if ((r['ucard'] ?? 0) > 0) s.raw['ucard'] = ucard + r['ucard']!;
   }
 
   // ───────────── 추억 속 원정대 (CHALLENGE.md 11장) ─────────────

@@ -30,7 +30,8 @@ class GameState {
         'plots': <dynamic>[], 'seeds': {'wheat': 0, 'carrot': 0, 'pumpkin': 0},
         'items': {'wheat': 0, 'carrot': 0, 'pumpkin': 0, 'fish': 0, 'honey': 0, 'ore': 0, 'egg': 0, 'milk': 0},
         'prod': <String, dynamic>{}, 'buffs': <String, dynamic>{}, 'rankSeen': 0, 'memory': 0, 'retires': 0,
-        'buys': <String, dynamic>{}, 'sub': {'until': 0, 'last': ''}, 'ucard': 0, 'gem': 0, 'gemRank': 0,
+        // 2026-11-16 결제 없앰: buys·sub·grow 칸 없음. uq2 = 유니크 별 장수(10·15·30·45)로 바뀐 뒤 저장 · adSpd = 광고 속도 x3 끝나는 시각
+        'ucard': 0, 'uq2': 1, 'adSpd': 0, 'gem': 0, 'gemRank': 0,
         'gemLord': <String, dynamic>{},
         'daily': {'d': '', 'kill': 0, 'box': 0, 'harv': 0, 'claim': <String, dynamic>{}},
         // 출석체크 (docs/content/ATTENDANCE.md) — 웹과 같은 필드명
@@ -52,12 +53,11 @@ class GameState {
         'bless': {'d': '', 'used': 0, 'ad': 0, 'k': '', 'until': 0, 'opts': <dynamic>[]},
         'vlv': 1, 'ep': <String, dynamic>{}, 'walkers': {'d': '', 'ids': <dynamic>[]}, 'keepOrder': 1,
         'work': <String, dynamic>{}, 'workIntro': 0, 'workDot': '',
-        // 상점·패스 (docs/content/SHOP.md 7장): 원정 일지(시즌 패스) · 영주의 첫걸음(성장 패키지) — 웹과 같은 필드
+        // 상점·패스 (docs/content/SHOP.md 7장): 원정 일지(시즌 패스, 무료 줄 하나) — 웹과 같은 필드
         'pass': {
-          's': 0, 'pt': 0, 'paid': 0, 'got': {'f': <dynamic>[], 'p': <dynamic>[]},
+          's': 0, 'pt': 0, 'got': {'f': <dynamic>[], 'p': <dynamic>[]},
           'day': {'d': '', 'src': <String, dynamic>{}, 'kc': 0}, 'intro': 0, 'mail': <dynamic>[],
         },
-        'grow': {'buy': 0, 'got': <String, dynamic>{}},
         // 원정대의 정 (docs/content/BOND.md 7장): 동료별 호감 점수 · 오늘 길 위에서 말 건 동료 · 본 관계 이야기·처음 안내·단짝 토스트
         'aff': <String, dynamic>{},
         'affTalk': {'d': '', 'ids': <String, dynamic>{}},
@@ -134,7 +134,7 @@ class GameState {
     f['gem'] = math.max<num>(0, f['gem'] as num);
     f['stage'] = math.max(1, (f['stage'] as num).floor());
     f['best'] = math.max(1, (f['best'] as num).floor());
-    // 원정 일지·성장 패키지: 안쪽 칸 모양이 깨졌으면 기본값 (웹 hydrate)
+    // 원정 일지: 안쪽 칸 모양이 깨졌으면 기본값 (웹 hydrate)
     {
       final p = f['pass'] as Map, p0 = freshMap(now)['pass'] as Map;
       if (p['got'] is! Map) p['got'] = p0['got'];
@@ -145,12 +145,38 @@ class GameState {
       }
       if (p['day'] is! Map || (p['day'] as Map)['src'] is! Map) p['day'] = p0['day'];
       p['mail'] = p['mail'] is List ? [for (final m in p['mail'] as List) if (m is Map && m['r'] is Map) m] : <dynamic>[];
-      for (final k in const ['s', 'pt', 'paid', 'intro']) {
+      for (final k in const ['s', 'pt', 'intro']) {
         final v = p[k];
         if (v is! num || !v.isFinite) p[k] = 0;
       }
-      final gr = f['grow'] as Map;
-      if (gr['got'] is! Map) gr['got'] = <String, dynamic>{};
+      p.remove('paid');
+    }
+    // 결제 흔적 정리 (2026-11-16, 웹 hydrate)
+    f.remove('buys');
+    f.remove('sub');
+    f.remove('grow');
+    if (f['adSpd'] is! num || !(f['adSpd'] as num).isFinite) f['adSpd'] = 0;
+    // 유니크 별 장수가 290장 → 100장으로 줄어든 뒤 처음 읽는 저장: 이미 쓴 카드로 새 기준 별까지 올림 (남은 카드는 그대로, 웹 hydrate)
+    if (!truthy(src['uq2'])) {
+      f['uq2'] = 1;
+      const old = [0, 20, 40, 80, 150];
+      final ug = asMap(wGr['unique'])!, nw = [for (final x in ug['need'] as List) asNum(x)], mx = asNum(ug['max']).toInt();
+      final rec = asMap(f['rec']);
+      if (rec != null) {
+        for (final id in rec.keys.toList()) {
+          final r0 = rec[id];
+          if (wGrade[id] != 'unique' || r0 is! num || r0 <= 1) continue;
+          num spent = 0;
+          var st = 1;
+          for (var k = 1; k < r0; k++) {
+            spent += old[k];
+          }
+          while (st < mx && spent >= nw[st]) {
+            spent -= nw[st++];
+          }
+          rec[id] = math.max(r0, st);
+        }
+      }
     }
     final pty = asMap(f['party']);
     if (pty != null && pty['kael'] != null && pty['kael'] != 'kael_chief') pty.remove('kael');
@@ -321,8 +347,6 @@ class GameState {
   Map<String, dynamic> get items => _obj('items');
   Map<String, dynamic> get prod => _obj('prod');
   Map<String, dynamic> get buffs => _obj('buffs');
-  Map<String, dynamic> get buys => _obj('buys');
-  Map<String, dynamic> get sub => _obj('sub');
   List<dynamic> get plots => raw['plots'] is List ? raw['plots'] as List : (raw['plots'] = <dynamic>[]);
 
   /// 없을 수도 있는 것들 (웹: S.rec&&S.rec[id] 처럼 확인)

@@ -198,7 +198,6 @@ void main() {
         same(c.goldRate(), b['goldRate'], 'goldRate');
         same([for (final x in goldExchanges) c.goldX(x)], b['goldX'], 'goldX');
         same([for (final k in buffName.keys) c.buff(k)], b['buffs'], 'buffs');
-        same(c.subOn(), b['subOn'], 'subOn');
         final gs = c.gearSum();
         same({'a': gs.a, 'h': gs.h}, b['gearSum'], 'gearSum');
         same(c.kStats().toJson(), b['kStats'], 'kStats');
@@ -319,7 +318,11 @@ void main() {
         same({
           'vp': c.vpChief(),
           'on': c.chiefOn(),
-          'shop': c.chiefShop(),
+          'soon': c.chiefSoon(),
+          'uqHow': [for (final id in GameCalc.uqIds) () {
+            final (t, v, g) = c.uqHow(id);
+            return [t, v, g];
+          }()],
           'can': c.chiefCan(),
           'pct': [for (var st = 1; st <= 5; st++) GameCalc.chPct(st)],
           'prod': [for (final b in const ['mine', 'dock', 'apiary', 'ranch', 'farm']) c.prodMul(b)],

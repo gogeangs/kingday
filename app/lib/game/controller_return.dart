@@ -76,7 +76,7 @@ extension GameReturnX on GameController {
                   icon: gemIcon,
                   text: '이삭 $gemOffline로 2배',
                   onTap: () {
-                    if (!acts.spendGem(gemOffline)) {
+                    if (!acts.spendGem(gemOffline, 'offline')) {
                       _flush();
                       return;
                     }

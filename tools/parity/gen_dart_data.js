@@ -28,7 +28,7 @@ const TABLES = [
   ['GEM_PLOTS', 'GEM_PLOTS'], ['RANKS', 'RANKS'],
   ['EVENTS', 'EVENTS.map(e=>({at:e.at,id:e.id,eb:e.eb,t:e.t,p:e.p,btn:e.btn}))'], ['QUIPS', 'QUIPS'],
   ['MISSIONS', 'MISSIONS'], ['MIS_ALL', 'MIS_ALL'], ['RANK_GEM', 'RANK_GEM'], ['LORD_GEM', 'LORD_GEM'],
-  ['ADS', 'ADS'], ['PACKS', 'PACKS'], ['SUB', 'SUB'], ['STARTER', 'STARTER'], ['CARDPK', 'CARDPK'], ['GOLDX', 'GOLDX'],
+  ['ADS', 'ADS'], ['CARDPK', 'CARDPK'], ['GOLDX', 'GOLDX'],
   ['GEM10', 'GEM10'], ['GEM_PLOT', 'GEM_PLOT'], ['GEM_OFFLINE', 'GEM_OFFLINE'], ['LUMQ', 'LUMQ'],
   ['SAVE_KEY', 'KEY'],
   // ── 전투 (2단계) ──
@@ -46,7 +46,9 @@ const TABLES = [
   // ── 2026-10-23 대륙 지도 (docs/content/WORLDMAP.md) ──
   ['MAPPOS', 'MAPPOS'], ['REG_FOG', 'REG_FOG'], ['P2', 'P2'],
   // ── 2026-10-26 상점·패스 (docs/content/SHOP.md) ──
-  ['SEAS0', 'SEAS0'], ['PASS', 'PASS'], ['PASS_SRC', 'PASS_SRC'], ['PASS_REW', 'PASS_REW'], ['GROW', 'GROW'],
+  ['SEAS0', 'SEAS0'], ['PASS', 'PASS'], ['PASS_SRC', 'PASS_SRC'], ['PASS_REW', 'PASS_REW'],
+  // ── 2026-11-16 유료화 제거 (docs/PLAN_MONETIZATION_REMOVAL.md): 유니크 합류 조건 ──
+  ['UQ_COND', '({lucOrd:LUC_ORD,goldAtt:GOLD_ATT,ttukLand:MAXLAND_1,towerUc:TOWER_UC,retryAtk:RETRY_ATK,spdAd:SPD_AD})'],
   // ── 2부 「흩어진 동맹」 (docs/content/PART2.md · 웹 p2Install 뒤의 표) ──
   ['LAND', 'LAND'], ['STORY2', 'STORY2'], ['ALLY', 'ALLY'], ['P2C', '({mem:P2_MEM,gem:P2_GEM,last:P2_LAST,seaR0:SEA_R0})'],
   ['P2FREE', 'P2FREE'], ['ENDING2', 'ENDING2'], ['SEAPOS', 'SEAPOS'], ['SEA_FOG', 'SEA_FOG'], ['RANKIMG', 'RANKIMG'],

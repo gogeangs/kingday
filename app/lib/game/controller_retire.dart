@@ -211,7 +211,7 @@ extension GameRetireX on GameController {
   /// 특성 초기화: 첫 1번 무료, 그다음 황금 이삭 100 (웹 trResetAsk). 했으면 true
   bool trReset() {
     final gcost = calc.trResetGem();
-    if (gcost > 0 && !acts.spendGem(gcost)) return false;
+    if (gcost > 0 && !acts.spendGem(gcost, 'trait')) return false;
     final back = calc.trSpent();
     state.raw['trait'] = <String, dynamic>{};
     state.raw['trReset'] = orNum(state.raw['trReset'], 0) + 1;

@@ -13,7 +13,7 @@
 2. Google Play Console 가입 → 앱 만들기 → 내부 테스트에 AAB 올리기 (§2)
 3. Google Cloud에 안드로이드 OAuth 클라이언트 추가 → Supabase에 클라이언트 ID 추가 (§3)
 4. AdMob 앱·광고 단위 만들기 (§4)
-5. Play Console에 상품 9개 등록 → 서비스 계정 연결 → Supabase에 SQL 실행·Edge Function 배포 (§5)
+5. ~~Play Console에 상품 등록·결제 서버~~ → 2026-11-16 결제 없앰, 상품 판매 중지·서버 정리 (§5)
 6. (iOS) Apple Developer 가입 → 앱·상품·애플 로그인 → Codemagic (§6)
 7. 스토어 등록정보·개인정보처리방침·콘텐츠 등급 (§7, `docs/STORE_LISTING.md`, `docs/PRIVACY_POLICY.md`)
 
@@ -87,7 +87,22 @@
 
 > 실제 광고를 내 폰에서 직접 누르거나 반복해서 보면 AdMob 계정이 정지될 수 있어요. AdMob 「설정 → 테스트 기기」에 대표님 폰을 등록해 두면 내 폰에는 시험 광고가 나와요.
 
-## 5. 인앱결제 (상품·결제 확인 서버)
+## 5. 인앱결제 — **2026-11-16 없앰** (docs/PLAN_MONETIZATION_REMOVAL.md)
+
+> 결제 상품을 모두 없애고 수익은 보상형 광고만 남김. 웹 `pay()`·앱 `IapStore`·`in_app_purchase` 패키지·상점 「구매 복원」은 코드에서 삭제(지우기 직전 커밋 태그 `iap-last` = `572807a`).
+> 앱은 0.0.9부터 결제 없음. 아이폰은 심사 중인 0.0.5 그대로 두고, 다음 제출 때 결제 없는 버전을 냄.
+>
+> **대표님 할 일 (순서대로)**
+> 1. 안드로이드 0.0.9 를 Play Console 에 올린 뒤 → Play Console → 수익 창출 → 상품: 아래 13개 + 정기 결제 `kd_sub_monthly` **판매 중지(비활성화)** — 지우지 말 것(같은 ID를 다시 못 씀)
+> 2. 아이폰 0.0.5 심사가 끝나고 결제 없는 버전을 낸 뒤 → App Store Connect 인앱 구매도 **판매 중지**(「판매 가능」 해제)
+> 3. 위 둘이 끝난 뒤 → Supabase SQL Editor 에서 `supabase/stage16_iap_off.sql` 실행 → Edge Functions 에서 `kd-iap` 삭제 → Secrets 에서 `GOOGLE_SERVICE_ACCOUNT_JSON`·`APPLE_ISSUER_ID`·`APPLE_KEY_ID`·`APPLE_PRIVATE_KEY` 삭제
+> 4. Google Cloud 서비스 계정 `kingday-iap@…` 키 삭제(또는 계정 비활성화), Play Console 사용자 목록에서 그 계정 권한 해제
+> 5. 스토어 「데이터 보안」·「앱이 수집하는 개인정보」에서 「구매 내역」 빼기 (docs/PRIVACY_POLICY.md 끝)
+> - 행동 기록 테이블 `supabase/stage15_play_log.sql` 은 2026-11-16 실행 완료
+>
+> 아래는 기록으로만 남김.
+
+### (기록) 인앱결제 상품·결제 확인 서버
 
 ### 5-1. 상품 등록 (Play Console → 수익 창출 → 상품)
 
@@ -162,6 +177,6 @@
 |---|---|---|
 | 효과음·진동 | `app/lib/game/feel.dart`, `app/assets/audio/` | 켜짐(설정에서 끄기 가능) |
 | 보상형 광고 | `app/lib/game/ads.dart` | 실제 광고 ID (0.0.5부터) |
-| 인앱결제 | `app/lib/game/store.dart`, `supabase/functions/kd-iap`, `supabase/stage4_iap.sql` | 꺼짐(시험용 바로 지급) |
+| 인앱결제 | (2026-11-16 삭제 — `iap-last` 참고) | 없음 |
 | 구글·애플 로그인 | `app/lib/game/login.dart` | 꺼짐(클라이언트 ID 대기) |
 | 정식 서명 | `.github/workflows/app-build.yml`, `app/android/app/build.gradle.kts` | GitHub 비밀값을 넣으면 자동 사용 |

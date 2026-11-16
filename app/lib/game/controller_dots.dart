@@ -80,8 +80,7 @@ extension GameDotsX on GameController {
         final d = c.daily();
         final claim = asMap(d['claim']) ?? const <String, dynamic>{};
         final n = missions.where((m) => orNum(d[m.k], 0) >= m.goal && !truthy(claim[m.k])).length +
-            (missions.every((m) => truthy(claim[m.k])) && !truthy(claim['all']) ? 1 : 0) +
-            (c.subOn() && asMap(state.raw['sub'])?['last'] != c.today() ? 1 : 0);
+            (missions.every((m) => truthy(claim[m.k])) && !truthy(claim['all']) ? 1 : 0);
         final a = acts.adKeys().any((k) => c.adLeft(k) > 0);
         // 원정 일지에 받을 보상 (웹 dotSig 'sh' 의 p)
         final pn = truthy(state.raw['started']) ? acts.passCanN() : 0;
@@ -102,13 +101,12 @@ extension GameDotsX on GameController {
     return sig != seen[t.name];
   }
 
-  /// 이삭 점: 받을 수 있는 할 일 보상이나 정기 배송이 있을 때 (웹 gemDot)
+  /// 이삭 점: 받을 수 있는 할 일 보상이 있을 때 (웹 gemDot)
   bool get gemDot {
     final d = calc.daily();
     final claim = asMap(d['claim']) ?? const <String, dynamic>{};
     bool can(MissionDef m) => orNum(d[m.k], 0) >= m.goal && !truthy(claim[m.k]);
     final all = missions.every((m) => truthy(claim[m.k])) && !truthy(claim['all']);
-    final sub = asMap(state.raw['sub']);
-    return missions.any(can) || all || (calc.subOn() && sub?['last'] != calc.today());
+    return missions.any(can) || all;
   }
 }

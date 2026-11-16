@@ -32,8 +32,8 @@ class BattleGame extends FlameGame {
   final BattleSim sim;
   final BattleInsets insets;
 
-  /// 2배속 (웹 S.speed===2)
-  int get speed => sim.s.raw['speed'] == 2 ? 2 : 1;
+  /// 2배속 (웹 S.speed===2) · 광고 보면 30분 x3 (웹 spdX, S.adSpd)
+  int get speed => (sim.s.raw['adSpd'] is num && (sim.s.raw['adSpd'] as num) > DateTime.now().millisecondsSinceEpoch) ? 3 : sim.s.raw['speed'] == 2 ? 2 : 1;
 
   /// 매 프레임 끝에 부름 (화면 위 Flutter 위젯 새로 그리기용)
   void Function(double dt)? onTick;

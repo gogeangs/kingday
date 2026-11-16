@@ -71,16 +71,6 @@ void main() {
             a.buyGoldX(o[1]);
           case 'cp':
             a.buyCardPack(int.parse(o[1]));
-          case 'pack':
-            a.buyPack(o[1]);
-          case 'starter':
-            a.buyStarter();
-          case 'sub':
-            a.buySub();
-          case 'subclaim':
-            a.claimSub();
-          case 'chief':
-            a.buyChief();
           case 'chiefchk':
             a.chiefCheck();
           case 'chiefup':
@@ -94,7 +84,13 @@ void main() {
           case 'adbox':
             a.adBoxGive();
           case 'adgem':
-            s.gem = s.gem + 5;
+            s.gem = s.gem + 10;
+          case 'passad':
+            a.passAdGive();
+          case 'uqchk':
+            a.uqCheck();
+          case 'stat':
+            c.stat(o[1], num.parse(o[2]) - c.st(o[1]));
           case 'adcard':
             a.adCardGive();
           case 'att':
@@ -135,30 +131,13 @@ void main() {
             } else {
               a.passClaim();
             }
-          case 'pbuy':
-            a.buyPass();
-          case 'popen':
-            a.passOpen(int.parse(o[1]));
           case 'pmail':
             a.passMailClaim(o.length > 1 ? o[1] : null);
-          case 'pwarn':
-            a.passWarn();
           case 'best':
             s.best = int.parse(o[1]);
-          case 'grow':
-            a.buyGrow();
-          case 'growgive':
-            a.growGive();
-          case 'growchk':
-            a.growCheck();
-          // ── 유니크 뚝딱이 ──
-          case 'tbuy':
-            a.buyTtuk();
+          // ── 유니크 (뚝딱이·루시안·골디) ──
           case 'uqup':
             a.uqUp(o[1]);
-          // ── 유니크 루시안 ──
-          case 'lbuy':
-            a.buyLucian();
           // ── 원정대의 정 ──
           case 'aff':
             (s.raw['aff'] as Map)[o[1]] = num.parse(o[2]);

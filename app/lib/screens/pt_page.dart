@@ -19,7 +19,6 @@ import '../ui/game_widgets.dart';
 import '../ui/theme.dart';
 import '../ui/widgets.dart';
 import 'bond_ui.dart';
-import 'shop_page.dart' show won;
 
 class PtPage extends StatelessWidget {
   const PtPage(this.g, {super.key});
@@ -348,7 +347,7 @@ class PtPage extends StatelessWidget {
     final ids = sorted.where((x) => !full(x)).toList();
     final upN = ready.length + (c.chiefCan() ? 1 : 0) + (c.uqCan(GameCalc.ttukId) ? 1 : 0) + (c.uqCan(GameCalc.lucId) ? 1 : 0) + (c.uqCan(GameCalc.goldId) ? 1 : 0);
     TextSpan gt(String n, int col) => TextSpan(text: n, style: TextStyle(color: Color(col), fontWeight: FontWeight.w700));
-    final uc = c.owned(GameCalc.chiefId) || c.chiefShop() || c.ucard > 0;
+    final uc = c.owned(GameCalc.chiefId) || c.chiefSoon() || c.ucard > 0;
     final maxed = [
       for (final u in [GameCalc.chiefId, GameCalc.ttukId, GameCalc.lucId, GameCalc.goldId])
         if (uqFull(u)) u,
@@ -486,8 +485,14 @@ class PtPage extends StatelessWidget {
                 Flexible(child: Text('마을 스킬 · ${villageSkillName[id]}', style: KdText.body(12, color: const Color(0xFFFFC23A)))),
               ]),
             ),
-            if (!has)
-              Text(chief ? '유니크 카드 $n장 모아 둠 · ${cd.join ?? ''}' : '피트의 상점 ${won(id == GameCalc.lucId ? GameCalc.lucWon : id == GameCalc.goldId ? GameCalc.goldWon : GameCalc.ttukWon)}', style: KdText.body(12, color: KdColors.muted))
+            if (!has && chief)
+              Text('유니크 카드 $n장 모아 둠 · ${cd.join ?? ''}', style: KdText.body(12, color: KdColors.muted))
+            else if (!has) ...[
+              // 합류 조건과 진행 막대 (2026-11-16 결제 대신 게임 안 조건, 웹 uqHowTxt)
+              Text(c.uqHowTxt(id), style: KdText.body(12, color: KdColors.muted)),
+              const SizedBox(height: 4),
+              XpBar((c.uqHow(id).$2 / c.uqHow(id).$3).clamp(0, 1).toDouble()),
+            ]
             else if (mx)
               Text('별을 모두 모았어요', style: KdText.body(12, color: KdColors.muted))
             else ...[
@@ -513,11 +518,11 @@ class PtPage extends StatelessWidget {
                   onTap: () => c.chiefCan() ? g.act((a) => a.chiefUp()) : chiefSheet(g),
                 )
               : KdBuy(
-                  text: !has ? '상점 보기' : c.uqCan(id) ? '★ 올리기' : '보기',
+                  text: !has ? '보기' : c.uqCan(id) ? '★ 올리기' : '보기',
                   glow: c.uqCan(id),
                   minWidth: 0,
                   onTap: () => !has
-                      ? g.setTab(GameTab.sh)
+                      ? g.toast('${cd.n} · ${(cd.join ?? '').replaceAll(' (유니크)', '')} (${c.uqHowTxt(id)})')
                       : c.uqCan(id)
                           ? g.act((a) => a.uqUp(id))
                           : compSheet(g, id),
@@ -785,7 +790,7 @@ void chiefSheet(GameController g) {
               Text(cd.desc, style: KdText.body(13, color: KdColors.muted, height: 1.5)),
               if (!has)
                 KdNote(
-                    '맞이하는 법: ${c.chiefShop() ? '피트의 상점 ₩${GameCalc.chiefWon}' : '첫 은퇴 뒤 피트의 상점'} · 또는 은퇴 ${math.min(orNum(g.state.raw['retires'], 0), GameCalc.chiefRet)} / ${GameCalc.chiefRet}번'),
+                    '맞이하는 법: 은퇴 ${math.min(orNum(g.state.raw['retires'], 0), GameCalc.chiefRet)} / ${GameCalc.chiefRet}번'),
               KdKv('능력치', '카엘 +${pctTxt(GameCalc.chiefBonus[math.max(1, st)] * 100)}%'),
               if (has) KdKv('공격 · 체력', '${fmt(t.atk)} · ${fmt(t.hp)}'),
               KdKv('장비·칭호', '카엘 것 그대로'),
@@ -793,7 +798,7 @@ void chiefSheet(GameController g) {
               VillageSkillBox(c, id),
               KdKv('유니크 카드', has ? (mx ? '$n장 · ★ 모두 모음' : '$n / $need장') : '$n장 모아 둠'),
               if (has && !mx) XpBar(n / need),
-              const KdNote('유니크 카드는 황금 이삭 상품(5,500원 이상)의 덤, 피트의 정기 배송(3일마다 1장), 랭킹 시즌 보상으로 받아요. 원하는 유니크 동료를 골라 별을 올려요.'),
+              const KdNote('유니크 카드는 원정 일지(시즌마다 5장)·시련의 탑 10층마다 처음 돌파(2장)·출석 7일마다(1장)·랭킹 시즌 보상으로 받아요. 원하는 유니크 동료를 골라 별을 올려요.'),
             ],
             acts: KdActs(buttons: [
               if (has)
@@ -802,11 +807,6 @@ void chiefSheet(GameController g) {
                 KdAct('닫기', onTap: () => Navigator.of(ctx).pop()),
               if (has)
                 KdAct(mx ? '★ 모두 모음' : '★ 올리기', primary: true, onTap: c.chiefCan() ? () => g.act((a) => a.chiefUp()) : null)
-              else if (c.chiefShop())
-                KdAct('상점 가기', primary: true, onTap: () {
-                  Navigator.of(ctx).pop();
-                  g.setTab(GameTab.sh);
-                }),
             ]),
           );
         },
@@ -889,7 +889,7 @@ List<String> ptOrder(GameController g) {
   );
   return <String>[
     'kael',
-    if (c.owned(GameCalc.chiefId) || c.chiefShop()) GameCalc.chiefId,
+    if (c.owned(GameCalc.chiefId) || c.chiefSoon()) GameCalc.chiefId,
     ...on,
     ...bench,
     for (final j in jobSlots.where((j) => j != 'kael' && c.slotMember(j) == null)) storyOf[j]!,
