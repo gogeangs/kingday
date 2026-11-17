@@ -553,7 +553,39 @@ class GameController extends ChangeNotifier {
         if (_passDayK.isNotEmpty) act((a) => a.passS());
         _passDayK = t;
       }
+      _growthFeedback();
       refresh();
+    }
+  }
+
+  // 네이티브(TestFlight) 성장 체감 알림: 게임 수치·저장 데이터는 건드리지 않음.
+  double? _growthPower;
+  int? _growthStage;
+  int? _growthRetires;
+  DateTime? _growthLastNotice;
+
+  void _growthFeedback() {
+    final stage = state.stage;
+    final retires = (state.raw['retires'] as num?)?.toInt() ?? 0;
+    final power = calc.power().toDouble();
+    if (!power.isFinite || power <= 0) return;
+    if (_growthPower == null || _growthStage != stage || _growthRetires != retires) {
+      _growthPower = power;
+      _growthStage = stage;
+      _growthRetires = retires;
+      return;
+    }
+    final ratio = power / _growthPower!;
+    if (ratio < .98) {
+      _growthPower = power;
+      return;
+    }
+    final now = DateTime.now();
+    if (ratio >= 1.03 && (_growthLastNotice == null || now.difference(_growthLastNotice!).inSeconds >= 4)) {
+      final percent = ((ratio - 1) * 100).round();
+      toast('성장 효과! 전투력 +$percent%');
+      _growthPower = power;
+      _growthLastNotice = now;
     }
   }
 
